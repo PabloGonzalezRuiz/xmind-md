@@ -149,3 +149,129 @@ def resolve_styles(mind_map: MindMap, style_config: dict[str, Any] | None = None
     for root in mind_map.topics:
         visit(root, mind_map.metadata.get("style_set"))
     return mind_map
+
+
+def resolve_ir_styles(
+    mind_map: Any,
+    style_config: dict[str, Any] | None = None,
+    defaults: dict[str, Any] | None = None,
+) -> Any:
+    """Resuelve la cascada de estilos sobre un MindMap IR 1.0.0.
+
+    Precedencia por propiedad:
+    defaults del sistema -> style_defaults globales del documento ->
+    conjunto aplicable -> estilo nombrado -> overrides locales.
+
+    Un tema hereda el conjunto efectivo de su padre; puede sustituirlo mediante
+    style.style_set. Las definiciones externas se sobrescriben por las del mapa.
+    La función modifica únicamente los campos style.resolved, no las definiciones.
+    """
+    from .ir.entities import MindMap as IRMindMap
+
+    if not isinstance(mind_map, IRMindMap):
+        raise TypeError("resolve_ir_styles requiere un MindMap IR 1.0.0")
+
+    config = style_config or {}
+    _mapping(config, "La configuración externa de estilos")
+    if "style_sets" in config or "styles" in config:
+        external_sets = _mapping(config.get("style_sets", {}), "style_sets externos")
+        external_styles = _mapping(config.get("styles", {}), "styles externos")
+    else:
+        # Compatibilidad con el formato histórico: el mapping contiene conjuntos.
+        external_sets, external_styles = config, {}
+
+    document_sets = _mapping(mind_map.style_sets, "style_sets del documento")
+    document_styles = _mapping(mind_map.styles, "styles del documento")
+    sets = {**deepcopy(external_sets), **deepcopy(document_sets)}
+    styles = {**deepcopy(external_styles), **deepcopy(document_styles)}
+    _validate_definitions(sets, styles)
+
+    system_defaults = _mapping(defaults or {}, "Los valores predeterminados")
+    global_defaults = _mapping(
+        mind_map.metadata.get("style_defaults", {}),
+        "style_defaults del documento",
+    )
+    global_set = mind_map.metadata.get("style_set")
+    if global_set is not None and not isinstance(global_set, str):
+        raise StyleError("metadata.style_set debe ser texto")
+    if global_set and global_set not in sets:
+        raise StyleError(f"Conjunto de estilos inexistente: {global_set}")
+
+    def target_properties(definition: Any, target: str, label: str) -> dict[str, Any]:
+        mapping = _mapping(definition, label)
+        properties = mapping.get(target, mapping)
+        return _mapping(properties, f"{label}.{target}")
+
+    def resolve_state(
+        state: Any,
+        target: str,
+        inherited_set: str | None,
+        label: str,
+    ) -> str | None:
+        set_name = state.style_set or inherited_set or global_set
+        effective = _deep_merge(
+            _mapping(system_defaults.get(target, {}), f"defaults.{target}"),
+            _mapping(global_defaults.get(target, {}), f"style_defaults.{target}"),
+        )
+
+        set_definition = None
+        if set_name:
+            set_definition = sets.get(set_name)
+            if set_definition is None:
+                raise StyleError(f"Conjunto de estilos inexistente: {set_name}")
+            _mapping(set_definition, f"El conjunto '{set_name}'")
+            effective = _deep_merge(
+                effective,
+                target_properties(
+                    set_definition.get(target, {}),
+                    target,
+                    f"Conjunto '{set_name}'",
+                ),
+            )
+
+        if state.ref:
+            named = styles.get(state.ref)
+            if named is None and set_definition is not None:
+                named = set_definition.get("styles", {}).get(state.ref)
+            if named is None:
+                raise StyleError(f"Estilo '{state.ref}' no definido para {label}")
+            effective = _deep_merge(
+                effective,
+                target_properties(named, target, f"Estilo '{state.ref}'"),
+            )
+
+        overrides = _mapping(state.overrides, f"Overrides de {label}")
+        state.resolved = _deep_merge(effective, overrides)
+        return set_name
+
+    def visit_topic(topic: Any, inherited_set: str | None = None) -> None:
+        effective_set = resolve_state(
+            topic.style, "topic", inherited_set, f"tema '{topic.title}'"
+        )
+        for index, note in enumerate(topic.annotations.notes):
+            resolve_state(
+                note.style, "notes", effective_set,
+                f"nota {index} del tema '{topic.title}'",
+            )
+        for child in topic.children:
+            visit_topic(child, effective_set)
+
+    visit_topic(mind_map.sheet.root_topic)
+
+    for index, relationship in enumerate(mind_map.sheet.relationships):
+        resolve_state(
+            relationship.style, "relationship", global_set,
+            f"relación {relationship.id}",
+        )
+    for index, boundary in enumerate(mind_map.sheet.boundaries):
+        resolve_state(
+            boundary.style, "boundary", global_set,
+            f"límite {boundary.id}",
+        )
+    for index, summary in enumerate(mind_map.sheet.summaries):
+        resolve_state(
+            summary.style, "summary", global_set,
+            f"resumen {summary.id}",
+        )
+
+    return mind_map

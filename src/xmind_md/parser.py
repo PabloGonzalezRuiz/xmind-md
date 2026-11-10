@@ -32,14 +32,51 @@ def _normalize_yaml(value: Any) -> Any:
     return value
 
 
+class _UniqueKeyLoader(yaml.SafeLoader):
+    """Loader seguro que rechaza claves YAML duplicadas."""
+
+
+def _construct_unique_mapping(loader: _UniqueKeyLoader, node: yaml.MappingNode, deep: bool = False):
+    mapping = {}
+    for key_node, value_node in node.value:
+        key = loader.construct_object(key_node, deep=deep)
+        try:
+            duplicate = key in mapping
+        except TypeError as exc:
+            raise yaml.constructor.ConstructorError(
+                "while constructing a mapping", node.start_mark,
+                "unhashable mapping key", key_node.start_mark,
+            ) from exc
+        if duplicate:
+            raise yaml.constructor.ConstructorError(
+                "while constructing a mapping", node.start_mark,
+                f"duplicate key {key!r}", key_node.start_mark,
+            )
+        mapping[key] = loader.construct_object(value_node, deep=deep)
+    return mapping
+
+
+_UniqueKeyLoader.add_constructor(
+    yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, _construct_unique_mapping
+)
+
+
 def _yaml_mapping(source: str, line: int, label: str) -> dict[str, Any]:
     try:
-        value = yaml.safe_load(source) or {}
+        value = yaml.load(source, Loader=_UniqueKeyLoader) or {}
     except yaml.YAMLError as exc:
         raise MarkdownParseError(f"YAML inválido en {label}, línea {line}: {exc}") from exc
     if not isinstance(value, dict):
         raise MarkdownParseError(f"{label} debe contener un objeto YAML (línea {line})")
     return _normalize_yaml(value)
+
+
+def _validate_id(value: Any, label: str, line: int) -> str:
+    if not isinstance(value, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]*", value):
+        raise MarkdownParseError(
+            f"{label} debe ser un ID no vacío y usar letras, números, punto, guion, dos puntos o guion bajo (línea {line})"
+        )
+    return value
 
 
 def _stable_id(prefix: str, seed: str) -> str:
@@ -75,27 +112,63 @@ def _inline_runs(text: str) -> list[dict[str, Any]]:
 
 
 def _parse_list(lines: list[str], start: int) -> tuple[dict[str, Any], int]:
-    first = re.match(r"^(\s*)([-+*]|\d+[.)])\s+(.+)$", lines[start])
+    """Analiza listas con niveles de anidamiento y conserva su estructura."""
+    marker_re = re.compile(r"^( *)([-+*]|\d+[.)])\s+(.+)$")
+
+    def parse_level(index: int, indent: int) -> tuple[dict[str, Any], int]:
+        first = marker_re.match(lines[index])
+        assert first is not None
+        ordered = first.group(2)[0].isdigit()
+        items: list[dict[str, Any]] = []
+        i = index
+        while i < len(lines):
+            match = marker_re.match(lines[i])
+            if not match:
+                break
+            current_indent = len(match.group(1).expandtabs(4))
+            if current_indent < indent:
+                break
+            if current_indent > indent:
+                if not items:
+                    break
+                nested, i = parse_level(i, current_indent)
+                items[-1]["children"].extend(nested["items"])
+                continue
+
+            item = {
+                "content": [{"type": "paragraph", "runs": _inline_runs(match.group(3))}],
+                "children": [],
+            }
+            items.append(item)
+            i += 1
+
+            # Las líneas de lista con mayor sangría pertenecen al último elemento.
+            while i < len(lines):
+                child_match = marker_re.match(lines[i])
+                if not child_match:
+                    break
+                child_indent = len(child_match.group(1).expandtabs(4))
+                if child_indent <= indent:
+                    break
+                nested, i = parse_level(i, child_indent)
+                item["children"].extend(nested["items"])
+        return {"type": "list", "ordered": ordered, "items": items}, i
+
+    first = marker_re.match(lines[start])
     assert first is not None
     base_indent = len(first.group(1).expandtabs(4))
-    ordered = first.group(2)[0].isdigit()
-    items: list[dict[str, Any]] = []
-    i = start
-    while i < len(lines):
-        match = re.match(r"^(\s*)([-+*]|\d+[.)])\s+(.+)$", lines[i])
-        if not match:
-            break
-        indent = len(match.group(1).expandtabs(4))
-        if indent < base_indent:
-            break
-        if indent > base_indent:
-            if items:
-                items[-1].setdefault("children", []).append({"content": _inline_runs(match.group(3))})
-            i += 1
-            continue
-        items.append({"content": _inline_runs(match.group(3))})
-        i += 1
-    return {"type": "list", "ordered": ordered, "items": items}, i
+    return parse_level(start, base_indent)
+
+
+def _list_plain_text(block: dict[str, Any]) -> str:
+    values = []
+    for item in block.get("items", []):
+        for content in item.get("content", []):
+            if content.get("type") == "paragraph":
+                values.append("".join(run.get("text", "") for run in content.get("runs", [])))
+        if item.get("children"):
+            values.append(_list_plain_text({"items": item["children"]}))
+    return "\\n".join(values)
 
 
 def _parse_table(lines: list[str], start: int) -> tuple[dict[str, Any], int]:
@@ -241,8 +314,9 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             occurrence = sum(1 for sibling in siblings if sibling.title == title)
             hierarchy = "/".join([ancestor.title for ancestor in stack] + [title])
             seed = f"{source_path}|{hierarchy}|{occurrence}"
+            explicit_id = _validate_id(props["id"], "id del tema", line_no) if "id" in props else None
             topic = Topic(
-                id=props.get("id") or _stable_id("topic", seed), title=title, level=level,
+                id=explicit_id or _stable_id("topic", seed), title=title, level=level,
                 style_set=props.get("style_set") or (metadata.get("style_set") if not stack else None),
                 kind=props.get("kind", "attached"),
                 style_ref=props.get("style"), style_overrides=props.get("style_overrides", {}),
@@ -357,8 +431,14 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
     if not isinstance(layout, dict):
         raise MarkdownParseError("layout del front matter debe ser un objeto")
 
+    map_id = _validate_id(metadata["id"], "id del mapa", 1) if "id" in metadata else _stable_id("map", f"{source_path}|{title}")
+    for field_name in ("styles", "style_sets", "extensions"):
+        if field_name in metadata and not isinstance(metadata[field_name], dict):
+            raise MarkdownParseError(f"{field_name} del front matter debe ser un objeto")
+    if "style_set" in metadata and not isinstance(metadata["style_set"], str):
+        raise MarkdownParseError("style_set del front matter debe ser texto")
     return MindMap(
-        id=metadata.get("id") or _stable_id("map", f"{source_path}|{title}"),
+        id=map_id,
         title=title, topics=roots, metadata=metadata, styles=metadata.get("styles", {}),
         style_sets=metadata.get("style_sets", {}), assets=assets,
         relationships=globals_["relationships"], boundaries=globals_["boundaries"],

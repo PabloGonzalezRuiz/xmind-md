@@ -328,3 +328,23 @@ def test_link_title_is_rejected_when_it_cannot_be_preserved_in_href():
     ]
     with pytest.raises(XMindAdapterError, match="título adicional"):
         build_xmind_content(mind_map)
+
+
+
+@pytest.mark.parametrize(
+    "change, message",
+    [
+        (lambda m: setattr(m.sheet.root_topic.annotations, "task", {"status": "done"}), "anotación task"),
+        (lambda m: setattr(m.sheet.layout, "structure", "org_chart"), "layout de hoja"),
+        (lambda m: m.sheet.metadata.update({"description": "No exportable"}), "Metadatos específicos de hoja"),
+        (lambda m: setattr(m.sheet.root_topic.annotations.notes[0].style, "resolved", {"text": {"bold": True}}), "estilo visual de las notas"),
+        (lambda m: m.sheet.relationships[0].extensions.update({"custom": True}), "extensiones no soportadas"),
+        (lambda m: m.sheet.root_topic.content.append(ContentBlock("equation", {"expression": "x^2"})), "Bloque de contenido 'equation'"),
+        (lambda m: m.sheet.root_topic.links.append({"id": "link_2", "kind": "web", "target": "https://example.org"}), "varios enlaces"),
+    ],
+)
+def test_remaining_unsupported_features_are_rejected_explicitly(change, message):
+    mind_map = make_map()
+    change(mind_map)
+    with pytest.raises(XMindAdapterError, match=message):
+        build_xmind_content(mind_map)

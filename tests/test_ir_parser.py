@@ -142,3 +142,28 @@ def test_internal_topic_link_to_missing_target_is_rejected():
 
     with pytest.raises(IRValidationError, match="tema enlazado inexistente"):
         parse_markdown_ir("# Raíz\n[no existe](topic:ausente)\n")
+
+
+
+def test_all_primary_content_blocks_keep_inclusive_source_ranges():
+    source = (
+        "# Raíz\n"
+        "Texto.\n\n"
+        "- Uno\n\n"
+        "| A |\n|---|\n| B |\n\n"
+        "```python\nprint('ok')\n```\n\n"
+        "> Cita\n\n"
+        "---\n\n"
+        "![Imagen](assets/imagen.png)\n"
+    )
+    result = parse_markdown_ir(source, source_path="ejemplo.md")
+    blocks = result.sheet.root_topic.content
+    assert [block.type for block in blocks] == [
+        "paragraph", "list", "table", "code", "quote", "divider", "image"
+    ]
+    expected = [(2, 2), (4, 4), (6, 8), (10, 12), (14, 14), (16, 16), (18, 18)]
+    assert [
+        (block.data["source"]["line_start"], block.data["source"]["line_end"])
+        for block in blocks
+    ] == expected
+    assert all(block.data["source"]["file"] == "ejemplo.md" for block in blocks)

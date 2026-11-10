@@ -9,6 +9,16 @@ La idea central es separar cuatro capas:
 3. **Modelo intermedio:** representa el mapa sin depender de XMind ni de una biblioteca concreta.
 4. **Adaptadores:** transforman el modelo al formato de destino (el primer objetivo es `.xmind`).
 
+## Documentación del proyecto
+
+La documentación está organizada para que una persona o una IA pueda entender, reconstruir y continuar el proyecto:
+
+- **[Prompt maestro para reconstruir el proyecto](docs/ai-reconstruction-prompt.md):** contexto autónomo, objetivos, arquitectura, reglas de diseño, estado real y protocolo de trabajo para otra IA.
+- [Arquitectura](docs/architecture.md): capas, flujo de datos, contratos e invariantes.
+- [Catálogo de archivos](docs/file-reference.md): función de cada archivo y dónde deben realizarse los cambios.
+- [Gramática Markdown](docs/grammar.md): sintaxis reconocida y limitaciones actuales.
+- [Guía de desarrollo](docs/development.md): instalación, ejecución, pruebas y ciclo de contribución.
+
 ## Estado actual
 
 **Estado:** prototipo inicial
@@ -28,7 +38,7 @@ Esta primera versión implementa:
 
 Python 3.10 o superior:
 
-```bash
+~~~bash
 python -m venv .venv
 # Windows
 .venv\\Scripts\\activate
@@ -36,23 +46,23 @@ python -m venv .venv
 source .venv/bin/activate
 
 python -m pip install -e ".[dev]"
-```
+~~~
 
 ## Uso
 
-```bash
+~~~bash
 xmind-md examples/constitucion.md --styles config/styles.yaml --output output/constitucion.json
-```
+~~~
 
 También puede ejecutarse como módulo:
 
-```bash
+~~~bash
 python -m xmind_md examples/constitucion.md --styles config/styles.yaml --output output/constitucion.json
-```
+~~~
 
 ## Ejemplo de Markdown
 
-```md
+~~~md
 @conjunto(TAI_LEGISLACION)
 # Constitución Española
 
@@ -61,11 +71,9 @@ python -m xmind_md examples/constitucion.md --styles config/styles.yaml --output
 @estilo(concepto_importante)
 ### Artículo 1
 - España se constituye en un Estado social y democrático de Derecho.
-```
+~~~
 
 Los metadatos deben aparecer antes del encabezado al que se aplican. Los elementos de lista se conservan como contenido textual del tema en esta fase inicial.
-
-Consulta [docs/grammar.md](docs/grammar.md) para la gramática prevista.
 
 ## Estructura
 
@@ -73,12 +81,13 @@ Consulta [docs/grammar.md](docs/grammar.md) para la gramática prevista.
 - `config/`: conjuntos de estilos.
 - `examples/`: documentos de ejemplo.
 - `tests/`: pruebas.
+- `docs/`: documentación técnica y prompt de reconstrucción.
 - `.github/workflows/`: integración continua.
 
 ## Desarrollo
 
-```bash
-pytest
-```
+~~~bash
+python -m pytest
+~~~
 
-Las decisiones de diseño y las limitaciones conocidas se documentarán en `docs/`.
+El código incluye docstrings y comentarios en español para explicar responsabilidades, decisiones y limitaciones. La norma para futuros cambios está descrita en [development.md](docs/development.md).

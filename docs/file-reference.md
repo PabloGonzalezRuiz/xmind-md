@@ -27,6 +27,7 @@ Este documento explica la finalidad de cada archivo versionado y qué tipo de ca
 |---|---|
 | __init__.py | Declara el paquete de adaptadores y su contrato general. |
 | json_adapter.py | Escribe una representación JSON del modelo intermedio. |
+| xmind_adapter.py (futuro) | Generará el formato moderno `.xmind` desde el IR mediante ZIP + JSON nativo Python. No está implementado todavía. |
 
 El futuro adaptador XMind debe añadirse como módulo separado, por ejemplo xmind_adapter.py, sin reemplazar el modelo neutral.
 
@@ -48,6 +49,7 @@ No incluir aquí identificadores ni estructuras privadas de una biblioteca de ex
 | style-system.md | Catálogo de propiedades visuales, conjuntos, herencia y resolución de estilos. |
 | ai-reconstruction-prompt.md | Prompt autónomo para que otra IA reconstruya y continúe el proyecto. |
 | development.md | Instalación, ejecución, pruebas y ciclo de contribución. |
+| xmind-engine-evaluation.md | Comparación de motores y decisión de arquitectura para el adaptador XMind. |
 
 ## Ejemplos: examples/
 

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import re
+from datetime import date, datetime
 from pathlib import Path
 from typing import Any
 from uuid import NAMESPACE_URL, uuid5
@@ -20,6 +21,17 @@ _OLD_DIRECTIVE_RE = re.compile(r"^@(conjunto|estilo)\(([^()]*)\)\s*$")
 _DIRECTIVES = {"xmind", "xmind-note", "xmind-relationship", "xmind-boundary", "xmind-summary"}
 
 
+def _normalize_yaml(value: Any) -> Any:
+    """Convierte escalares YAML no JSON, como fechas, a valores serializables."""
+    if isinstance(value, (datetime, date)):
+        return value.isoformat()
+    if isinstance(value, dict):
+        return {str(key): _normalize_yaml(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_normalize_yaml(item) for item in value]
+    return value
+
+
 def _yaml_mapping(source: str, line: int, label: str) -> dict[str, Any]:
     try:
         value = yaml.safe_load(source) or {}
@@ -27,7 +39,7 @@ def _yaml_mapping(source: str, line: int, label: str) -> dict[str, Any]:
         raise MarkdownParseError(f"YAML inválido en {label}, línea {line}: {exc}") from exc
     if not isinstance(value, dict):
         raise MarkdownParseError(f"{label} debe contener un objeto YAML (línea {line})")
-    return value
+    return _normalize_yaml(value)
 
 
 def _stable_id(prefix: str, seed: str) -> str:

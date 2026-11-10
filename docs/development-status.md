@@ -4,9 +4,9 @@
 
 - **Última actualización:** 2026-11-10
 - **Rama de referencia:** `main`
-- **Último commit de implementación:** `1995076eee2e5108c37320c7a9df9be21745f5de`
+- **Último commit registrado antes de esta auditoría:** `f99273d3f93a95648457aa183bb4ec55bb99fda8` (CI #205, workflow completo correcto).
 - **Contrato objetivo:** IR 1.0.0
-- **Estado global:** prototipo en migración hacia el IR 1.0.0; todavía no declarar compatibilidad completa.
+- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; perfil XMind experimental. Pendientes las pruebas manuales en XMind Desktop, Windows, Ruff, sincronización documental global y auditoría final.
 
 ## 1. Para qué sirve este documento
 
@@ -95,6 +95,7 @@ No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar
 - GitHub Actions contiene un flujo de CI y una generación de artefacto XMind de prueba.
 - CI #165, commit `2250dbf06d86680cbfcf9c5c4c4d208e62a4f53b`: **90 pruebas superadas**, incluyendo validación formal Draft 2020-12, ejemplos y casos negativos; generación y publicación del artefacto XMind correctas.\n- CI #178, commit `f2f491cd52e668a53d31c1dddbf321c30f262882`: **97 pruebas superadas**; generación y publicación del artefacto XMind correctas tras los cambios de gramática.
 - CI #203, run `42842555229`, commit `1995076eee2e5108c37320c7a9df9be21745f5de`: **131 pruebas superadas en 0,45 s**; Tests, generación del smoke XMind y publicación del artefacto correctos. Entorno: GitHub Actions, Ubuntu, Python 3.12.16. https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42842555229
+- CI #205, run `42842726726`, commit `f99273d3f93a95648457aa183bb4ec55bb99fda8`: workflow completo correcto tras la actualización del documento de estado. Los cinco pasos Install, Download XMind reference fixture, Tests, Build XMind Desktop smoke test y Upload XMind smoke test finalizaron correctamente. El log registra **131 pruebas superadas en 0,52 s**. https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42842726726
 - Validador: `jsonschema 4.26.0` con extra `format`; se comprueban los formatos de fecha/fecha-hora.
 - Ruff no forma parte todavía de los pasos del workflow y debe verificarse expresamente.
 - La ejecución local en Windows sigue pendiente; la existencia de configuración o documentación no demuestra que haya pasado.
@@ -125,7 +126,7 @@ No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar
 | 7 | Completar y probar la gramática Markdown | **Completada** | Subconjunto implementado auditado, limitaciones explícitas y suite CI verde |
 | 8 | Ampliar y probar las capacidades del adaptador XMind | **Completada** | Matriz de capacidades, conversiones adicionales y suite CI verde |
 | 9 | Integrar la exportación XMind en la CLI | **Completada** | CLI XMind y JSON probadas, errores controlados y documentación actualizada |
-| 10 | Completar las pruebas con XMind Desktop | Pendiente | Apertura, inspección y guardado comprobados y registrados |
+| 10 | Completar las pruebas con XMind Desktop | **En curso: artefacto descargado; pendiente comprobación del usuario** | Abrir, inspeccionar, guardar y reabrir el archivo en XMind Desktop; registrar versión y resultado |
 | 11 | Verificar ejecución local en Windows | Pendiente | Instalación, CLI y pruebas ejecutadas en entorno Windows |
 | 12 | Completar CI, Ruff y comprobaciones automáticas | Pendiente | Workflow verde con pruebas y lint |
 | 13 | Sincronizar README y documentación técnica | Pendiente | Documentación coherente con el comportamiento real |
@@ -254,27 +255,85 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 - **Commits principales:** CLI `acf87ed9914509e8e81f2bb5d148386c0709d929`; primera batería de pruebas `fd61af356d5df023ce46665221f068baa2f23307`; ampliación y correcciones de pruebas `c062e7d68fc28563fd837bbb0668481e410a56a4`, `456ff64df9a8efd5c554245c8248f27eac6def33`, `36c81c4c2d1d28183ec5431cb3ba432f25770056`, `1995076eee2e5108c37320c7a9df9be21745f5de`; README `9c150d6e6d6eb8156646ad38871ec931c84cff54`; guía de desarrollo `4f189ec5615162f14f58d9f6c12998b069002641`.
 - **Limitaciones que permanecen:** el perfil XMind sigue rechazando las capacidades no implementadas en el adaptador. El smoke test acredita generación y estructura automatizada, no apertura/guardado manual en XMind Desktop. Ruff y ejecución local Windows siguen pendientes.
 
-## 7. Próxima tarea
+## 7. Auditoría integral y reconstrucción desde cero (2026-11-10)
+
+### Alcance auditado
+
+- Árbol Git completo de `main`: 59 entradas, sin truncamiento.
+- Documentación de arquitectura, catálogo de archivos, IR, migración, gramática, estilos, motor XMind, adaptador, integración, CLI y prompt maestro.
+- Código fuente de parser, puente IR, entidades/validación, estilos, adaptadores, CLI y script smoke.
+- Pruebas de CLI, parser, IR, esquema, estilos, adaptadores e integración.
+- `pyproject.toml`, workflow GitHub Actions y ejecuciones CI recientes.
+
+### Resultado técnico
+
+- Las tareas 1–9 están completadas según el código, pruebas y registro histórico.
+- El flujo canónico está integrado hasta CLI: Markdown → parser → IR 1.0.0 → resolución de estilos cuando procede → adaptador JSON/XMind.
+- El modelo legacy `src/xmind_md/model.py` y las API legacy de parsing/estilos siguen presentes; no eliminarlos sin auditar consumidores y compatibilidad.
+- La exportación XMind es un perfil parcial. La matriz de `docs/xmind-adapter.md` debe considerarse junto al código y las pruebas; no equivale a compatibilidad visual completa.
+- El workflow #205 (run `42842726726`, commit `f99273d3f93a95648457aa183bb4ec55bb99fda8`) terminó correctamente. El log de Tests registra **131 passed in 0.52s**. Se completaron también descarga del fixture, generación y publicación del artefacto.
+- No hay evidencia de ejecución local Windows, Ruff, apertura/guardado manual XMind Desktop.
+
+### Discrepancias documentales detectadas (pendientes de tarea 13)
+
+1. `docs/architecture.md`: todavía afirma que CLI no exporta XMind y su lista de extensiones está desfasada.
+2. `docs/ir-migration-plan.md`: presenta la integración CLI como pendiente y mantiene criterios de migración antiguos.
+3. `docs/style-system.md`: encabezado declara pendiente la resolución completa, aunque el resolutor IR está implementado y probado.
+4. `docs/xmind-engine-evaluation.md`: conserva el estado inicial; dice que faltan `controlPoints`, temas detached/callout y CLI.
+5. `docs/xmind-adapter.md`: su sección de limitaciones contradice la matriz posterior sobre detached/callout; hay que reconciliar texto y código.
+6. `docs/file-reference.md`: describe `model.py` como modelo principal y no refleja adecuadamente los módulos IR, puente y nuevas pruebas.
+7. `docs/development-status.md`: había un literal `\\n` en el bloque de CI, y la cabecera no recogía el último commit/documentación ni CI #205. Esta auditoría corrige el registro operativo, pero no pretende cerrar toda la tarea 13.
+8. El prompt anterior contenía afirmaciones obsoletas sobre CLI, adaptador y fases. Se ha reescrito como prompt autónomo con estado actual, arquitectura, pruebas, limitaciones, ruta de trabajo y discrepancias pendientes.
+
+### Prompt maestro actualizado
+
+- Archivo: `docs/ai-reconstruction-prompt.md`.
+- Commit: `30f9a690ebe631d3d5ddbbd353fd488df29a6384`.
+- Contenido: propósito, protocolo de trabajo, arquitectura, contrato IR, parser/gramática, estilos, adaptadores, CLI, estructura de repositorio, instalación/pruebas, estado al 2026-11-10, hoja de ruta, discrepancias conocidas y reglas para retomar desde cero.
+
+### Primera tarea pendiente iniciada: tarea 10 — XMind Desktop
+
+- Artefacto obtenido de CI #205: `xmind-desktop-smoke-test`, artifact ID `13775958163`, expiración GitHub `2026-11-24T15:17:14Z`.
+- Archivo interno: `xmind-md-smoke-test.xmind`.
+- Tamaño: 3.299 bytes.
+- SHA-256: `9caa73f02ecd6e082202663ada77bd4079ef8bde7da835509d00c314c045acd3`.
+- Verificación automatizada local del contenedor: `unzip -t` correcto; entradas `mimetype`, `content.json`, `metadata.json`, `manifest.json` y `Thumbnails/thumbnail.png` legibles.
+- Esta verificación **no** sustituye XMind Desktop. La tarea permanece en curso hasta que el usuario abra el archivo, inspeccione los elementos, guarde una copia y confirme el resultado.
+
+## 8. Próxima tarea
 
 ### Tarea 10 — Pruebas con XMind Desktop
 
-**Estado:** pendiente de autorización expresa.
+**Estado:** en curso; el artefacto ya está preparado y descargado. Falta la inspección manual en el equipo del usuario.
 
-**Alcance propuesto:**
-- Descargar el artefacto `xmind-desktop-smoke-test` de CI #203.
-- Abrirlo en XMind Desktop, comprobar árbol, notas, relaciones, etiquetas, marcadores y estilos presentes en la muestra.
-- Guardar una copia desde XMind Desktop y comprobar que sigue abriendo correctamente.
-- Registrar versión de XMind, sistema operativo, pasos, resultados y defectos reproducibles en `docs/xmind-integration-tests.md`.
+**Alcance pendiente:**
+- Abrir `xmind-md-smoke-test.xmind` con XMind Desktop.
+- Comprobar raíz, ramas, detalle, nota, etiqueta, marcador y relación.
+- Guardar una copia desde XMind Desktop y volver a abrirla.
+- Comunicar versión de XMind Desktop, sistema operativo, avisos/errores y resultado de cada elemento.
+- Registrar el resultado en `docs/xmind-integration-tests.md`.
 
-**Criterios de aceptación:**
-- El archivo generado se abre sin avisos de corrupción o reparación.
-- La estructura y los elementos soportados se inspeccionan visualmente.
-- El archivo guardado desde XMind Desktop se vuelve a abrir.
-- Los resultados y limitaciones quedan documentados.
+**Criterios de aceptación:** apertura sin corrupción/reparación, inspección visual, guardado y reapertura confirmados, versión y resultados documentados.
 
-No iniciar esta tarea hasta recibir autorización expresa.
+La IA no puede declarar esta prueba manual superada sin confirmación del usuario.
 
-## 8. Protocolo obligatorio de actualización
+### Tarea 11 — Verificar ejecución local en Windows
+
+Instalación limpia con Python compatible, instalación editable, ejecución CLI JSON/XMind y suite pytest. Registrar versiones, comandos, resultados y problemas específicos de Windows.
+
+### Tarea 12 — Completar CI, Ruff y comprobaciones automáticas
+
+Incorporar `ruff check src tests` y `ruff format --check src tests` al workflow, corregir defectos con cambios acotados, revisar advertencias y ejecutar CI completa. No confundir lint con pruebas funcionales.
+
+### Tarea 13 — Sincronizar documentación técnica
+
+Resolver todas las discrepancias enumeradas en la auditoría; actualizar README, arquitectura, catálogo, plan IR, sistema de estilos, evaluación del motor, matriz del adaptador, guía de desarrollo y ejemplos cuando proceda. Mantener una única descripción coherente de capacidades reales.
+
+### Tarea 14 — Auditoría final y publicación estable
+
+Auditoría de código, contratos, pruebas, dependencias/licencias, seguridad de entradas, reproducibilidad, empaquetado, versionado, documentación y compatibilidad. Preparar publicación solo si se cumplen criterios de aceptación; no llamar estable al proyecto antes de ello.
+
+## 9. Protocolo obligatorio de actualización
 
 Al terminar cada tarea autorizada:
 
@@ -289,7 +348,7 @@ Al terminar cada tarea autorizada:
 
 Si no se puede ejecutar una prueba, anotarlo como **no ejecutada**; si falla, registrar el fallo. Nunca inferir un resultado.
 
-## 9. Reglas para retomar el trabajo
+## 10. Reglas para retomar el trabajo
 
 Antes de modificar el repositorio:
 

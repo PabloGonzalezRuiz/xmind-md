@@ -43,6 +43,7 @@ def test_parser_indexes_images_as_assets_and_topic_resources():
 
 def test_parser_converts_annotations_styles_and_links():
     source = (
+        "---\nstyles:\n  destacado:\n    topic:\n      text:\n        color: '#fff'\n---\n"
         "# Raíz\n"
         ":::xmind\nstyle: destacado\nstyle_overrides:\n  text:\n    color: '#fff'\n"
         "labels: [IMPORTANTE]\nmarkers:\n  - group: priority\n    value: 1\n"

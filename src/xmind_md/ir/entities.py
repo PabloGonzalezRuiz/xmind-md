@@ -13,12 +13,14 @@ class StyleState:
     """Referencia, modificaciones locales y resultado de la cascada."""
 
     ref: str | None = None
+    style_set: str | None = None
     overrides: dict[str, Any] = field(default_factory=dict)
     resolved: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "ref": self.ref,
+            "style_set": self.style_set,
             "overrides": self.overrides,
             "resolved": self.resolved,
         }

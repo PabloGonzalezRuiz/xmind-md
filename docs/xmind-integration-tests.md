@@ -17,7 +17,7 @@ obligatorios de las relaciones.
 El fixture se descarga en CI en vez de almacenarse como binario dentro de este
 repositorio. La prueba de origen del proyecto externo espera una hoja titulada
 `Mind Map`, tema raíz `Central Topic` y cuatro temas principales. También
-comprueba que el paquete conserva `Thumbnails/thumbnail.png` y `content.xml`.
+comprueba que el paquete conserva `Thumbnails/thumbnail.png` y `content.xml`. En la revisión fijada, el fixture no incluye una entrada `mimetype`; por ello la prueba no la exige en el archivo externo. El adaptador de XMind MD sí la incluye y sus pruebas unitarias comprueban su valor y su compresión.
 
 La procedencia exacta de creación del fixture no está acreditada como una
 exportación directa de XMind Desktop. Por tanto, es una referencia de

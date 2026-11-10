@@ -68,7 +68,7 @@ El modelo es el contrato entre parser, resolución de estilos y adaptadores. Las
 
 Archivo: src/xmind_md/styles.py.
 
-Carga YAML y resuelve nombres simbólicos. El conjunto de estilos puede heredarse por la rama del árbol. La resolución combina recursivamente las propiedades del conjunto, el estilo nombrado y los overrides locales, conservando las propiedades no sustituidas. Las propiedades resultantes deben ser neutrales: por ejemplo, font_size, font_weight o shape, no nombres de campos internos de una versión concreta de XMind.
+Carga YAML y resuelve nombres simbólicos. `resolve_styles()` conserva la ruta legacy y despacha los documentos IR 1.0.0 a `resolve_ir_styles()`. En el IR, el conjunto puede seleccionarse en `metadata.style_set` o en `Topic.style.style_set`; se hereda por la rama y puede sustituirse en un tema descendiente. La cascada combina recursivamente, por propiedad: valores predeterminados del sistema, `metadata.style_defaults`, conjunto aplicable, estilo nombrado y overrides locales. También resuelve estilos de notas, relaciones, límites y resúmenes. No modifica las definiciones originales; escribe el resultado en `style.resolved`. Las propiedades resultantes deben ser neutrales: por ejemplo, font_size, font_weight o shape, no nombres de campos internos de una versión concreta de XMind.
 
 ### 3.5 Adaptadores
 

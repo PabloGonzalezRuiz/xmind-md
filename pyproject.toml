@@ -16,7 +16,7 @@ dependencies = ["PyYAML>=6.0"]
 
 [project.optional-dependencies]
 # Herramientas usadas durante el desarrollo y en la integración continua.
-dev = ["pytest>=8.0", "ruff>=0.5"]
+dev = ["pytest>=8.0", "ruff>=0.5", "jsonschema>=4.22,<5"]
 
 [project.scripts]
 # Instala el comando xmind-md que apunta a la función principal de la CLI.

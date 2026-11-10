@@ -76,12 +76,12 @@ def test_build_content_maps_labels_markers_notes_links_and_styles():
     assert child["href"] == "https://example.com"
     assert child["style"]["properties"] == {
         "shape-class": "org.xmind.topicShape.roundRect",
-        "fo:font-size": 14,
+        "fo:font-size": "14",
         "fo:font-weight": "bold",
         "fo:color": "#123456",
         "svg:fill": "#ffffff",
         "line-color": "#000000",
-        "line-width": 2,
+        "line-width": "2",
     }
 
 

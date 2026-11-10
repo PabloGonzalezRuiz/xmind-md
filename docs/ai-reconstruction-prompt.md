@@ -49,11 +49,12 @@ La versión inicial del repositorio contiene:
 - Resolución de estilos YAML con herencia de conjuntos, fusión recursiva y overrides locales.
 - Parser con bloques de contenido estructurados, listas anidadas y validaciones semánticas.
 - Adaptador JSON de depuración.
-- CLI.
-- Pruebas unitarias iniciales.
+- Primera versión experimental del adaptador XMind moderno en `src/xmind_md/adapters/xmind_adapter.py`.
+- CLI que todavía genera JSON intermedio; el adaptador XMind aún no está integrado en ella.
+- Pruebas unitarias del parser, estilos y adaptador.
 - Workflow CI de GitHub Actions.
 
-**No existe todavía un exportador funcional a .xmind.** No afirmes lo contrario ni simules que un JSON intermedio es un archivo XMind. Tampoco des por implementadas las características avanzadas enumeradas en el objetivo.
+El adaptador XMind genera ZIP + JSON para un subconjunto del IR. No afirmes compatibilidad con XMind Desktop hasta abrir y volver a guardar un archivo generado. Consulta `docs/xmind-adapter.md` para distinguir las características implementadas de las pendientes.
 
 ### 4. Archivos y responsabilidades
 
@@ -63,7 +64,9 @@ La versión inicial del repositorio contiene:
 - src/xmind_md/cli.py: orquestación de lectura, parsing, estilos y escritura.
 - src/xmind_md/__main__.py: ejecución mediante python -m xmind_md.
 - src/xmind_md/adapters/json_adapter.py: serialización de depuración.
+- src/xmind_md/adapters/xmind_adapter.py: generación experimental de XMind moderno ZIP + JSON.
 - docs/xmind-engine-evaluation.md: evaluación de alternativas y decisión del motor de salida.
+- docs/xmind-adapter.md: alcance, mapeos y limitaciones del adaptador.
 - config/styles.yaml: estilos neutrales reutilizables.
 - examples/constitucion.md: documento de muestra.
 - tests/: pruebas automatizadas.
@@ -223,8 +226,8 @@ Si una decisión no está definida, formula la pregunta mínima necesaria o prop
 
 La auditoría, la especificación inicial del IR, la gramática, el diseño del sistema de estilos y la ampliación inicial del parser/resolutor se han trabajado en las fases anteriores. Consulta los archivos actuales y los workflows de GitHub para verificar el estado real; no des por válidas pruebas que no puedas comprobar.
 
-La evaluación del motor está documentada en docs/xmind-engine-evaluation.md. La decisión es implementar un adaptador Python que escriba el contenedor ZIP y el JSON moderno de XMind. El adaptador todavía no está implementado.
+La evaluación del motor está documentada en docs/xmind-engine-evaluation.md. La decisión es implementar un adaptador Python que escriba el contenedor ZIP y el JSON moderno de XMind. Ya existe una primera implementación en src/xmind_md/adapters/xmind_adapter.py, con pruebas en tests/test_xmind_adapter.py.
 
-La siguiente tarea es implementar una primera versión mínima del adaptador en src/xmind_md/adapters/, con pruebas de estructura ZIP/JSON y fixtures. Después hay que abrir los archivos en XMind real antes de declarar compatibilidad.
+El trabajo pendiente incluye confirmar CI, integrar el adaptador en la CLI en su fase correspondiente, ampliar la cobertura de entidades/estilos y abrir los archivos generados en XMind Desktop antes de declarar compatibilidad.
 
 ## FIN DEL PROMPT

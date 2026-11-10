@@ -91,7 +91,7 @@ Reglas:
 - Se permite saltar niveles; por ejemplo, de `##` a `####`.
 - Un encabezado de nivel igual o inferior cierra los temas abiertos de ese nivel o niveles inferiores.
 - El nivel Markdown es una ayuda de sintaxis; no se conserva como propiedad visual obligatoria del IR.
-- Los encabezados Setext (`===` y `---`) no crean temas en la gramática 1.0.
+- Los encabezados Setext (`===` y `---`) no crean temas en la gramática 1.0. Los IDs generados dependen de la ruta del archivo, la ruta jerárquica de títulos y la ocurrencia entre hermanos; para conservar IDs al renombrar o mover temas, se recomienda declarar `id` explícitamente.
 - Los encabezados dentro de bloques de código cercados no crean temas.
 - El texto del encabezado se interpreta como título; los atributos de formato se conservan cuando el parser pueda representarlos.
 

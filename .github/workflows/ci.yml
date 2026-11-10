@@ -24,6 +24,13 @@ jobs:
       # Instalar el paquete junto con las dependencias de desarrollo.
       - name: Install
         run: python -m pip install -e ".[dev]"
+      # Descargar una muestra .xmind externa fijada por commit para las pruebas de integración.
+      - name: Download XMind reference fixture
+        run: |
+          mkdir -p tests/fixtures
+          curl --fail --location --silent --show-error \
+            https://raw.githubusercontent.com/sc0tfree/xmind-mcp/6225cbcd3e8fc565bc18e80346699a6e118dd0f7/tests/fixture.xmind \
+            --output tests/fixtures/reference.xmind
       # Una prueba fallida debe hacer fallar el workflow.
       - name: Tests
         run: pytest

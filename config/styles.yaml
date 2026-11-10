@@ -1,22 +1,28 @@
-# Los nombres de propiedades son neutrales; el adaptador XMind los mapeará.
+# Configuración de estilos expresada en propiedades neutrales.
+# No usar aquí nombres internos del XML/JSON de XMind: esa traducción
+# corresponde exclusivamente al adaptador de exportación.
 style_sets:
   TAI_LEGISLACION:
     description: "Estilos iniciales para mapas de legislación del temario TAI."
     styles:
+      # Estilo previsto para el nodo central del mapa.
       central:
         role: central
         font_size: 20
         font_weight: bold
         shape: rounded_rectangle
+      # Estilo previsto para los temas principales.
       principal:
         role: primary
         font_size: 16
         font_weight: bold
         shape: rounded_rectangle
+      # Estilo base para los subtemas.
       subtema:
         role: secondary
         font_size: 13
         font_weight: normal
+      # Estilo de énfasis para conceptos que deben destacar.
       concepto_importante:
         role: emphasis
         font_size: 13

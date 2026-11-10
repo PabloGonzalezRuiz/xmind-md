@@ -14,7 +14,7 @@ from xmind_md.ir import (
     Summary,
     Topic,
 )
-from xmind_md.styles import StyleError, resolve_ir_styles
+from xmind_md.styles import StyleError, resolve_ir_styles, resolve_styles
 
 
 def make_map(root=None, metadata=None, **sheet_kwargs):
@@ -185,3 +185,10 @@ def test_sheet_entities_and_notes_resolve_their_own_style_targets():
     assert relationship.style.resolved == {"line": {"width": 2}}
     assert boundary.style.resolved == {"border": {"color": "red"}}
     assert summary.style.resolved == {"text": {"color": "blue"}}
+
+
+def test_public_resolve_styles_dispatches_to_ir_model():
+    root = Topic(id="raiz", title="Raíz")
+    mind_map = make_map(root)
+    resolve_styles(mind_map, defaults={"topic": {"text": {"bold": True}}})
+    assert root.style.resolved == {"text": {"bold": True}}

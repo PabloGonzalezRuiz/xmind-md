@@ -1,0 +1,85 @@
+# Guía de desarrollo
+
+## Requisitos
+
+- Python 3.10 o superior.
+- Git.
+- Un editor Python; VS Code o PyCharm son opciones válidas.
+- Conexión a Internet para instalar dependencias.
+
+## Preparar el entorno en Windows
+
+Desde la raíz del repositorio:
+
+~~~powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev]"
+~~~
+
+Si PowerShell bloquea la activación, puede ejecutarse el intérprete del entorno directamente:
+
+~~~powershell
+.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
+.\.venv\Scripts\python.exe -m pytest
+~~~
+
+## Preparar el entorno en Linux/macOS
+
+~~~bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev]"
+~~~
+
+## Ejecutar el proyecto
+
+Con el comando instalado:
+
+~~~bash
+xmind-md examples/constitucion.md --styles config/styles.yaml --output output/constitucion.json
+~~~
+
+Como módulo:
+
+~~~bash
+python -m xmind_md examples/constitucion.md --styles config/styles.yaml --output output/constitucion.json
+~~~
+
+El resultado actual es JSON del modelo intermedio. No es todavía un archivo .xmind.
+
+## Ejecutar pruebas
+
+~~~bash
+python -m pytest
+~~~
+
+## Comprobar estilo del código
+
+~~~bash
+ruff check src tests
+ruff format --check src tests
+~~~
+
+## Ciclo recomendado para una modificación
+
+1. Crear una rama para el cambio.
+2. Leer arquitectura, gramática y catálogo de archivos.
+3. Añadir o modificar pruebas antes o junto con el código.
+4. Implementar el cambio en la capa adecuada.
+5. Ejecutar pytest y Ruff.
+6. Actualizar documentación y ejemplos.
+7. Revisar el diff completo.
+8. Crear un commit con un mensaje descriptivo.
+
+## Comentarios y documentación del código
+
+Todo módulo debe explicar su propósito. Las clases y funciones públicas deben tener docstrings. Añade comentarios en español a los bloques que expresen decisiones, invariantes, limitaciones o pasos no obvios.
+
+Evita comentarios redundantes del tipo "# incrementar i" justo antes de "i += 1". El objetivo es que otra persona o IA pueda comprender por qué existe una sección y qué contrato debe preservar.
+
+## GitHub Actions
+
+El workflow .github/workflows/ci.yml instala el proyecto con las dependencias de desarrollo y ejecuta pytest en cada push o pull request. Un cambio no debe considerarse validado hasta que el workflow termine correctamente o se hayan ejecutado localmente los mismos pasos.

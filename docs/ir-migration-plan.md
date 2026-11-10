@@ -1,14 +1,14 @@
 # Plan de consolidación del modelo intermedio (IR)
 
 **Versión objetivo:** IR 1.0.0  
-**Estado:** plan de migración aprobado como primera tarea de implementación  
-**Alcance:** alinear el modelo Python y sus consumidores con `docs/ir-specification.md`, `docs/ir-schema.json` y `examples/ir/constitucion.json`.
+**Estado:** migración del modelo y de los primeros consumidores implementada; validación y gramática aún pendientes  
+**Alcance:** alinear el modelo Python y sus consumidores con \`docs/ir-specification.md\`, \`docs/ir-schema.json\` y \`examples/ir/constitucion.json\`.
 
 ## 1. Diagnóstico confirmado
 
 La especificación 1.0.0 define un documento con una única hoja:
 
-```text
+\`\`\`text
 MindMap
 ├── metadata
 ├── styles
@@ -20,113 +20,85 @@ MindMap
     ├── relationships
     ├── boundaries
     └── summaries
-```
+\`\`\`
 
-La implementación Python actual todavía expone un modelo transitorio:
-
-- `MindMap.topics` contiene una lista de raíces, aunque el contrato exige una única `sheet.root_topic`.
-- `MindMap.assets` es una lista; el contrato define un objeto indexado por ID.
-- `Topic.content` se utiliza como lista de texto heredada; el contrato define una lista de bloques estructurados.
-- `Topic.content_blocks` no coincide con el nombre contractual `content`.
-- El estilo está distribuido entre `style_ref`, `style_overrides` y `resolved_style`; el contrato lo agrupa en `style.ref`, `style.overrides` y `style.resolved`.
-- `Topic.resources` es una lista, mientras que el contrato define grupos `images`, `attachments` y `audio`.
-- Relaciones, límites y resúmenes están actualmente en el nivel de MindMap; el contrato los sitúa dentro de Sheet.
-- La hoja no existe como entidad Python.
-
-El parser, los adaptadores y algunas pruebas consumen los nombres transitorios. No se debe cambiar el modelo sin migrar esos consumidores de forma coordinada.
+El modelo legacy \`src/xmind_md/model.py\` conserva la estructura transitoria descrita en las primeras fases de este plan. El nuevo modelo canónico está en \`src/xmind_md/ir/\`; los consumidores se están migrando por etapas para no romper la API anterior.
 
 ## 2. Contrato canónico
 
-Las clases Python deberán representar directamente las entidades del esquema:
+Las clases Python representan las entidades del esquema: \`MindMap\`, \`Sheet\`, \`Topic\`, \`ContentBlock\`, anotaciones, recursos, \`Asset\`, \`Relationship\`, \`Boundary\`, \`Summary\` y \`StyleState\`.
 
-- `MindMap`
-- `Sheet`
-- `Topic`
-- `ContentBlock` y tipos especializados o estructuras tipadas equivalentes
-- `Annotation` / estructuras de notas, etiquetas, marcadores y tareas
-- `Resource` / `Asset`
-- `Relationship`
-- `Boundary`
-- `Summary`
-- `StyleState`
-- `StyleDefinition` y `StyleSet`
-
-El modelo no importará parser, PyYAML ni bibliotecas de exportación. Las entidades deberán poder convertirse a diccionarios JSON sin introducir decisiones de formato XMind.
+El modelo no importa parser, PyYAML ni bibliotecas de exportación. Las entidades se convierten a diccionarios JSON con la estructura contractual.
 
 ## 3. Política de compatibilidad
 
-La compatibilidad con el modelo transitorio será temporal y explícita:
+1. La API legacy se mantiene temporalmente para consumidores aún no migrados.
+2. Los adaptadores deben consumir el contrato canónico, no depender de alias legacy.
+3. Los campos legacy no forman parte de la serialización IR 1.0.0.
+4. La compatibilidad se retirará cuando parser, estilos, CLI y adaptadores hayan migrado.
+5. No se permite que un mismo dato tenga dos representaciones divergentes.
 
-1. El parser podrá seguir construyendo el modelo mediante una fábrica o constructor de compatibilidad durante la migración.
-2. Los adaptadores deberán consumir el contrato canónico, no depender indefinidamente de alias legacy.
-3. Los campos legacy no formarán parte de la serialización IR 1.0.0.
-4. La compatibilidad se eliminará cuando parser, estilos, adaptadores y pruebas hayan migrado.
-5. No se permitirá que un mismo dato tenga dos representaciones divergentes.
-
-No se mantendrán propiedades legacy silenciosamente si pueden producir dos fuentes de verdad.
-
-## 4. Secuencia de migración
+## 4. Secuencia y estado de migración
 
 ### Fase A — Modelo canónico
 
-- Crear las entidades `Sheet`, `StyleState` y estructuras de recursos.
-- Hacer que `MindMap` contenga una única `sheet`.
-- Hacer que `Sheet` contenga `root_topic`, relaciones, límites y resúmenes.
-- Hacer que `Topic.content` contenga bloques tipados.
-- Normalizar estilo y recursos conforme al esquema.
-- Añadir validación de invariantes del árbol e IDs.
+**Estado: completada.** Entidades, serialización y validación semántica están implementadas en \`src/xmind_md/ir/\` y cubiertas por pruebas.
 
 ### Fase B — Parser y resolutor de estilos
 
-**Estado: implementada parcialmente y probada mediante las tareas 3 y 4.**
+**Estado: implementada parcialmente y probada.**
 
-- El puente `parse_markdown_ir()` / `parse_file_ir()` construye una única hoja y convierte la raíz en `sheet.root_topic`.
+- \`parse_markdown_ir()\` / \`parse_file_ir()\` construyen una única hoja y convierten la raíz en \`sheet.root_topic\`.
 - Convierte bloques actuales a formas estructuradas del IR y crea assets indexados por ID.
 - Conserva trazabilidad de origen.
-- El resolutor IR aplica la cascada de estilos y almacena el resultado en `style.resolved`.
-- `StyleState.style_set` conserva la selección de conjunto por tema y permite herencia/sustitución por rama.
-- La API legacy sigue existiendo durante la migración de los adaptadores y la CLI.
-- La gramática Markdown completa y el uso del modelo IR como ruta predeterminada siguen pendientes de sus tareas específicas.
+- El resolutor IR aplica la cascada de estilos y almacena el resultado en \`style.resolved\`.
+- \`StyleState.style_set\` conserva la selección de conjunto por tema y permite herencia/sustitución por rama.
+- La gramática Markdown completa sigue pendiente.
 
 ### Fase C — Adaptadores
 
-- Actualizar el adaptador JSON para serializar únicamente IR 1.0.0.
-- Actualizar el adaptador XMind para leer `sheet.root_topic` y entidades dentro de Sheet.
-- Rechazar características no soportadas con errores claros; nunca descartarlas silenciosamente.
+**Estado: migrada y verificada en CI.**
 
-### Fase D — Pruebas y documentación
+- El adaptador JSON serializa exclusivamente \`MindMap.to_dict()\` del IR 1.0.0.
+- El adaptador XMind consume \`MindMap.sheet.root_topic\`, entidades de anotación y relaciones canónicas, y \`StyleState.resolved\`.
+- Los adaptadores no importan el modelo legacy.
+- La CLI JSON y el script de smoke test utilizan \`parse_file_ir()\`.
+- Los formatos y capacidades XMind no soportados se rechazan explícitamente.
+- La exportación no modifica el IR original.
 
-- Validar el ejemplo de referencia con JSON Schema Draft 2020-12.
-- Añadir pruebas de ida y vuelta de serialización.
-- Añadir pruebas de validación de referencias e IDs.
-- Ejecutar toda la suite y Ruff.
-- Actualizar README, arquitectura, gramática y documentación de adaptadores para que no describan estructuras contradictorias.
+### Fase D — Validación y documentación
+
+**Estado: pendiente en parte.**
+
+- Validación formal del ejemplo con JSON Schema Draft 2020-12.
+- Pruebas de ida y vuelta y validación ampliada del contrato.
+- Cobertura completa de la gramática.
+- Ejecución de Ruff.
+- Sincronización documental general y auditoría final.
 
 ## 5. Criterios de aceptación
 
-La consolidación se considerará terminada únicamente cuando:
+La migración de consumidores se considera completada cuando:
 
-- La serialización Python tenga la misma estructura que el esquema IR 1.0.0.
-- El ejemplo JSON valide con un validador JSON Schema Draft 2020-12.
-- El parser produzca un `MindMap` con una única `Sheet` y un `root_topic`.
-- Los bloques de contenido, estilos y assets sigan las formas contractuales.
-- Las relaciones, boundaries y summaries estén dentro de Sheet.
-- Los adaptadores y pruebas consuman el modelo canónico.
-- No haya regresiones en las funciones ya implementadas.
-- Las limitaciones del adaptador XMind sigan documentadas con precisión.
+- Los adaptadores consumen el modelo canónico.
+- La serialización JSON refleja la estructura IR 1.0.0.
+- El adaptador XMind consume las entidades ubicadas dentro de Sheet.
+- Los estilos exportados proceden de \`style.resolved\`.
+- Las características no soportadas se rechazan explícitamente.
+- Las pruebas de exportación positivas y negativas pasan.
+- La suite completa no presenta regresiones.
+- Se comprueba que la exportación no muta el documento IR.
 
-## 6. Fuera de alcance de esta primera tarea
+La consolidación global del contrato IR requiere además validar el esquema y el ejemplo, completar las tareas de gramática y cerrar las comprobaciones restantes.
 
-Esta consolidación no implica todavía:
+## 6. Fuera de alcance de esta migración
 
 - Completar toda la gramática Markdown.
 - Implementar todas las propiedades visuales de XMind.
 - Garantizar compatibilidad total con XMind Desktop.
-- Añadir nuevas funciones a la CLI.
-- Cambiar el formato fuente Markdown.
-
-Estas tareas se abordarán después de estabilizar el contrato IR y migrar sus consumidores.
+- Integrar una opción de exportación XMind en la CLI.
+- Retirar toda la API legacy antes de migrar sus últimos consumidores.
 
 ## 7. Regla de versionado
 
-Mientras el modelo Python no cumpla íntegramente este documento y el JSON Schema, la implementación no se anunciará como compatible con IR 1.0.0. Los cambios incompatibles deberán reflejarse en el versionado del IR y en sus pruebas.
+Mientras el modelo Python no cumpla íntegramente el contrato y el JSON Schema, la implementación no se anunciará como compatible globalmente con IR 1.0.0. Los cambios incompatibles deberán reflejarse en el versionado del IR y en sus pruebas.

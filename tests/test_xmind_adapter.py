@@ -86,10 +86,10 @@ def test_build_content_maps_labels_markers_notes_links_and_styles():
 
 
 def test_build_content_maps_relationship_endpoints_to_xmind_ids():
-    content = build_xmind_content(make_map())[0]
-    root = content[0]["rootTopic"]
+    sheet = build_xmind_content(make_map())[0]
+    root = sheet["rootTopic"]
     child = root["children"]["attached"][0]
-    relationship = content[0]["relationships"][0]
+    relationship = sheet["relationships"][0]
 
     assert relationship["class"] == "relationship"
     assert relationship["end1Id"] == root["id"]

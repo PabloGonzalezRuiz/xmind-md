@@ -191,9 +191,12 @@ El vocabulario podrá ampliarse sin cambiar la semántica de las propiedades exi
 
 Cada elemento estilizable utiliza:
 
-- `ref`: nombre simbólico del estilo.
+- `ref`: nombre simbólico del estilo concreto.
+- `style_set`: nombre del conjunto de estilos aplicable, opcional. Si no se declara, hereda el conjunto del tema padre; en la raíz se utiliza el conjunto global indicado en `metadata.style_set`, si existe.
 - `overrides`: modificaciones locales.
 - `resolved`: resultado calculado de la cascada.
+
+La referencia `style_set` forma parte de `StyleState` para conservar en el IR la selección de conjunto que permite la sintaxis Markdown. Un tema puede sustituir el conjunto heredado declarando otro; los descendientes heredan el conjunto efectivo salvo que lo sustituyan a su vez.
 
 La procedencia de los valores resueltos debe poder recuperarse en diagnóstico, aunque no sea necesario duplicarla en cada exportación.
 

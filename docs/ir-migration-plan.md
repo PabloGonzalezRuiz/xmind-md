@@ -78,12 +78,15 @@ No se mantendrán propiedades legacy silenciosamente si pueden producir dos fuen
 
 ### Fase B — Parser y resolutor de estilos
 
-- Adaptar el parser para construir el modelo canónico.
-- Mantener una única raíz y convertirla en `sheet.root_topic`.
-- Convertir bloques actuales a las formas del esquema.
-- Construir assets indexados por ID y referencias desde los temas.
-- Producir `style.ref`, `style.overrides` y `style.resolved`.
-- Mantener trazabilidad de origen.
+**Estado: implementada parcialmente y probada mediante las tareas 3 y 4.**
+
+- El puente `parse_markdown_ir()` / `parse_file_ir()` construye una única hoja y convierte la raíz en `sheet.root_topic`.
+- Convierte bloques actuales a formas estructuradas del IR y crea assets indexados por ID.
+- Conserva trazabilidad de origen.
+- El resolutor IR aplica la cascada de estilos y almacena el resultado en `style.resolved`.
+- `StyleState.style_set` conserva la selección de conjunto por tema y permite herencia/sustitución por rama.
+- La API legacy sigue existiendo durante la migración de los adaptadores y la CLI.
+- La gramática Markdown completa y el uso del modelo IR como ruta predeterminada siguen pendientes de sus tareas específicas.
 
 ### Fase C — Adaptadores
 

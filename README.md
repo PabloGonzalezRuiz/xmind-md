@@ -11,7 +11,7 @@ La idea central es separar cuatro capas:
 
 ## Estado actual
 
-<badge>Prototipo inicial</badge>
+**Estado:** prototipo inicial
 
 Esta primera versión implementa:
 

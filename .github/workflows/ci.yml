@@ -1,21 +1,29 @@
+# Integración continua: ejecutar las pruebas en cada cambio relevante.
 name: CI
 
 on:
+  # Verificar tanto las actualizaciones directas como las pull requests.
   push:
   pull_request:
+  # Permitir iniciar la comprobación manualmente desde GitHub Actions.
   workflow_dispatch:
 
 jobs:
   tests:
+    # Entorno Linux limpio y reproducible para validar el paquete.
     runs-on: ubuntu-latest
     steps:
+      # Obtener el contenido del commit que activa el workflow.
       - name: Checkout
         uses: actions/checkout@v4
+      # Fijar la versión de Python usada por la CI.
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      # Instalar el paquete junto con las dependencias de desarrollo.
       - name: Install
         run: python -m pip install -e ".[dev]"
+      # Una prueba fallida debe hacer fallar el workflow.
       - name: Tests
         run: pytest

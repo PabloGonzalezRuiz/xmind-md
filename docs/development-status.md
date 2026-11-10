@@ -4,9 +4,10 @@
 
 - **Última actualización:** 2026-11-10
 - **Rama de referencia:** `main`
+- **Última prueba manual XMind Desktop:** superada en Windows, XMind 26.05.01107.
 - **Commit de incorporación del fixture XMind permanente:** `a1cf99861c819d9f148a7c7a3d779df6a95fc394`.
 - **Contrato objetivo:** IR 1.0.0
-- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; perfil XMind experimental. Pendientes las pruebas manuales en XMind Desktop, Windows, Ruff, sincronización documental global y auditoría final.
+- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; prueba manual del perfil de exportación comprobada en XMind Desktop 26.05.01107 para el fixture de integración. Pendientes ejecución local Windows, Ruff, sincronización documental global y auditoría final.
 
 ## 1. Para qué sirve este documento
 
@@ -80,13 +81,13 @@ El puente del parser y el resolutor disponen de rutas canónicas IR. Los adaptad
 - `xmind_adapter.py` consume `MindMap.sheet`, entidades `Topic`, `Relationship`, `Annotation` y `StyleState` canónicas; no importa el modelo legacy.
 - La exportación XMind mantiene un perfil parcial y rechaza recursos, imágenes, boundaries, summaries, layouts no predeterminados y extensiones no soportadas.
 - La CLI JSON y el script de smoke test construyen IR mediante `parse_file_ir()`.
-- La apertura y el guardado manual en XMind Desktop siguen sin acreditarse.
+- La apertura, inspección visual, guardado y reapertura manual del fixture se confirmaron en XMind Desktop para Windows 26.05.01107. La comprobación cubre los elementos incluidos en el fixture, no todas las capacidades del formato.
 
 No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar esa comprobación.
 
 ### 3.5 CLI, pruebas y automatización
 
-**Estado: suite y generación de artefacto verificadas en CI; lint y Windows pendientes.**
+**Estado: suite y generación de artefacto verificadas en CI; prueba manual del fixture en XMind Desktop superada; ejecución local Windows y lint pendientes.**
 
 - La CLI genera JSON (`.json`) o libros XMind (`.xmind`) a partir de `parse_file_ir()`; admite `--format` explícito y deducción por extensión.
 - La exportación XMind resuelve estilos antes de invocar el adaptador; la salida JSON conserva el comportamiento anterior y solo resuelve estilos si se proporciona `--styles`.
@@ -126,7 +127,7 @@ No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar
 | 7 | Completar y probar la gramática Markdown | **Completada** | Subconjunto implementado auditado, limitaciones explícitas y suite CI verde |
 | 8 | Ampliar y probar las capacidades del adaptador XMind | **Completada** | Matriz de capacidades, conversiones adicionales y suite CI verde |
 | 9 | Integrar la exportación XMind en la CLI | **Completada** | CLI XMind y JSON probadas, errores controlados y documentación actualizada |
-| 10 | Completar las pruebas con XMind Desktop | **En curso: artefacto descargado; pendiente comprobación del usuario** | Abrir, inspeccionar, guardar y reabrir el archivo en XMind Desktop; registrar versión y resultado |
+| 10 | Completar las pruebas con XMind Desktop | **Completada** | Apertura, inspección, guardado y reapertura confirmados; versión y resultados registrados |
 | 11 | Verificar ejecución local en Windows | Pendiente | Instalación, CLI y pruebas ejecutadas en entorno Windows |
 | 12 | Completar CI, Ruff y comprobaciones automáticas | Pendiente | Workflow verde con pruebas y lint |
 | 13 | Sincronizar README y documentación técnica | Pendiente | Documentación coherente con el comportamiento real |
@@ -292,7 +293,15 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 - Commit de sincronización tras auditar el artefacto y la tarea 10: `ab968fc1078512713f149cade4d415e03efb154c`.
 - Contenido: propósito, protocolo de trabajo, arquitectura, contrato IR, parser/gramática, estilos, adaptadores, CLI, estructura de repositorio, instalación/pruebas, estado al 2026-11-10, hoja de ruta, discrepancias conocidas y reglas para retomar desde cero.
 
-### Primera tarea pendiente iniciada: tarea 10 — XMind Desktop
+### Tarea 10 — Prueba manual en XMind Desktop
+
+- **Estado: completada**, tras confirmación del usuario el 2026-11-10.
+- **Entorno:** Windows, XMind Desktop versión `26.05.01107`.
+- **Resultado:** el usuario descargó el fixture permanente, lo abrió y confirmó que se visualizaba correctamente; comprobó el tema central `XMind MD · Prueba de apertura`, ramas `Rama A` y `Rama B`, subtema `Detalle de rama A`, nota desplegable `Nota de prueba asociada a la rama A.`, etiqueta `IMPORTANTE`, marcador de prioridad `1` y relación `Relación de prueba`.
+- **Persistencia:** el usuario confirmó que guardó el archivo, lo cerró y volvió a abrirlo sin problemas; indicó que «va perfecto».
+- **Alcance:** esta prueba acredita el fixture y los elementos enumerados en esta versión de XMind; no certifica compatibilidad universal ni todas las capacidades de XMind.
+
+### Artefacto y fixture de la tarea 10
 
 - Artefacto obtenido de CI #205: `xmind-desktop-smoke-test`, artifact ID `13775958163`, expiración GitHub `2026-11-24T15:17:14Z`.
 - Archivo interno: `xmind-md-smoke-test.xmind`.
@@ -307,22 +316,9 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 
 ## 8. Próxima tarea
 
-### Tarea 10 — Pruebas con XMind Desktop
-
-**Estado:** en curso; el fixture está versionado permanentemente en `tests/fixtures/xmind/xmind-md-smoke-test.xmind`. Falta la inspección manual en el equipo del usuario.
-
-**Alcance pendiente:**
-- Descargar `tests/fixtures/xmind/xmind-md-smoke-test.xmind` desde el repositorio y abrirlo con XMind Desktop. La carpeta incluye un README con procedencia y hash.
-- Comprobar raíz, ramas, detalle, nota, etiqueta, marcador y relación.
-- Guardar una copia desde XMind Desktop y volver a abrirla.
-- Comunicar versión de XMind Desktop, sistema operativo, avisos/errores y resultado de cada elemento.
-- Registrar el resultado en `docs/xmind-integration-tests.md`.
-
-**Criterios de aceptación:** apertura sin corrupción/reparación, inspección visual, guardado y reapertura confirmados, versión y resultados documentados.
-
-La IA no puede declarar esta prueba manual superada sin confirmación del usuario.
-
 ### Tarea 11 — Verificar ejecución local en Windows
+
+**Siguiente tarea pendiente; requiere autorización expresa del usuario antes de comenzar.**
 
 Instalación limpia con Python compatible, instalación editable, ejecución CLI JSON/XMind y suite pytest. Registrar versiones, comandos, resultados y problemas específicos de Windows.
 

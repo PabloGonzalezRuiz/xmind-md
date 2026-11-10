@@ -194,3 +194,107 @@ def test_unsupported_map_metadata_is_not_silently_dropped():
     with pytest.raises(XMindAdapterError, match="Metadatos del mapa no soportados"):
         build_xmind_content(mind_map)
 
+
+
+
+def test_detached_and_callout_topics_are_exported_in_their_xmind_child_groups():
+    mind_map = make_map()
+    root = mind_map.sheet.root_topic
+    detached = Topic(
+        id="topic_detached",
+        title="Independiente",
+        kind="detached",
+        layout={"position": {"x": 120, "y": -45}},
+    )
+    callout = Topic(id="topic_callout", title="Aclaración", kind="callout")
+    callout.children.append(Topic(id="topic_callout_child", title="Detalle"))
+    root.children.extend([detached, callout])
+
+    exported = build_xmind_content(mind_map)[0]["rootTopic"]
+    assert exported["children"]["detached"][0]["title"] == "Independiente"
+    assert exported["children"]["detached"][0]["position"] == {"x": 120, "y": -45}
+    assert exported["children"]["callout"][0]["title"] == "Aclaración"
+    assert exported["children"]["callout"][0]["children"]["attached"][0]["title"] == "Detalle"
+
+
+def test_topic_layout_properties_are_mapped_to_xmind_fields():
+    mind_map = make_map()
+    child = mind_map.sheet.root_topic.children[0]
+    child.layout = {
+        "position": {"x": 10.5, "y": -20},
+        "structure_class": "org.xmind.ui.logic.right",
+        "branch": "folded",
+        "width": 240,
+    }
+
+    exported = build_xmind_content(mind_map)[0]["rootTopic"]["children"]["attached"][0]
+    assert exported["position"] == {"x": 10.5, "y": -20}
+    assert exported["structureClass"] == "org.xmind.ui.logic.right"
+    assert exported["branch"] == "folded"
+    assert exported["customWidth"] == 240
+
+
+def test_topic_internal_link_is_exported_as_xmind_topic_href():
+    mind_map = make_map()
+    root = mind_map.sheet.root_topic
+    root.links = [{"id": "link_internal", "kind": "topic", "target": "topic_child"}]
+
+    exported = build_xmind_content(mind_map)[0]
+    root_json = exported["rootTopic"]
+    child_json = root_json["children"]["attached"][0]
+    assert root_json["href"] == f"xmind:#{child_json['id']}"
+
+
+def test_file_link_with_file_uri_is_exported_as_href():
+    mind_map = make_map()
+    mind_map.sheet.root_topic.links = [
+        {"id": "link_file", "kind": "file", "target": "file:///tmp/reference.pdf"}
+    ]
+    root = build_xmind_content(mind_map)[0]["rootTopic"]
+    assert root["href"] == "file:///tmp/reference.pdf"
+
+
+@pytest.mark.parametrize(
+    "kind, layout, message",
+    [
+        ("detached", {}, "necesita layout.position"),
+        ("unknown", {}, "se admiten attached"),
+        ("attached", {"rotation": 45}, "layout no soportadas"),
+        ("attached", {"position": {"x": 1}}, "coordenadas numéricas"),
+        ("attached", {"position": {"x": True, "y": 2}}, "coordenadas numéricas"),
+        ("attached", {"width": 0}, "número positivo"),
+        ("attached", {"branch": "expanded"}, "solo admite el valor"),
+    ],
+)
+def test_invalid_topic_kinds_and_layout_are_rejected(kind, layout, message):
+    mind_map = make_map()
+    child = mind_map.sheet.root_topic.children[0]
+    child.kind = kind
+    child.layout = layout
+    with pytest.raises(XMindAdapterError, match=message):
+        build_xmind_content(mind_map)
+
+
+def test_non_attached_root_topic_is_rejected():
+    mind_map = make_map()
+    mind_map.sheet.root_topic.kind = "callout"
+    with pytest.raises(XMindAdapterError, match="raíz XMind debe ser"):
+        build_xmind_content(mind_map)
+
+
+def test_internal_link_to_missing_topic_is_rejected():
+    mind_map = make_map()
+    mind_map.sheet.root_topic.links = [
+        {"id": "link_internal", "kind": "topic", "target": "missing"}
+    ]
+    with pytest.raises(XMindAdapterError, match="referencia un tema inexistente"):
+        build_xmind_content(mind_map)
+
+
+def test_internal_link_with_unmapped_kind_is_rejected():
+    mind_map = make_map()
+    mind_map.sheet.root_topic.links = [
+        {"id": "link_internal", "kind": "internal", "target": "topic_child"}
+    ]
+    with pytest.raises(XMindAdapterError, match="tipo o destino no soportado"):
+        build_xmind_content(mind_map)

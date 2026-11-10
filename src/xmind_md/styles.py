@@ -97,12 +97,23 @@ def _validate_definitions(style_sets: dict[str, Any], styles: dict[str, Any]) ->
                 _mapping(definition[target], f"{target} del conjunto '{set_name}'")
 
 
-def resolve_styles(mind_map: MindMap, style_config: dict[str, Any] | None = None) -> MindMap:
-    """Resuelve estilos del documento y configuración externa sobre cada tema.
+def resolve_styles(
+    mind_map: Any,
+    style_config: dict[str, Any] | None = None,
+    defaults: dict[str, Any] | None = None,
+) -> Any:
+    """Resuelve estilos tanto en el modelo IR como en el modelo legacy.
 
-    Acepta el formato nuevo devuelto por load_styles y, temporalmente, un
-    mapping legacy que contenga directamente los conjuntos de estilos.
+    Para IR 1.0.0 delega en resolve_ir_styles(). El camino legacy se conserva
+    temporalmente para no romper los consumidores aún no migrados.
     """
+    from .ir.entities import MindMap as IRMindMap
+
+    if isinstance(mind_map, IRMindMap):
+        return resolve_ir_styles(mind_map, style_config, defaults)
+    if defaults is not None:
+        raise TypeError("defaults solo se admite con un MindMap IR 1.0.0")
+
     config = style_config or {}
     if "style_sets" in config or "styles" in config:
         external_sets = _mapping(config.get("style_sets", {}), "style_sets externos")

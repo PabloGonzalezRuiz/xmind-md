@@ -121,7 +121,8 @@ La clasificación distingue entre representación exportada, conversión con pé
 
 | Entidad o propiedad IR | Estado | Comportamiento del adaptador |
 |---|---|---|
-| `MindMap.id`, `title` | Soportado | El ID sirve de base para UUID5; el título del mapa no sustituye al título de la hoja |
+| `MindMap.id` | Soportado | Sirve de base para UUID5 deterministas |
+| `MindMap.title` | No representado en el paquete de una sola hoja | Se utiliza `Sheet.title` como título visible; el título del mapa no se exporta |
 | `MindMap.metadata.author` | Soportado con mapeo | Se convierte en `metadata.json.modifier` |
 | `MindMap.metadata.style_set`, `style_defaults`, `source_file` | Aceptado como metadato de autoría | No se materializa como catálogo de estilos ni se exporta como campo XMind |
 | Otros metadatos del mapa | No soportado | Error explícito |
@@ -135,9 +136,9 @@ La clasificación distingue entre representación exportada, conversión con pé
 | `Topic.kind=callout` | Soportado | `children.callout` |
 | `Topic.kind=summary` y otros tipos | No soportado | Error explícito |
 | `Topic.layout` | Parcial | `position`, `structure_class`, `branch=folded`, `width`; resto rechazado |
-| `Topic.content` paragraph/list/table/code/quote/divider | Soportado con pérdida de formato | Se aplana a texto Markdown/plano dentro de `notes.plain.content` |
+| `Topic.content` paragraph/list/table/code/quote/divider | Soportado con pérdida de formato | Se aplana a texto dentro de `notes.plain.content`; se pierden estilos inline, los destinos de enlaces inline (queda su texto visible) y la estructura original de los bloques |
 | `Topic.content` equation/image/raw | No soportado | Error explícito |
-| Notas sin estilo visual | Soportado con pérdida de formato | Se concatenan con el contenido del tema en `notes.plain.content` |
+| Notas sin estilo visual | Soportado con pérdida de formato | Se concatenan con el contenido del tema en `notes.plain.content`; los IDs de nota y la estructura de bloques no se conservan |
 | Notas con estilo visual resuelto | No soportado | Error explícito |
 | Etiquetas y marcadores | Soportado con mapeo | Se convierten a `labels` y `markers[].markerId`; los IDs IR no se conservan |
 | `Topic.links` web | Soportado | `href` |
@@ -150,6 +151,7 @@ La clasificación distingue entre representación exportada, conversión con pé
 | Estilo de relación | Parcial | Solo propiedades de estilo incluidas en la tabla de mapeo |
 | `Boundary` y `Summary` | No soportado | Error explícito |
 | Extensiones de tema o relación | No soportado | Error explícito |
+| `Topic.source` y procedencia de bloques | No representado | Los rangos de origen no tienen campo equivalente en el perfil generado |
 | Propiedades de estilo desconocidas, valores `null` o estilos sin resolver | No soportado | Error explícito |
 
 Las pérdidas intencionadas (aplanamiento de bloques, IDs auxiliares, catálogos de estilos) se describen en esta tabla y no deben confundirse con soporte de ida y vuelta. Los casos no soportados deben continuar fallando de forma explícita.

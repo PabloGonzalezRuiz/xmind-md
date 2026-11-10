@@ -94,6 +94,7 @@ No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar
 - Hay pruebas unitarias, de integración y de CLI en `tests/`.
 - GitHub Actions contiene un flujo de CI y una generación de artefacto XMind de prueba.
 - CI #165, commit `2250dbf06d86680cbfcf9c5c4c4d208e62a4f53b`: **90 pruebas superadas**, incluyendo validación formal Draft 2020-12, ejemplos y casos negativos; generación y publicación del artefacto XMind correctas.\n- CI #178, commit `f2f491cd52e668a53d31c1dddbf321c30f262882`: **97 pruebas superadas**; generación y publicación del artefacto XMind correctas tras los cambios de gramática.
+- CI #203, run `42842555229`, commit `1995076eee2e5108c37320c7a9df9be21745f5de`: **131 pruebas superadas en 0,45 s**; Tests, generación del smoke XMind y publicación del artefacto correctos. Entorno: GitHub Actions, Ubuntu, Python 3.12.16. https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42842555229
 - Validador: `jsonschema 4.26.0` con extra `format`; se comprueban los formatos de fecha/fecha-hora.
 - Ruff no forma parte todavía de los pasos del workflow y debe verificarse expresamente.
 - La ejecución local en Windows sigue pendiente; la existencia de configuración o documentación no demuestra que haya pasado.

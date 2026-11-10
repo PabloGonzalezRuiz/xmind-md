@@ -4,7 +4,7 @@
 
 - **Última actualización:** 2026-11-10
 - **Rama de referencia:** `main`
-- **Último commit documental de esta auditoría:** `ab968fc1078512713f149cade4d415e03efb154c` (prompt maestro sincronizado con la auditoría y el artefacto de la tarea 10).
+- **Commit de incorporación del fixture XMind permanente:** `a1cf99861c819d9f148a7c7a3d779df6a95fc394`.
 - **Contrato objetivo:** IR 1.0.0
 - **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; perfil XMind experimental. Pendientes las pruebas manuales en XMind Desktop, Windows, Ruff, sincronización documental global y auditoría final.
 
@@ -298,17 +298,21 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 - Archivo interno: `xmind-md-smoke-test.xmind`.
 - Tamaño: 3.299 bytes.
 - SHA-256: `9caa73f02ecd6e082202663ada77bd4079ef8bde7da835509d00c314c045acd3`.
-- Verificación automatizada local del contenedor: `unzip -t` correcto; entradas `mimetype`, `content.json`, `metadata.json`, `manifest.json` y `Thumbnails/thumbnail.png` legibles.
+- Verificación automatizada local del artefacto original: `unzip -t` correcto; entradas `mimetype`, `content.json`, `metadata.json`, `manifest.json` y `Thumbnails/thumbnail.png` legibles.
+- Para evitar depender de la caducidad de Actions, se añadió una copia permanente y equivalente del libro en `tests/fixtures/xmind/xmind-md-smoke-test.xmind`, junto con `tests/fixtures/xmind/README.md`. El ZIP se recomprimió; conserva los archivos internos del libro.
+- Commit de incorporación: `a1cf99861c819d9f148a7c7a3d779df6a95fc394`.
+- Tamaño del fixture versionado: 1.852 bytes. SHA-256: `bc7a3a79f055ee9d9afe3ad976adb303ec04ee117a9f92d9137c2f5018cf2c33`.
+- Enlace directo al archivo: https://raw.githubusercontent.com/PabloGonzalezRuiz/xmind-md/main/tests/fixtures/xmind/xmind-md-smoke-test.xmind
 - Esta verificación **no** sustituye XMind Desktop. La tarea permanece en curso hasta que el usuario abra el archivo, inspeccione los elementos, guarde una copia y confirme el resultado.
 
 ## 8. Próxima tarea
 
 ### Tarea 10 — Pruebas con XMind Desktop
 
-**Estado:** en curso; el artefacto ya está preparado y descargado. Falta la inspección manual en el equipo del usuario.
+**Estado:** en curso; el fixture está versionado permanentemente en `tests/fixtures/xmind/xmind-md-smoke-test.xmind`. Falta la inspección manual en el equipo del usuario.
 
 **Alcance pendiente:**
-- Abrir `xmind-md-smoke-test.xmind` con XMind Desktop.
+- Descargar `tests/fixtures/xmind/xmind-md-smoke-test.xmind` desde el repositorio y abrirlo con XMind Desktop. La carpeta incluye un README con procedencia y hash.
 - Comprobar raíz, ramas, detalle, nota, etiqueta, marcador y relación.
 - Guardar una copia desde XMind Desktop y volver a abrirla.
 - Comunicar versión de XMind Desktop, sistema operativo, avisos/errores y resultado de cada elemento.

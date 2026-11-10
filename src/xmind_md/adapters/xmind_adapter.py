@@ -324,6 +324,13 @@ def build_xmind_content(mind_map: MindMap) -> list[dict[str, Any]]:
             "title": relationship.get("title", ""),
             "end1Id": id_map[relationship["source"]],
             "end2Id": id_map[relationship["target"]],
+            # XMind's model requires two control points. Neutral coordinates
+            # preserve the relationship contract; visual routing needs a
+            # separate manual check in XMind Desktop.
+            "controlPoints": {
+                "0": {"x": 0, "y": 0},
+                "1": {"x": 0, "y": 0},
+            },
         }
         if relationship.get("style"):
             style_props = _style_properties(

@@ -65,6 +65,10 @@ def test_all_ir_json_examples_conform_to_schema(validator: Draft202012Validator)
             ),
             "tipo de enlace no admitido",
         ),
+        (
+            lambda document: document["metadata"].update(created="no-es-una-fecha"),
+            "formato date-time no válido",
+        ),
     ],
 )
 def test_schema_rejects_invalid_documents(

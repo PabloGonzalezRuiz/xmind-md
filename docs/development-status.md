@@ -171,7 +171,7 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 
 **Fuera de alcance:** completar la gramática, cambiar el parser de forma integral, terminar la resolución de estilos o ampliar la compatibilidad XMind. Esas tareas conservan sus propios pasos en la hoja de ruta.
 
-**Criterios de cierre pendientes:** confirmar que el comando anterior pasa; corregir cualquier fallo; dejar constancia del resultado y del entorno. La integración del parser y de los demás consumidores permanece en sus tareas independientes.
+**Cierre de tarea 2:** los criterios se han cumplido con la ejecución CI #115: 59 pruebas superadas y generación/publicación del artefacto XMind de comprobación. La integración del parser y de los demás consumidores permanece en sus tareas independientes.
 
 ## 8. Protocolo obligatorio de actualización
 

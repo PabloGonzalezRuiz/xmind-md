@@ -58,6 +58,7 @@ No incluir aquí identificadores ni estructuras privadas de una biblioteca de ex
 | Archivo | Función |
 |---|---|
 | constitucion.md | Documento de muestra para probar encabezados, contenido y directivas de estilo. |
+| xmind-smoke-test.md | Documento mínimo usado para generar el archivo de comprobación manual en XMind Desktop. |
 
 Los ejemplos también actúan como fixtures legibles: al cambiar la gramática, deben actualizarse y añadirse pruebas.
 
@@ -69,6 +70,7 @@ Los ejemplos también actúan como fixtures legibles: al cambiar la gramática, 
 | test_styles.py | Comprueba la resolución de estilos desde un conjunto heredado. |
 | test_xmind_adapter.py | Comprueba JSON, árbol de temas, IDs, relaciones, estilos básicos y estructura ZIP del adaptador XMind. |
 | test_xmind_integration.py | Contrasta la estructura del adaptador con un fixture `.xmind` externo descargado por CI. |
+| scripts/create_xmind_smoke.py | Genera un `.xmind` de prueba a partir del ejemplo Markdown para validación manual. |
 
 Toda funcionalidad nueva debe tener pruebas. No basta con modificar un ejemplo o comprobar visualmente el JSON.
 

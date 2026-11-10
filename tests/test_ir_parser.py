@@ -50,7 +50,7 @@ def test_parser_converts_annotations_styles_and_links():
         "task:\n  progress: 25\nlinks:\n  - kind: web\n    target: https://example.com\n"
         ":::\n## Hijo\n"
     )
-    root = parse_markdown_ir(source).sheet.root_topic
+    root = parse_markdown_ir(source).sheet.root_topic.children[0]
     assert root.style.ref == "destacado"
     assert root.style.overrides["text"]["color"] == "#fff"
     assert root.annotations.labels[0].text == "IMPORTANTE"

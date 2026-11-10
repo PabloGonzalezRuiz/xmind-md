@@ -1,12 +1,11 @@
-"""Carga y resolución de conjuntos de estilos YAML.
+"""Carga, valida y resuelve estilos neutrales de XMind MD.
 
-El módulo traduce nombres de conjunto y estilo a diccionarios neutrales.
-El adaptador de salida será responsable de convertir esas propiedades al
-vocabulario específico de XMind u otro destino.
+Precedencia: valores base del conjunto -> estilo nombrado -> overrides locales.
+Las definiciones del documento prevalecen sobre las externas con el mismo nombre.
 """
-
 from __future__ import annotations
 
+from copy import deepcopy
 from pathlib import Path
 from typing import Any
 
@@ -19,60 +18,105 @@ class StyleError(ValueError):
     """Configuración de estilos inválida o referencia inexistente."""
 
 
-def load_styles(path: str | Path) -> dict[str, Any]:
-    """Carga el apartado style_sets de un archivo YAML."""
-    # safe_load evita construir objetos Python arbitrarios desde el YAML.
-    data = yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
-    if not isinstance(data, dict):
-        raise StyleError("El archivo de estilos debe contener un objeto YAML")
-
-    # La clave raíz permite añadir en el futuro otras secciones de configuración.
-    style_sets = data.get("style_sets", {})
-    if not isinstance(style_sets, dict):
-        raise StyleError("La propiedad 'style_sets' debe ser un objeto YAML")
-    return style_sets
+def _mapping(value: Any, label: str) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        raise StyleError(f"{label} debe ser un objeto YAML")
+    return value
 
 
-def resolve_styles(mind_map: MindMap, style_sets: dict[str, Any]) -> MindMap:
-    """Asocia a cada tema el estilo definido en el conjunto que le corresponda.
+def _deep_merge(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any]:
+    """Fusiona recursivamente sin mutar las definiciones originales.
 
-    El conjunto se hereda recursivamente desde el tema padre. Una directiva
-    @conjunto en un tema reemplaza el conjunto heredado para esa rama.
-    La primera versión no combina estilos ni implementa herencia de propiedades.
+    Los valores null se conservan como instrucciones explícitas de reinicio;
+    el adaptador de salida decidirá cómo materializarlas.
     """
+    result = deepcopy(base)
+    for key, value in override.items():
+        if isinstance(value, dict) and isinstance(result.get(key), dict):
+            result[key] = _deep_merge(result[key], value)
+        else:
+            result[key] = deepcopy(value)
+    return result
+
+
+def load_styles(path: str | Path) -> dict[str, Any]:
+    """Carga estilos externos conservando tanto styles como style_sets."""
+    try:
+        data = yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
+    except yaml.YAMLError as exc:
+        raise StyleError(f"YAML de estilos inválido: {exc}") from exc
+    _mapping(data, "El archivo de estilos")
+    style_sets = data.get("style_sets", {})
+    styles = data.get("styles", {})
+    _mapping(style_sets, "style_sets")
+    _mapping(styles, "styles")
+    _validate_definitions(style_sets, styles)
+    return {"style_sets": deepcopy(style_sets), "styles": deepcopy(styles)}
+
+
+def _validate_definitions(style_sets: dict[str, Any], styles: dict[str, Any]) -> None:
+    for name, definition in styles.items():
+        _mapping(definition, f"El estilo '{name}'")
+    for set_name, definition in style_sets.items():
+        _mapping(definition, f"El conjunto '{set_name}'")
+        if "styles" in definition:
+            _mapping(definition["styles"], f"styles del conjunto '{set_name}'")
+            for style_name, style in definition["styles"].items():
+                _mapping(style, f"Estilo '{style_name}' del conjunto '{set_name}'")
+        for target in ("topic", "relationship", "boundary", "summary", "notes", "extensions"):
+            if target in definition:
+                _mapping(definition[target], f"{target} del conjunto '{set_name}'")
+
+
+def resolve_styles(mind_map: MindMap, style_config: dict[str, Any] | None = None) -> MindMap:
+    """Resuelve estilos del documento y configuración externa sobre cada tema.
+
+    Acepta el formato nuevo devuelto por load_styles y, temporalmente, un
+    mapping legacy que contenga directamente los conjuntos de estilos.
+    """
+    config = style_config or {}
+    if "style_sets" in config or "styles" in config:
+        external_sets = _mapping(config.get("style_sets", {}), "style_sets externos")
+        external_styles = _mapping(config.get("styles", {}), "styles externos")
+    else:
+        external_sets, external_styles = config, {}
+
+    document_sets = _mapping(mind_map.style_sets or {}, "style_sets del documento")
+    document_styles = _mapping(mind_map.styles or {}, "styles del documento")
+    sets = {**deepcopy(external_sets), **deepcopy(document_sets)}
+    styles = {**deepcopy(external_styles), **deepcopy(document_styles)}
+    _validate_definitions(sets, styles)
+
     def visit(topic: Topic, inherited_set: str | None = None) -> None:
-        # Un conjunto explícito tiene prioridad sobre el heredado del padre.
         set_name = topic.style_set or inherited_set
+        effective: dict[str, Any] = {}
+        if set_name:
+            definition = sets.get(set_name)
+            if definition is None:
+                raise StyleError(f"Conjunto de estilos inexistente: {set_name}")
+            _mapping(definition, f"El conjunto '{set_name}'")
+            effective = _deep_merge(effective, definition.get("topic", {}))
 
         if topic.style_ref:
-            # No es posible resolver un estilo si no hay conjunto aplicable.
-            if not set_name:
-                raise StyleError(
-                    f"El tema '{topic.title}' usa @estilo sin un @conjunto aplicable"
-                )
+            named = styles.get(topic.style_ref)
+            if named is None and set_name:
+                named = definition.get("styles", {}).get(topic.style_ref)
+            if named is None:
+                raise StyleError(f"Estilo '{topic.style_ref}' no definido")
+            _mapping(named, f"Estilo '{topic.style_ref}'")
+            # Las definiciones de estilo pueden agrupar propiedades por objeto
+            # (topic, relationship...) o describir directamente el estilo topic.
+            topic_style = named.get("topic", named)
+            _mapping(topic_style, f"Propiedades topic del estilo '{topic.style_ref}'")
+            effective = _deep_merge(effective, topic_style)
 
-            # Validar primero el conjunto y después el nombre de estilo.
-            style_set = style_sets.get(set_name)
-            if style_set is None:
-                raise StyleError(f"Conjunto de estilos inexistente: {set_name}")
-            if not isinstance(style_set, dict):
-                raise StyleError(f"El conjunto '{set_name}' debe ser un objeto")
-            styles = style_set.get("styles", {})
-            if not isinstance(styles, dict):
-                raise StyleError(f"La propiedad 'styles' de '{set_name}' debe ser un objeto")
-            if topic.style_ref not in styles:
-                raise StyleError(
-                    f"Estilo '{topic.style_ref}' no definido en el conjunto '{set_name}'"
-                )
+        overrides = _mapping(topic.style_overrides or {}, f"Overrides de '{topic.title}'")
+        effective = _deep_merge(effective, overrides)
+        topic.resolved_style = effective
 
-            # Copiar el diccionario evita compartir accidentalmente el objeto YAML.
-            topic.resolved_style = dict(styles[topic.style_ref])
-
-        # Propagar el conjunto efectivo a los descendientes de este tema.
         for child in topic.children:
             visit(child, set_name)
 
-    # Resolver cada raíz sin conjunto heredado; puede tener uno explícito.
     for root in mind_map.topics:
-        visit(root)
+        visit(root, mind_map.metadata.get("style_set"))
     return mind_map

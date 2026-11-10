@@ -134,11 +134,17 @@ def validate_mind_map(mind_map: MindMap) -> MindMap:
         asset_ids, set(), set(),
     )
 
-    available_styles = set(mind_map.styles)
-    for style_set in mind_map.style_sets.values():
-        available_styles.update(style_set.get("styles", {}))
-
-    def validate_topic_references(topic: Topic, path: str) -> None:
+    def validate_topic_references(
+        topic: Topic, path: str, inherited_set: str | None = None
+    ) -> None:
+        selected_set = topic.style.style_set or inherited_set or mind_map.metadata.get("style_set")
+        if selected_set is not None and selected_set not in mind_map.style_sets:
+            raise IRValidationError(
+                f"{path}.style.style_set: conjunto inexistente {selected_set!r}"
+            )
+        available_styles = set(mind_map.styles)
+        if selected_set:
+            available_styles.update(mind_map.style_sets[selected_set].get("styles", {}))
         if topic.style.ref and topic.style.ref not in available_styles:
             raise IRValidationError(
                 f"{path}.style.ref: estilo inexistente {topic.style.ref!r}"
@@ -149,7 +155,7 @@ def validate_mind_map(mind_map: MindMap) -> MindMap:
                     f"{path}.links[{index}].target: tema enlazado inexistente"
                 )
         for index, child in enumerate(topic.children):
-            validate_topic_references(child, f"{path}.children[{index}]")
+            validate_topic_references(child, f"{path}.children[{index}]", selected_set)
 
     validate_topic_references(mind_map.sheet.root_topic, "sheet.root_topic")
 

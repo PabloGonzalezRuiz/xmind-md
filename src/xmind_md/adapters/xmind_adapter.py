@@ -63,6 +63,12 @@ def _validate_supported_features(mind_map: MindMap) -> None:
         raise TypeError("El adaptador XMind requiere un MindMap IR 1.0.0.")
     if mind_map.assets:
         raise XMindAdapterError("La exportación de recursos/imágenes aún no está implementada.")
+    unsupported_metadata = set(mind_map.metadata) - {
+        "author", "style_set", "style_defaults", "source_file"
+    }
+    if unsupported_metadata:
+        names = ", ".join(sorted(unsupported_metadata))
+        raise XMindAdapterError(f"Metadatos del mapa no soportados: {names}.")
 
     sheet = mind_map.sheet
     if sheet.boundaries:

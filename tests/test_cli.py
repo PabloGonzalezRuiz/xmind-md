@@ -94,13 +94,14 @@ def test_cli_help_documents_both_formats(monkeypatch, capsys):
     assert ".json o .xmind" in output
     assert "--format" in output
 
+
 def test_cli_reports_ir_feature_not_supported_by_xmind(tmp_path, monkeypatch, capsys):
     source = tmp_path / "mapa.md"
     source.write_text(
-        "# Raíz\\n"
-        ":::xmind\\nid: tema_a\\n:::\\n## A\\n"
-        ":::xmind\\nid: tema_b\\n:::\\n## B\\n"
-        ":::xmind-summary\\nid: resumen\\ntopics: [tema_a, tema_b]\\n:::\\n",
+        "# Raíz\n"
+        ":::xmind\nid: tema_a\n:::\n## A\n"
+        ":::xmind\nid: tema_b\n:::\n## B\n"
+        ":::xmind-summary\nid: resumen\ntopics: [tema_a, tema_b]\n:::\n",
         encoding="utf-8",
     )
 
@@ -113,7 +114,7 @@ def test_cli_reports_ir_feature_not_supported_by_xmind(tmp_path, monkeypatch, ca
 def test_cli_reports_unresolved_style_for_xmind(tmp_path, monkeypatch, capsys):
     source = tmp_path / "mapa.md"
     source.write_text(
-        "---\\nstyle_set: INEXISTENTE\\n---\\n# Raíz\\n",
+        "---\nstyle_set: INEXISTENTE\n---\n# Raíz\n",
         encoding="utf-8",
     )
 
@@ -121,3 +122,4 @@ def test_cli_reports_unresolved_style_for_xmind(tmp_path, monkeypatch, capsys):
 
     assert result == 2
     assert "INEXISTENTE" in capsys.readouterr().err
+

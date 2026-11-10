@@ -223,30 +223,6 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 
 ## 7. Próxima tarea
 
-### Tarea 7 — Completar y probar la gramática Markdown
-
-**Estado:** pendiente de autorización expresa.
-
-**Alcance propuesto:**
-- Auditar la gramática documentada frente al parser real.
-- Identificar directivas y construcciones anunciadas que aún no estén implementadas.
-- Completar la gramática de encabezados, bloques estructurados, enlaces, anotaciones y directivas de estilos dentro del alcance aprobado.
-- Añadir pruebas positivas, negativas y de interacción entre construcciones.
-- Verificar que el parser produce IR canónico y conserva orden, contenido y procedencia.
-- Actualizar \`docs/grammar.md\`, ejemplos y documentación de uso.
-
-**Criterios de aceptación:**
-- Cada construcción declarada tiene una regla o una limitación explícita.
-- Las reglas principales están cubiertas por pruebas automatizadas.
-- Los casos inválidos producen errores claros y localizables.
-- La salida IR se valida semánticamente.
-- La suite completa pasa en CI.
-- Documentación y ejemplos reflejan únicamente sintaxis implementada.
-
-No iniciar esta tarea hasta recibir autorización expresa.
-
-## 7. Próxima tarea
-
 ### Tarea 8 — Ampliar y probar las capacidades del adaptador XMind
 
 **Estado:** pendiente de autorización expresa.

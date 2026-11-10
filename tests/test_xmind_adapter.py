@@ -1,4 +1,5 @@
-"""Pruebas del adaptador XMind moderno."""
+"""Pruebas del adaptador XMind moderno con entidades IR 1.0.0."""
+
 import json
 import uuid
 import zipfile
@@ -11,55 +12,64 @@ from xmind_md.adapters.xmind_adapter import (
     build_xmind_content,
     write_xmind,
 )
-from xmind_md.model import MindMap, Topic
+from xmind_md.ir import (
+    Annotation,
+    Asset,
+    Boundary,
+    ContentBlock,
+    Label,
+    Marker,
+    MindMap,
+    Note,
+    Relationship,
+    ResourceReferences,
+    Sheet,
+    StyleState,
+    Summary,
+    Topic,
+)
 
 
 def make_map() -> MindMap:
     child = Topic(
         id="topic_child",
         title="Hijo",
-        level=2,
-        annotations={
-            "labels": ["IMPORTANTE"],
-            "markers": [{"group": "priority", "value": "1"}],
-            "notes": ["Nota adicional"],
-        },
-        content_blocks=[
-            {"type": "paragraph", "runs": [{"text": "Texto "}, {"text": "del hijo"}]}
-        ],
-        links=[{"url": "https://example.com"}],
-        resolved_style={
+        content=[ContentBlock(
+            "paragraph",
+            {"text": "Texto del hijo", "runs": [{"text": "Texto "}, {"text": "del hijo"}]},
+        )],
+        annotations=Annotation(
+            labels=[Label("label_1", "IMPORTANTE")],
+            markers=[Marker("marker_1", "priority", 1)],
+            notes=[Note("note_1", [ContentBlock("paragraph", {"text": "Nota adicional"})])],
+        ),
+        links=[{"id": "link_1", "kind": "web", "target": "https://example.com"}],
+        style=StyleState(resolved={
             "shape": "org.xmind.topicShape.roundRect",
             "text": {"font_size": 14, "bold": True, "color": "#123456"},
             "background": {"color": "#ffffff"},
             "border": {"color": "#000000", "width": 2},
-        },
+        }),
     )
-    root = Topic(
-        id="topic_root",
-        title="Raíz",
-        level=1,
-        children=[child],
-    )
+    root = Topic(id="topic_root", title="Raíz", children=[child])
     return MindMap(
         id="map_test",
         title="Mapa de prueba",
-        topics=[root],
-        relationships=[
-            {"id": "rel_1", "source": "topic_root", "target": "topic_child", "title": "Conecta"}
-        ],
+        sheet=Sheet(
+            id="sheet_test",
+            title="Hoja de prueba",
+            root_topic=root,
+            relationships=[Relationship("rel_1", "topic_root", "topic_child", title="Conecta")],
+        ),
     )
 
 
 def test_build_content_creates_one_sheet_and_recursive_topic_tree():
-    content = build_xmind_content(make_map())
-
-    assert len(content) == 1
-    sheet = content[0]
-    assert sheet["class"] == "sheet"
-    assert sheet["title"] == "Mapa de prueba"
+    sheet = build_xmind_content(make_map())[0]
     root = sheet["rootTopic"]
     child = root["children"]["attached"][0]
+    assert sheet["class"] == "sheet"
+    assert sheet["title"] == "Hoja de prueba"
     assert root["title"] == "Raíz"
     assert child["title"] == "Hijo"
     assert uuid.UUID(root["id"])
@@ -67,9 +77,8 @@ def test_build_content_creates_one_sheet_and_recursive_topic_tree():
     assert root["id"] != child["id"]
 
 
-def test_build_content_maps_labels_markers_notes_links_and_styles():
+def test_build_content_maps_annotations_links_and_resolved_styles():
     child = build_xmind_content(make_map())[0]["rootTopic"]["children"]["attached"][0]
-
     assert child["labels"] == ["IMPORTANTE"]
     assert child["markers"] == [{"markerId": "priority-1"}]
     assert child["notes"]["plain"]["content"] == "Texto del hijo\n\nNota adicional"
@@ -90,37 +99,27 @@ def test_build_content_maps_relationship_endpoints_to_xmind_ids():
     root = sheet["rootTopic"]
     child = root["children"]["attached"][0]
     relationship = sheet["relationships"][0]
-
     assert relationship["class"] == "relationship"
     assert relationship["end1Id"] == root["id"]
     assert relationship["end2Id"] == child["id"]
+    assert relationship["title"] == "Conecta"
     assert relationship["controlPoints"] == {
         "0": {"x": 0, "y": 0},
         "1": {"x": 0, "y": 0},
     }
-    assert relationship["title"] == "Conecta"
 
 
 def test_generated_ids_are_deterministic():
-    first = build_xmind_content(make_map())
-    second = build_xmind_content(make_map())
-
-    assert first == second
+    assert build_xmind_content(make_map()) == build_xmind_content(make_map())
 
 
 def test_write_xmind_creates_valid_zip_package(tmp_path):
     destination = tmp_path / "nested" / "mapa.xmind"
-
     result = write_xmind(make_map(), destination)
-
     assert result == destination
     with zipfile.ZipFile(destination) as archive:
-        names = archive.namelist()
-        assert names == [
-            "mimetype",
-            "content.json",
-            "metadata.json",
-            "manifest.json",
+        assert archive.namelist() == [
+            "mimetype", "content.json", "metadata.json", "manifest.json",
             "Thumbnails/thumbnail.png",
         ]
         assert archive.getinfo("mimetype").compress_type == zipfile.ZIP_STORED
@@ -137,41 +136,45 @@ def test_write_xmind_creates_valid_zip_package(tmp_path):
 @pytest.mark.parametrize(
     "change, message",
     [
-        (lambda m: setattr(m.topics[0], "kind", "detached"), "kind"),
-        (lambda m: m.assets.append({"src": "image.png"}), "recursos"),
-        (lambda m: m.boundaries.append({"id": "b1"}), "boundaries"),
-        (lambda m: m.summaries.append({"id": "s1"}), "summaries"),
-        (lambda m: m.topics[0].extensions.update({"custom": True}), "extensiones"),
+        (lambda m: setattr(m.sheet.root_topic, "kind", "detached"), "kind"),
+        (lambda m: setattr(m.sheet.root_topic, "resources", ResourceReferences(images=["a1"])), "recursos"),
+        (lambda m: m.assets.update({"a1": Asset("image", "image.png")}), "recursos"),
+        (lambda m: m.sheet.boundaries.append(Boundary("b1", ["topic_child"])), "boundaries"),
+        (lambda m: m.sheet.summaries.append(Summary("s1", ["topic_child"])), "summaries"),
+        (lambda m: m.sheet.root_topic.extensions.update({"custom": True}), "extensiones"),
     ],
 )
 def test_unsupported_features_fail_explicitly(change, message):
     mind_map = make_map()
     change(mind_map)
-
     with pytest.raises(XMindAdapterError, match=message):
         build_xmind_content(mind_map)
 
 
 def test_unknown_style_property_fails_instead_of_being_dropped():
     mind_map = make_map()
-    mind_map.topics[0].resolved_style = {"effects": {"shadow": True}}
-
+    mind_map.sheet.root_topic.style.resolved = {"effects": {"shadow": True}}
     with pytest.raises(XMindAdapterError, match="no soportada"):
         build_xmind_content(mind_map)
 
 
 def test_relationship_with_unknown_topic_id_is_rejected():
     mind_map = make_map()
-    mind_map.relationships[0]["target"] = "missing"
-
+    mind_map.sheet.relationships[0].target_topic = "missing"
     with pytest.raises(XMindAdapterError, match="no existe"):
         build_xmind_content(mind_map)
 
 
 def test_named_style_must_be_resolved_before_export():
     mind_map = make_map()
-    mind_map.topics[0].style_ref = "named-style"
-    mind_map.topics[0].style_overrides = {"text": {"bold": True}}
-
+    mind_map.sheet.root_topic.style.ref = "named-style"
+    mind_map.sheet.root_topic.style.overrides = {"text": {"bold": True}}
     with pytest.raises(XMindAdapterError, match="no están resueltos"):
         build_xmind_content(mind_map)
+
+
+def test_relationship_style_uses_resolved_state():
+    mind_map = make_map()
+    mind_map.sheet.relationships[0].style.resolved = {"text": {"bold": True}}
+    relationship = build_xmind_content(mind_map)[0]["relationships"][0]
+    assert relationship["style"]["properties"] == {"fo:font-weight": "bold"}

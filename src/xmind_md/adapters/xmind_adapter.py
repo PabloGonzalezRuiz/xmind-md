@@ -1,8 +1,7 @@
-"""Adaptador inicial para generar libros XMind modernos (ZIP + JSON).
+"""Adaptador IR 1.0.0 para generar libros XMind modernos (ZIP + JSON).
 
-El adaptador traduce exclusivamente el IR; no interpreta Markdown ni modifica
-el documento de entrada. Las características no soportadas se rechazan para
-evitar pérdidas silenciosas.
+El adaptador solo consume entidades canónicas. No interpreta Markdown, no
+resuelve estilos y rechaza explícitamente las capacidades que aún no exporta.
 """
 from __future__ import annotations
 
@@ -13,14 +12,12 @@ from pathlib import Path
 from typing import Any
 from uuid import NAMESPACE_URL, uuid5
 
-from ..model import MindMap, Topic
+from ..ir import MindMap, Topic
 
 
 MIMETYPE = "application/vnd.xmind.workbook"
 DATA_STRUCTURE_VERSION = "3"
 LAYOUT_ENGINE_VERSION = "5"
-
-# PNG transparente de 1 x 1 píxel, utilizado como miniatura inicial.
 THUMBNAIL_PNG = bytes.fromhex(
     "89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4"
     "890000000d49444154789c6300010000000500010d0a2db40000000049454e44"
@@ -50,26 +47,36 @@ _STYLE_KEYS = {
 
 
 def _xmind_id(kind: str, map_id: str, source_id: str) -> str:
-    """Convierte IDs del IR en UUID estables aceptables por el formato XMind."""
     return str(uuid5(NAMESPACE_URL, f"xmind-md:{kind}:{map_id}:{source_id}"))
 
 
-def _validate_supported_features(mind_map: MindMap) -> None:
-    if len(mind_map.topics) != 1:
-        raise XMindAdapterError("XMind requiere exactamente un tema raíz en esta versión.")
+def _validate_style_state(state: Any, label: str) -> None:
+    if (state.ref or state.style_set or state.overrides) and not state.resolved:
+        raise XMindAdapterError(
+            f"Los estilos de {label} no están resueltos. "
+            "Ejecuta resolve_styles antes de exportar."
+        )
 
+
+def _validate_supported_features(mind_map: MindMap) -> None:
+    if not isinstance(mind_map, MindMap):
+        raise TypeError("El adaptador XMind requiere un MindMap IR 1.0.0.")
     if mind_map.assets:
-        raise XMindAdapterError(
-            "La exportación de recursos/imágenes aún no está implementada."
-        )
-    if mind_map.boundaries:
+        raise XMindAdapterError("La exportación de recursos/imágenes aún no está implementada.")
+
+    sheet = mind_map.sheet
+    if sheet.boundaries:
         raise XMindAdapterError("La exportación de boundaries aún no está implementada.")
-    if mind_map.summaries:
+    if sheet.summaries:
         raise XMindAdapterError("La exportación de summaries aún no está implementada.")
-    if mind_map.layout or mind_map.extensions:
-        raise XMindAdapterError(
-            "El layout o las extensiones del mapa aún no están soportados."
-        )
+    if (
+        sheet.layout.structure != "mind_map"
+        or sheet.layout.direction != "balanced"
+        or sheet.layout.properties
+    ):
+        raise XMindAdapterError("El layout de hoja solicitado aún no está soportado.")
+    if sheet.metadata:
+        raise XMindAdapterError("Los metadatos específicos de hoja aún no están soportados.")
 
     topic_ids: set[str] = set()
 
@@ -85,7 +92,7 @@ def _validate_supported_features(mind_map: MindMap) -> None:
             raise XMindAdapterError(f"ID de tema duplicado: {topic.id}")
         topic_ids.add(topic.id)
 
-        if topic.resources:
+        if topic.resources.images or topic.resources.attachments or topic.resources.audio:
             raise XMindAdapterError(
                 f"El tema '{topic.title}' contiene recursos aún no soportados."
             )
@@ -93,29 +100,34 @@ def _validate_supported_features(mind_map: MindMap) -> None:
             raise XMindAdapterError(
                 f"El tema '{topic.title}' contiene layout o extensiones no soportados."
             )
-        unsupported_annotations = set(topic.annotations) - {"notes", "labels", "markers"}
-        if unsupported_annotations:
-            names = ", ".join(sorted(unsupported_annotations))
+        if topic.annotations.task is not None:
             raise XMindAdapterError(
-                f"Anotaciones no soportadas en '{topic.title}': {names}."
+                f"La anotación task de '{topic.title}' aún no está soportada."
             )
-        if (topic.style_ref or topic.style_set) and not topic.resolved_style:
-            raise XMindAdapterError(
-                f"Los estilos de '{topic.title}' no están resueltos. "
-                "Ejecuta resolve_styles antes de exportar."
-            )
+        _validate_style_state(topic.style, f"'{topic.title}'")
+        for index, note in enumerate(topic.annotations.notes):
+            _validate_style_state(note.style, f"la nota {index} de '{topic.title}'")
+        for block in topic.content:
+            if block.type in {"image", "raw"}:
+                raise XMindAdapterError(
+                    f"El bloque '{block.type}' de '{topic.title}' aún no está soportado."
+                )
         for child in topic.children:
             visit(child)
 
-    visit(mind_map.topics[0])
+    visit(sheet.root_topic)
 
-    for relationship in mind_map.relationships:
-        source = relationship.get("source")
-        target = relationship.get("target")
-        if source not in topic_ids or target not in topic_ids:
+    for relationship in sheet.relationships:
+        if (
+            relationship.source_topic not in topic_ids
+            or relationship.target_topic not in topic_ids
+        ):
+            raise XMindAdapterError("Una relationship referencia un tema que no existe en el IR.")
+        if relationship.extensions:
             raise XMindAdapterError(
-                "Una relationship referencia un tema que no existe en el IR."
+                f"La relationship '{relationship.id}' contiene extensiones no soportadas."
             )
+        _validate_style_state(relationship.style, f"la relación '{relationship.id}'")
 
 
 def _inline_text(runs: list[dict[str, Any]]) -> str:
@@ -123,10 +135,10 @@ def _inline_text(runs: list[dict[str, Any]]) -> str:
     for run in runs:
         if "text" in run:
             values.append(str(run["text"]))
-        elif run.get("type") == "link":
-            values.append(f"[{run.get('text', '')}]({run.get('url', '')})")
-        elif run.get("type") == "image":
-            values.append(f"![{run.get('alt', '')}]({run.get('src', '')})")
+        elif "link" in run:
+            values.append(str(run.get("text", "")))
+        elif "image_source" in run:
+            raise XMindAdapterError("Las imágenes en línea aún no están soportadas.")
     return "".join(values)
 
 
@@ -135,10 +147,9 @@ def _list_text(block: dict[str, Any], depth: int = 0) -> list[str]:
     ordered = bool(block.get("ordered"))
     for index, item in enumerate(block.get("items", []), start=1):
         prefix = f"{index}. " if ordered else "- "
-        content = item.get("content", [])
         text = " ".join(
-            _inline_text(part.get("runs", []))
-            for part in content
+            _block_text(part)
+            for part in item.get("content", [])
             if part.get("type") == "paragraph"
         )
         lines.append(("  " * depth) + prefix + text)
@@ -147,61 +158,57 @@ def _list_text(block: dict[str, Any], depth: int = 0) -> list[str]:
     return lines
 
 
+def _cell_text(cell: dict[str, Any]) -> str:
+    return "\n".join(_block_text(block) for block in cell.get("content", []))
+
+
+def _block_text(block: dict[str, Any]) -> str:
+    kind = block.get("type")
+    if kind == "paragraph":
+        return (
+            _inline_text(block.get("runs", []))
+            if "runs" in block
+            else str(block.get("text", ""))
+        )
+    if kind == "code":
+        fence = chr(96) * 3
+        return f"{fence}{block.get('language') or ''}\n{block.get('code', '')}\n{fence}"
+    if kind == "quote":
+        return "\n".join("> " + line for line in str(block.get("text", "")).splitlines())
+    if kind == "divider":
+        return "---"
+    if kind == "list":
+        return "\n".join(_list_text(block))
+    if kind == "table":
+        lines = []
+        for row in block.get("rows", []):
+            cells = [_cell_text(cell) for cell in row.get("cells", [])]
+            lines.append(" | ".join(cells))
+            if row.get("header"):
+                lines.append(" | ".join("---" for _ in cells))
+        return "\n".join(lines)
+    if kind in {"image", "raw"}:
+        raise XMindAdapterError(f"El bloque de contenido '{kind}' aún no está soportado.")
+    raise XMindAdapterError(f"Bloque de contenido no reconocido: {kind!r}.")
+
+
 def _content_as_note(topic: Topic) -> str:
-    """Aplana bloques IR a texto legible para el campo plain de las notas."""
-    parts: list[str] = []
-    for block in topic.content_blocks:
-        kind = block.get("type")
-        if kind == "paragraph":
-            parts.append(_inline_text(block.get("runs", [])))
-        elif kind == "list":
-            parts.extend(_list_text(block))
-        elif kind == "code":
-            language = block.get("language") or ""
-            parts.append(f"\u0060\u0060\u0060{language}\n{block.get('text', '')}\n\u0060\u0060\u0060")
-        elif kind == "quote":
-            quoted = block.get("content", [])
-            for paragraph in quoted:
-                if paragraph.get("type") == "paragraph":
-                    parts.append("> " + _inline_text(paragraph.get("runs", [])))
-        elif kind == "table":
-            header = [_inline_text(cell) for cell in block.get("header", [])]
-            rows = block.get("rows", [])
-            if header:
-                parts.append(" | ".join(header))
-                parts.append(" | ".join("---" for _ in header))
-            parts.extend(" | ".join(_inline_text(cell) for cell in row) for row in rows)
-        elif kind == "divider":
-            parts.append("---")
-        elif kind == "image":
-            parts.append(f"![{block.get('alt', '')}]({block.get('src', '')})")
-        else:
+    parts = [_block_text(block.to_dict()) for block in topic.content]
+    for note in topic.annotations.notes:
+        if note.style.resolved:
             raise XMindAdapterError(
-                f"Bloque de contenido no reconocido en '{topic.title}': {kind!r}."
+                f"El estilo visual de las notas de '{topic.title}' aún no está soportado."
             )
-
-    # El campo legacy se conserva por compatibilidad con el parser inicial.
-    if not topic.content_blocks and topic.content:
-        parts.extend(topic.content)
-
-    notes = topic.annotations.get("notes", [])
-    if isinstance(notes, str):
-        notes = [notes]
-    if notes:
-        parts.extend(str(note) for note in notes)
-
+        parts.extend(_block_text(block.to_dict()) for block in note.content)
     return "\n\n".join(part for part in parts if part).strip()
 
 
-def _style_properties(style: dict[str, Any], topic_title: str) -> dict[str, Any]:
-    """Traduce el subconjunto de propiedades neutrales implementado."""
+def _style_properties(style: dict[str, Any], label: str) -> dict[str, Any]:
     properties: dict[str, Any] = {}
 
     def visit(value: Any, prefix: str = "") -> None:
         if not isinstance(value, dict):
-            raise XMindAdapterError(
-                f"El estilo de '{topic_title}' debe usar objetos agrupados por propiedad."
-            )
+            raise XMindAdapterError(f"El estilo de {label} debe usar objetos agrupados por propiedad.")
         for key, item in value.items():
             path = f"{prefix}.{key}" if prefix else key
             if isinstance(item, dict):
@@ -209,18 +216,12 @@ def _style_properties(style: dict[str, Any], topic_title: str) -> dict[str, Any]
                 continue
             target = _STYLE_KEYS.get(path)
             if target is None:
-                raise XMindAdapterError(
-                    f"Propiedad de estilo no soportada en '{topic_title}': {path}."
-                )
+                raise XMindAdapterError(f"Propiedad de estilo no soportada en {label}: {path}.")
             if item is None:
-                raise XMindAdapterError(
-                    f"El reinicio null de estilo no está soportado todavía: {path}."
-                )
+                raise XMindAdapterError(f"El reinicio null de estilo no está soportado todavía: {path}.")
             if path == "text.bold":
-                target = "fo:font-weight"
                 item = "bold" if item else "normal"
             elif path == "text.italic":
-                target = "fo:font-style"
                 item = "italic" if item else "normal"
             elif path == "shape" and not isinstance(item, str):
                 raise XMindAdapterError("shape debe ser texto.")
@@ -228,38 +229,27 @@ def _style_properties(style: dict[str, Any], topic_title: str) -> dict[str, Any]
                 raise XMindAdapterError(
                     f"El valor de estilo '{path}' debe ser texto o número, no booleano."
                 )
-            # El esquema JSON oficial declara las propiedades de estilo como texto.
             properties[target] = str(item)
 
     visit(style)
     return properties
 
 
-def _topic_to_json(
-    topic: Topic,
-    map_id: str,
-    id_map: dict[str, str],
-) -> dict[str, Any]:
+def _topic_to_json(topic: Topic, map_id: str, id_map: dict[str, str]) -> dict[str, Any]:
     data: dict[str, Any] = {
         "id": id_map[topic.id],
         "class": "topic",
         "title": topic.title,
     }
-
-    labels = topic.annotations.get("labels", [])
-    if labels:
-        data["labels"] = list(labels)
-
-    markers = topic.annotations.get("markers", [])
-    if markers:
+    if topic.annotations.labels:
+        data["labels"] = [label.text for label in topic.annotations.labels]
+    if topic.annotations.markers:
         marker_data = []
-        for marker in markers:
-            group = str(marker["group"]).strip()
-            value = str(marker["value"]).strip()
+        for marker in topic.annotations.markers:
+            group = str(marker.group).strip()
+            value = str(marker.value).strip()
             if not group or not value:
-                raise XMindAdapterError(
-                    f"Marcador vacío en el tema '{topic.title}'."
-                )
+                raise XMindAdapterError(f"Marcador vacío en el tema '{topic.title}'.")
             marker_id = value if value.startswith(group + "-") else f"{group}-{value}"
             marker_data.append({"markerId": marker_id})
         data["markers"] = marker_data
@@ -271,32 +261,27 @@ def _topic_to_json(
     if topic.links:
         if len(topic.links) != 1:
             raise XMindAdapterError(
-                f"El tema '{topic.title}' tiene varios enlaces; XMind admite un href "
-                "en el perfil inicial."
+                f"El tema '{topic.title}' tiene varios enlaces; "
+                "XMind admite un href en el perfil inicial."
             )
         link = topic.links[0]
-        href = link.get("url") or link.get("href")
-        if not isinstance(href, str) or not href:
+        href = link.get("target")
+        if link.get("kind") != "web" or not isinstance(href, str) or not href:
             raise XMindAdapterError(
-                f"El enlace del tema '{topic.title}' no contiene url/href."
+                f"El enlace del tema '{topic.title}' debe ser de tipo web y tener target."
             )
         data["href"] = href
 
-    style = topic.resolved_style or topic.style_overrides
-    if style:
-        properties = _style_properties(style, topic.title)
+    if topic.style.resolved:
+        properties = _style_properties(topic.style.resolved, f"'{topic.title}'")
         if properties:
             data["style"] = {
                 "id": _xmind_id("style", map_id, topic.id),
                 "properties": properties,
             }
-
     if topic.children:
         data["children"] = {
-            "attached": [
-                _topic_to_json(child, map_id, id_map)
-                for child in topic.children
-            ]
+            "attached": [_topic_to_json(child, map_id, id_map) for child in topic.children]
         }
     return data
 
@@ -304,7 +289,6 @@ def _topic_to_json(
 def build_xmind_content(mind_map: MindMap) -> list[dict[str, Any]]:
     """Construye el array content.json sin escribir ningún archivo."""
     _validate_supported_features(mind_map)
-
     map_id = mind_map.id or mind_map.title
     id_map: dict[str, str] = {}
 
@@ -313,41 +297,37 @@ def build_xmind_content(mind_map: MindMap) -> list[dict[str, Any]]:
         for child in topic.children:
             index(child)
 
-    root = mind_map.topics[0]
+    root = mind_map.sheet.root_topic
     index(root)
-
     relationships = []
-    for relationship in mind_map.relationships:
+    for relationship in mind_map.sheet.relationships:
         item: dict[str, Any] = {
-            "id": _xmind_id("relationship", map_id, str(relationship["id"])),
+            "id": _xmind_id("relationship", map_id, relationship.id),
             "class": "relationship",
-            "title": relationship.get("title", ""),
-            "end1Id": id_map[relationship["source"]],
-            "end2Id": id_map[relationship["target"]],
-            # XMind's model requires two control points. Neutral coordinates
-            # preserve the relationship contract; visual routing needs a
-            # separate manual check in XMind Desktop.
+            "title": relationship.title or "",
+            "end1Id": id_map[relationship.source_topic],
+            "end2Id": id_map[relationship.target_topic],
             "controlPoints": {
                 "0": {"x": 0, "y": 0},
                 "1": {"x": 0, "y": 0},
             },
         }
-        if relationship.get("style"):
-            style_props = _style_properties(
-                relationship["style"], f"relationship {relationship['id']}"
+        if relationship.style.resolved:
+            properties = _style_properties(
+                relationship.style.resolved, f"relationship {relationship.id}"
             )
-            if style_props:
+            if properties:
                 item["style"] = {
-                    "id": _xmind_id("relationship-style", map_id, str(relationship["id"])),
-                    "properties": style_props,
+                    "id": _xmind_id("relationship-style", map_id, relationship.id),
+                    "properties": properties,
                 }
         relationships.append(item)
 
-    sheet_id = _xmind_id("sheet", map_id, mind_map.id or mind_map.title)
+    sheet_id = _xmind_id("sheet", map_id, mind_map.sheet.id)
     return [{
         "id": sheet_id,
         "class": "sheet",
-        "title": mind_map.metadata.get("sheet_title", mind_map.title),
+        "title": mind_map.sheet.title,
         "rootTopic": _topic_to_json(root, map_id, id_map),
         "relationships": relationships,
     }]
@@ -358,7 +338,6 @@ def write_xmind(mind_map: MindMap, destination: str | Path) -> Path:
     content = build_xmind_content(mind_map)
     path = Path(destination)
     path.parent.mkdir(parents=True, exist_ok=True)
-
     metadata = {
         "modifier": mind_map.metadata.get("author", ""),
         "creator": {"name": "XMind MD"},
@@ -374,23 +353,12 @@ def write_xmind(mind_map: MindMap, destination: str | Path) -> Path:
             "Thumbnails/thumbnail.png": {"media-type": "image/png"},
         }
     }
-
     with zipfile.ZipFile(path, "w") as archive:
         mimetype_info = zipfile.ZipInfo("mimetype")
         mimetype_info.compress_type = zipfile.ZIP_STORED
         archive.writestr(mimetype_info, MIMETYPE)
-        archive.writestr(
-            "content.json",
-            json.dumps(content, ensure_ascii=False, indent=2),
-        )
-        archive.writestr(
-            "metadata.json",
-            json.dumps(metadata, ensure_ascii=False, indent=2),
-        )
-        archive.writestr(
-            "manifest.json",
-            json.dumps(manifest, ensure_ascii=False, indent=2),
-        )
+        archive.writestr("content.json", json.dumps(content, ensure_ascii=False, indent=2))
+        archive.writestr("metadata.json", json.dumps(metadata, ensure_ascii=False, indent=2))
+        archive.writestr("manifest.json", json.dumps(manifest, ensure_ascii=False, indent=2))
         archive.writestr("Thumbnails/thumbnail.png", THUMBNAIL_PNG)
-
     return path

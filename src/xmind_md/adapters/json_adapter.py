@@ -1,20 +1,18 @@
-"""Adaptador de depuración que serializa el modelo intermedio a JSON."""
+"""Adaptador JSON del modelo intermedio canónico IR 1.0.0."""
 
 from __future__ import annotations
 
 import json
 from pathlib import Path
 
-from ..model import MindMap
+from ..ir import MindMap
 
 
 def write_json(mind_map: MindMap, destination: str | Path) -> None:
-    """Escribe el mapa como JSON UTF-8 con formato legible."""
+    """Escribe el documento IR canónico como JSON UTF-8 legible."""
+    if not isinstance(mind_map, MindMap):
+        raise TypeError("write_json requiere un MindMap IR 1.0.0.")
     path = Path(destination)
-
-    # Crear directorios intermedios para que la CLI admita rutas nuevas.
     path.parent.mkdir(parents=True, exist_ok=True)
-
-    # ensure_ascii=False conserva caracteres españoles y indent facilita inspección.
     serialized = json.dumps(mind_map.to_dict(), ensure_ascii=False, indent=2) + "\n"
     path.write_text(serialized, encoding="utf-8")

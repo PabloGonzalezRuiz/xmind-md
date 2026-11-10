@@ -31,7 +31,7 @@ El contenedor se genera con `zipfile` y los documentos JSON con `json`, sin aña
 | Un mapa con una raíz | Una hoja XMind (`class: sheet`) y `rootTopic` |
 | Temas `attached` | `class: topic` y `children.attached` recursivo |
 | IDs del IR | UUID deterministas derivados mediante UUID5 |
-| Relaciones | `end1Id`, `end2Id`, título e ID determinista |
+| Relaciones (provisional) | `end1Id`, `end2Id`, título e ID determinista; falta completar `controlPoints` |
 | Notas | `notes.plain.content` |
 | Párrafos, listas, tablas, código y citas | Texto plano/Markdown dentro de la nota |
 | Etiquetas | `labels` |
@@ -56,6 +56,8 @@ El contenedor se genera con `zipfile` y los documentos JSON con `json`, sin aña
 | `border.width` | `line-width` |
 | `border.pattern` | `line-pattern` |
 
+Los valores de propiedades se serializan como texto, de acuerdo con el tipo declarado en el esquema JSON oficial.
+
 Los estilos con nombre o conjuntos deben haberse resuelto previamente mediante `resolve_styles`. Las propiedades no incluidas en la tabla y los reinicios `null` se rechazan.
 
 ## 4. Limitaciones explícitas
@@ -68,6 +70,7 @@ No se consideran implementados todavía:
 - Temas flotantes/detached y callouts.
 - Extensiones específicas de XMind y datos de tarea.
 - Varias direcciones/enlaces por tema.
+- Relaciones completas: el mapeo de extremos está implementado, pero aún no se generan los `controlPoints` exigidos por el esquema oficial; por tanto, no se debe considerar validada la representación visual de relaciones.
 - Estilos de relaciones y estilos avanzados de límites/resúmenes.
 - Posicionamiento, estructura de mapa y propiedades avanzadas de layout.
 - Formato de notas enriquecidas HTML; el contenido se aplana a texto.

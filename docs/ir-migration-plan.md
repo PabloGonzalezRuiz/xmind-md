@@ -1,7 +1,7 @@
 # Plan de consolidación del modelo intermedio (IR)
 
 **Versión objetivo:** IR 1.0.0  
-**Estado:** migración del modelo y de los primeros consumidores implementada; validación y gramática aún pendientes  
+**Estado:** modelo, consumidores y validación formal del esquema implementados; gramática aún pendiente  
 **Alcance:** alinear el modelo Python y sus consumidores con \`docs/ir-specification.md\`, \`docs/ir-schema.json\` y \`examples/ir/constitucion.json\`.
 
 ## 1. Diagnóstico confirmado
@@ -68,9 +68,12 @@ El modelo no importa parser, PyYAML ni bibliotecas de exportación. Las entidade
 
 ### Fase D — Validación y documentación
 
-**Estado: pendiente en parte.**
+**Estado: validación formal del esquema y ejemplo completada; resto pendiente.**
 
-- Validación formal del ejemplo con JSON Schema Draft 2020-12.
+- `docs/ir-schema.json` comprobado con `Draft202012Validator.check_schema()`.
+- Todos los archivos JSON bajo `examples/ir/` validados con `FormatChecker`.
+- Pruebas negativas para versión, propiedad obligatoria, tipo de enlace y formato date-time.
+- CI #165: 90 pruebas superadas.
 - Pruebas de ida y vuelta y validación ampliada del contrato.
 - Cobertura completa de la gramática.
 - Ejecución de Ruff.
@@ -89,7 +92,7 @@ La migración de consumidores se considera completada cuando:
 - La suite completa no presenta regresiones.
 - Se comprueba que la exportación no muta el documento IR.
 
-La consolidación global del contrato IR requiere además validar el esquema y el ejemplo, completar las tareas de gramática y cerrar las comprobaciones restantes.
+La validación formal del esquema y el ejemplo ya está automatizada. La consolidación global del contrato IR requiere completar las tareas de gramática y cerrar las comprobaciones restantes.
 
 ## 6. Fuera de alcance de esta migración
 

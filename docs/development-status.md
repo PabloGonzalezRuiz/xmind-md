@@ -4,7 +4,7 @@
 
 - **Última actualización:** 2026-11-10
 - **Rama de referencia:** `main`
-- **Último commit de implementación:** `2250dbf06d86680cbfcf9c5c4c4d208e62a4f53b`
+- **Último commit de implementación:** `f2f491cd52e668a53d31c1dddbf321c30f262882`
 - **Contrato objetivo:** IR 1.0.0
 - **Estado global:** prototipo en migración hacia el IR 1.0.0; todavía no declarar compatibilidad completa.
 
@@ -64,7 +64,7 @@ El puente del parser y el resolutor disponen de rutas canónicas IR. Los adaptad
 
 **Estado: puente de conversión a IR 1.0.0 implementado y probado; API legacy conservada temporalmente.**
 
-`src/xmind_md/ir_parser.py` expone `parse_markdown_ir()` y `parse_file_ir()`. Estas funciones convierten el resultado del parser actual a entidades canónicas, estructuran la hoja y validan el documento resultante. `parse_markdown()` y `parse_file()` conservan la API legacy; `parse_markdown_ir()` y `parse_file_ir()` proporcionan la ruta canónica. La CLI JSON y el generador smoke usan la ruta IR. La gramática completa sigue pendiente de la tarea 7.
+`src/xmind_md/ir_parser.py` expone `parse_markdown_ir()` y `parse_file_ir()`. Estas funciones convierten el resultado del parser actual a entidades canónicas, estructuran la hoja y validan el documento resultante. `parse_markdown()` y `parse_file()` conservan la API legacy; `parse_markdown_ir()` y `parse_file_ir()` proporcionan la ruta canónica. La CLI JSON y el generador smoke usan la ruta IR. La tarea 7 ha auditado y probado el subconjunto implementado; `docs/grammar.md` delimita expresamente las funciones no compatibles con CommonMark/GFM completo.
 
 ### 3.3 Estilos
 
@@ -91,7 +91,7 @@ No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar
 - La CLI permite generar el JSON intermedio.
 - Hay pruebas unitarias y de integración en `tests/`.
 - GitHub Actions contiene un flujo de CI y una generación de artefacto XMind de prueba.
-- CI #165, commit `2250dbf06d86680cbfcf9c5c4c4d208e62a4f53b`: **90 pruebas superadas**, incluyendo validación formal Draft 2020-12, ejemplos y casos negativos; generación y publicación del artefacto XMind correctas.
+- CI #165, commit `2250dbf06d86680cbfcf9c5c4c4d208e62a4f53b`: **90 pruebas superadas**, incluyendo validación formal Draft 2020-12, ejemplos y casos negativos; generación y publicación del artefacto XMind correctas.\n- CI #178, commit `f2f491cd52e668a53d31c1dddbf321c30f262882`: **97 pruebas superadas**; generación y publicación del artefacto XMind correctas tras los cambios de gramática.
 - Validador: `jsonschema 4.26.0` con extra `format`; se comprueban los formatos de fecha/fecha-hora.
 - Ruff no forma parte todavía de los pasos del workflow y debe verificarse expresamente.
 - La ejecución local en Windows sigue pendiente; la existencia de configuración o documentación no demuestra que haya pasado.
@@ -119,7 +119,7 @@ No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar
 | 4 | Adaptar el resolutor de estilos | **Completada** | Cascada conforme a IR y pruebas de precedencia |
 | 5 | Adaptar los exportadores JSON y XMind | **Completada** | Consumen el modelo canónico y notifican pérdidas |
 | 6 | Validar el esquema JSON y los ejemplos | **Completada** | Draft 2020-12 validado por herramienta y ejemplos conformes |
-| 7 | Completar y probar la gramática Markdown | Pendiente | Gramática y pruebas cubren las construcciones declaradas |
+| 7 | Completar y probar la gramática Markdown | **Completada** | Subconjunto implementado auditado, limitaciones explícitas y suite CI verde |
 | 8 | Ampliar y probar las capacidades del adaptador XMind | Pendiente | Matriz de capacidades y pruebas por entidad/propiedad |
 | 9 | Integrar la exportación XMind en la CLI | Pendiente | Comando/opción documentado y probado |
 | 10 | Completar las pruebas con XMind Desktop | Pendiente | Apertura, inspección y guardado comprobados y registrados |
@@ -207,6 +207,20 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 - **Alcance:** validación estructural y de formatos declarados por JSON Schema; no sustituye \`validate_mind_map()\`, que comprueba invariantes semánticas y referencias cruzadas.
 - **Limitaciones restantes:** solo existe actualmente un ejemplo JSON en \`examples/ir/\`; no se afirma validación de ejemplos que no existen. Ruff y ejecución local Windows permanecen pendientes.
 
+### Tarea 7 — Auditoría, ampliación y pruebas de la gramática Markdown
+
+- **Estado:** completada y verificada en GitHub Actions.
+- **Archivos:** src/xmind_md/parser.py, src/xmind_md/ir_parser.py, src/xmind_md/ir/validation.py, tests/test_parser.py, tests/test_ir_parser.py, docs/grammar.md, docs/ir-migration-plan.md.
+- **Auditoría:** contrastadas las reglas documentadas con el parser legacy y la conversión al IR. Se sustituyeron afirmaciones genéricas por una matriz de construcciones implementadas y limitaciones explícitas. No se anuncia compatibilidad completa con CommonMark/GFM.
+- **Cambios de parser:** formato inline para negrita, cursiva, tachado y código; enlaces internos [texto](topic:ID); pipes escapados en tablas; comprobación de colisiones entre IDs de entidades globales y temas; procedencia inclusiva por archivo y rango de líneas en párrafos, listas, tablas, código cercado, citas, separadores e imágenes.
+- **Conversión IR:** se conservan los rangos de origen de los bloques; las notas mantienen formato inline; los enlaces a temas se representan como kind: topic. validate_mind_map() comprueba los destinos de enlaces internos tanto en los enlaces del tema como en los runs de contenido y notas.
+- **Pruebas nuevas:** 7 pruebas de regresión para pipes escapados, colisión de IDs, enlaces internos válidos/inexistentes, tachado y formato de notas, procedencia y rangos de todos los bloques principales. La salida pasa por validación semántica IR.
+- **CI final:** #178, run 42836154415, commit f2f491cd52e668a53d31c1dddbf321c30f262882: **97 pruebas superadas en 0,46 s**; pasos Tests, Build XMind Desktop smoke test y Upload XMind smoke test correctos. Entorno: GitHub Actions, Ubuntu, Python 3.12.16. https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42836154415
+- **Correcciones detectadas por CI:** una ejecución intermedia detectó que la validación no recorría enlaces internos dentro de runs; otra detectó que los bloques de código cercado no tenían source. Ambos defectos se corrigieron y se cubrieron antes de la ejecución final #178.
+- **Commits relevantes:** parser inline/tablas/procedencia eaa0f5f5f8e0ea92c178c17d85261a7067e7ae02, corrección de tokens/tabla 714d60177e7e219c1329df71b82215c3fe1b1b73, conversión IR 315ed13a3dc9efb1cb8943ae02f28332a904b417, validación de enlaces 33b654f89e5af669c27bd12919be7038ee44eff2, cobertura de rangos 3107aaf3f25b9c51633c813b005965c48ec9ea25 y corrección de procedencia de código f2f491cd52e668a53d31c1dddbf321c30f262882.
+- **Limitaciones deliberadas:** no se implementan CommonMark/GFM completos, fórmulas, HTML, enlaces de referencia, listas laxas, imágenes inline con inventario de assets, ni notas con bloques estructurados. Están enumeradas en docs/grammar.md.
+- **No ejecutado:** Ruff, ejecución local Windows y apertura/guardado manual del artefacto en XMind Desktop siguen pendientes en sus tareas correspondientes.
+
 ## 7. Próxima tarea
 
 ### Tarea 7 — Completar y probar la gramática Markdown
@@ -228,6 +242,29 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 - La salida IR se valida semánticamente.
 - La suite completa pasa en CI.
 - Documentación y ejemplos reflejan únicamente sintaxis implementada.
+
+No iniciar esta tarea hasta recibir autorización expresa.
+
+## 7. Próxima tarea
+
+### Tarea 8 — Ampliar y probar las capacidades del adaptador XMind
+
+**Estado:** pendiente de autorización expresa.
+
+**Alcance propuesto:**
+- Auditar la matriz actual de capacidades de src/xmind_md/adapters/xmind_adapter.py frente a IR 1.0.0 y el formato XMind objetivo.
+- Priorizar entidades y propiedades exportables que actualmente se rechazan.
+- Implementar conversiones explícitas sin mutar el IR.
+- Añadir pruebas positivas y negativas por entidad y propiedad.
+- Actualizar docs/xmind-adapter.md y docs/xmind-integration-tests.md.
+- Mantener rechazos explícitos para las capacidades que no puedan representarse sin pérdida.
+
+**Criterios de aceptación:**
+- Cada capacidad del adaptador está clasificada como soportada, parcial o no soportada.
+- Las conversiones implementadas tienen pruebas automatizadas.
+- No se descarta información silenciosamente ni se muta el IR.
+- La suite completa pasa en CI y se genera el artefacto smoke.
+- La documentación coincide con el comportamiento real.
 
 No iniciar esta tarea hasta recibir autorización expresa.
 

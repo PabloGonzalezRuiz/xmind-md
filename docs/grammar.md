@@ -119,7 +119,7 @@ El bloque comienza con `:::xmind` y termina con `:::`. Su contenido debe ser un 
 Reglas de asociación:
 
 - Solo puede existir un bloque `:::xmind` pendiente antes de un encabezado.
-- Puede haber líneas vacías y comentarios Markdown entre la directiva y el encabezado.
+- Puede haber líneas vacías entre la directiva y el encabezado. No se admiten comentarios Markdown intermedios en la implementación actual.
 - No puede haber párrafos, listas, citas, imágenes ni otros bloques de contenido entre ambos.
 - Si aparece otra directiva de tema antes del encabezado, se produce un error.
 - Si llega el final del archivo sin el encabezado de destino, se produce un error.

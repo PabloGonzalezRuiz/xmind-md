@@ -51,6 +51,7 @@ No incluir aquí identificadores ni estructuras privadas de una biblioteca de ex
 | development.md | Instalación, ejecución, pruebas y ciclo de contribución. |
 | xmind-engine-evaluation.md | Comparación de motores y decisión de arquitectura para el adaptador XMind. |
 | xmind-adapter.md | Contrato, mapeos, características soportadas y limitaciones de la primera versión del adaptador. |
+| xmind-integration-tests.md | Procedencia del fixture externo, pruebas de integración y límites de la validación. |
 
 ## Ejemplos: examples/
 
@@ -67,6 +68,7 @@ Los ejemplos también actúan como fixtures legibles: al cambiar la gramática, 
 | test_parser.py | Comprueba gramática enriquecida, bloques estructurados, directivas, referencias y errores. |
 | test_styles.py | Comprueba la resolución de estilos desde un conjunto heredado. |
 | test_xmind_adapter.py | Comprueba JSON, árbol de temas, IDs, relaciones, estilos básicos y estructura ZIP del adaptador XMind. |
+| test_xmind_integration.py | Contrasta la estructura del adaptador con un fixture `.xmind` externo descargado por CI. |
 
 Toda funcionalidad nueva debe tener pruebas. No basta con modificar un ejemplo o comprobar visualmente el JSON.
 

@@ -271,7 +271,10 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             if i >= len(lines):
                 raise MarkdownParseError(f"Bloque de código sin cierre (línea {line_no})")
             code = "\n".join(code_lines)
-            stack[-1].content_blocks.append({"type": "code", "language": language.strip() or None, "text": code})
+            stack[-1].content_blocks.append({
+                "type": "code", "language": language.strip() or None, "text": code,
+                "source": {"file": source_path, "line_start": line_no, "line_end": i + 1},
+            })
             stack[-1].content.append(code)
             i += 1
             continue

@@ -93,3 +93,14 @@ def test_parser_preserves_topic_style_set_reference_in_ir():
     assert root.style.style_set == "BASE"
     assert root.children[0].style.style_set is None
     assert validate_mind_map(result) is result
+
+
+def test_parser_preserves_document_level_style_set():
+    source = (
+        "---\ntitle: Mapa\nstyle_set: GLOBAL\n"
+        "style_sets:\n  GLOBAL:\n    topic:\n      text:\n        bold: true\n---\n"
+        "# Raíz\n"
+    )
+    result = parse_markdown_ir(source)
+    assert result.metadata["style_set"] == "GLOBAL"
+    assert validate_mind_map(result) is result

@@ -31,14 +31,14 @@ Esta primera versión implementa:
 
 - Jerarquía de temas a partir de encabezados Markdown (`#` a `######`).
 - Metadatos `@conjunto(...)` y `@estilo(...)` asociados al siguiente encabezado.
-- Modelo intermedio JSON.
-- Resolución inicial de estilos definidos en YAML.
-- CLI para validar y generar el JSON intermedio.
-- Primera versión programática del adaptador XMind moderno (ZIP + JSON), con temas jerárquicos, IDs estables, relaciones, notas, etiquetas, marcadores y estilos básicos.
+- Modelo intermedio IR 1.0.0 y exportación JSON para inspección.
+- Resolución de estilos definidos en YAML.
+- CLI para generar JSON o libros XMind modernos (`.xmind`) a partir del IR canónico.
+- Adaptador XMind experimental (ZIP + JSON), con temas jerárquicos, IDs estables, relaciones, notas, etiquetas, marcadores y estilos básicos.
 - Pruebas automatizadas del adaptador y de integración con un fixture `.xmind` externo descargado por GitHub Actions.
 - Generación en CI de un archivo `.xmind` descargable para la comprobación manual en XMind Desktop.
 
-**El adaptador XMind es todavía experimental.** No está integrado en la CLI y su compatibilidad con XMind Desktop no se ha verificado abriendo un archivo generado. Las limitaciones están detalladas en [xmind-adapter.md](docs/xmind-adapter.md).
+**El adaptador XMind es todavía experimental.** La generación automatizada y las pruebas estructurales no acreditan por sí solas la apertura, inspección y guardado en XMind Desktop. Las limitaciones están detalladas en [xmind-adapter.md](docs/xmind-adapter.md).
 
 ## Instalación local
 
@@ -56,15 +56,25 @@ python -m pip install -e ".[dev]"
 
 ## Uso
 
+El formato se deduce de la extensión del archivo de salida:
+
 ~~~bash
+# JSON del modelo intermedio
 xmind-md examples/constitucion.md --styles config/styles.yaml --output output/constitucion.json
+
+# Libro XMind
+xmind-md examples/constitucion.md --styles config/styles.yaml --output output/constitucion.xmind
 ~~~
 
-También puede ejecutarse como módulo:
+También puede indicarse explícitamente con `--format json` o `--format xmind`. Si se utiliza una extensión conocida (`.json` o `.xmind`), debe coincidir con el formato solicitado. Para otra extensión es obligatorio indicar `--format`.
+
+La misma interfaz está disponible como módulo:
 
 ~~~bash
-python -m xmind_md examples/constitucion.md --styles config/styles.yaml --output output/constitucion.json
+python -m xmind_md examples/constitucion.md --styles config/styles.yaml --output output/constitucion.xmind
 ~~~
+
+La exportación XMind resuelve los estilos antes de llamar al adaptador. Las construcciones IR que el perfil XMind actual no puede representar se rechazan con un error; consulta la [matriz de capacidades](docs/xmind-adapter.md).
 
 ## Ejemplo de Markdown
 

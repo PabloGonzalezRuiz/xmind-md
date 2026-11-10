@@ -91,8 +91,9 @@ No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar
 - La CLI permite generar el JSON intermedio.
 - Hay pruebas unitarias y de integración en `tests/`.
 - GitHub Actions contiene un flujo de CI y una generación de artefacto XMind de prueba.
-- En esta revisión no se ha confirmado una ejecución CI satisfactoria reciente.
-- Ruff y la ejecución local en Windows deben verificarse expresamente; la existencia de configuración o documentación no demuestra que hayan pasado.
+- La ejecución CI #123 finalizó correctamente: 65 pruebas superadas y artefacto XMind de comprobación generado.
+- Ruff no forma parte todavía de los pasos del workflow y debe verificarse expresamente.
+- La ejecución local en Windows sigue pendiente; la existencia de configuración o documentación no demuestra que haya pasado.
 
 ## 4. Decisiones técnicas vigentes
 

@@ -94,6 +94,10 @@ def test_build_content_maps_relationship_endpoints_to_xmind_ids():
     assert relationship["class"] == "relationship"
     assert relationship["end1Id"] == root["id"]
     assert relationship["end2Id"] == child["id"]
+    assert relationship["controlPoints"] == {
+        "0": {"x": 0, "y": 0},
+        "1": {"x": 0, "y": 0},
+    }
     assert relationship["title"] == "Conecta"
 
 

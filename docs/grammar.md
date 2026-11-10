@@ -2,7 +2,7 @@
 
 **Versión de gramática:** 1.0-draft  
 **Contrato IR objetivo:** 1.0.0  
-**Estado:** propuesta formal para revisión; parser pendiente de implementación.
+**Estado:** especificación 1.0-draft; implementación parcial en `parser.py`. Consultar las limitaciones de implementación al final.
 
 ## 1. Objetivo y principios
 
@@ -393,3 +393,19 @@ El archivo `examples/constitucion.md` debe actuar como fixture de referencia. De
 La especificación fija la sintaxis y la semántica previstas. No implica que el parser actual implemente ya todas estas construcciones.
 
 La implementación se hará por fases y cada bloque gramatical deberá disponer de pruebas positivas, negativas y de serialización al IR. Las funciones no implementadas deben indicarse en la documentación y en los mensajes de la CLI.
+
+
+## 15. Estado real del parser (paso 5)
+
+La implementación actual reconoce:
+
+- Front matter YAML con metadatos de mapa, estilos, conjuntos y layout.
+- Encabezados ATX con una única raíz H1.
+- IDs explícitos y generación determinista de IDs cuando faltan.
+- Directivas de tema `:::xmind` y compatibilidad transitoria con `@conjunto(...)` y `@estilo(...)`.
+- Notas mediante `:::xmind-note`.
+- Directivas globales de relaciones, límites y resúmenes con validación de referencias.
+- Párrafos, listas, tablas, citas, bloques de código, separadores e imágenes como bloques tipados.
+- Fragmentos inline básicos: negrita, cursiva, código y enlaces.
+
+La implementación todavía no cubre toda la gramática. En particular, las listas anidadas, fórmulas, enlaces internos especiales, referencias de assets, validación exhaustiva de tipos de propiedades, actualización completa de rangos de origen y preservación CommonMark avanzada necesitan trabajo adicional. La gramática debe considerarse una especificación objetivo, no una afirmación de compatibilidad completa.

@@ -408,4 +408,20 @@ La implementación actual reconoce:
 - Párrafos, listas, tablas, citas, bloques de código, separadores e imágenes como bloques tipados.
 - Fragmentos inline básicos: negrita, cursiva, código y enlaces.
 
-La implementación todavía no cubre toda la gramática. En particular, las listas anidadas, fórmulas, enlaces internos especiales, referencias de assets, validación exhaustiva de tipos de propiedades, actualización completa de rangos de origen y preservación CommonMark avanzada necesitan trabajo adicional. La gramática debe considerarse una especificación objetivo, no una afirmación de compatibilidad completa.
+La implementación todavía no cubre toda la gramática. En particular, las fórmulas, enlaces internos especiales, referencias de assets, validación exhaustiva de todos los tipos de propiedades, actualización completa de rangos de origen y preservación CommonMark avanzada necesitan trabajo adicional. La gramática debe considerarse una especificación objetivo, no una afirmación de compatibilidad completa.
+
+
+### 15.1 Ampliaciones verificables de la segunda fase del paso 5
+
+La implementación del parser se ha ampliado con:
+
+- Listas ordenadas y no ordenadas con anidamiento recursivo; los elementos y sus sublistas se conservan como estructura, no como texto plano.
+- Rechazo de claves YAML duplicadas en front matter y directivas.
+- Validación del formato de IDs explícitos de mapas, temas y entidades globales.
+- Validación de tipos para estilos, conjuntos, enlaces, marcadores y referencias de relaciones, límites y resúmenes.
+- Rechazo de referencias globales repetidas o inexistentes.
+- Validación de los objetos `styles`, `style_sets` y `extensions` del front matter.
+
+El resolutor de estilos aplica fusión recursiva de propiedades, herencia del conjunto de estilos por rama, estilo nombrado y overrides locales. Las definiciones del Markdown prevalecen sobre las definiciones externas con el mismo nombre. Los valores `null` se conservan como instrucciones explícitas para el adaptador.
+
+Estas ampliaciones no convierten todavía el parser en una implementación CommonMark completa ni implican que todos los campos del contrato IR estén cubiertos.

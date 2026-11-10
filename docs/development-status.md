@@ -4,7 +4,7 @@
 
 - **Última actualización:** 2026-11-10
 - **Rama de referencia:** `main`
-- **Último commit registrado antes de esta auditoría:** `f99273d3f93a95648457aa183bb4ec55bb99fda8` (CI #205, workflow completo correcto).
+- **Último commit documental de esta auditoría:** `ab968fc1078512713f149cade4d415e03efb154c` (prompt maestro sincronizado con la auditoría y el artefacto de la tarea 10).
 - **Contrato objetivo:** IR 1.0.0
 - **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; perfil XMind experimental. Pendientes las pruebas manuales en XMind Desktop, Windows, Ruff, sincronización documental global y auditoría final.
 
@@ -288,7 +288,8 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 ### Prompt maestro actualizado
 
 - Archivo: `docs/ai-reconstruction-prompt.md`.
-- Commit: `30f9a690ebe631d3d5ddbbd353fd488df29a6384`.
+- Commit inicial de reconstrucción: `30f9a690ebe631d3d5ddbbd353fd488df29a6384`.
+- Commit de sincronización tras auditar el artefacto y la tarea 10: `ab968fc1078512713f149cade4d415e03efb154c`.
 - Contenido: propósito, protocolo de trabajo, arquitectura, contrato IR, parser/gramática, estilos, adaptadores, CLI, estructura de repositorio, instalación/pruebas, estado al 2026-11-10, hoja de ruta, discrepancias conocidas y reglas para retomar desde cero.
 
 ### Primera tarea pendiente iniciada: tarea 10 — XMind Desktop

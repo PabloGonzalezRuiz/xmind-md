@@ -160,9 +160,9 @@ def _validate_supported_features(mind_map: MindMap) -> None:
             raise XMindAdapterError(
                 f"El tema '{topic.title}' contiene recursos aún no soportados."
             )
-        if topic.layout or topic.extensions:
+        if topic.extensions:
             raise XMindAdapterError(
-                f"El tema '{topic.title}' contiene layout o extensiones no soportados."
+                f"El tema '{topic.title}' contiene extensiones no soportadas."
             )
         if topic.annotations.task is not None:
             raise XMindAdapterError(

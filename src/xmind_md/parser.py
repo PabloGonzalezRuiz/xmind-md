@@ -113,7 +113,7 @@ def _inline_runs(text: str) -> list[dict[str, Any]]:
 
 def _parse_list(lines: list[str], start: int) -> tuple[dict[str, Any], int]:
     """Analiza listas con niveles de anidamiento y conserva su estructura."""
-    marker_re = re.compile(r"^( *)([-+*]|\d+[.)])\s+(.+)$")
+    marker_re = re.compile(r"^([ \t]*)([-+*]|\d+[.)])\s+(.+)$")
 
     def parse_level(index: int, indent: int) -> tuple[dict[str, Any], int]:
         first = marker_re.match(lines[index])

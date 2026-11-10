@@ -187,3 +187,10 @@ def test_export_does_not_mutate_the_original_ir():
 
     assert mind_map.to_dict() == original
 
+def test_unsupported_map_metadata_is_not_silently_dropped():
+    mind_map = make_map()
+    mind_map.metadata["description"] = "Descripción no exportable"
+
+    with pytest.raises(XMindAdapterError, match="Metadatos del mapa no soportados"):
+        build_xmind_content(mind_map)
+

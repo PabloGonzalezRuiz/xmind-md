@@ -157,7 +157,8 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             if end is None:
                 raise MarkdownParseError(f"Directiva {name} sin cierre (línea {line_no})")
             payload_text = "\n".join(lines[i + 1:end])
-            payload = _yaml_mapping(payload_text, line_no + 1, name) if payload_text.strip() else {}
+            payload = (_yaml_mapping(payload_text, line_no + 1, name)
+                       if payload_text.strip() and name != "xmind-note" else {})
             if name == "xmind":
                 if pending is not None:
                     raise MarkdownParseError(f"Directivas de tema consecutivas (línea {line_no})")

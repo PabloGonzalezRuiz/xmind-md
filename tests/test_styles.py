@@ -77,7 +77,7 @@ def test_missing_style_set_or_style_is_an_error():
 def test_load_styles_reads_both_sections(tmp_path):
     path = tmp_path / "styles.yml"
     path.write_text(
-        "style_sets:\\n  BASE:\\n    topic: {}\\nstyles:\\n  normal:\\n    topic:\\n      text:\\n        bold: true\\n",
+        "style_sets:\n  BASE:\n    topic: {}\nstyles:\n  normal:\n    topic:\n      text:\n        bold: true\n",
         encoding="utf-8",
     )
 

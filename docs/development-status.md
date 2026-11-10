@@ -4,7 +4,7 @@
 
 - **Última actualización:** 2026-11-10
 - **Rama de referencia:** `main`
-- **Último commit de implementación:** `a94c0c93c0ba542c4c7bde85e60351c31d20a446`
+- **Último commit de implementación:** `6f43aff232b34e034efaa779232e0537ead025b7`
 - **Contrato objetivo:** IR 1.0.0
 - **Estado global:** prototipo en migración hacia el IR 1.0.0; todavía no declarar compatibilidad completa.
 
@@ -113,7 +113,7 @@ No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar
 |---:|---|---|---|
 | 1 | Consolidar el contrato IR 1.0.0 y preparar la migración | **Completada** | Especificación, esquema, ejemplo y plan de migración disponibles |
 | 2 | Implementar el modelo Python conforme al IR | **Completada** | Entidades canónicas, invariantes y pruebas del modelo ejecutadas con éxito |
-| 3 | Adaptar el parser al nuevo modelo | Pendiente | Parser construye el IR canónico y conserva la sintaxis probada |
+| 3 | Adaptar el parser al nuevo modelo | **En curso** | Parser construye el IR canónico y conserva la sintaxis probada |
 | 4 | Adaptar el resolutor de estilos | Pendiente | Cascada conforme a IR y pruebas de precedencia |
 | 5 | Adaptar los exportadores JSON y XMind | Pendiente | Consumen el modelo canónico y notifican pérdidas |
 | 6 | Validar el esquema JSON y los ejemplos | Pendiente | Draft 2020-12 validado por herramienta y ejemplos conformes |
@@ -150,15 +150,32 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 - **Commit del plan de migración:** `9df7ee3e1dbe6c78bb045d325495ed613d093042`.
 - **Limitación pendiente:** la existencia del esquema no equivale a haberlo validado todavía con un validador Draft 2020-12.
 
-## 7. Próxima tarea
+## 7. Tarea en curso y siguiente paso
 
 ### Tarea 3 — Adaptar el parser al IR 1.0.0
 
-**Situación:** pendiente de autorización. La tarea 2 está cerrada con 59 pruebas superadas y generación del artefacto XMind de comprobación.
+**Estado:** en curso; pendiente de CI verde para cerrar.
 
-**Alcance propuesto:** adaptar el parser para construir el modelo canónico `MindMap.sheet.root_topic`, conservando la sintaxis ya cubierta y evitando cambios en el resolutor de estilos o los adaptadores, que corresponden a tareas posteriores.
+**Decisión de migración:** se mantiene temporalmente la API legacy `parse_markdown()` / `parse_file()` porque el resolutor de estilos, la CLI y los adaptadores todavía consumen `src/xmind_md/model.py`. Se añade una entrada canónica independiente para no romper esos consumidores antes de sus tareas de migración.
 
-**Criterios de aceptación propuestos:** las pruebas del parser pasan; los casos existentes producen el modelo IR; se añaden pruebas para la estructura de hoja y tema raíz; no se rompen los consumidores legacy que aún no se hayan migrado.
+**Implementación añadida:**
+- `src/xmind_md/ir_parser.py`: funciones `parse_markdown_ir()` y `parse_file_ir()`.
+- Conversión del árbol legacy a `MindMap.sheet.root_topic`, `SheetLayout`, entidades de hoja y bloques de contenido tipados.
+- Conversión de anotaciones, estilos, enlaces, imágenes y referencias a assets.
+- Validación del IR resultante mediante `validate_mind_map()`.
+- `tests/test_ir_parser.py`: seis pruebas para jerarquía, contenido estructurado, recursos, anotaciones, entidades de hoja y lectura de archivo.
+
+**Commits:** `44097aeb1c2392cf25fa0448929265b00a77b68b` (puente parser IR); `18618f7d029f727d2ed9cfccc1d82d02131e41ed` (pruebas); `6f43aff232b34e034efaa779232e0537ead025b7` (corrección del fixture de estilo).
+
+**CI:** ejecución #120 falló con 64 pruebas superadas y 1 fallida. El test había referenciado un estilo no definido; el validador detectó correctamente esa referencia inválida. Se corrigió el fixture añadiendo la definición de estilo. Ejecución #121, sobre el commit `6f43aff232b34e034efaa779232e0537ead025b7`, está pendiente de resultado en el momento de esta actualización.
+
+**Limitaciones deliberadas:** `parse_markdown()` y `parse_file()` siguen devolviendo el modelo legacy. La migración de los consumidores y el cambio de la API predeterminada se harán coordinadamente en las tareas posteriores. La conversión de notas y recursos conserva el contenido básico; la gramática completa continúa fuera de esta tarea.
+
+**Criterios de cierre:** CI verde; pruebas del nuevo parser IR y suite legacy completas; el IR producido supera la validación semántica; no se rompe la API legacy.
+
+## 8. Próxima tarea
+
+La tarea 4 (resolutor de estilos) no comenzará hasta cerrar la tarea 3 y recibir autorización expresa.
 
 **Alcance ya implementado en tarea 2:**
 
@@ -173,7 +190,7 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 
 **Cierre de tarea 2:** los criterios se han cumplido con la ejecución CI #115: 59 pruebas superadas y generación/publicación del artefacto XMind de comprobación. La integración del parser y de los demás consumidores permanece en sus tareas independientes.
 
-## 8. Protocolo obligatorio de actualización
+## 9. Protocolo obligatorio de actualización
 
 Al terminar cada tarea autorizada:
 
@@ -188,7 +205,7 @@ Al terminar cada tarea autorizada:
 
 Si no se puede ejecutar una prueba, anotarlo como **no ejecutada**; si falla, registrar el fallo. Nunca inferir un resultado.
 
-## 9. Reglas para retomar el trabajo
+## 10. Reglas para retomar el trabajo
 
 Antes de modificar el repositorio:
 

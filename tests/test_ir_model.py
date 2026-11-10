@@ -55,7 +55,7 @@ def test_serialization_matches_ir_document_shape():
     assert result["ir_version"] == "1.0.0"
     assert "root_topic" in result["sheet"]
     assert "topics" not in result
-    topic = result["sheet"]["root_topic"]
+    topic = result["sheet"]["root_topic"]["children"][0]
     assert topic["content"][0] == {
         "type": "paragraph", "text": "Contenido"
     }

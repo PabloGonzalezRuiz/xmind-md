@@ -298,3 +298,33 @@ def test_internal_link_with_unmapped_kind_is_rejected():
     ]
     with pytest.raises(XMindAdapterError, match="tipo o destino no soportado"):
         build_xmind_content(mind_map)
+
+
+
+@pytest.mark.parametrize(
+    "layout",
+    [
+        {"position": {"x": float("inf"), "y": 0}},
+        {"position": {"x": 0, "y": float("nan")}},
+        {"width": float("inf")},
+    ],
+)
+def test_non_finite_topic_layout_values_are_rejected(layout):
+    mind_map = make_map()
+    mind_map.sheet.root_topic.children[0].layout = layout
+    with pytest.raises(XMindAdapterError):
+        build_xmind_content(mind_map)
+
+
+def test_link_title_is_rejected_when_it_cannot_be_preserved_in_href():
+    mind_map = make_map()
+    mind_map.sheet.root_topic.links = [
+        {
+            "id": "link_1",
+            "kind": "web",
+            "target": "https://example.com",
+            "title": "Texto alternativo",
+        }
+    ]
+    with pytest.raises(XMindAdapterError, match="título adicional"):
+        build_xmind_content(mind_map)

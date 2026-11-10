@@ -1,28 +1,37 @@
+# Metadatos de construcción, dependencias y herramientas del proyecto.
 [build-system]
+# Usar setuptools para construir el paquete instalable.
 requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
+# Mantener la versión sincronizada con xmind_md.__version__.
 name = "xmind-md"
 version = "0.1.0"
 description = "Convierte Markdown enriquecido en mapas mentales mediante un modelo intermedio."
 readme = "README.md"
 requires-python = ">=3.10"
+# PyYAML es la única dependencia de ejecución de la primera versión.
 dependencies = ["PyYAML>=6.0"]
 
 [project.optional-dependencies]
+# Herramientas usadas durante el desarrollo y en la integración continua.
 dev = ["pytest>=8.0", "ruff>=0.5"]
 
 [project.scripts]
+# Instala el comando xmind-md que apunta a la función principal de la CLI.
 xmind-md = "xmind_md.cli:main"
 
 [tool.setuptools.packages.find]
+# Adoptar el diseño src para separar código importable y archivos del proyecto.
 where = ["src"]
 
 [tool.pytest.ini_options]
+# Configuración mínima para localizar pruebas y el paquete fuente.
 testpaths = ["tests"]
 pythonpath = ["src"]
 
 [tool.ruff]
+# Reglas básicas de formato/lint compartidas por los desarrolladores.
 line-length = 100
 target-version = "py310"

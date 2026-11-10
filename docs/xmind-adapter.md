@@ -1,98 +1,109 @@
 # Adaptador XMind: alcance de la primera versión
 
-**Módulo:** `src/xmind_md/adapters/xmind_adapter.py`  
+**Módulo:** \`src/xmind_md/adapters/xmind_adapter.py\`  
 **Formato objetivo:** XMind moderno, contenedor ZIP con JSON  
-**Estado:** implementación inicial; compatibilidad con XMind Desktop pendiente de prueba
+**Estado:** migrado a IR 1.0.0; compatibilidad con XMind Desktop pendiente de prueba manual
 
-## 1. Responsabilidad
+## 1. Responsabilidad y contrato
 
-El adaptador recibe un objeto `MindMap` del IR y genera un paquete `.xmind`. No analiza Markdown, no resuelve referencias simbólicas y no modifica el IR.
+El adaptador recibe exclusivamente un \`xmind_md.ir.MindMap\` IR 1.0.0 y genera un paquete \`.xmind\`. No analiza Markdown, no resuelve estilos y no modifica el IR.
 
-La función pública `build_xmind_content(mind_map)` construye el contenido JSON en memoria. La función `write_xmind(mind_map, destination)` genera el contenedor ZIP.
+- \`build_xmind_content(mind_map)\`: construye el contenido JSON en memoria.
+- \`write_xmind(mind_map, destination)\`: genera el contenedor ZIP.
 
-Antes de serializar, el adaptador valida el subconjunto de características admitido. Si encuentra una característica no implementada, lanza `XMindAdapterError`; no debe descartarla silenciosamente.
+El adaptador no importa ni consume \`xmind_md.model\`, que es el modelo legacy. Los estilos deben llegar resueltos en \`StyleState.resolved\`; el adaptador no ejecuta la cascada.
+
+Antes de serializar, valida el perfil de capacidades. Si encuentra una característica no implementada, lanza \`XMindAdapterError\`; no debe descartarla silenciosamente.
 
 ## 2. Estructura del paquete
 
 La primera versión escribe las siguientes entradas, en este orden:
 
-1. `mimetype`, sin compresión y como primera entrada.
-2. `content.json`, con una hoja y su árbol de temas.
-3. `metadata.json`, con versiones de estructura y hoja activa.
-4. `manifest.json`, con el registro de los recursos incluidos.
-5. `Thumbnails/thumbnail.png`, miniatura PNG transparente de 1 × 1 píxel.
+1. \`mimetype\`, sin compresión y como primera entrada.
+2. \`content.json\`, con una hoja y su árbol de temas.
+3. \`metadata.json\`, con versiones de estructura y hoja activa.
+4. \`manifest.json\`, con el registro de los recursos incluidos.
+5. \`Thumbnails/thumbnail.png\`, miniatura PNG transparente de 1 × 1 píxel.
 
-El contenedor se genera con `zipfile` y los documentos JSON con `json`, sin añadir dependencias de ejecución.
+El contenedor se genera con \`zipfile\` y los documentos JSON con \`json\`, sin añadir dependencias de ejecución.
 
-## 3. Características implementadas en el adaptador
+## 3. Mapeo IR → XMind
 
-| Característica del IR | Traducción inicial |
+| Entidad/capacidad IR | Traducción |
 |---|---|
-| Un mapa con una raíz | Una hoja XMind (`class: sheet`) y `rootTopic` |
-| Temas `attached` | `class: topic` y `children.attached` recursivo |
-| IDs del IR | UUID deterministas derivados mediante UUID5 |
-| Relaciones (provisional) | `end1Id`, `end2Id`, título, ID determinista y dos `controlPoints` neutrales; falta verificar su trazado visual en XMind Desktop |
-| Notas | `notes.plain.content` |
-| Párrafos, listas, tablas, código y citas | Texto plano/Markdown dentro de la nota |
-| Etiquetas | `labels` |
-| Marcadores | `markers[].markerId`, construidos como `grupo-valor` |
-| Un enlace por tema | `href` |
-| Estilos básicos de tema | Objeto `style` con ID y `properties` traducidas |
+| \`MindMap.sheet\` | Hoja XMind única |
+| \`Sheet.id\` | Base para UUID determinista de la hoja |
+| \`Sheet.title\` | \`sheet.title\` |
+| \`Sheet.root_topic\` | \`rootTopic\` |
+| Temas \`attached\` | \`class: topic\` y \`children.attached\` recursivo |
+| IDs de temas | UUID deterministas derivados mediante UUID5 |
+| \`Relationship\` | \`end1Id\`, \`end2Id\`, título, ID determinista y dos \`controlPoints\` neutrales |
+| \`Annotation.notes\` | \`notes.plain.content\` |
+| Párrafos, listas, tablas, código, citas y separadores | Texto plano/Markdown dentro de la nota |
+| \`Label.text\` | Elementos de \`labels\` |
+| \`Marker.group/value\` | \`markers[].markerId\`, compuesto como \`grupo-valor\` |
+| Un enlace \`kind=web\` | \`href\` |
+| \`Topic.style.resolved\` | Objeto \`style\` con propiedades traducidas |
+| \`Relationship.style.resolved\` | Estilo de relación, si está presente |
+| \`MindMap.metadata.author\` | \`metadata.json.modifier\` |
+
+Los IDs propios de notas, etiquetas y marcadores no se conservan como IDs XMind: el perfil del formato utilizado no ofrece un campo equivalente en la estructura generada. Los nombres de estilos y las definiciones de conjuntos se materializan en propiedades resueltas; no se exportan como catálogos reutilizables.
 
 ### Propiedades de estilo admitidas
 
 | Propiedad neutral | Propiedad XMind |
 |---|---|
-| `shape` | `shape-class` |
-| `text.font_family` | `fo:font-family` |
-| `text.font_size` | `fo:font-size` |
-| `text.font_weight` | `fo:font-weight` |
-| `text.bold` | `fo:font-weight` (`bold` / `normal`) |
-| `text.italic` | `fo:font-style` (`italic` / `normal`) |
-| `text.color` | `fo:color` |
-| `text.decoration` | `fo:text-decoration` |
-| `background.color` / `background.fill` | `svg:fill` |
-| `border.color` | `line-color` |
-| `border.width` | `line-width` |
-| `border.pattern` | `line-pattern` |
+| \`shape\` | \`shape-class\` |
+| \`text.font_family\` | \`fo:font-family\` |
+| \`text.font_size\` | \`fo:font-size\` |
+| \`text.font_weight\` | \`fo:font-weight\` |
+| \`text.bold\` | \`fo:font-weight\` (\`bold\` / \`normal\`) |
+| \`text.italic\` | \`fo:font-style\` (\`italic\` / \`normal\`) |
+| \`text.color\` | \`fo:color\` |
+| \`text.decoration\` | \`fo:text-decoration\` |
+| \`background.color\` / \`background.fill\` | \`svg:fill\` |
+| \`border.color\` | \`line-color\` |
+| \`border.width\` | \`line-width\` |
+| \`border.pattern\` | \`line-pattern\` |
 
-Los valores de propiedades se serializan como texto, de acuerdo con el tipo declarado en el esquema JSON oficial.
-
-Los estilos con nombre o conjuntos deben haberse resuelto previamente mediante `resolve_styles`. Las propiedades no incluidas en la tabla y los reinicios `null` se rechazan.
+Los valores de propiedades se serializan como texto. Los valores \`null\`, las propiedades desconocidas y los estilos sin resolver se rechazan.
 
 ## 4. Limitaciones explícitas
 
-No se consideran implementados todavía:
+No se exportan todavía:
 
-- Integración del adaptador en la CLI.
-- Empaquetado de imágenes y otros recursos en `resources/`.
-- Límites (`boundaries`) y resúmenes (`summaries`).
-- Temas flotantes/detached y callouts.
-- Extensiones específicas de XMind y datos de tarea.
-- Varias direcciones/enlaces por tema.
-- Relaciones: se generan los dos `controlPoints` exigidos por el modelo oficial con coordenadas neutrales. La estructura queda cubierta por pruebas, pero el trazado visual de las líneas debe verificarse en XMind Desktop.
-- Estilos de relaciones y estilos avanzados de límites/resúmenes.
-- Posicionamiento, estructura de mapa y propiedades avanzadas de layout.
-- Formato de notas enriquecidas HTML; el contenido se aplana a texto.
-- Compatibilidad completa con CommonMark o con todas las propiedades visuales de XMind.
+- Assets, imágenes, adjuntos, audio ni referencias de recursos.
+- Bloques de contenido \`image\` y \`raw\`, ni imágenes en línea.
+- \`boundaries\` y \`summaries\`.
+- Temas \`detached\`, callouts y otras clases de tema.
+- Anotaciones de tarea.
+- Estilos visuales de notas.
+- Extensiones de temas o relaciones.
+- Layouts distintos del perfil predeterminado \`mind_map/balanced\`.
+- Metadatos específicos de hoja.
+- Metadatos de mapa distintos de \`author\`, \`style_set\`, \`style_defaults\` y \`source_file\`.
+- Más de un enlace por tema o enlaces cuyo tipo no sea \`web\`.
+- Propiedades visuales fuera de la tabla anterior.
+- Notas enriquecidas HTML; el contenido se aplana a texto.
 
-Si el IR contiene una característica estructural aún no soportada, la exportación debe fallar con un mensaje explícito.
+Los metadatos no admitidos y las entidades no exportables producen un error explícito. La procedencia del tema (\`source\`) y los metadatos de origen/selección de estilo se consideran información de autoría y no se incorporan al documento XMind.
 
-## 5. Identificadores
+Las relaciones se serializan con dos puntos de control neutrales. La estructura queda cubierta por pruebas, pero su trazado visual requiere comprobación manual en XMind Desktop.
 
-Los IDs de temas, hojas, relaciones y estilos de salida se generan como UUID5 deterministas a partir del ID del mapa y del ID de origen. Así se conserva la estabilidad entre ejecuciones para el mismo IR, sin exponer los IDs simbólicos del IR como identificadores internos de XMind.
+## 5. Identificadores y referencias
 
-Las relaciones se traducen usando la tabla de correspondencia de IDs de temas. Una referencia inexistente provoca un error.
+Los IDs de temas, hojas, relaciones y estilos de salida se generan como UUID5 deterministas a partir del ID del mapa y del ID de origen. Las relaciones se traducen mediante la tabla de correspondencia de IDs de temas. Una referencia inexistente provoca un error.
 
-## 6. Verificación y criterio de compatibilidad
+## 6. Pruebas y criterio de compatibilidad
 
-Las pruebas unitarias deben comprobar:
+Las pruebas unitarias y de integración comprueban:
 
 - Estructura JSON de hoja, raíz, hijos y relaciones.
 - Estabilidad de IDs.
-- Conversión de notas, etiquetas, marcadores, enlaces y estilos básicos.
+- Conversión de notas, etiquetas, marcadores, enlaces y estilos resueltos.
 - Orden y contenido del ZIP, MIME, manifiesto y miniatura.
 - Rechazo de características no soportadas.
+- Que la exportación no modifica el documento IR original.
 
 Estas pruebas demuestran consistencia interna del generador, no compatibilidad completa con la aplicación. La compatibilidad con XMind Desktop solo podrá declararse después de abrir y volver a guardar un archivo generado con una versión concreta de XMind, y comparar su estructura.
 

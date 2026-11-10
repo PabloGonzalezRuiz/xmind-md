@@ -25,7 +25,7 @@ Markdown enriquecido
                      JSON / XMind / otros
 ~~~
 
-El flujo implementado actualmente termina en el adaptador JSON. La exportación .xmind es un objetivo futuro, no una capacidad ya disponible.
+El proyecto dispone de dos salidas: JSON de inspección y una primera versión del adaptador .xmind. Este último genera ZIP + JSON para un subconjunto documentado del IR; su compatibilidad con XMind Desktop todavía no está verificada.
 
 ## 3. Capas y responsabilidades
 
@@ -74,7 +74,7 @@ Carga YAML y resuelve nombres simbólicos. El conjunto de estilos puede heredars
 
 Directorio: src/xmind_md/adapters/.
 
-Un adaptador convierte el modelo intermedio en una representación externa. El adaptador JSON actual es útil para depuración, inspección y pruebas. La decisión del proyecto es implementar el futuro adaptador XMind en Python, generando el formato moderno ZIP + JSON. La evaluación de alternativas y sus límites está documentada en xmind-engine-evaluation.md. El adaptador traducirá las propiedades neutrales a la estructura soportada por la versión objetivo de XMind.
+Un adaptador convierte el modelo intermedio en una representación externa. El adaptador JSON es útil para depuración, inspección y pruebas. El adaptador XMind inicial (`adapters/xmind_adapter.py`) genera el formato moderno ZIP + JSON en Python. Traduce temas, relaciones, notas, etiquetas, marcadores, un enlace por tema y un subconjunto de estilos. Rechaza explícitamente recursos, boundaries, summaries, extensiones, temas detached y propiedades de estilo no reconocidas. El contrato y las limitaciones están descritos en xmind-adapter.md; la decisión de motor, en xmind-engine-evaluation.md.
 
 No se debe introducir lógica de parsing Markdown en un adaptador.
 
@@ -109,7 +109,7 @@ Orquesta las fases: lectura, parsing, resolución opcional de estilos y escritur
 - PyYAML como dependencia de ejecución.
 - pytest y Ruff como dependencias de desarrollo.
 - JSON como formato de inspección del modelo.
-- Formato de salida objetivo: XMind 2020+ basado en content.json.
+- Formato de salida: XMind moderno basado en content.json; adaptador inicial implementado, compatibilidad con la aplicación pendiente de verificación.
 - Motor seleccionado: serialización ZIP + JSON nativa en Python; los SDK externos son referencias, no dependencias obligatorias.
 - GitHub Actions para integración continua.
 
@@ -121,10 +121,11 @@ Orden recomendado:
 2. Ampliar el modelo intermedio con notas, etiquetas, marcadores, enlaces, imágenes, relaciones, boundaries y summaries.
 3. Definir un esquema neutral de estilos y validarlo.
 4. Incorporar pruebas de fixtures para cada característica.
-5. Implementar el adaptador XMind Python para el formato moderno ZIP + JSON, según xmind-engine-evaluation.md.
-6. Abrir los archivos generados con XMind real y comprobar su estructura y presentación.
-7. Ampliar progresivamente la cobertura de estilos y entidades mediante fixtures y pruebas de integración.
-8. Añadir exportadores alternativos solo cuando exista una necesidad concreta.
+5. Ampliar el adaptador XMind Python para cubrir recursos, boundaries, summaries, estilos y extensiones de forma incremental.
+6. Abrir los archivos generados con XMind Desktop y comprobar su estructura y presentación; mantener esta verificación separada de las pruebas ZIP/JSON.
+7. Añadir fixtures reales de archivos guardados desde XMind y pruebas de integración.
+8. Integrar el adaptador en la CLI cuando el contrato de exportación esté estabilizado.
+9. Añadir exportadores alternativos solo cuando exista una necesidad concreta.
 
 ## 7. Criterio para aceptar cambios
 

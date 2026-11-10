@@ -83,10 +83,10 @@ def test_parse_file_ir_uses_source_file_metadata(tmp_path):
 
 def test_parser_preserves_topic_style_set_reference_in_ir():
     source = (
-        "---\\nstyle_sets:\\n  BASE:\\n    topic:\\n      text:\\n        bold: true\\n---\\n"
-        ":::xmind\\nstyle_set: BASE\\n:::\\n"
-        "# Raíz\\n"
-        "## Hijo\\n"
+        "---\nstyle_sets:\n  BASE:\n    topic:\n      text:\n        bold: true\n---\n"
+        ":::xmind\nstyle_set: BASE\n:::\n"
+        "# Raíz\n"
+        "## Hijo\n"
     )
     result = parse_markdown_ir(source)
     root = result.sheet.root_topic

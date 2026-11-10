@@ -79,3 +79,17 @@ def test_parse_file_ir_uses_source_file_metadata(tmp_path):
     source.write_text("# Raíz\n", encoding="utf-8")
     result = parse_file_ir(source)
     assert result.metadata["source_file"] == source.as_posix()
+
+
+def test_parser_preserves_topic_style_set_reference_in_ir():
+    source = (
+        "---\\nstyle_sets:\\n  BASE:\\n    topic:\\n      text:\\n        bold: true\\n---\\n"
+        "# Raíz\\n"
+        ":::xmind\\nstyle_set: BASE\\n:::\\n"
+        "## Hijo\\n"
+    )
+    result = parse_markdown_ir(source)
+    root = result.sheet.root_topic
+    assert root.style.style_set == "BASE"
+    assert root.children[0].style.style_set is None
+    assert validate_mind_map(result) is result

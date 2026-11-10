@@ -2,8 +2,6 @@
 from __future__ import annotations
 
 import re
-from typing import Iterable
-
 from .entities import MindMap, Topic
 
 
@@ -72,6 +70,13 @@ def _walk_topics(
     for index, note in enumerate(topic.annotations.notes):
         note_path = f"{path}.annotations.notes[{index}]"
         _register(note.id, f"{note_path}.id", seen)
+        for block_index, block in enumerate(note.content):
+            if block.type not in _CONTENT_TYPES:
+                raise IRValidationError(
+                    f"{note_path}.content[{block_index}].type: tipo no reconocido {block.type!r}"
+                )
+            if block.id is not None:
+                _register(block.id, f"{note_path}.content[{block_index}].id", seen)
     for index, label in enumerate(topic.annotations.labels):
         _register(label.id, f"{path}.annotations.labels[{index}].id", seen)
     for index, marker in enumerate(topic.annotations.markers):
@@ -128,6 +133,21 @@ def validate_mind_map(mind_map: MindMap) -> MindMap:
         mind_map.sheet.root_topic, "sheet.root_topic", seen, topic_ids,
         asset_ids, set(), set(),
     )
+
+    def validate_topic_references(topic: Topic, path: str) -> None:
+        if topic.style.ref and topic.style.ref not in mind_map.styles:
+            raise IRValidationError(
+                f"{path}.style.ref: estilo inexistente {topic.style.ref!r}"
+            )
+        for index, link in enumerate(topic.links):
+            if link.get("kind") == "topic" and link.get("target") not in topic_ids:
+                raise IRValidationError(
+                    f"{path}.links[{index}].target: tema enlazado inexistente"
+                )
+        for index, child in enumerate(topic.children):
+            validate_topic_references(child, f"{path}.children[{index}]")
+
+    validate_topic_references(mind_map.sheet.root_topic, "sheet.root_topic")
 
     for collection_name, collection in (
         ("relationships", mind_map.sheet.relationships),

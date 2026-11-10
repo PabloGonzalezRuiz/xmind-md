@@ -162,3 +162,12 @@ def test_relationship_with_unknown_topic_id_is_rejected():
 
     with pytest.raises(XMindAdapterError, match="no existe"):
         build_xmind_content(mind_map)
+
+
+def test_named_style_must_be_resolved_before_export():
+    mind_map = make_map()
+    mind_map.topics[0].style_ref = "named-style"
+    mind_map.topics[0].style_overrides = {"text": {"bold": True}}
+
+    with pytest.raises(XMindAdapterError, match="no están resueltos"):
+        build_xmind_content(mind_map)

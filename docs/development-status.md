@@ -4,7 +4,7 @@
 
 - **Última actualización:** 2026-11-10
 - **Rama de referencia:** `main`
-- **Último commit de implementación:** `d6e3152670696060e09eabe8ac1b2262c2476718`
+- **Último commit de implementación:** `c81121bc0536841cc638e3169c0c505d2a6b5645`
 - **Contrato objetivo:** IR 1.0.0
 - **Estado global:** prototipo en migración hacia el IR 1.0.0; todavía no declarar compatibilidad completa.
 
@@ -68,9 +68,9 @@ El parser, los resolutores, los adaptadores y las pruebas consumen partes de est
 
 ### 3.3 Estilos
 
-**Estado: implementación parcial existente.**
+**Estado: resolutor IR 1.0.0 implementado y probado; ruta legacy conservada.**
 
-Existe carga de estilos YAML y resolución inicial de referencias, conjuntos y modificaciones locales. Debe alinearse con la estructura `style.ref`, `style.overrides` y `style.resolved` del IR 1.0.0 y con la precedencia definida en la especificación.
+`resolve_styles()` despacha el modelo canónico a `resolve_ir_styles()` y mantiene el comportamiento anterior para el modelo legacy. La cascada IR aplica valores predeterminados del sistema, `metadata.style_defaults`, conjunto aplicable, estilo nombrado y overrides locales, mediante fusión recursiva por propiedad. Los conjuntos se seleccionan globalmente con `metadata.style_set` o por tema con `Topic.style.style_set`; se heredan por rama y pueden sustituirse en descendientes. Se resuelven temas, notas, relaciones, límites y resúmenes. Las definiciones originales no se mutan.
 
 ### 3.4 Adaptadores y exportación
 
@@ -115,7 +115,7 @@ No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar
 | 1 | Consolidar el contrato IR 1.0.0 y preparar la migración | **Completada** | Especificación, esquema, ejemplo y plan de migración disponibles |
 | 2 | Implementar el modelo Python conforme al IR | **Completada** | Entidades canónicas, invariantes y pruebas del modelo ejecutadas con éxito |
 | 3 | Adaptar el parser al nuevo modelo | **Completada** | Parser construye el IR canónico y conserva la sintaxis probada |
-| 4 | Adaptar el resolutor de estilos | Pendiente | Cascada conforme a IR y pruebas de precedencia |
+| 4 | Adaptar el resolutor de estilos | **Completada** | Cascada conforme a IR y pruebas de precedencia |
 | 5 | Adaptar los exportadores JSON y XMind | Pendiente | Consumen el modelo canónico y notifican pérdidas |
 | 6 | Validar el esquema JSON y los ejemplos | Pendiente | Draft 2020-12 validado por herramienta y ejemplos conformes |
 | 7 | Completar y probar la gramática Markdown | Pendiente | Gramática y pruebas cubren las construcciones declaradas |
@@ -130,6 +130,21 @@ No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar
 Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tareas descritas en documentos futuros.
 
 ## 6. Registro de tareas terminadas y actividad
+
+### Tarea 4 — Resolutor de estilos IR 1.0.0
+
+- **Estado:** completada y verificada mediante GitHub Actions.
+- **Archivos de implementación:** `src/xmind_md/styles.py`, `src/xmind_md/ir/entities.py`, `src/xmind_md/ir/validation.py`, `src/xmind_md/ir_parser.py`.
+- **Contrato:** se añadió `StyleState.style_set` opcional y su serialización/esquema, para no perder la selección de conjuntos por tema que ya permite Markdown. Se documentó la herencia y sustitución por rama en `docs/ir-specification.md`.
+- **Resolución:** `resolve_ir_styles()` implementa la cascada por propiedad: valores predeterminados del sistema, `metadata.style_defaults`, conjunto aplicable, estilo nombrado y overrides locales. La fusión es recursiva; los valores explícitos `null` se conservan. El conjunto se hereda del padre, puede sustituirse por tema y admite selección global mediante `metadata.style_set`.
+- **Cobertura:** temas, notas, relaciones, límites y resúmenes. Las definiciones externas se combinan con las del documento, prevaleciendo estas últimas. El resultado se escribe en `style.resolved`; las definiciones originales no se modifican.
+- **Compatibilidad:** `resolve_styles()` despacha automáticamente los documentos IR a `resolve_ir_styles()`; mantiene la implementación legacy para los consumidores aún no migrados. El puente `ir_parser.py` conserva ahora tanto el conjunto global como el conjunto específico de cada tema.
+- **Validación:** se comprueba la existencia de conjuntos y estilos referenciados. Los formatos incorrectos de definiciones y overrides generan `StyleError`.
+- **Pruebas:** CI #144 (`42826026792`), commit `c81121bc0536841cc638e3169c0c505d2a6b5645`: **77 pruebas superadas**. Pasaron `Tests`, `Build XMind Desktop smoke test` y `Upload XMind smoke test`. Entorno: GitHub Actions, Python 3.12.16.
+- **Commits principales:** `6070bbaced6ff0621653a9067e9035f22768bdd` (entidad StyleState); `be916113bf1faa269b83c7215f0a08289c4001a3` (esquema); `4789a55675b9ad165a743b31cd299df477d6927a` (especificación); `37e82304081438ef3bfc5dbe76e3f557610f6c3c` y `380dfdcfcdc9e41f1cd6732c736c5538e6a1a505` (preservación de conjuntos en parser); `ace1bcd63492d068dfa8d594a77bbe8ad6e6117d` (validación); `d1e93c4a139dd4e4f1a32019f0cf8f04fe066d26` y `6cf5cca4147ba7ecab5f65eceaf0777b58c0e061` (resolutor y despacho).
+- **Pruebas nuevas:** `tests/test_ir_styles.py` cubre cascada, fusión recursiva, herencia, sustitución de conjunto, precedencia de definiciones, errores, no mutación y estilos de entidades de hoja; se ampliaron `tests/test_ir_model.py` y `tests/test_ir_parser.py`.
+- **Documentación:** actualizadas `docs/ir-specification.md` y `docs/architecture.md`. La validación formal del esquema JSON completo y Ruff siguen en las tareas correspondientes; no se afirman como ejecutadas en esta fase.
+
 
 ### Tarea 3 — Puente del parser al IR 1.0.0
 
@@ -165,22 +180,23 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 
 ## 7. Próxima tarea
 
-### Tarea 4 — Adaptar el resolutor de estilos al IR 1.0.0
+### Tarea 5 — Adaptar los exportadores JSON y XMind al IR 1.0.0
 
 **Estado:** pendiente de autorización expresa.
 
 **Alcance propuesto:**
-- Hacer que el resolutor trabaje con `MindMap.styles`, `MindMap.style_sets` y `Topic.style.ref / overrides / resolved`.
-- Preservar la precedencia aprobada: valores predeterminados, tema global, conjunto, estilo concreto y overrides locales.
-- Resolver estilos de temas y entidades estilizadas de hoja conforme al contrato, sin introducir dependencias de XMind.
-- Mantener temporalmente una ruta de compatibilidad para el modelo legacy si la CLI aún la necesita.
+- Hacer que el adaptador JSON serialice directamente el modelo canónico.
+- Migrar el adaptador XMind para leer `MindMap.sheet.root_topic` y las entidades de hoja.
+- Consumir `style.resolved` sin volver a interpretar ni resolver estilos.
+- Mantener los límites de capacidad explícitos y notificar cualquier pérdida o propiedad no soportada.
+- Evitar dependencias del modelo legacy una vez migrados ambos adaptadores.
 
 **Criterios de aceptación:**
-- Pruebas de precedencia y fusión recursiva sobre el modelo IR.
-- Referencias inexistentes y definiciones mal formadas producen errores claros.
-- La resolución no muta las definiciones originales ni pierde propiedades.
-- La suite completa sigue pasando.
-- El estado y las limitaciones quedan registrados aquí al cerrar la tarea.
+- Pruebas de exportación JSON y XMind basadas en objetos IR.
+- Pruebas positivas y negativas para estilos, recursos y entidades de hoja.
+- La suite completa sigue pasando y el IR original no se modifica.
+- No se declara compatibilidad completa con XMind Desktop sin validación manual.
+- Actualización de esta documentación al cerrar la tarea.
 
 No iniciar esta tarea hasta recibir autorización expresa.
 

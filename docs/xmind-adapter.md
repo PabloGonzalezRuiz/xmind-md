@@ -31,7 +31,7 @@ El contenedor se genera con `zipfile` y los documentos JSON con `json`, sin aña
 | Un mapa con una raíz | Una hoja XMind (`class: sheet`) y `rootTopic` |
 | Temas `attached` | `class: topic` y `children.attached` recursivo |
 | IDs del IR | UUID deterministas derivados mediante UUID5 |
-| Relaciones (provisional) | `end1Id`, `end2Id`, título e ID determinista; falta completar `controlPoints` |
+| Relaciones (provisional) | `end1Id`, `end2Id`, título, ID determinista y dos `controlPoints` neutrales; falta verificar su trazado visual en XMind Desktop |
 | Notas | `notes.plain.content` |
 | Párrafos, listas, tablas, código y citas | Texto plano/Markdown dentro de la nota |
 | Etiquetas | `labels` |
@@ -70,7 +70,7 @@ No se consideran implementados todavía:
 - Temas flotantes/detached y callouts.
 - Extensiones específicas de XMind y datos de tarea.
 - Varias direcciones/enlaces por tema.
-- Relaciones completas: el mapeo de extremos está implementado, pero aún no se generan los `controlPoints` exigidos por el esquema oficial; por tanto, no se debe considerar validada la representación visual de relaciones.
+- Relaciones: se generan los dos `controlPoints` exigidos por el modelo oficial con coordenadas neutrales. La estructura queda cubierta por pruebas, pero el trazado visual de las líneas debe verificarse en XMind Desktop.
 - Estilos de relaciones y estilos avanzados de límites/resúmenes.
 - Posicionamiento, estructura de mapa y propiedades avanzadas de layout.
 - Formato de notas enriquecidas HTML; el contenido se aplana a texto.

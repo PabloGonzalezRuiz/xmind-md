@@ -128,7 +128,7 @@ No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar
 | 8 | Ampliar y probar las capacidades del adaptador XMind | **Completada** | Matriz de capacidades, conversiones adicionales y suite CI verde |
 | 9 | Integrar la exportación XMind en la CLI | **Completada** | CLI XMind y JSON probadas, errores controlados y documentación actualizada |
 | 10 | Completar las pruebas con XMind Desktop | **Completada** | Apertura, inspección, guardado y reapertura confirmados; versión y resultados registrados |
-| 11 | Verificar ejecución local en Windows | Pendiente | Instalación, CLI y pruebas ejecutadas en entorno Windows |
+| 11 | Verificar ejecución local en Windows | **En curso; pendiente ejecución en el equipo Windows del usuario** | Instalación, CLI y pruebas ejecutadas en entorno Windows |
 | 12 | Completar CI, Ruff y comprobaciones automáticas | Pendiente | Workflow verde con pruebas y lint |
 | 13 | Sincronizar README y documentación técnica | Pendiente | Documentación coherente con el comportamiento real |
 | 14 | Auditoría final y publicación estable | Pendiente | Criterios de aceptación globales cumplidos |
@@ -318,9 +318,17 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 
 ### Tarea 11 — Verificar ejecución local en Windows
 
-**Siguiente tarea pendiente; requiere autorización expresa del usuario antes de comenzar.**
+**Estado: en curso; autorización recibida el 2026-11-10.**
 
-Instalación limpia con Python compatible, instalación editable, ejecución CLI JSON/XMind y suite pytest. Registrar versiones, comandos, resultados y problemas específicos de Windows.
+La inspección del repositorio confirma que `pyproject.toml` admite Python 3.10 o superior y que `docs/development.md` ya contiene instrucciones para PowerShell. El workflow CI actual ejecuta en Ubuntu (`runs-on: ubuntu-latest`), por lo que sus resultados no sustituyen una ejecución en Windows.
+
+**Límite de ejecución:** no tengo acceso directo al equipo Windows del usuario. Para completar esta tarea, el usuario ejecutará los comandos de diagnóstico y prueba en PowerShell y compartirá sus salidas. No se registrará ninguna prueba como superada hasta recibir esa evidencia.
+
+**Secuencia prevista:** comprobar intérpretes Python y Git; crear un entorno virtual limpio; instalar `.[dev]`; ejecutar la CLI para JSON y XMind; inspeccionar que ambos archivos se generan; ejecutar `pytest`; registrar versiones, comandos, resultados y problemas específicos de Windows.
+
+**Evidencia recogida hasta ahora:** solo inspección estática de `pyproject.toml`, `docs/development.md` y `.github/workflows/ci.yml`. No se ha ejecutado aún ningún comando en Windows ni se ha modificado el código para simular esa ejecución.
+
+**Siguiente interacción:** pedir al usuario la salida de `py --version` y `py -0p` en PowerShell.
 
 ### Tarea 12 — Completar CI, Ruff y comprobaciones automáticas
 

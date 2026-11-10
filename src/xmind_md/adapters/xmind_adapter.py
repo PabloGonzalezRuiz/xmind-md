@@ -6,6 +6,7 @@ resuelve estilos y rechaza explícitamente las capacidades que aún no exporta.
 from __future__ import annotations
 
 import json
+import math
 import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
@@ -78,6 +79,7 @@ def _validate_topic_layout(topic: Topic) -> None:
             or any(
                 isinstance(position[key], bool)
                 or not isinstance(position[key], (int, float))
+                or not math.isfinite(position[key])
                 for key in ("x", "y")
             )
         ):
@@ -107,6 +109,7 @@ def _validate_topic_layout(topic: Topic) -> None:
     if width is not None and (
         isinstance(width, bool)
         or not isinstance(width, (int, float))
+        or not math.isfinite(width)
         or width <= 0
     ):
         raise XMindAdapterError(

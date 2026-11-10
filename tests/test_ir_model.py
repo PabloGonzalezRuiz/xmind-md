@@ -164,3 +164,11 @@ def test_style_reference_must_exist():
 
     with pytest.raises(IRValidationError, match="estilo inexistente"):
         validate_mind_map(mind_map)
+
+
+def test_topic_style_set_reference_must_exist():
+    mind_map = make_map()
+    mind_map.sheet.root_topic.style.style_set = "missing"
+
+    with pytest.raises(IRValidationError, match="conjunto inexistente"):
+        validate_mind_map(mind_map)

@@ -416,7 +416,9 @@ La implementación todavía no cubre toda la gramática. En particular, las fór
 La implementación del parser se ha ampliado con:
 
 - Listas ordenadas y no ordenadas con anidamiento recursivo; los elementos y sus sublistas se conservan como estructura, no como texto plano.
-- Rechazo de claves YAML duplicadas en front matter y directivas.
+- Se admite sangría con espacios o tabuladores en los niveles de lista.
+- Las tablas validan la anchura de cada fila y la correspondencia del separador con las columnas del encabezado.
+- Rechazo de claves YAML duplicadas en front matter, directivas y archivos externos de estilos.
 - Validación del formato de IDs explícitos de mapas, temas y entidades globales.
 - Validación de tipos para estilos, conjuntos, enlaces, marcadores y referencias de relaciones, límites y resúmenes.
 - Rechazo de referencias globales repetidas o inexistentes.

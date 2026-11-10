@@ -134,8 +134,12 @@ def validate_mind_map(mind_map: MindMap) -> MindMap:
         asset_ids, set(), set(),
     )
 
+    available_styles = set(mind_map.styles)
+    for style_set in mind_map.style_sets.values():
+        available_styles.update(style_set.get("styles", {}))
+
     def validate_topic_references(topic: Topic, path: str) -> None:
-        if topic.style.ref and topic.style.ref not in mind_map.styles:
+        if topic.style.ref and topic.style.ref not in available_styles:
             raise IRValidationError(
                 f"{path}.style.ref: estilo inexistente {topic.style.ref!r}"
             )

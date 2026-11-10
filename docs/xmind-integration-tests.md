@@ -71,25 +71,14 @@ Estas pruebas verifican la estructura JSON generada. No sustituyen la apertura y
 
 La validación manual del fixture de integración sí se ha completado; su alcance y versión se registran a continuación.
 
-## Archivo para comprobación manual en XMind Desktop
+## Fixture utilizado en la comprobación manual
 
 El workflow también ejecuta scripts/create_xmind_smoke.py y publica el
 resultado como artefacto xmind-desktop-smoke-test. El archivo se construye
 a partir de examples/xmind-smoke-test.md y contiene dos ramas, una nota,
 una etiqueta, un marcador y una relación.
 
-Para realizar la comprobación:
-
-1. Abre la última ejecución correcta de CI.
-2. Descarga el artefacto xmind-desktop-smoke-test.
-3. Extrae xmind-md-smoke-test.xmind.
-4. Ábrelo con XMind Desktop.
-5. Comprueba que aparecen la raíz, las dos ramas, el detalle, la nota, la
-   etiqueta, el marcador y la relación.
-6. Guarda una copia desde XMind Desktop y, si es posible, vuelve a abrirla.
-
-La compatibilidad visual solo podrá darse por verificada cuando se conozca la
-versión de XMind Desktop y se confirme el resultado de esa comprobación.
+El fixture permanente se encuentra en `tests/fixtures/xmind/xmind-md-smoke-test.xmind`; su README registra procedencia y hash. La comprobación manual de este archivo se completó el 2026-11-10 en XMind Desktop 26.05.01107 para Windows, según el resultado detallado más abajo.
 
 
 ## Resultado de la prueba manual — 2026-11-10

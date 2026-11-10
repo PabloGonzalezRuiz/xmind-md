@@ -69,6 +69,7 @@ def test_style_state_always_serializes_all_three_layers():
     style = StyleState(ref="important", overrides={"text": {"bold": True}})
     assert style.to_dict() == {
         "ref": "important",
+        "style_set": None,
         "overrides": {"text": {"bold": True}},
         "resolved": {},
     }

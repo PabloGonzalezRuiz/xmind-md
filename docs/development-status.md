@@ -87,7 +87,7 @@ No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar
 
 ### 3.5 CLI, pruebas y automatización
 
-**Estado: suite y generación de artefacto verificadas en CI; prueba manual del fixture en XMind Desktop superada; ejecución local Windows y lint pendientes.**
+**Estado: suite y generación de artefacto verificadas en CI; prueba manual del fixture en XMind Desktop superada; ejecución local Windows aplazada y lint pendiente.**
 
 - La CLI genera JSON (`.json`) o libros XMind (`.xmind`) a partir de `parse_file_ir()`; admite `--format` explícito y deducción por extensión.
 - La exportación XMind resuelve estilos antes de invocar el adaptador; la salida JSON conserva el comportamiento anterior y solo resuelve estilos si se proporciona `--styles`.
@@ -100,7 +100,7 @@ No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar
 - CI #209, run `42843815047`, commit `1fd131cc16786093dba00e09fd551f299a439761`: job tests completado con success; Install, descarga del fixture de referencia, Tests, generación y publicación del smoke test finalizaron correctamente. Log: **131 passed in 0.37s**, GitHub-hosted Linux, Python 3.12.16. https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42843815047
 - Validador: `jsonschema 4.26.0` con extra `format`; se comprueban los formatos de fecha/fecha-hora.
 - Ruff no forma parte todavía de los pasos del workflow y debe verificarse expresamente.
-- La ejecución local en Windows sigue pendiente; la existencia de configuración o documentación no demuestra que haya pasado.
+- La ejecución local en Windows queda aplazada por decisión del usuario; se comprobará primero la compatibilidad multiplataforma mediante runners de GitHub Actions en la tarea 12.
 
 ## 4. Decisiones técnicas vigentes
 

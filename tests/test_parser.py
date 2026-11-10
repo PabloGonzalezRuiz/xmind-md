@@ -129,3 +129,19 @@ def test_invalid_explicit_topic_ids_are_rejected(bad_id):
 def test_front_matter_style_fields_must_be_mappings():
     with pytest.raises(MarkdownParseError, match="styles"):
         parse_markdown("---\nstyles: texto\n---\n# Raíz\n")
+
+
+
+def test_table_rows_must_match_header_width():
+    with pytest.raises(MarkdownParseError, match="Fila de tabla"):
+        parse_markdown("# Raíz\n| A | B |\n|---|---|\n| solo una |\n")
+
+
+def test_table_separator_must_match_header_width():
+    with pytest.raises(MarkdownParseError, match="Separador de tabla"):
+        parse_markdown("# Raíz\n| A | B |\n|---|\n")
+
+
+def test_tab_indented_nested_list_is_preserved():
+    result = parse_markdown("# Raíz\n- Padre\n\t- Hijo\n")
+    assert len(result.topics[0].content_blocks[0]["items"][0]["children"]) == 1

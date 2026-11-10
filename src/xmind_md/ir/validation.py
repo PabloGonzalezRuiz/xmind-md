@@ -134,6 +134,21 @@ def validate_mind_map(mind_map: MindMap) -> MindMap:
         asset_ids, set(), set(),
     )
 
+    def validate_inline_targets(value: Any, path: str) -> None:
+        if isinstance(value, dict):
+            link = value.get("link")
+            if isinstance(link, dict) and link.get("kind") == "topic":
+                target = link.get("target")
+                if target not in topic_ids:
+                    raise IRValidationError(
+                        f"{path}.link.target: tema enlazado inexistente {target!r}"
+                    )
+            for key, item in value.items():
+                validate_inline_targets(item, f"{path}.{key}")
+        elif isinstance(value, list):
+            for index, item in enumerate(value):
+                validate_inline_targets(item, f"{path}[{index}]")
+
     def validate_topic_references(
         topic: Topic, path: str, inherited_set: str | None = None
     ) -> None:
@@ -153,6 +168,14 @@ def validate_mind_map(mind_map: MindMap) -> MindMap:
             if link.get("kind") == "topic" and link.get("target") not in topic_ids:
                 raise IRValidationError(
                     f"{path}.links[{index}].target: tema enlazado inexistente"
+                )
+        for index, block in enumerate(topic.content):
+            validate_inline_targets(block.data, f"{path}.content[{index}]")
+        for note_index, note in enumerate(topic.annotations.notes):
+            for block_index, block in enumerate(note.content):
+                validate_inline_targets(
+                    block.data,
+                    f"{path}.annotations.notes[{note_index}].content[{block_index}]",
                 )
         for index, child in enumerate(topic.children):
             validate_topic_references(child, f"{path}.children[{index}]", selected_set)

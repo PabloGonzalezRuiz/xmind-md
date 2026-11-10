@@ -58,6 +58,61 @@ def _validate_style_state(state: Any, label: str) -> None:
         )
 
 
+
+def _validate_topic_layout(topic: Topic) -> None:
+    """Valida el subconjunto de propiedades de disposición exportable."""
+    layout = topic.layout
+    supported = {"position", "structure_class", "branch", "width"}
+    unknown = set(layout) - supported
+    if unknown:
+        names = ", ".join(sorted(unknown))
+        raise XMindAdapterError(
+            f"Propiedades de layout no soportadas en '{topic.title}': {names}."
+        )
+
+    position = layout.get("position")
+    if position is not None:
+        if (
+            not isinstance(position, dict)
+            or set(position) != {"x", "y"}
+            or any(
+                isinstance(position[key], bool)
+                or not isinstance(position[key], (int, float))
+                for key in ("x", "y")
+            )
+        ):
+            raise XMindAdapterError(
+                f"La posición de '{topic.title}' debe contener coordenadas numéricas x e y."
+            )
+    if topic.kind == "detached" and position is None:
+        raise XMindAdapterError(
+            f"El tema detached '{topic.title}' necesita layout.position con x e y."
+        )
+
+    structure_class = layout.get("structure_class")
+    if structure_class is not None and (
+        not isinstance(structure_class, str) or not structure_class
+    ):
+        raise XMindAdapterError(
+            f"structure_class de '{topic.title}' debe ser texto no vacío."
+        )
+
+    branch = layout.get("branch")
+    if branch is not None and branch != "folded":
+        raise XMindAdapterError(
+            f"branch de '{topic.title}' solo admite el valor 'folded'."
+        )
+
+    width = layout.get("width")
+    if width is not None and (
+        isinstance(width, bool)
+        or not isinstance(width, (int, float))
+        or width <= 0
+    ):
+        raise XMindAdapterError(
+            f"width de '{topic.title}' debe ser un número positivo."
+        )
+
 def _validate_supported_features(mind_map: MindMap) -> None:
     if not isinstance(mind_map, MindMap):
         raise TypeError("El adaptador XMind requiere un MindMap IR 1.0.0.")
@@ -86,12 +141,15 @@ def _validate_supported_features(mind_map: MindMap) -> None:
 
     topic_ids: set[str] = set()
 
-    def visit(topic: Topic) -> None:
-        if topic.kind != "attached":
+    def visit(topic: Topic, *, is_root: bool = False) -> None:
+        if topic.kind not in {"attached", "detached", "callout"}:
             raise XMindAdapterError(
                 f"El tema '{topic.title}' tiene kind='{topic.kind}'; "
-                "solo se admiten temas jerárquicos attached."
+                "se admiten attached, detached y callout."
             )
+        if is_root and topic.kind != "attached":
+            raise XMindAdapterError("El tema raíz XMind debe ser de tipo attached.")
+        _validate_topic_layout(topic)
         if not topic.id:
             raise XMindAdapterError(f"El tema '{topic.title}' no tiene ID en el IR.")
         if topic.id in topic_ids:
@@ -121,7 +179,7 @@ def _validate_supported_features(mind_map: MindMap) -> None:
         for child in topic.children:
             visit(child)
 
-    visit(sheet.root_topic)
+    visit(sheet.root_topic, is_root=True)
 
     for relationship in sheet.relationships:
         if (
@@ -272,11 +330,29 @@ def _topic_to_json(topic: Topic, map_id: str, id_map: dict[str, str]) -> dict[st
             )
         link = topic.links[0]
         href = link.get("target")
-        if link.get("kind") != "web" or not isinstance(href, str) or not href:
+        if not isinstance(href, str) or not href:
             raise XMindAdapterError(
-                f"El enlace del tema '{topic.title}' debe ser de tipo web y tener target."
+                f"El enlace del tema '{topic.title}' debe tener un target textual no vacío."
             )
-        data["href"] = href
+        if link.get("title") is not None:
+            raise XMindAdapterError(
+                f"El título adicional del enlace de '{topic.title}' no tiene equivalente en href."
+            )
+        kind = link.get("kind")
+        if kind == "web":
+            data["href"] = href
+        elif kind == "topic":
+            if href not in id_map:
+                raise XMindAdapterError(
+                    f"El enlace interno de '{topic.title}' referencia un tema inexistente: {href}."
+                )
+            data["href"] = f"xmind:#{id_map[href]}"
+        elif kind == "file" and href.startswith("file://"):
+            data["href"] = href
+        else:
+            raise XMindAdapterError(
+                f"El enlace del tema '{topic.title}' tiene tipo o destino no soportado: {kind!r}."
+            )
 
     if topic.style.resolved:
         properties = _style_properties(topic.style.resolved, f"'{topic.title}'")
@@ -285,10 +361,22 @@ def _topic_to_json(topic: Topic, map_id: str, id_map: dict[str, str]) -> dict[st
                 "id": _xmind_id("style", map_id, topic.id),
                 "properties": properties,
             }
+    if topic.layout.get("position") is not None:
+        data["position"] = dict(topic.layout["position"])
+    if topic.layout.get("structure_class") is not None:
+        data["structureClass"] = topic.layout["structure_class"]
+    if topic.layout.get("branch") is not None:
+        data["branch"] = topic.layout["branch"]
+    if topic.layout.get("width") is not None:
+        data["customWidth"] = topic.layout["width"]
+
     if topic.children:
-        data["children"] = {
-            "attached": [_topic_to_json(child, map_id, id_map) for child in topic.children]
-        }
+        children: dict[str, list[dict[str, Any]]] = {}
+        for child in topic.children:
+            children.setdefault(child.kind, []).append(
+                _topic_to_json(child, map_id, id_map)
+            )
+        data["children"] = children
     return data
 
 

@@ -48,7 +48,7 @@ def test_ir_style_cascade_applies_all_levels_and_merges_recursively():
     )
     mind_map = make_map(
         root,
-        metadata={"style_defaults": {"text": {"font_size": 10, "color": "black"}}},
+        metadata={"style_defaults": {"topic": {"text": {"font_size": 10, "color": "black"}}}},
     )
     mind_map.style_sets = {
         "BASE": {
@@ -137,6 +137,7 @@ def test_malformed_definitions_and_overrides_raise_style_error():
     with pytest.raises(StyleError, match="topic"):
         resolve_ir_styles(mind_map)
 
+    mind_map.style_sets = {}
     root.style.style_set = None
     root.style.overrides = []
     with pytest.raises(StyleError, match="Overrides"):

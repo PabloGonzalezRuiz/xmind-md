@@ -178,3 +178,12 @@ def test_relationship_style_uses_resolved_state():
     mind_map.sheet.relationships[0].style.resolved = {"text": {"bold": True}}
     relationship = build_xmind_content(mind_map)[0]["relationships"][0]
     assert relationship["style"]["properties"] == {"fo:font-weight": "bold"}
+
+def test_export_does_not_mutate_the_original_ir():
+    mind_map = make_map()
+    original = mind_map.to_dict()
+
+    build_xmind_content(mind_map)
+
+    assert mind_map.to_dict() == original
+

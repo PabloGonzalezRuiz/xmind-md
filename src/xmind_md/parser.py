@@ -84,24 +84,33 @@ def _stable_id(prefix: str, seed: str) -> str:
 
 
 def _inline_runs(text: str) -> list[dict[str, Any]]:
-    """Reconoce énfasis, código inline y enlaces; conserva el resto del texto."""
-    tick = chr(96)
-    token = re.compile(r"(!?\[[^\]]*\]\([^)]*\)|\*\*[^*]+\*\*|(?<!\*)\*[^*]+\*(?!\*)|" + re.escape(tick) + r"[^" + re.escape(tick) + r"]+" + re.escape(tick) + r")")
+    """Reconoce el subconjunto inline documentado y conserva el texto restante."""
+    token = re.compile(
+        r"(?P<image>!\\[[^\\]]*\\]\\([^)]*\\))"
+        r"|(?P<link>\\[[^\\]]+\\]\\([^)]*\\))"
+        r"|(?P<bold>\\*\\*[^*]+\\*\\*|__[^_]+__)"
+        r"|(?P<strike>~~[^~]+~~)"
+        r"|(?P<code>\\x60[^\\x60]+\\x60)"
+        r"|(?P<italic>(?<![\\*_])\\*(?!\\*)[^*]+\\*(?!\\*)|(?<![\\w])_[^_]+_(?![\\w]))"
+    )
     runs: list[dict[str, Any]] = []
     cursor = 0
     for match in token.finditer(text):
         if match.start() > cursor:
             runs.append({"text": text[cursor:match.start()]})
         value = match.group(0)
-        if value.startswith("!["):
-            inner = re.match(r"!\[([^\]]*)\]\(([^)]*)\)", value)
+        kind = match.lastgroup
+        if kind == "image":
+            inner = re.match(r"!\\[([^\\]]*)\\]\\(([^)]*)\\)", value)
             runs.append({"type": "image", "alt": inner.group(1), "src": inner.group(2)})
-        elif value.startswith("["):
-            inner = re.match(r"\[([^\]]*)\]\(([^)]*)\)", value)
+        elif kind == "link":
+            inner = re.match(r"\\[([^\\]]+)\\]\\(([^)]*)\\)", value)
             runs.append({"type": "link", "text": inner.group(1), "url": inner.group(2)})
-        elif value.startswith("**"):
+        elif kind == "bold":
             runs.append({"text": value[2:-2], "style": {"bold": True}})
-        elif value.startswith("*"):
+        elif kind == "strike":
+            runs.append({"text": value[2:-2], "style": {"strikethrough": True}})
+        elif kind == "italic":
             runs.append({"text": value[1:-1], "style": {"italic": True}})
         else:
             runs.append({"text": value[1:-1], "style": {"code": True}})
@@ -173,7 +182,29 @@ def _list_plain_text(block: dict[str, Any]) -> str:
 
 def _parse_table(lines: list[str], start: int) -> tuple[dict[str, Any], int]:
     def cells(line: str) -> list[str]:
-        return [cell.strip() for cell in line.strip().strip("|").split("|")]
+        value = line.strip()
+        if value.startswith("|"):
+            value = value[1:]
+        if value.endswith("|") and not value.endswith("\\\\|"):
+            value = value[:-1]
+        result: list[str] = []
+        current: list[str] = []
+        escaped = False
+        for char in value:
+            if escaped:
+                current.append(char)
+                escaped = False
+            elif char == "\\\\":
+                escaped = True
+            elif char == "|":
+                result.append("".join(current).strip())
+                current = []
+            else:
+                current.append(char)
+        if escaped:
+            current.append("\\\\")
+        result.append("".join(current).strip())
+        return result
 
     header = cells(lines[start])
     separator = cells(lines[start + 1])
@@ -374,21 +405,29 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             while i < len(lines) and lines[i].lstrip().startswith(">"):
                 quote.append(lines[i].lstrip()[1:].lstrip())
                 i += 1
-            topic.content_blocks.append({"type": "quote", "content": [
-                {"type": "paragraph", "runs": _inline_runs(value)} for value in quote]})
+            topic.content_blocks.append({
+                "type": "quote",
+                "content": [{"type": "paragraph", "runs": _inline_runs(value)} for value in quote],
+                "source": {"file": source_path, "line_start": line_no, "line_end": i},
+            })
             topic.content.extend(quote)
             continue
         if re.match(r"^\s*([-+*]|\d+[.)])\s+", raw):
             block, i = _parse_list(lines, i)
+            block["source"] = {"file": source_path, "line_start": line_no, "line_end": i}
             topic.content_blocks.append(block)
             topic.content.append("\n".join("".join(r.get("text", "") for r in item["content"]) for item in block["items"]))
             continue
         if "|" in raw and i + 1 < len(lines) and re.match(r"^\s*\|?\s*:?-{3,}", lines[i + 1]):
             block, i = _parse_table(lines, i)
+            block["source"] = {"file": source_path, "line_start": line_no, "line_end": i}
             topic.content_blocks.append(block)
             continue
         if re.match(r"^\s*([-*_])(?:\s*\1){2,}\s*$", raw):
-            topic.content_blocks.append({"type": "divider"})
+            topic.content_blocks.append({
+                "type": "divider",
+                "source": {"file": source_path, "line_start": line_no, "line_end": line_no},
+            })
             i += 1
             continue
         if stripped.startswith("!["):
@@ -396,11 +435,15 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             if match:
                 asset = {"alt": match.group(1), "src": match.group(2)}
                 assets.append(asset)
-                topic.content_blocks.append({"type": "image", **asset})
+                topic.content_blocks.append({
+                    "type": "image", **asset,
+                    "source": {"file": source_path, "line_start": line_no, "line_end": line_no},
+                })
                 topic.resources.append(asset)
                 i += 1
                 continue
 
+        paragraph_start = line_no
         paragraph = [stripped]
         i += 1
         while i < len(lines) and lines[i].strip():
@@ -412,7 +455,10 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             i += 1
         joined = " ".join(paragraph)
         topic.content.append(joined)
-        topic.content_blocks.append({"type": "paragraph", "runs": _inline_runs(joined)})
+        topic.content_blocks.append({
+            "type": "paragraph", "runs": _inline_runs(joined),
+            "source": {"file": source_path, "line_start": paragraph_start, "line_end": i},
+        })
 
     if pending is not None:
         raise MarkdownParseError("Directiva de tema al final del documento sin encabezado")
@@ -437,7 +483,7 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             if missing:
                 raise MarkdownParseError(f"{kind}: faltan campos obligatorios {missing}")
             entity_id = _validate_id(entry["id"], f"id de {kind}", 1)
-            if entity_id in entity_ids:
+            if entity_id in entity_ids or entity_id in topic_index:
                 raise MarkdownParseError(f"ID de entidad global duplicado: {entity_id}")
             entity_ids.add(entity_id)
             if kind == "relationships":

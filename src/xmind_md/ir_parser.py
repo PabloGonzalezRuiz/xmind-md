@@ -28,7 +28,7 @@ from .ir import (
     Topic,
     validate_mind_map,
 )
-from .parser import parse_markdown
+from .parser import _inline_runs, parse_markdown
 
 
 def _id(prefix: str, value: str) -> str:
@@ -39,10 +39,17 @@ def _runs(value: list[dict[str, Any]]) -> list[dict[str, Any]]:
     result = []
     for run in value:
         if run.get("type") == "link":
-            result.append({
-                "text": run.get("text", ""),
-                "link": {"kind": "web", "target": run.get("url", "")},
-            })
+            target = run.get("url", "")
+            if target.startswith("topic:"):
+                result.append({
+                    "text": run.get("text", ""),
+                    "link": {"kind": "topic", "target": target[len("topic:"): ]},
+                })
+            else:
+                result.append({
+                    "text": run.get("text", ""),
+                    "link": {"kind": "web", "target": target},
+                })
         elif run.get("type") == "image":
             result.append({
                 "text": run.get("alt", ""),
@@ -80,6 +87,11 @@ def _table_cell(runs: list[dict[str, Any]]) -> dict[str, Any]:
 def _block(block: dict[str, Any], source_key: str, assets: dict[str, Asset],
            resource_refs: ResourceReferences) -> ContentBlock:
     kind = block.get("type")
+    def make(block_type: str, data: dict[str, Any] | None = None) -> ContentBlock:
+        values = dict(data or {})
+        if block.get("source"):
+            values["source"] = dict(block["source"])
+        return make(block_type, values)
     if kind == "paragraph":
         runs = _runs(block.get("runs", []))
         return _paragraph("".join(run["text"] for run in runs), runs)
@@ -149,13 +161,14 @@ def _topic(old: Any, assets: dict[str, Asset]) -> Topic:
         )
         for index, marker in enumerate(old.annotations.get("markers", []))
     ]
-    notes = [
-        Note(
+    notes = []
+    for index, value in enumerate(old.annotations.get("notes", [])):
+        note_runs = _runs(_inline_runs(value))
+        note_text = "".join(run["text"] for run in note_runs)
+        notes.append(Note(
             _id("note", f"{old.id}|{index}|{value}"),
-            [_paragraph(value)],
-        )
-        for index, value in enumerate(old.annotations.get("notes", []))
-    ]
+            [_paragraph(note_text, note_runs)],
+        ))
     annotation = Annotation(
         notes=notes,
         labels=labels,

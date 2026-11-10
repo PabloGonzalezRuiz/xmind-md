@@ -7,7 +7,7 @@
 - **Última prueba manual XMind Desktop:** superada en Windows, XMind 26.05.01107.
 - **Commit de incorporación del fixture XMind permanente:** `a1cf99861c819d9f148a7c7a3d779df6a95fc394`.
 - **Contrato objetivo:** IR 1.0.0
-- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; prueba manual del perfil de exportación comprobada en XMind Desktop 26.05.01107 para el fixture de integración. Pendientes ejecución local Windows, Ruff, sincronización documental global y auditoría final.
+- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; fixture de exportación comprobado manualmente en XMind Desktop 26.05.01107; CI GitHub Actions verificada en Ubuntu/Python 3.12 con 131 pruebas superadas. La ejecución local Windows queda aplazada por decisión del usuario; pendientes refuerzo de CI/Ruff, sincronización documental global y auditoría final.
 
 ## 1. Para qué sirve este documento
 
@@ -97,6 +97,7 @@ No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar
 - CI #165, commit `2250dbf06d86680cbfcf9c5c4c4d208e62a4f53b`: **90 pruebas superadas**, incluyendo validación formal Draft 2020-12, ejemplos y casos negativos; generación y publicación del artefacto XMind correctas.\n- CI #178, commit `f2f491cd52e668a53d31c1dddbf321c30f262882`: **97 pruebas superadas**; generación y publicación del artefacto XMind correctas tras los cambios de gramática.
 - CI #203, run `42842555229`, commit `1995076eee2e5108c37320c7a9df9be21745f5de`: **131 pruebas superadas en 0,45 s**; Tests, generación del smoke XMind y publicación del artefacto correctos. Entorno: GitHub Actions, Ubuntu, Python 3.12.16. https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42842555229
 - CI #205, run `42842726726`, commit `f99273d3f93a95648457aa183bb4ec55bb99fda8`: workflow completo correcto tras la actualización del documento de estado. Los cinco pasos Install, Download XMind reference fixture, Tests, Build XMind Desktop smoke test y Upload XMind smoke test finalizaron correctamente. El log registra **131 pruebas superadas en 0,52 s**. https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42842726726
+- CI #209, run `42843815047`, commit `1fd131cc16786093dba00e09fd551f299a439761`: job tests completado con success; Install, descarga del fixture de referencia, Tests, generación y publicación del smoke test finalizaron correctamente. Log: **131 passed in 0.37s**, GitHub-hosted Linux, Python 3.12.16. https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42843815047
 - Validador: `jsonschema 4.26.0` con extra `format`; se comprueban los formatos de fecha/fecha-hora.
 - Ruff no forma parte todavía de los pasos del workflow y debe verificarse expresamente.
 - La ejecución local en Windows sigue pendiente; la existencia de configuración o documentación no demuestra que haya pasado.
@@ -128,7 +129,7 @@ No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar
 | 8 | Ampliar y probar las capacidades del adaptador XMind | **Completada** | Matriz de capacidades, conversiones adicionales y suite CI verde |
 | 9 | Integrar la exportación XMind en la CLI | **Completada** | CLI XMind y JSON probadas, errores controlados y documentación actualizada |
 | 10 | Completar las pruebas con XMind Desktop | **Completada** | Apertura, inspección, guardado y reapertura confirmados; versión y resultados registrados |
-| 11 | Verificar ejecución local en Windows | **En curso; pendiente ejecución en el equipo Windows del usuario** | Instalación, CLI y pruebas ejecutadas en entorno Windows |
+| 11 | Auditar y verificar la ejecución en GitHub Actions | **Completada** | Workflow y último run inspeccionados; 131 pruebas y artefacto generados correctamente |
 | 12 | Completar CI, Ruff y comprobaciones automáticas | Pendiente | Workflow verde con pruebas y lint |
 | 13 | Sincronizar README y documentación técnica | Pendiente | Documentación coherente con el comportamiento real |
 | 14 | Auditoría final y publicación estable | Pendiente | Criterios de aceptación globales cumplidos |
@@ -314,33 +315,54 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 - Enlace directo al archivo: https://raw.githubusercontent.com/PabloGonzalezRuiz/xmind-md/main/tests/fixtures/xmind/xmind-md-smoke-test.xmind
 - Esta verificación **no** sustituye XMind Desktop. La tarea permanece en curso hasta que el usuario abra el archivo, inspeccione los elementos, guarde una copia y confirme el resultado.
 
-## 8. Próxima tarea
+## 8. Estado de la tarea 11 y próxima tarea
 
-### Tarea 11 — Verificar ejecución local en Windows
+### Tarea 11 — Auditoría y verificación de GitHub Actions
 
-**Estado: en curso; autorización recibida el 2026-11-10.**
+**Estado: completada el 2026-11-10.** El usuario decidió aplazar cualquier instalación o ejecución local en Windows hasta que el proyecto funcione desde GitHub. No se ha instalado ni modificado software en su equipo.
 
-La inspección del repositorio confirma que `pyproject.toml` admite Python 3.10 o superior y que `docs/development.md` ya contiene instrucciones para PowerShell. El workflow CI actual ejecuta en Ubuntu (`runs-on: ubuntu-latest`), por lo que sus resultados no sustituyen una ejecución en Windows.
+**Auditoría del workflow vigente** (.github/workflows/ci.yml):
 
-**Límite de ejecución:** no tengo acceso directo al equipo Windows del usuario. Para completar esta tarea, el usuario ejecutará los comandos de diagnóstico y prueba en PowerShell y compartirá sus salidas. No se registrará ninguna prueba como superada hasta recibir esa evidencia.
+- Disparadores: push, pull_request y workflow_dispatch.
+- Único entorno: ubuntu-latest; no hay matriz Windows/Linux.
+- Versión fijada: Python 3.12.
+- Instalación: python -m pip install -e ".[dev]".
+- Dependencias de desarrollo instaladas: pytest, Ruff y jsonschema.
+- Comprobaciones ejecutadas: descarga de fixture XMind de referencia, pytest, generación del XMind smoke test y subida del artefacto.
+- No se ejecutan ruff check ni ruff format --check.
+- No se verifica todavía el comportamiento del paquete en un runner Windows.
 
-**Secuencia prevista:** comprobar intérpretes Python y Git; crear un entorno virtual limpio; instalar `.[dev]`; ejecutar la CLI para JSON y XMind; inspeccionar que ambos archivos se generan; ejecutar `pytest`; registrar versiones, comandos, resultados y problemas específicos de Windows.
+**Evidencia consultada:**
 
-**Evidencia recogida hasta ahora:** solo inspección estática de `pyproject.toml`, `docs/development.md` y `.github/workflows/ci.yml`. No se ha ejecutado aún ningún comando en Windows ni se ha modificado el código para simular esa ejecución.
+- CI #209, run 42843815047, commit 1fd131cc16786093dba00e09fd551f299a439761.
+- Job tests: estado completed, conclusión success.
+- Pasos Install, Download XMind reference fixture, Tests, Build XMind Desktop smoke test y Upload XMind smoke test: todos correctos.
+- Log de pytest: **131 passed in 0.37s**.
+- Entorno: GitHub-hosted Linux, Python 3.12.16.
+- URL: https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42843815047
 
-**Siguiente interacción:** pedir al usuario la salida de `py --version` y `py -0p` en PowerShell.
+**Conclusión:** la ruta de instalación, pruebas y generación del artefacto funciona en el runner Linux de GitHub. Esto no acredita compatibilidad con Windows ni calidad de lint; esas comprobaciones aún no se ejecutan. Las advertencias deprecatorias de Node.js 20 corresponden a las versiones de las acciones GitHub utilizadas, no a fallos de pytest.
+
+**Decisión del usuario:** aplazar la instalación local y las pruebas en su ordenador Windows hasta que el flujo de GitHub esté suficientemente completo. No solicitar comandos locales en las siguientes fases.
 
 ### Tarea 12 — Completar CI, Ruff y comprobaciones automáticas
 
-Incorporar `ruff check src tests` y `ruff format --check src tests` al workflow, corregir defectos con cambios acotados, revisar advertencias y ejecutar CI completa. No confundir lint con pruebas funcionales.
+**Siguiente tarea pendiente; todavía no iniciada.**
 
-### Tarea 13 — Sincronizar documentación técnica
+Alcance propuesto:
 
-Resolver todas las discrepancias enumeradas en la auditoría; actualizar README, arquitectura, catálogo, plan IR, sistema de estilos, evaluación del motor, matriz del adaptador, guía de desarrollo y ejemplos cuando proceda. Mantener una única descripción coherente de capacidades reales.
+1. Incorporar ruff check src tests al workflow.
+2. Incorporar ruff format --check src tests.
+3. Ejecutar CI, corregir los problemas reales de lint/formato con cambios acotados y repetir el workflow.
+4. Evaluar e incorporar una matriz de runners Linux y Windows, manteniendo Python 3.12, para comprobar la compatibilidad multiplataforma directamente en GitHub Actions.
+5. Revisar que la descarga del fixture y la generación del artefacto funcionen en ambos sistemas; adaptar pasos de shell si fuera necesario.
+6. Registrar resultados exactos, versiones y posibles limitaciones.
 
-### Tarea 14 — Auditoría final y publicación estable
+**Criterio de cierre:** workflow verde en Linux y Windows con pruebas, lint y comprobación de formato; artefacto XMind generado y publicado correctamente en el entorno previsto. No se considerará verificada la ejecución Windows hasta que un runner Windows termine correctamente.
 
-Auditoría de código, contratos, pruebas, dependencias/licencias, seguridad de entradas, reproducibilidad, empaquetado, versionado, documentación y compatibilidad. Preparar publicación solo si se cumplen criterios de aceptación; no llamar estable al proyecto antes de ello.
+**Tarea 13 — Sincronizar README y documentación técnica.** Resolver las discrepancias de la auditoría enumeradas en esta misma documentación.
+
+**Tarea 14 — Auditoría final y publicación estable.** Revisar código, contratos, pruebas, dependencias/licencias, seguridad de entradas, reproducibilidad, empaquetado, versionado y documentación antes de decidir si procede publicar una versión estable.
 
 ## 9. Protocolo obligatorio de actualización
 

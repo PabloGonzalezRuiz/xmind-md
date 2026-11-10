@@ -4,7 +4,7 @@
 
 - **Última actualización:** 2026-11-10
 - **Rama de referencia:** `main`
-- **Último commit revisado antes de esta actualización:** `9df7ee3e1dbe6c78bb045d325495ed613d093042`
+- **Último commit de implementación:** `7951fe82652c251cff4288bb9426f008b638c684`
 - **Contrato objetivo:** IR 1.0.0
 - **Estado global:** prototipo en migración hacia el IR 1.0.0; todavía no declarar compatibilidad completa.
 
@@ -44,9 +44,11 @@ Prioridad: contrato IR aprobado para la estructura objetivo; código y pruebas p
 
 ### 3.1 Modelo intermedio
 
-**Estado: pendiente de migración.**
+**Estado: modelo canónico creado; integración y verificación pendientes.**
 
-La especificación IR 1.0.0 está documentada, pero `src/xmind_md/model.py` todavía representa el modelo transitorio:
+Se ha añadido `src/xmind_md/ir/` con entidades canónicas IR 1.0.0, serialización y validación semántica. El módulo `src/xmind_md/model.py` se conserva temporalmente para que parser, estilos y adaptadores actuales sigan funcionando mientras se migran en las tareas siguientes. Por tanto, la aplicación todavía no produce IR 1.0.0 de extremo a extremo.
+
+El modelo legacy `src/xmind_md/model.py` todavía presenta estas diferencias:
 
 - `MindMap.topics` contiene una lista de temas raíz, en vez de `MindMap.sheet.root_topic`.
 - `MindMap.assets` es una lista, no un inventario indexado por ID.
@@ -110,7 +112,7 @@ No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar
 | N.º | Tarea | Estado | Criterio de cierre |
 |---:|---|---|---|
 | 1 | Consolidar el contrato IR 1.0.0 y preparar la migración | **Completada** | Especificación, esquema, ejemplo y plan de migración disponibles |
-| 2 | Implementar el modelo Python conforme al IR | **Pendiente de autorización/ejecución** | Entidades canónicas, invariantes y pruebas del modelo |
+| 2 | Implementar el modelo Python conforme al IR | **Implementación añadida; pruebas pendientes de ejecución** | Entidades canónicas, invariantes y pruebas del modelo ejecutadas con éxito |
 | 3 | Adaptar el parser al nuevo modelo | Pendiente | Parser construye el IR canónico y conserva la sintaxis probada |
 | 4 | Adaptar el resolutor de estilos | Pendiente | Cascada conforme a IR y pruebas de precedencia |
 | 5 | Adaptar los exportadores JSON y XMind | Pendiente | Consumen el modelo canónico y notifican pérdidas |
@@ -126,7 +128,16 @@ No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar
 
 Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tareas descritas en documentos futuros.
 
-## 6. Registro de tareas terminadas
+## 6. Registro de tareas terminadas y actividad
+
+### Tarea 2 — Modelo canónico IR 1.0.0 (implementación pendiente de verificación)
+
+- **Estado:** código y pruebas añadidos; no se cierra la tarea hasta ejecutar las pruebas.
+- **Archivos:** `src/xmind_md/ir/entities.py`, `src/xmind_md/ir/validation.py`, `src/xmind_md/ir/__init__.py`, `tests/test_ir_model.py`.
+- **Resultado:** entidades tipadas para mapa, hoja, tema, contenido, anotaciones, estilos, recursos, relaciones, límites y resúmenes; serialización con forma canónica; validación de IDs, árbol, estilos y referencias.
+- **Compatibilidad:** `src/xmind_md/model.py` no se ha sustituido todavía. Los consumidores actuales siguen usando el modelo legacy hasta las tareas de migración del parser, estilos y adaptadores.
+- **Pruebas:** `python -m pytest tests/test_ir_model.py -q` está **pendiente de ejecución**. El entorno de trabajo no pudo acceder a GitHub para clonar el repositorio; tampoco se ha obtenido un resultado CI para los commits de esta implementación. No se afirma que las pruebas pasen.
+- **Último commit de código:** `7951fe82652c251cff4288bb9426f008b638c684`.
 
 ### Tarea 1 — Contrato IR y plan de migración
 
@@ -138,11 +149,19 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 
 ## 7. Próxima tarea
 
-### Tarea 2 — Implementar el modelo Python conforme al IR 1.0.0
+### Verificación pendiente de la tarea 2
 
-**Situación:** pendiente de inicio. El usuario ha autorizado continuar con esta fase una vez creado este documento de seguimiento.
+**Situación:** ejecutar las pruebas del nuevo modelo antes de cerrar la tarea y pasar al parser.
 
-**Alcance previsto:**
+Comando:
+
+```bash
+python -m pytest tests/test_ir_model.py -q
+```
+
+Si se ejecuta desde un entorno nuevo, instalar primero las dependencias de desarrollo con `python -m pip install -e ".[dev]"`.
+
+**Alcance ya implementado:**
 
 - Definir las entidades canónicas, incluida `Sheet`.
 - Representar una única raíz mediante `MindMap.sheet.root_topic`.
@@ -153,7 +172,7 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 
 **Fuera de alcance:** completar la gramática, cambiar el parser de forma integral, terminar la resolución de estilos o ampliar la compatibilidad XMind. Esas tareas conservan sus propios pasos en la hoja de ruta.
 
-**Criterios de aceptación:** el modelo puede representar y serializar el contrato canónico; se validan árbol, IDs y referencias cubiertas por el modelo; las pruebas nuevas pasan; las incompatibilidades pendientes quedan identificadas sin ocultarlas.
+**Criterios de cierre pendientes:** confirmar que el comando anterior pasa; corregir cualquier fallo; dejar constancia del resultado y del entorno. La integración del parser y de los demás consumidores permanece en sus tareas independientes.
 
 ## 8. Protocolo obligatorio de actualización
 

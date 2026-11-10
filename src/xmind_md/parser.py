@@ -287,8 +287,15 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             for field_name in ("style_overrides", "layout", "extensions"):
                 if field_name in props and not isinstance(props[field_name], dict):
                     raise MarkdownParseError(f"{field_name} debe ser un objeto YAML (línea {line_no})")
-            if "links" in props and not isinstance(props["links"], list):
-                raise MarkdownParseError(f"links debe ser una lista (línea {line_no})")
+            if "links" in props and (
+                not isinstance(props["links"], list)
+                or any(not isinstance(link, dict) for link in props["links"])
+            ):
+                raise MarkdownParseError(f"links debe ser una lista de objetos (línea {line_no})")
+            if "style" in props and not isinstance(props["style"], str):
+                raise MarkdownParseError(f"style debe ser texto (línea {line_no})")
+            if "style_set" in props and not isinstance(props["style_set"], str):
+                raise MarkdownParseError(f"style_set debe ser texto (línea {line_no})")
             if "labels" in props and (
                 not isinstance(props["labels"], list)
                 or any(not isinstance(label, str) for label in props["labels"])
@@ -296,9 +303,17 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
                 raise MarkdownParseError(f"labels debe ser una lista de textos (línea {line_no})")
             if "markers" in props and (
                 not isinstance(props["markers"], list)
-                or any(not isinstance(marker, dict) for marker in props["markers"])
+                or any(
+                    not isinstance(marker, dict)
+                    or not isinstance(marker.get("group"), str)
+                    or not marker.get("group")
+                    or "value" not in marker
+                    for marker in props["markers"]
+                )
             ):
-                raise MarkdownParseError(f"markers debe ser una lista de objetos (línea {line_no})")
+                raise MarkdownParseError(
+                    f"markers debe ser una lista de objetos con group y value (línea {line_no})"
+                )
             if "task" in props:
                 task = props["task"]
                 if not isinstance(task, dict):
@@ -409,18 +424,32 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             missing = [key for key in required if key not in entry]
             if missing:
                 raise MarkdownParseError(f"{kind}: faltan campos obligatorios {missing}")
-            if entry["id"] in entity_ids:
-                raise MarkdownParseError(f"ID de entidad global duplicado: {entry['id']}")
-            entity_ids.add(entry["id"])
-            refs = [entry["source"], entry["target"]] if kind == "relationships" else entry["topics"]
-            if not isinstance(refs, list) and kind != "relationships":
-                raise MarkdownParseError(f"{kind}: topics debe ser una lista")
+            entity_id = _validate_id(entry["id"], f"id de {kind}", 1)
+            if entity_id in entity_ids:
+                raise MarkdownParseError(f"ID de entidad global duplicado: {entity_id}")
+            entity_ids.add(entity_id)
+            if kind == "relationships":
+                refs = [entry["source"], entry["target"]]
+                if any(not isinstance(ref, str) or not ref for ref in refs):
+                    raise MarkdownParseError("relationships: source y target deben ser IDs de texto")
+            else:
+                refs = entry["topics"]
+                if (
+                    not isinstance(refs, list) or not refs
+                    or any(not isinstance(ref, str) or not ref for ref in refs)
+                ):
+                    raise MarkdownParseError(f"{kind}: topics debe ser una lista no vacía de IDs")
+                if len(refs) != len(set(refs)):
+                    raise MarkdownParseError(f"{kind}: no se permiten referencias duplicadas")
             if any(ref not in topic_index for ref in refs):
                 raise MarkdownParseError(f"{kind}: referencia a tema inexistente")
             if kind == "relationships" and entry["source"] == entry["target"]:
                 raise MarkdownParseError("Una relación no puede conectar un tema consigo mismo")
+            for optional_text in ("title", "style"):
+                if optional_text in entry and entry[optional_text] is not None and not isinstance(entry[optional_text], str):
+                    raise MarkdownParseError(f"{kind}: {optional_text} debe ser texto")
 
-    title = metadata.get("title") or roots[0].title
+    title = metadata["title"] if "title" in metadata else roots[0].title
     if not isinstance(title, str) or not title.strip():
         raise MarkdownParseError("title del front matter debe ser texto no vacío")
     known = {"title", "id", "author", "description", "style_set", "layout", "styles", "style_sets", "extensions"}

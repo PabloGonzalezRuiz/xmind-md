@@ -113,3 +113,43 @@ Estas pruebas demuestran consistencia interna del generador, no compatibilidad c
 - SDK oficial: https://github.com/xmindltd/xmind-sdk-js
 - Implementación Python de contraste: https://github.com/innotools/xmindpy
 - Decisión de arquitectura: [xmind-engine-evaluation.md](xmind-engine-evaluation.md)
+
+
+## 8. Matriz de capacidades IR 1.0.0
+
+La clasificación distingue entre representación exportada, conversión con pérdida explícita y rechazo. «Soportado» significa que existe una conversión estructural probada; no certifica todavía la apertura visual en XMind Desktop.
+
+| Entidad o propiedad IR | Estado | Comportamiento del adaptador |
+|---|---|---|
+| `MindMap.id`, `title` | Soportado | El ID sirve de base para UUID5; el título del mapa no sustituye al título de la hoja |
+| `MindMap.metadata.author` | Soportado con mapeo | Se convierte en `metadata.json.modifier` |
+| `MindMap.metadata.style_set`, `style_defaults`, `source_file` | Aceptado como metadato de autoría | No se materializa como catálogo de estilos ni se exporta como campo XMind |
+| Otros metadatos del mapa | No soportado | Error explícito |
+| `MindMap.styles`, `style_sets` | Soportado con pérdida controlada | Se exportan las propiedades finales resueltas, no los catálogos reutilizables |
+| `MindMap.assets` | No soportado | Error explícito; no se incluyen archivos en `resources/` |
+| `Sheet` única, ID y título | Soportado | Se crea una hoja XMind |
+| `Sheet.metadata` | No soportado | Error explícito |
+| `Sheet.layout` | Parcial | Solo `mind_map` con dirección `balanced` y sin propiedades adicionales |
+| `Topic.kind=attached` | Soportado | `children.attached`; obligatorio para la raíz |
+| `Topic.kind=detached` | Soportado con requisito | `children.detached`; requiere coordenadas numéricas `layout.position.x/y` |
+| `Topic.kind=callout` | Soportado | `children.callout` |
+| `Topic.kind=summary` y otros tipos | No soportado | Error explícito |
+| `Topic.layout` | Parcial | `position`, `structure_class`, `branch=folded`, `width`; resto rechazado |
+| `Topic.content` paragraph/list/table/code/quote/divider | Soportado con pérdida de formato | Se aplana a texto Markdown/plano dentro de `notes.plain.content` |
+| `Topic.content` equation/image/raw | No soportado | Error explícito |
+| Notas sin estilo visual | Soportado con pérdida de formato | Se concatenan con el contenido del tema en `notes.plain.content` |
+| Notas con estilo visual resuelto | No soportado | Error explícito |
+| Etiquetas y marcadores | Soportado con mapeo | Se convierten a `labels` y `markers[].markerId`; los IDs IR no se conservan |
+| `Topic.links` web | Soportado | `href` |
+| `Topic.links` topic | Soportado | `href` con esquema `xmind:#` y UUID de destino |
+| `Topic.links` file | Parcial | Solo URI `file://` |
+| Enlaces `internal`, múltiples o con título adicional | No soportado | Error explícito |
+| Recursos de tema: imágenes, adjuntos y audio | No soportado | Error explícito |
+| `Annotation.task` | No soportado | Error explícito |
+| `Relationship` | Soportado | Extremos traducidos mediante el mapa de IDs; puntos de control neutrales |
+| Estilo de relación | Parcial | Solo propiedades de estilo incluidas en la tabla de mapeo |
+| `Boundary` y `Summary` | No soportado | Error explícito |
+| Extensiones de tema o relación | No soportado | Error explícito |
+| Propiedades de estilo desconocidas, valores `null` o estilos sin resolver | No soportado | Error explícito |
+
+Las pérdidas intencionadas (aplanamiento de bloques, IDs auxiliares, catálogos de estilos) se describen en esta tabla y no deben confundirse con soporte de ida y vuelta. Los casos no soportados deben continuar fallando de forma explícita.

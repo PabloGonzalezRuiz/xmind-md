@@ -34,3 +34,14 @@ jobs:
       # Una prueba fallida debe hacer fallar el workflow.
       - name: Tests
         run: pytest
+      # Crear un archivo real para comprobar manualmente con XMind Desktop.
+      - name: Build XMind Desktop smoke test
+        run: python scripts/create_xmind_smoke.py
+      # Publicar el archivo como artefacto descargable del workflow.
+      - name: Upload XMind smoke test
+        uses: actions/upload-artifact@v4
+        with:
+          name: xmind-desktop-smoke-test
+          path: output/xmind-md-smoke-test.xmind
+          if-no-files-found: error
+          retention-days: 14

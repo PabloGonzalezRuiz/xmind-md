@@ -224,7 +224,12 @@ def _style_properties(style: dict[str, Any], topic_title: str) -> dict[str, Any]
                 item = "italic" if item else "normal"
             elif path == "shape" and not isinstance(item, str):
                 raise XMindAdapterError("shape debe ser texto.")
-            properties[target] = item
+            if isinstance(item, bool):
+                raise XMindAdapterError(
+                    f"El valor de estilo '{path}' debe ser texto o número, no booleano."
+                )
+            # El esquema JSON oficial declara las propiedades de estilo como texto.
+            properties[target] = str(item)
 
     visit(style)
     return properties

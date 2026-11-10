@@ -1,47 +1,53 @@
-# Integración continua: ejecutar las pruebas en cada cambio relevante.
+# Integración continua: ejecutar pruebas y controles de calidad en Linux y Windows.
 name: CI
 
 on:
-  # Verificar tanto las actualizaciones directas como las pull requests.
   push:
   pull_request:
-  # Permitir iniciar la comprobación manualmente desde GitHub Actions.
   workflow_dispatch:
 
 jobs:
   tests:
-    # Entorno Linux limpio y reproducible para validar el paquete.
-    runs-on: ubuntu-latest
+    name: Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
     steps:
-      # Obtener el contenido del commit que activa el workflow.
       - name: Checkout
         uses: actions/checkout@v4
-      # Fijar la versión de Python usada por la CI.
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      # Instalar el paquete junto con las dependencias de desarrollo.
+
       - name: Install
         run: python -m pip install -e ".[dev]"
-      # Descargar una muestra .xmind externa fijada por commit para las pruebas de integración.
+
+      - name: Ruff lint
+        run: python -m ruff check src tests
+
+      - name: Ruff format
+        run: python -m ruff format --check src tests
+
       - name: Download XMind reference fixture
         run: |
-          mkdir -p tests/fixtures
-          curl --fail --location --silent --show-error \
-            https://raw.githubusercontent.com/sc0tfree/xmind-mcp/6225cbcd3e8fc565bc18e80346699a6e118dd0f7/tests/fixture.xmind \
-            --output tests/fixtures/reference.xmind
-      # Una prueba fallida debe hacer fallar el workflow.
+          python -c "from pathlib import Path; from urllib.request import urlretrieve; p=Path('tests/fixtures'); p.mkdir(parents=True, exist_ok=True); urlretrieve('https://raw.githubusercontent.com/sc0tfree/xmind-mcp/6225cbcd3e8fc565bc18e80346699a6e118dd0f7/tests/fixture.xmind', p / 'reference.xmind')"
+
       - name: Tests
-        run: pytest
-      # Crear un archivo real para comprobar manualmente con XMind Desktop.
+        run: python -m pytest
+
       - name: Build XMind Desktop smoke test
         run: python scripts/create_xmind_smoke.py
-      # Publicar el archivo como artefacto descargable del workflow.
+
       - name: Upload XMind smoke test
         uses: actions/upload-artifact@v4
         with:
-          name: xmind-desktop-smoke-test
+          name: xmind-desktop-smoke-test-${{ matrix.os }}
           path: output/xmind-md-smoke-test.xmind
           if-no-files-found: error
           retention-days: 14

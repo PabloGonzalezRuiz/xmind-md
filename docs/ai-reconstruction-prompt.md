@@ -46,7 +46,8 @@ La versión inicial del repositorio contiene:
 - Parser de encabezados Markdown # a ######.
 - Directivas @conjunto(NOMBRE) y @estilo(NOMBRE).
 - Árbol de objetos MindMap y Topic.
-- Resolución básica de estilos YAML.
+- Resolución de estilos YAML con herencia de conjuntos, fusión recursiva y overrides locales.
+- Parser con bloques de contenido estructurados, listas anidadas y validaciones semánticas.
 - Adaptador JSON de depuración.
 - CLI.
 - Pruebas unitarias iniciales.
@@ -62,6 +63,7 @@ La versión inicial del repositorio contiene:
 - src/xmind_md/cli.py: orquestación de lectura, parsing, estilos y escritura.
 - src/xmind_md/__main__.py: ejecución mediante python -m xmind_md.
 - src/xmind_md/adapters/json_adapter.py: serialización de depuración.
+- docs/xmind-engine-evaluation.md: evaluación de alternativas y decisión del motor de salida.
 - config/styles.yaml: estilos neutrales reutilizables.
 - examples/constitucion.md: documento de muestra.
 - tests/: pruebas automatizadas.
@@ -99,7 +101,7 @@ Reglas actuales:
 - El conjunto de estilos se hereda hacia los descendientes en la resolución actual.
 - Un conjunto explícito en un nodo sustituye el conjunto heredado para esa rama.
 - El texto ordinario se conserva en Topic.content.
-- Las listas todavía no se convierten en nodos.
+- Las listas se conservan como bloques estructurados, incluidos los niveles anidados.
 - Una directiva desconocida produce error.
 
 No amplíes silenciosamente esta gramática. Antes de introducir sintaxis nueva, define su semántica, casos límite, escape de texto literal y pruebas.
@@ -141,10 +143,11 @@ Antes de implementarlo:
 1. Investiga el formato y la versión concreta de XMind que se desea soportar.
 2. Revisa SDKs y bibliotecas existentes, licencias, actividad y cobertura real.
 3. Construye una matriz de características: soportadas, parcialmente soportadas y no soportadas.
-4. Selecciona un motor y encapsúlalo detrás del adaptador.
-5. Genera archivos de fixture pequeños.
-6. Comprueba que XMind abre los archivos generados y conserva estructura y estilo.
-7. Añade pruebas de integración y documenta limitaciones.
+4. La decisión actual es generar el formato moderno XMind 2020+ mediante ZIP + JSON nativo Python; consulta docs/xmind-engine-evaluation.md.
+5. Usa el SDK oficial JavaScript/TypeScript y el modelo/esquemas oficiales como referencias técnicas, no como dependencias obligatorias.
+6. Genera archivos de fixture pequeños.
+7. Comprueba que XMind abre los archivos generados y conserva estructura y estilo.
+8. Añade pruebas de integración y documenta limitaciones.
 
 No deduzcas que una biblioteca soporta una propiedad solo porque tenga una clase con un nombre parecido. Comprueba su API, formato de salida y compatibilidad con la versión elegida.
 
@@ -216,17 +219,12 @@ Si hay contradicciones, aplica este orden:
 
 Si una decisión no está definida, formula la pregunta mínima necesaria o propone opciones explícitas. No inventes silenciosamente requisitos.
 
-### 13. Primera tarea recomendada para una IA que retome el proyecto
+### 13. Estado y siguiente tarea
 
-Haz una auditoría del estado actual sin modificar archivos:
+La auditoría, la especificación inicial del IR, la gramática, el diseño del sistema de estilos y la ampliación inicial del parser/resolutor se han trabajado en las fases anteriores. Consulta los archivos actuales y los workflows de GitHub para verificar el estado real; no des por válidas pruebas que no puedas comprobar.
 
-- Comprueba si el parser refleja exactamente la gramática documentada.
-- Comprueba errores de validación y casos límite.
-- Revisa el esquema del modelo intermedio y su capacidad de ampliación.
-- Evalúa el sistema de estilos y sus reglas de precedencia.
-- Ejecuta las pruebas si tienes entorno disponible.
-- Devuelve un informe con defectos, riesgos y un plan priorizado.
+La evaluación del motor está documentada en docs/xmind-engine-evaluation.md. La decisión es implementar un adaptador Python que escriba el contenedor ZIP y el JSON moderno de XMind. El adaptador todavía no está implementado.
 
-No empieces el adaptador XMind hasta que el IR y la gramática estén suficientemente definidos.
+La siguiente tarea es implementar una primera versión mínima del adaptador en src/xmind_md/adapters/, con pruebas de estructura ZIP/JSON y fixtures. Después hay que abrir los archivos en XMind real antes de declarar compatibilidad.
 
 ## FIN DEL PROMPT

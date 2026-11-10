@@ -45,6 +45,7 @@ No incluir aquí identificadores ni estructuras privadas de una biblioteca de ex
 | architecture.md | Explica capas, flujo de datos, contratos e invariantes. |
 | file-reference.md | Catálogo de archivos y responsabilidades. |
 | grammar.md | Sintaxis de los documentos fuente y límites del parser actual. |
+| style-system.md | Catálogo de propiedades visuales, conjuntos, herencia y resolución de estilos. |
 | ai-reconstruction-prompt.md | Prompt autónomo para que otra IA reconstruya y continúe el proyecto. |
 | development.md | Instalación, ejecución, pruebas y ciclo de contribución. |
 

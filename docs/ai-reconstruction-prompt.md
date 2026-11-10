@@ -54,6 +54,7 @@ La versión inicial del repositorio contiene:
 - Pruebas unitarias del parser, estilos y adaptador, más pruebas de integración contra un fixture `.xmind` externo descargado por CI.
 - Workflow CI de GitHub Actions.
 - El adaptador genera dos `controlPoints` neutrales en las relaciones; su trazado visual sigue pendiente de validación en XMind Desktop.
+- GitHub Actions descarga un fixture `.xmind` externo, ejecuta las pruebas de integración y publica el artefacto `xmind-desktop-smoke-test` para una comprobación manual.
 
 El adaptador XMind genera ZIP + JSON para un subconjunto del IR. No afirmes compatibilidad con XMind Desktop hasta abrir y volver a guardar un archivo generado. Consulta `docs/xmind-adapter.md` para distinguir las características implementadas de las pendientes.
 
@@ -68,7 +69,7 @@ El adaptador XMind genera ZIP + JSON para un subconjunto del IR. No afirmes comp
 - src/xmind_md/adapters/xmind_adapter.py: generación experimental de XMind moderno ZIP + JSON.
 - docs/xmind-engine-evaluation.md: evaluación de alternativas y decisión del motor de salida.
 - docs/xmind-adapter.md: alcance, mapeos y limitaciones del adaptador.
-- docs/xmind-integration-tests.md: fixture externo, procedencia y validaciones de integración.
+- docs/xmind-integration-tests.md: fixture externo, procedencia, validaciones y comprobación manual con XMind Desktop.
 - config/styles.yaml: estilos neutrales reutilizables.
 - examples/constitucion.md: documento de muestra.
 - tests/: pruebas automatizadas.

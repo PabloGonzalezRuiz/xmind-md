@@ -14,6 +14,7 @@ La idea central es separar cuatro capas:
 La documentación está organizada para que una persona o una IA pueda entender, reconstruir y continuar el proyecto:
 
 - **[Prompt maestro para reconstruir el proyecto](docs/ai-reconstruction-prompt.md):** contexto autónomo, objetivos, arquitectura, reglas de diseño, estado real y protocolo de trabajo para otra IA.
+- **[Estado de desarrollo](docs/development-status.md):** seguimiento operativo actualizado tras cada tarea, hoja de ruta, decisiones vigentes, evidencias y próximo paso.
 - [Arquitectura](docs/architecture.md): capas, flujo de datos, contratos e invariantes.
 - [Catálogo de archivos](docs/file-reference.md): función de cada archivo y dónde deben realizarse los cambios.
 - [Gramática Markdown](docs/grammar.md): sintaxis reconocida y limitaciones actuales.

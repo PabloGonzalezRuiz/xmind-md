@@ -1,14 +1,23 @@
+# Archivos generados por Python y herramientas de desarrollo.
 __pycache__/
 *.py[cod]
 *.egg-info/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+
+# Entornos virtuales locales.
 .venv/
 venv/
+
+# Artefactos de construcción.
 build/
 dist/
+
+# Ignorar resultados generados, pero conservar el marcador del directorio.
 output/*
 !output/.gitkeep
+
+# Archivos auxiliares habituales de sistemas operativos.
 .DS_Store
 Thumbs.db

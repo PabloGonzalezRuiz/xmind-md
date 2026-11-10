@@ -4,7 +4,7 @@
 
 - **Última actualización:** 2026-11-10
 - **Rama de referencia:** `main`
-- **Último commit de implementación:** `6f43aff232b34e034efaa779232e0537ead025b7`
+- **Último commit de implementación:** `d6e3152670696060e09eabe8ac1b2262c2476718`
 - **Contrato objetivo:** IR 1.0.0
 - **Estado global:** prototipo en migración hacia el IR 1.0.0; todavía no declarar compatibilidad completa.
 
@@ -167,7 +167,7 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 
 **Commits:** `44097aeb1c2392cf25fa0448929265b00a77b68b` (puente parser IR); `18618f7d029f727d2ed9cfccc1d82d02131e41ed` (pruebas); `6f43aff232b34e034efaa779232e0537ead025b7` (corrección del fixture de estilo).
 
-**CI:** ejecución #120 falló con 64 pruebas superadas y 1 fallida. El test había referenciado un estilo no definido; el validador detectó correctamente esa referencia inválida. Se corrigió el fixture añadiendo la definición de estilo. Ejecución #121, sobre el commit `6f43aff232b34e034efaa779232e0537ead025b7`, está pendiente de resultado en el momento de esta actualización.
+**CI:** ejecución #120 falló con 64 pruebas superadas y 1 fallida porque el test referenciaba un estilo no definido; el validador detectó correctamente esa referencia inválida. En #121 se añadió la definición, pero volvió a fallar una aserción: la directiva `:::xmind` precedía al encabezado `## Hijo`, así que las anotaciones pertenecían al tema hijo y no a la raíz. Corregido en el commit `d6e3152670696060e09eabe8ac1b2262c2476718`, haciendo que la prueba inspeccione el tema hijo. Ejecución #123 sobre ese commit pendiente de resultado.
 
 **Limitaciones deliberadas:** `parse_markdown()` y `parse_file()` siguen devolviendo el modelo legacy. La migración de los consumidores y el cambio de la API predeterminada se harán coordinadamente en las tareas posteriores. La conversión de notas y recursos conserva el contenido básico; la gramática completa continúa fuera de esta tarea.
 

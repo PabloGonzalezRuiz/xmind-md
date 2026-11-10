@@ -74,14 +74,14 @@ def test_invalid_documents_fail(source):
 
 def test_note_directive_keeps_markdown_body():
     result = parse_markdown(
-        "# Raíz\\n:::xmind-note\\nNota con **énfasis** y texto.\\n:::\\n"
+        "# Raíz\n:::xmind-note\nNota con **énfasis** y texto.\n:::\n"
     )
     assert result.topics[0].annotations["notes"] == ["Nota con **énfasis** y texto."]
 
 
 def test_yaml_dates_are_normalized_to_json_strings():
     result = parse_markdown(
-        "# Raíz\\n:::xmind\\ntask:\\n  due_date: 2026-12-15\\n:::\\n## Hijo\\n"
+        "# Raíz\n:::xmind\ntask:\n  due_date: 2026-12-15\n:::\n## Hijo\n"
     )
     assert result.topics[0].children[0].annotations["task"]["due_date"] == "2026-12-15"
 
@@ -98,7 +98,34 @@ def test_repository_example_parses_as_complete_document():
 
 
 def test_generated_topic_ids_do_not_depend_on_line_numbers():
-    first = parse_markdown("# Raíz\\n## Rama\\n")
-    second = parse_markdown("# Raíz\\n\\nPárrafo añadido.\\n\\n## Rama\\n")
+    first = parse_markdown("# Raíz\n## Rama\n")
+    second = parse_markdown("# Raíz\n\nPárrafo añadido.\n\n## Rama\n")
     assert first.topics[0].id == second.topics[0].id
     assert first.topics[0].children[0].id == second.topics[0].children[0].id
+
+
+
+def test_nested_lists_keep_recursive_structure():
+    result = parse_markdown(
+        "# Raíz\n- Uno\n  - Uno A\n    - Uno A.1\n  - Uno B\n- Dos\n"
+    )
+    block = result.topics[0].content_blocks[0]
+    assert len(block["items"]) == 2
+    assert len(block["items"][0]["children"]) == 2
+    assert len(block["items"][0]["children"][0]["children"]) == 1
+
+
+def test_duplicate_yaml_keys_are_rejected():
+    with pytest.raises(MarkdownParseError, match="YAML inválido"):
+        parse_markdown("# Raíz\n:::xmind\nlabels: [A]\nlabels: [B]\n:::\n## Hijo\n")
+
+
+@pytest.mark.parametrize("bad_id", ["", "con espacios", "ámbito", "id/incorrecto"])
+def test_invalid_explicit_topic_ids_are_rejected(bad_id):
+    with pytest.raises(MarkdownParseError, match="ID"):
+        parse_markdown(f"# Raíz\n:::xmind\nid: '{bad_id}'\n:::\n## Hijo\n")
+
+
+def test_front_matter_style_fields_must_be_mappings():
+    with pytest.raises(MarkdownParseError, match="styles"):
+        parse_markdown("---\nstyles: texto\n---\n# Raíz\n")

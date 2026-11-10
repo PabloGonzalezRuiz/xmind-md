@@ -86,12 +86,12 @@ def _stable_id(prefix: str, seed: str) -> str:
 def _inline_runs(text: str) -> list[dict[str, Any]]:
     """Reconoce el subconjunto inline documentado y conserva el texto restante."""
     token = re.compile(
-        r"(?P<image>!\\[[^\\]]*\\]\\([^)]*\\))"
-        r"|(?P<link>\\[[^\\]]+\\]\\([^)]*\\))"
-        r"|(?P<bold>\\*\\*[^*]+\\*\\*|__[^_]+__)"
+        r"(?P<image>!\[[^\]]*\]\([^)]*\))"
+        r"|(?P<link>\[[^\]]+\]\([^)]*\))"
+        r"|(?P<bold>\*\*[^*]+\*\*|__[^_]+__)"
         r"|(?P<strike>~~[^~]+~~)"
-        r"|(?P<code>\\x60[^\\x60]+\\x60)"
-        r"|(?P<italic>(?<![\\*_])\\*(?!\\*)[^*]+\\*(?!\\*)|(?<![\\w])_[^_]+_(?![\\w]))"
+        r"|(?P<code>\x60[^\x60]+\x60)"
+        r"|(?P<italic>(?<![\*_])\*(?!\*)[^*]+\*(?!\*)|(?<![\w])_[^_]+_(?![\w]))"
     )
     runs: list[dict[str, Any]] = []
     cursor = 0
@@ -101,10 +101,10 @@ def _inline_runs(text: str) -> list[dict[str, Any]]:
         value = match.group(0)
         kind = match.lastgroup
         if kind == "image":
-            inner = re.match(r"!\\[([^\\]]*)\\]\\(([^)]*)\\)", value)
+            inner = re.match(r"!\[([^\]]*)\]\(([^)]*)\)", value)
             runs.append({"type": "image", "alt": inner.group(1), "src": inner.group(2)})
         elif kind == "link":
-            inner = re.match(r"\\[([^\\]]+)\\]\\(([^)]*)\\)", value)
+            inner = re.match(r"\[([^\]]+)\]\(([^)]*)\)", value)
             runs.append({"type": "link", "text": inner.group(1), "url": inner.group(2)})
         elif kind == "bold":
             runs.append({"text": value[2:-2], "style": {"bold": True}})
@@ -185,7 +185,7 @@ def _parse_table(lines: list[str], start: int) -> tuple[dict[str, Any], int]:
         value = line.strip()
         if value.startswith("|"):
             value = value[1:]
-        if value.endswith("|") and not value.endswith("\\\\|"):
+        if value.endswith("|") and not value.endswith("\\|"):
             value = value[:-1]
         result: list[str] = []
         current: list[str] = []
@@ -194,7 +194,7 @@ def _parse_table(lines: list[str], start: int) -> tuple[dict[str, Any], int]:
             if escaped:
                 current.append(char)
                 escaped = False
-            elif char == "\\\\":
+            elif char == "\\":
                 escaped = True
             elif char == "|":
                 result.append("".join(current).strip())
@@ -202,7 +202,7 @@ def _parse_table(lines: list[str], start: int) -> tuple[dict[str, Any], int]:
             else:
                 current.append(char)
         if escaped:
-            current.append("\\\\")
+            current.append("\\")
         result.append("".join(current).strip())
         return result
 

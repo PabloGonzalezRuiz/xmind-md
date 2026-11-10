@@ -109,6 +109,12 @@
             "null"
           ]
         },
+        "style_set": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "overrides": {
           "type": "object",
           "additionalProperties": true

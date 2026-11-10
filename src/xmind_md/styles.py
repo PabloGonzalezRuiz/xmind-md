@@ -14,6 +14,35 @@ import yaml
 from .model import MindMap, Topic
 
 
+class _UniqueKeyLoader(yaml.SafeLoader):
+    """Loader YAML seguro que rechaza claves duplicadas."""
+
+
+def _construct_unique_mapping(loader: _UniqueKeyLoader, node: yaml.MappingNode, deep: bool = False):
+    mapping = {}
+    for key_node, value_node in node.value:
+        key = loader.construct_object(key_node, deep=deep)
+        try:
+            duplicate = key in mapping
+        except TypeError as exc:
+            raise yaml.constructor.ConstructorError(
+                "while constructing a mapping", node.start_mark,
+                "unhashable mapping key", key_node.start_mark,
+            ) from exc
+        if duplicate:
+            raise yaml.constructor.ConstructorError(
+                "while constructing a mapping", node.start_mark,
+                f"duplicate key {key!r}", key_node.start_mark,
+            )
+        mapping[key] = loader.construct_object(value_node, deep=deep)
+    return mapping
+
+
+_UniqueKeyLoader.add_constructor(
+    yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, _construct_unique_mapping
+)
+
+
 class StyleError(ValueError):
     """Configuración de estilos inválida o referencia inexistente."""
 
@@ -42,7 +71,7 @@ def _deep_merge(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any
 def load_styles(path: str | Path) -> dict[str, Any]:
     """Carga estilos externos conservando tanto styles como style_sets."""
     try:
-        data = yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
+        data = yaml.load(Path(path).read_text(encoding="utf-8"), Loader=_UniqueKeyLoader) or {}
     except yaml.YAMLError as exc:
         raise StyleError(f"YAML de estilos inválido: {exc}") from exc
     _mapping(data, "El archivo de estilos")

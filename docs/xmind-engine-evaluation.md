@@ -225,7 +225,7 @@ La primera implementación del paso 7 ya contiene:
 3. Notas, etiquetas y marcadores.
 4. Un subconjunto de estilos de tema.
 5. Escritura ZIP con `mimetype`, `content.json`, `metadata.json`, `manifest.json` y miniatura.
-6. Relaciones con extremos traducidos a los IDs de salida.
+6. Relaciones con extremos traducidos a los IDs de salida (mapeo provisional: falta `controlPoints`, que exige el esquema oficial).
 7. Pruebas unitarias para JSON, ZIP, IDs, relaciones, estilos y rechazo de características no soportadas.
 
 **Pendiente de confirmar:** resultado de GitHub Actions tras estos cambios. También está pendiente abrir un archivo generado en XMind Desktop y volver a guardarlo para comprobar interoperabilidad real.
@@ -249,6 +249,6 @@ La prueba con XMind real es condición necesaria. Que el ZIP sea válido o que e
 
 **Decisión tomada:** escritura nativa Python del formato moderno ZIP + JSON, usando el SDK y el modelo oficial como referencias técnicas.
 
-**Implementado inicialmente:** adaptador Python, generación del paquete ZIP + JSON, árbol jerárquico, IDs estables, relaciones, notas, etiquetas, marcadores y subconjunto de estilos. Se han añadido pruebas automatizadas para el adaptador; el resultado CI de esta iteración debe consultarse antes de declarar las pruebas superadas.
+**Implementado inicialmente:** adaptador Python, generación del paquete ZIP + JSON, árbol jerárquico, IDs estables, notas, etiquetas, marcadores y subconjunto de estilos. Las relaciones tienen un mapeo inicial de extremos, pero todavía no incorporan `controlPoints` y no deben considerarse interoperables. Se han añadido pruebas automatizadas para el adaptador; el resultado CI de esta iteración debe consultarse antes de declarar las pruebas superadas.
 
 **Pendiente:** integración en CLI, recursos/imágenes, boundaries, summaries, callouts, extensiones, mayor cobertura de estilos y, especialmente, apertura y guardado de un archivo generado en XMind Desktop. No se declara compatibilidad completa con XMind hasta superar esa prueba.

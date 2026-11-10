@@ -1,30 +1,71 @@
-# Configuración de estilos expresada en propiedades neutrales.
-# No usar aquí nombres internos del XML/JSON de XMind: esa traducción
-# corresponde exclusivamente al adaptador de exportación.
+# Configuración de estilos de ejemplo para XMind MD.
+# Las claves son neutrales; no usar aquí atributos internos de XMind.
+# La especificación completa está en docs/style-system.md.
+
+version: 1
+
+defaults:
+  elements:
+    map:
+      background:
+        color: "#FFFFFF"
+
+styles: {}
+
 style_sets:
+  BASE_ACADEMICO:
+    description: "Base visual reutilizable para mapas de estudio."
+    elements:
+      topic:
+        roles:
+          root:
+            typography:
+              font_size: 20
+              font_weight: bold
+          main:
+            typography:
+              font_size: 16
+              font_weight: bold
+          subtopic:
+            typography:
+              font_size: 13
+              font_weight: normal
+      branch:
+        line:
+          color: "#78909C"
+          width: 1.5
+
   TAI_LEGISLACION:
-    description: "Estilos iniciales para mapas de legislación del temario TAI."
+    description: "Estilos para mapas de legislación del temario TAI."
+    extends: BASE_ACADEMICO
+    elements:
+      topic:
+        roles:
+          root:
+            shape:
+              type: rounded_rectangle
+              fill:
+                color: "#263B5A"
+            text:
+              color: "#FFFFFF"
+          main:
+            shape:
+              type: rounded_rectangle
+              fill:
+                color: "#DCE6F1"
+            text:
+              color: "#172B4D"
     styles:
-      # Estilo previsto para el nodo central del mapa.
-      central:
-        role: central
-        font_size: 20
-        font_weight: bold
-        shape: rounded_rectangle
-      # Estilo previsto para los temas principales.
-      principal:
-        role: primary
-        font_size: 16
-        font_weight: bold
-        shape: rounded_rectangle
-      # Estilo base para los subtemas.
-      subtema:
-        role: secondary
-        font_size: 13
-        font_weight: normal
-      # Estilo de énfasis para conceptos que deben destacar.
       concepto_importante:
-        role: emphasis
-        font_size: 13
-        font_weight: bold
-        font_color: "#C00000"
+        applies_to: topic
+        properties:
+          shape:
+            fill:
+              color: "#FCE4D6"
+          border:
+            color: "#C00000"
+            width: 1.5
+          text:
+            color: "#9C0006"
+          typography:
+            font_weight: bold

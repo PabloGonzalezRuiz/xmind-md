@@ -1,0 +1,24 @@
+# Los nombres de propiedades son neutrales; el adaptador XMind los mapeará.
+style_sets:
+  TAI_LEGISLACION:
+    description: "Estilos iniciales para mapas de legislación del temario TAI."
+    styles:
+      central:
+        role: central
+        font_size: 20
+        font_weight: bold
+        shape: rounded_rectangle
+      principal:
+        role: primary
+        font_size: 16
+        font_weight: bold
+        shape: rounded_rectangle
+      subtema:
+        role: secondary
+        font_size: 13
+        font_weight: normal
+      concepto_importante:
+        role: emphasis
+        font_size: 13
+        font_weight: bold
+        font_color: "#C00000"

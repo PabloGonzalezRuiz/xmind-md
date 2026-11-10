@@ -174,11 +174,23 @@ def _list_plain_text(block: dict[str, Any]) -> str:
 def _parse_table(lines: list[str], start: int) -> tuple[dict[str, Any], int]:
     def cells(line: str) -> list[str]:
         return [cell.strip() for cell in line.strip().strip("|").split("|")]
+
     header = cells(lines[start])
+    separator = cells(lines[start + 1])
+    if len(separator) != len(header) or any(
+        not re.fullmatch(r":?-{3,}:?", cell) for cell in separator
+    ):
+        raise MarkdownParseError(f"Separador de tabla inválido (línea {start + 2})")
+
     i = start + 2
     rows = []
     while i < len(lines) and "|" in lines[i] and lines[i].strip():
-        rows.append(cells(lines[i]))
+        row = cells(lines[i])
+        if len(row) != len(header):
+            raise MarkdownParseError(
+                f"Fila de tabla con {len(row)} celdas; se esperaban {len(header)} (línea {i + 1})"
+            )
+        rows.append(row)
         i += 1
     return {"type": "table", "header": [_inline_runs(c) for c in header],
             "rows": [[_inline_runs(c) for c in row] for row in rows]}, i

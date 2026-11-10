@@ -2,7 +2,7 @@
 
 **Proyecto:** XMind MD  
 **Versión del contrato:** 1.0.0  
-**Estado:** especificación aprobada; implementación parcial en migración  
+**Estado:** especificación aprobada; esquema Draft 2020-12 validado y ejemplo conforme  
 **Esquema asociado:** [ir-schema.json](ir-schema.json)  
 **Ejemplo:** [constitucion.json](../examples/ir/constitucion.json)
 
@@ -258,6 +258,12 @@ El validador debe comprobar:
 
 Los errores deben identificar la ruta del elemento en el IR y, cuando exista, su ubicación en el Markdown.
 
+### 9.1 Validación estructural automatizada
+
+El contrato se publica en `docs/ir-schema.json`, declarado como JSON Schema Draft 2020-12. Las pruebas automatizadas usan `jsonschema` y `Draft202012Validator` para comprobar la validez del propio esquema y validar todos los documentos `*.json` situados bajo `examples/ir/`. Se activa `FormatChecker` para los formatos declarados, incluidos `date` y `date-time`.
+
+Esta validación estructural no reemplaza la validación semántica del modelo Python: unicidad global de IDs, referencias entre temas/recursos/estilos, ciclos y pertenencia de cada tema al árbol se comprueban mediante `validate_mind_map()`.
+
 ## 10. Adaptadores y pérdidas de información
 
 Un adaptador:
@@ -304,7 +310,7 @@ La implementación se realizará por fases, con pruebas para cada capacidad. Las
 
 ## 14. Criterios de aceptación del contrato
 
-- El esquema JSON valida el ejemplo incluido.
+- El esquema JSON Draft 2020-12 es válido y las pruebas automatizadas validan todos los ejemplos incluidos.
 - El ejemplo contiene una hoja y una única raíz.
 - La jerarquía, el contenido estructurado y las referencias son válidos.
 - Se representan estilos, anotaciones, recursos, relaciones, límites y resúmenes.

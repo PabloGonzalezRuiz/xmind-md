@@ -254,7 +254,7 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 - **Correcciones durante CI:** las ejecuciones #200 y #202 detectaron fixtures de prueba que no activaban realmente las rutas negativas (escapes de nueva línea y construcciones Markdown no adecuadas). Se corrigieron los fixtures y se volvió a ejecutar la suite completa; no se ocultaron esos fallos intermedios.
 - **CI final:** #203, run `42842555229`, commit `1995076eee2e5108c37320c7a9df9be21745f5de`: **131 pruebas superadas en 0,45 s**. Pasaron `Tests`, `Build XMind Desktop smoke test` y `Upload XMind smoke test`. Entorno: GitHub Actions, Ubuntu, Python 3.12.16. https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42842555229
 - **Commits principales:** CLI `acf87ed9914509e8e81f2bb5d148386c0709d929`; primera batería de pruebas `fd61af356d5df023ce46665221f068baa2f23307`; ampliación y correcciones de pruebas `c062e7d68fc28563fd837bbb0668481e410a56a4`, `456ff64df9a8efd5c554245c8248f27eac6def33`, `36c81c4c2d1d28183ec5431cb3ba432f25770056`, `1995076eee2e5108c37320c7a9df9be21745f5de`; README `9c150d6e6d6eb8156646ad38871ec931c84cff54`; guía de desarrollo `4f189ec5615162f14f58d9f6c12998b069002641`.
-- **Limitaciones que permanecen:** el perfil XMind sigue rechazando las capacidades no implementadas en el adaptador. El smoke test acredita generación y estructura automatizada, no apertura/guardado manual en XMind Desktop. Ruff y ejecución local Windows siguen pendientes.
+- **Limitaciones que permanecen:** el perfil XMind sigue rechazando las capacidades no implementadas en el adaptador. El smoke test acredita generación y estructura automatizada; la comprobación manual posterior en XMind Desktop 26.05.01107 se registra en la tarea 10. Ruff y ejecución local Windows siguen pendientes.
 
 ## 7. Auditoría integral y reconstrucción desde cero (2026-11-10)
 
@@ -273,7 +273,7 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 - El modelo legacy `src/xmind_md/model.py` y las API legacy de parsing/estilos siguen presentes; no eliminarlos sin auditar consumidores y compatibilidad.
 - La exportación XMind es un perfil parcial. La matriz de `docs/xmind-adapter.md` debe considerarse junto al código y las pruebas; no equivale a compatibilidad visual completa.
 - El workflow #205 (run `42842726726`, commit `f99273d3f93a95648457aa183bb4ec55bb99fda8`) terminó correctamente. El log de Tests registra **131 passed in 0.52s**. Se completaron también descarga del fixture, generación y publicación del artefacto.
-- No hay evidencia de ejecución local Windows, Ruff, apertura/guardado manual XMind Desktop.
+- No hay evidencia de ejecución local Windows ni Ruff. La apertura, inspección, guardado y reapertura manual del fixture sí quedaron confirmados por el usuario en XMind Desktop 26.05.01107.
 
 ### Discrepancias documentales detectadas (pendientes de tarea 13)
 

@@ -136,7 +136,7 @@ def test_write_xmind_creates_valid_zip_package(tmp_path):
 @pytest.mark.parametrize(
     "change, message",
     [
-        (lambda m: setattr(m.sheet.root_topic, "kind", "detached"), "kind"),
+        (lambda m: setattr(m.sheet.root_topic, "kind", "detached"), "raíz XMind debe ser"),
         (lambda m: setattr(m.sheet.root_topic, "resources", ResourceReferences(images=["a1"])), "recursos"),
         (lambda m: m.assets.update({"a1": Asset("image", "image.png")}), "recursos"),
         (lambda m: m.sheet.boundaries.append(Boundary("b1", ["topic_child"])), "boundaries"),

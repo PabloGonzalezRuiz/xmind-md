@@ -85,3 +85,14 @@ def test_load_styles_reads_both_sections(tmp_path):
 
     assert "BASE" in result["style_sets"]
     assert result["styles"]["normal"]["topic"]["text"]["bold"] is True
+
+
+
+def test_load_styles_rejects_duplicate_yaml_keys(tmp_path):
+    path = tmp_path / "duplicate.yml"
+    path.write_text(
+        "style_sets:\n  BASE: {}\n  BASE: {}\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(StyleError, match="YAML de estilos inválido"):
+        load_styles(path)

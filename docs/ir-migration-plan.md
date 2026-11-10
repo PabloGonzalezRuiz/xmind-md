@@ -1,7 +1,7 @@
 # Plan de consolidación del modelo intermedio (IR)
 
 **Versión objetivo:** IR 1.0.0  
-**Estado:** modelo, consumidores y validación formal del esquema implementados; gramática aún pendiente  
+**Estado:** modelo, parser, estilos, adaptadores y validación formal implementados; integración XMind en CLI y comprobaciones de entorno pendientes  
 **Alcance:** alinear el modelo Python y sus consumidores con \`docs/ir-specification.md\`, \`docs/ir-schema.json\` y \`examples/ir/constitucion.json\`.
 
 ## 1. Diagnóstico confirmado
@@ -57,7 +57,7 @@ El modelo no importa parser, PyYAML ni bibliotecas de exportación. Las entidade
 
 ### Fase C — Adaptadores
 
-**Estado: migrada y verificada en CI.**
+**Estado: migrada, ampliada y verificada en CI.**
 
 - El adaptador JSON serializa exclusivamente \`MindMap.to_dict()\` del IR 1.0.0.
 - El adaptador XMind consume \`MindMap.sheet.root_topic\`, entidades de anotación y relaciones canónicas, y \`StyleState.resolved\`.
@@ -65,6 +65,7 @@ El modelo no importa parser, PyYAML ni bibliotecas de exportación. Las entidade
 - La CLI JSON y el script de smoke test utilizan \`parse_file_ir()\`.
 - Los formatos y capacidades XMind no soportados se rechazan explícitamente.
 - La exportación no modifica el IR original.
+- Tarea 8: matriz de capacidades IR/XMind documentada; temas `detached` y `callout`, propiedades locales de layout seleccionadas y enlaces internos/a archivo implementados con pruebas. Los `boundaries`, `summaries`, assets, tareas y extensiones siguen rechazados.
 
 ### Fase D — Validación y documentación
 
@@ -92,7 +93,7 @@ La migración de consumidores se considera completada cuando:
 - La suite completa no presenta regresiones.
 - Se comprueba que la exportación no muta el documento IR.
 
-La validación formal del esquema y el ejemplo ya está automatizada. La consolidación global del contrato IR requiere completar las tareas de gramática y cerrar las comprobaciones restantes.
+La validación formal del esquema, el ejemplo y la auditoría de gramática ya están automatizadas. La consolidación global del contrato IR requiere completar la integración XMind en CLI y cerrar las comprobaciones restantes.
 
 ## 6. Fuera de alcance de esta migración
 

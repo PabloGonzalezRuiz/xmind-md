@@ -209,6 +209,32 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             unknown = set(props) - allowed
             if unknown:
                 raise MarkdownParseError(f"Propiedades desconocidas en :::xmind: {sorted(unknown)} (línea {line_no})")
+            if props.get("kind", "attached") not in {"attached", "callout", "summary"}:
+                raise MarkdownParseError(f"kind no válido en :::xmind (línea {line_no})")
+            for field_name in ("style_overrides", "layout", "extensions"):
+                if field_name in props and not isinstance(props[field_name], dict):
+                    raise MarkdownParseError(f"{field_name} debe ser un objeto YAML (línea {line_no})")
+            if "links" in props and not isinstance(props["links"], list):
+                raise MarkdownParseError(f"links debe ser una lista (línea {line_no})")
+            if "labels" in props and (
+                not isinstance(props["labels"], list)
+                or any(not isinstance(label, str) for label in props["labels"])
+            ):
+                raise MarkdownParseError(f"labels debe ser una lista de textos (línea {line_no})")
+            if "markers" in props and (
+                not isinstance(props["markers"], list)
+                or any(not isinstance(marker, dict) for marker in props["markers"])
+            ):
+                raise MarkdownParseError(f"markers debe ser una lista de objetos (línea {line_no})")
+            if "task" in props:
+                task = props["task"]
+                if not isinstance(task, dict):
+                    raise MarkdownParseError(f"task debe ser un objeto YAML (línea {line_no})")
+                progress = task.get("progress")
+                if progress is not None and (
+                    not isinstance(progress, int) or isinstance(progress, bool) or not 0 <= progress <= 100
+                ):
+                    raise MarkdownParseError(f"task.progress debe ser un entero entre 0 y 100 (línea {line_no})")
             if not stack and (roots or level != 1):
                 raise MarkdownParseError("El primer encabezado debe ser H1 y solo puede existir una raíz")
             seed = f"{source_path}|{level}|{title}|{line_no}"

@@ -1,7 +1,9 @@
 """Pruebas de la gramática Markdown enriquecida y su validación."""
+from pathlib import Path
+
 import pytest
 
-from xmind_md.parser import MarkdownParseError, parse_markdown
+from xmind_md.parser import MarkdownParseError, parse_file, parse_markdown
 
 
 def test_legacy_heading_and_directives_remain_supported():
@@ -82,3 +84,14 @@ def test_yaml_dates_are_normalized_to_json_strings():
         "# Raíz\\n:::xmind\\ntask:\\n  due_date: 2026-12-15\\n:::\\n## Hijo\\n"
     )
     assert result.topics[0].children[0].annotations["task"]["due_date"] == "2026-12-15"
+
+
+def test_repository_example_parses_as_complete_document():
+    example = Path(__file__).parents[1] / "examples" / "constitucion.md"
+    result = parse_file(example)
+    assert result.title == "Constitución Española"
+    assert len(result.topics) == 1
+    assert len(result.relationships) == 1
+    assert len(result.boundaries) == 1
+    assert len(result.summaries) == 1
+    assert result.assets[0]["src"] == "assets/escudo.png"

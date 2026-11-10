@@ -75,3 +75,10 @@ def test_note_directive_keeps_markdown_body():
         "# Raíz\\n:::xmind-note\\nNota con **énfasis** y texto.\\n:::\\n"
     )
     assert result.topics[0].annotations["notes"] == ["Nota con **énfasis** y texto."]
+
+
+def test_yaml_dates_are_normalized_to_json_strings():
+    result = parse_markdown(
+        "# Raíz\\n:::xmind\\ntask:\\n  due_date: 2026-12-15\\n:::\\n## Hijo\\n"
+    )
+    assert result.topics[0].children[0].annotations["task"]["due_date"] == "2026-12-15"

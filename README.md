@@ -18,6 +18,7 @@ La documentación está organizada para que una persona o una IA pueda entender,
 - [Catálogo de archivos](docs/file-reference.md): función de cada archivo y dónde deben realizarse los cambios.
 - [Gramática Markdown](docs/grammar.md): sintaxis reconocida y limitaciones actuales.
 - [Guía de desarrollo](docs/development.md): instalación, ejecución, pruebas y ciclo de contribución.
+- [Evaluación del motor XMind](docs/xmind-engine-evaluation.md): alternativas estudiadas y decisión técnica para generar `.xmind`.
 
 ## Estado actual
 

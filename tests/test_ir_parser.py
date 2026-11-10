@@ -104,3 +104,41 @@ def test_parser_preserves_document_level_style_set():
     result = parse_markdown_ir(source)
     assert result.metadata["style_set"] == "GLOBAL"
     assert validate_mind_map(result) is result
+
+
+
+def test_parser_preserves_internal_topic_links_and_validates_target():
+    source = (
+        "# Raíz\n:::xmind\nid: destino\n:::\n## Destino\n"
+        "Referencia a [destino](topic:destino).\n"
+    )
+    result = parse_markdown_ir(source)
+    runs = result.sheet.root_topic.children[0].content[0].data["runs"]
+    assert runs[1]["link"] == {"kind": "topic", "target": "destino"}
+
+
+def test_parser_preserves_inline_strikethrough_and_note_formatting():
+    source = (
+        "# Raíz\nTexto ~~obsoleto~~.\n"
+        ":::xmind-note\nNota **importante**.\n:::\n"
+    )
+    root = parse_markdown_ir(source).sheet.root_topic
+    assert root.content[0].data["runs"][1]["style"] == {"strikethrough": True}
+    note_runs = root.annotations.notes[0].content[0].data["runs"]
+    assert note_runs[1]["style"] == {"bold": True}
+
+
+def test_parser_preserves_content_block_source_ranges():
+    result = parse_markdown_ir("# Raíz\nPrimera línea.\nSegunda línea.\n")
+    block = result.sheet.root_topic.content[0]
+    assert block.data["source"] == {
+        "file": "<string>", "line_start": 2, "line_end": 3
+    }
+
+
+def test_internal_topic_link_to_missing_target_is_rejected():
+    import pytest
+    from xmind_md.ir.validation import IRValidationError
+
+    with pytest.raises(IRValidationError, match="tema enlazado inexistente"):
+        parse_markdown_ir("# Raíz\n[no existe](topic:ausente)\n")

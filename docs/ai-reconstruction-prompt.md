@@ -290,13 +290,13 @@ Evidencia reciente:
 
 ### Hoja de ruta pendiente
 
-10. **Prueba manual XMind Desktop:** abrir el artefacto smoke de CI, inspeccionar elementos, guardar desde XMind Desktop y reabrir. Registrar versión de XMind, sistema operativo, resultados y defectos.
+10. **Prueba manual XMind Desktop (en curso):** el artefacto de CI #205 (run `42842726726`, artifact ID `13775958163`) está descargado y su ZIP ha pasado `unzip -t`. Archivo `xmind-md-smoke-test.xmind`, SHA-256 `9caa73f02ecd6e082202663ada77bd4079ef8bde7da835509d00c314c045acd3`. Falta que el usuario lo abra en XMind Desktop, inspeccione elementos, guarde desde XMind Desktop y reabra. Registrar versión de XMind, sistema operativo, resultados y defectos.
 11. **Windows:** instalación limpia, ejecución de CLI JSON/XMind y suite de pruebas en Windows.
 12. **Calidad automatizada:** incorporar/ejecutar Ruff en CI (lint y formato), revisar workflow y advertencias relevantes.
 13. **Sincronización documental:** corregir inconsistencias de `architecture.md`, `file-reference.md`, `ir-migration-plan.md`, `style-system.md`, `xmind-engine-evaluation.md`, README y otros documentos con respecto al código actual; conservar historial y explicar diferencias intencionadas.
 14. **Auditoría final y publicación estable:** revisar requisitos, seguridad de entradas, errores, dependencias, versionado, licencia, ejemplos, reproducibilidad, documentación y compatibilidad. No publicar como estable hasta satisfacer los criterios definidos.
 
-La tarea 10 es la primera pendiente y requiere intervención del usuario en su escritorio. No la marques completada basándote únicamente en ZIP, JSON o CI.
+La tarea 10 es la primera pendiente y requiere intervención del usuario en su escritorio. La auditoría integral y la reescritura de este prompt se registraron en `docs/development-status.md` (commit `e0ba5b328152d6f5ec7649b4a22829a55f207089`). No marques la tarea 10 completada basándote únicamente en ZIP, JSON o CI.
 
 ## 11. Auditoría documental conocida
 

@@ -68,15 +68,13 @@ El modelo es el contrato entre parser, resolución de estilos y adaptadores. Las
 
 Archivo: src/xmind_md/styles.py.
 
-Carga YAML y resuelve nombres simbólicos. El conjunto de estilos puede heredarse por la rama del árbol. Las propiedades resultantes deben ser neutrales: por ejemplo, font_size, font_weight o shape, no nombres de campos internos de una versión concreta de XMind.
-
-La resolución actual no implementa combinación de estilos ni herencia individual de propiedades.
+Carga YAML y resuelve nombres simbólicos. El conjunto de estilos puede heredarse por la rama del árbol. La resolución combina recursivamente las propiedades del conjunto, el estilo nombrado y los overrides locales, conservando las propiedades no sustituidas. Las propiedades resultantes deben ser neutrales: por ejemplo, font_size, font_weight o shape, no nombres de campos internos de una versión concreta de XMind.
 
 ### 3.5 Adaptadores
 
 Directorio: src/xmind_md/adapters/.
 
-Un adaptador convierte el modelo intermedio en una representación externa. El adaptador JSON actual es útil para depuración, inspección y pruebas. Un futuro adaptador XMind debe traducir las propiedades neutrales a la estructura soportada por la versión elegida de XMind.
+Un adaptador convierte el modelo intermedio en una representación externa. El adaptador JSON actual es útil para depuración, inspección y pruebas. La decisión del proyecto es implementar el futuro adaptador XMind en Python, generando el formato moderno ZIP + JSON. La evaluación de alternativas y sus límites está documentada en xmind-engine-evaluation.md. El adaptador traducirá las propiedades neutrales a la estructura soportada por la versión objetivo de XMind.
 
 No se debe introducir lógica de parsing Markdown en un adaptador.
 
@@ -111,6 +109,8 @@ Orquesta las fases: lectura, parsing, resolución opcional de estilos y escritur
 - PyYAML como dependencia de ejecución.
 - pytest y Ruff como dependencias de desarrollo.
 - JSON como formato de inspección del modelo.
+- Formato de salida objetivo: XMind 2020+ basado en content.json.
+- Motor seleccionado: serialización ZIP + JSON nativa en Python; los SDK externos son referencias, no dependencias obligatorias.
 - GitHub Actions para integración continua.
 
 ## 6. Extensiones previstas
@@ -121,9 +121,10 @@ Orden recomendado:
 2. Ampliar el modelo intermedio con notas, etiquetas, marcadores, enlaces, imágenes, relaciones, boundaries y summaries.
 3. Definir un esquema neutral de estilos y validarlo.
 4. Incorporar pruebas de fixtures para cada característica.
-5. Implementar un adaptador XMind contra una versión/formato objetivo documentado.
+5. Implementar el adaptador XMind Python para el formato moderno ZIP + JSON, según xmind-engine-evaluation.md.
 6. Abrir los archivos generados con XMind real y comprobar su estructura y presentación.
-7. Añadir exportadores alternativos solo cuando exista una necesidad concreta.
+7. Ampliar progresivamente la cobertura de estilos y entidades mediante fixtures y pruebas de integración.
+8. Añadir exportadores alternativos solo cuando exista una necesidad concreta.
 
 ## 7. Criterio para aceptar cambios
 

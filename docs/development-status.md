@@ -4,7 +4,7 @@
 
 - **Última actualización:** 2026-11-10
 - **Rama de referencia:** `main`
-- **Último commit de implementación:** `275f230cd9741b6d7faa59f3c076a76f31df980e`
+- **Último commit de implementación:** `2250dbf06d86680cbfcf9c5c4c4d208e62a4f53b`
 - **Contrato objetivo:** IR 1.0.0
 - **Estado global:** prototipo en migración hacia el IR 1.0.0; todavía no declarar compatibilidad completa.
 
@@ -44,9 +44,9 @@ Prioridad: contrato IR aprobado para la estructura objetivo; código y pruebas p
 
 ### 3.1 Modelo intermedio
 
-**Estado: modelo canónico, puente del parser y resolutor IR integrados parcialmente; adaptadores y CLI aún pendientes.**
+**Estado: modelo IR, parser, resolutor y adaptadores canónicos integrados; validación formal del esquema completada.**
 
-Se ha añadido `src/xmind_md/ir/` con entidades canónicas IR 1.0.0, serialización y validación semántica. El módulo `src/xmind_md/model.py` se conserva temporalmente para que parser, estilos y adaptadores actuales sigan funcionando mientras se migran en las tareas siguientes. Por tanto, la aplicación todavía no produce IR 1.0.0 de extremo a extremo.
+`src/xmind_md/ir/` contiene las entidades canónicas IR 1.0.0, serialización y validación semántica. `src/xmind_md/model.py` se conserva como API legacy por compatibilidad; los adaptadores JSON/XMind y el flujo actual de CLI/smoke consumen el IR canónico.
 
 El modelo legacy `src/xmind_md/model.py` todavía presenta estas diferencias:
 
@@ -58,13 +58,13 @@ El modelo legacy `src/xmind_md/model.py` todavía presenta estas diferencias:
 - Relaciones, límites y resúmenes están en `MindMap`, no dentro de `Sheet`.
 - No existe todavía una entidad `Sheet` en el modelo Python.
 
-El puente del parser y el resolutor ya disponen de rutas canónicas IR. La CLI y los adaptadores siguen dependiendo del modelo legacy; la migración de estos consumidores debe coordinarse para no dejarlos rotos.
+El puente del parser y el resolutor disponen de rutas canónicas IR. Los adaptadores y los consumidores directos migrados no dependen del modelo legacy.
 
 ### 3.2 Parser Markdown
 
 **Estado: puente de conversión a IR 1.0.0 implementado y probado; API legacy conservada temporalmente.**
 
-`src/xmind_md/ir_parser.py` expone `parse_markdown_ir()` y `parse_file_ir()`. Estas funciones convierten el resultado del parser actual a entidades canónicas, estructuran la hoja y validan el documento resultante. `parse_markdown()` y `parse_file()` continúan devolviendo el modelo legacy para no romper el resolutor de estilos, la CLI y los adaptadores aún no migrados. La gramática completa sigue pendiente de la tarea 7.
+`src/xmind_md/ir_parser.py` expone `parse_markdown_ir()` y `parse_file_ir()`. Estas funciones convierten el resultado del parser actual a entidades canónicas, estructuran la hoja y validan el documento resultante. `parse_markdown()` y `parse_file()` conservan la API legacy; `parse_markdown_ir()` y `parse_file_ir()` proporcionan la ruta canónica. La CLI JSON y el generador smoke usan la ruta IR. La gramática completa sigue pendiente de la tarea 7.
 
 ### 3.3 Estilos
 
@@ -86,12 +86,13 @@ No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar
 
 ### 3.5 CLI, pruebas y automatización
 
-**Estado: funcionalidad parcial documentada; ejecución global pendiente de evidencia.**
+**Estado: suite y generación de artefacto verificadas en CI; lint y Windows pendientes.**
 
 - La CLI permite generar el JSON intermedio.
 - Hay pruebas unitarias y de integración en `tests/`.
 - GitHub Actions contiene un flujo de CI y una generación de artefacto XMind de prueba.
-- La ejecución CI #149 finalizó correctamente sobre la actualización documental final de esta fase: **77 pruebas superadas** y artefacto XMind de comprobación generado. La ejecución #144 ya había validado el commit de implementación de la tarea 4 con los mismos 77 tests.
+- CI #165, commit `2250dbf06d86680cbfcf9c5c4c4d208e62a4f53b`: **90 pruebas superadas**, incluyendo validación formal Draft 2020-12, ejemplos y casos negativos; generación y publicación del artefacto XMind correctas.
+- Validador: `jsonschema 4.26.0` con extra `format`; se comprueban los formatos de fecha/fecha-hora.
 - Ruff no forma parte todavía de los pasos del workflow y debe verificarse expresamente.
 - La ejecución local en Windows sigue pendiente; la existencia de configuración o documentación no demuestra que haya pasado.
 
@@ -117,7 +118,7 @@ No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar
 | 3 | Adaptar el parser al nuevo modelo | **Completada** | Parser construye el IR canónico y conserva la sintaxis probada |
 | 4 | Adaptar el resolutor de estilos | **Completada** | Cascada conforme a IR y pruebas de precedencia |
 | 5 | Adaptar los exportadores JSON y XMind | **Completada** | Consumen el modelo canónico y notifican pérdidas |
-| 6 | Validar el esquema JSON y los ejemplos | Pendiente | Draft 2020-12 validado por herramienta y ejemplos conformes |
+| 6 | Validar el esquema JSON y los ejemplos | **Completada** | Draft 2020-12 validado por herramienta y ejemplos conformes |
 | 7 | Completar y probar la gramática Markdown | Pendiente | Gramática y pruebas cubren las construcciones declaradas |
 | 8 | Ampliar y probar las capacidades del adaptador XMind | Pendiente | Matriz de capacidades y pruebas por entidad/propiedad |
 | 9 | Integrar la exportación XMind en la CLI | Pendiente | Comando/opción documentado y probado |
@@ -193,25 +194,40 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 - **Entorno:** GitHub Actions, Ubuntu runner, Python 3.12.16. Ruff no se ejecutó; permanece en la tarea 12.
 - **Documentación:** actualizadas `docs/xmind-adapter.md`, `docs/architecture.md` y `docs/ir-migration-plan.md`.
 
+### Tarea 6 — Validación formal del esquema JSON y los ejemplos
+
+- **Estado:** completada y verificada en GitHub Actions.
+- **Dependencia de desarrollo:** añadido \`jsonschema[format]>=4.22,<5\` a \`pyproject.toml\`; CI resolvió \`jsonschema 4.26.0\` y el extra de validadores de formato.
+- **Pruebas:** nuevo \`tests/test_ir_schema.py\`.
+  - Comprueba que \`docs/ir-schema.json\` es un esquema válido Draft 2020-12 mediante \`Draft202012Validator.check_schema()\`.
+  - Valida todos los JSON encontrados recursivamente en \`examples/ir/\` con \`FormatChecker\`.
+  - Comprueba rechazos para versión IR incorrecta, propiedad obligatoria ausente, tipo de enlace no permitido y fecha-hora inválida.
+- **Resultado CI #165:** commit \`2250dbf06d86680cbfcf9c5c4c4d208e62a4f53b\`; **90 pruebas superadas en 0,30 s**. Pasaron también la descarga del fixture XMind, generación del archivo smoke y publicación del artefacto. Run: \`42833000666\`.
+- **Commits:** dependencia inicial \`de32ff87b54573be595eff26e304730dea73b166\`; pruebas \`367940776aadad58b971185a06a9180c3b1d393a\`; extra de formatos \`3937ddfd04c16488b16d40fde6f3c1c7e4e9c29d\`; prueba de fecha-hora \`2250dbf06d86680cbfcf9c5c4c4d208e62a4f53b\`.
+- **Alcance:** validación estructural y de formatos declarados por JSON Schema; no sustituye \`validate_mind_map()\`, que comprueba invariantes semánticas y referencias cruzadas.
+- **Limitaciones restantes:** solo existe actualmente un ejemplo JSON en \`examples/ir/\`; no se afirma validación de ejemplos que no existen. Ruff y ejecución local Windows permanecen pendientes.
+
 ## 7. Próxima tarea
 
-### Tarea 6 — Validar el esquema JSON y los ejemplos
+### Tarea 7 — Completar y probar la gramática Markdown
 
 **Estado:** pendiente de autorización expresa.
 
 **Alcance propuesto:**
-- Validar `docs/ir-schema.json` con un validador JSON Schema Draft 2020-12.
-- Validar `examples/ir/constitucion.json` contra el esquema.
-- Añadir pruebas automatizadas para el esquema y ejemplos.
-- Corregir discrepancias entre entidades Python, esquema y ejemplo sin ampliar el contrato por accidente.
-- Documentar la herramienta, versión y resultado reproducible.
+- Auditar la gramática documentada frente al parser real.
+- Identificar directivas y construcciones anunciadas que aún no estén implementadas.
+- Completar la gramática de encabezados, bloques estructurados, enlaces, anotaciones y directivas de estilos dentro del alcance aprobado.
+- Añadir pruebas positivas, negativas y de interacción entre construcciones.
+- Verificar que el parser produce IR canónico y conserva orden, contenido y procedencia.
+- Actualizar \`docs/grammar.md\`, ejemplos y documentación de uso.
 
 **Criterios de aceptación:**
-- El esquema es válido Draft 2020-12.
-- Todos los ejemplos declarados pasan la validación.
-- Se añaden pruebas automatizadas y se ejecutan en CI.
-- La documentación refleja las limitaciones reales.
-- Actualización de este documento al cerrar la tarea.
+- Cada construcción declarada tiene una regla o una limitación explícita.
+- Las reglas principales están cubiertas por pruebas automatizadas.
+- Los casos inválidos producen errores claros y localizables.
+- La salida IR se valida semánticamente.
+- La suite completa pasa en CI.
+- Documentación y ejemplos reflejan únicamente sintaxis implementada.
 
 No iniciar esta tarea hasta recibir autorización expresa.
 

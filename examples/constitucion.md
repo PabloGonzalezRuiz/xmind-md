@@ -15,6 +15,9 @@ Norma suprema del ordenamiento jurídico español.
 
 ## Título preliminar
 
+:::xmind
+id: topic_articulo_1
+:::
 ### Artículo 1
 
 España se constituye en un Estado social y democrático de Derecho.

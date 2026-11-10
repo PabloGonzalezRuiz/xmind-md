@@ -27,7 +27,7 @@ def test_front_matter_and_structured_content():
     result = parse_markdown(source)
     root = result.topics[0]
     assert result.title == "Mapa de prueba"
-    assert root.id == "mapa_1"
+    assert result.id == "mapa_1"
     assert [block["type"] for block in root.content_blocks] == [
         "paragraph", "list", "table", "code"
     ]

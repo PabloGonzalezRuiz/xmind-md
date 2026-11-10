@@ -43,7 +43,7 @@ def _runs(value: list[dict[str, Any]]) -> list[dict[str, Any]]:
             if target.startswith("topic:"):
                 result.append({
                     "text": run.get("text", ""),
-                    "link": {"kind": "topic", "target": target[len("topic:"): ]},
+                    "link": {"kind": "topic", "target": target[len("topic:"):]},
                 })
             else:
                 result.append({
@@ -87,16 +87,21 @@ def _table_cell(runs: list[dict[str, Any]]) -> dict[str, Any]:
 def _block(block: dict[str, Any], source_key: str, assets: dict[str, Asset],
            resource_refs: ResourceReferences) -> ContentBlock:
     kind = block.get("type")
+
     def make(block_type: str, data: dict[str, Any] | None = None) -> ContentBlock:
         values = dict(data or {})
         if block.get("source"):
             values["source"] = dict(block["source"])
-        return make(block_type, values)
+        return ContentBlock(block_type, values)
+
     if kind == "paragraph":
         runs = _runs(block.get("runs", []))
-        return _paragraph("".join(run["text"] for run in runs), runs)
+        return make("paragraph", {
+            "text": "".join(run["text"] for run in runs),
+            "runs": runs,
+        })
     if kind == "list":
-        return ContentBlock("list", {
+        return make("list", {
             "ordered": bool(block.get("ordered")),
             "items": [_list_item(item) for item in block.get("items", [])],
         })
@@ -107,22 +112,22 @@ def _block(block: dict[str, Any], source_key: str, assets: dict[str, Asset],
             "cells": [_table_cell(cell) for cell in row],
             "header": False,
         } for row in block.get("rows", []))
-        return ContentBlock("table", {"rows": rows})
+        return make("table", {"rows": rows})
     if kind == "code":
-        return ContentBlock("code", {
+        return make("code", {
             "language": block.get("language"),
             "code": block.get("text", ""),
         })
     if kind == "quote":
         paragraphs = block.get("content", [])
-        return ContentBlock("quote", {
+        return make("quote", {
             "text": "\n".join(
                 "".join(run.get("text", "") for run in item.get("runs", []))
                 for item in paragraphs
             )
         })
     if kind == "divider":
-        return ContentBlock("divider")
+        return make("divider")
     if kind == "image":
         src = str(block.get("src", ""))
         asset_id = _id("asset", src)
@@ -132,12 +137,12 @@ def _block(block: dict[str, Any], source_key: str, assets: dict[str, Asset],
         ))
         if asset_id not in resource_refs.images:
             resource_refs.images.append(asset_id)
-        return ContentBlock("image", {
+        return make("image", {
             "asset_id": asset_id,
             "alt": block.get("alt"),
         })
     # No se pierde silenciosamente una construcción futura del parser.
-    return ContentBlock("raw", {
+    return make("raw", {
         "format": "xmind-md-legacy",
         "data": dict(block),
     })

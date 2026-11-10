@@ -14,7 +14,7 @@ from pathlib import Path
 import pytest
 
 from xmind_md.adapters.xmind_adapter import build_xmind_content, write_xmind
-from xmind_md.model import MindMap, Topic
+from xmind_md.ir import MindMap, Relationship, Sheet, Topic
 
 
 REFERENCE_FILE = Path(__file__).parent / "fixtures" / "reference.xmind"
@@ -36,7 +36,6 @@ def test_reference_xmind_is_a_readable_modern_workbook():
         assert "Thumbnails/thumbnail.png" in names
         assert "content.xml" in names
         assert archive.testzip() is None
-        # Este fixture externo no incluye mimetype; si existe, debe ser válido.
         if "mimetype" in names:
             assert archive.read("mimetype").decode("ascii") == "application/vnd.xmind.workbook"
 
@@ -56,14 +55,17 @@ def test_reference_xmind_is_a_readable_modern_workbook():
 def test_generated_workbook_matches_reference_core_structure(tmp_path: Path):
     reference = _read_content(REFERENCE_FILE)[0]
 
-    child = Topic(id="child-1", title="Child", level=2)
-    root = Topic(id="root-1", title="Root", level=1, children=[child])
-    mind_map = MindMap(title="Integration map", id="integration-map", topics=[root])
+    child = Topic(id="child-1", title="Child")
+    root = Topic(id="root-1", title="Root", children=[child])
+    mind_map = MindMap(
+        id="integration-map",
+        title="Integration map",
+        sheet=Sheet(id="sheet-1", title="Integration map", root_topic=root),
+    )
 
     generated_path = write_xmind(mind_map, tmp_path / "generated.xmind")
     generated = _read_content(generated_path)[0]
 
-    # Both workbooks expose the same modern sheet/root/attached-topic bones.
     assert {"id", "rootTopic"} <= set(reference)
     assert {"id", "rootTopic"} <= set(generated)
     for sheet in (reference, generated):
@@ -80,21 +82,24 @@ def test_generated_relationship_contains_two_model_control_points():
     root = Topic(
         id="root-1",
         title="Root",
-        level=1,
-        children=[Topic(id="child-1", title="Child", level=2)],
+        children=[Topic(id="child-1", title="Child")],
     )
     mind_map = MindMap(
-        title="Relationship map",
         id="relationship-map",
-        topics=[root],
-        relationships=[
-            {
-                "id": "relation-1",
-                "source": "root-1",
-                "target": "child-1",
-                "title": "Related",
-            }
-        ],
+        title="Relationship map",
+        sheet=Sheet(
+            id="sheet-1",
+            title="Relationship map",
+            root_topic=root,
+            relationships=[
+                Relationship(
+                    "relation-1",
+                    "root-1",
+                    "child-1",
+                    title="Related",
+                )
+            ],
+        ),
     )
 
     relationship = build_xmind_content(mind_map)[0]["relationships"][0]

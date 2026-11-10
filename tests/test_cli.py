@@ -96,22 +96,28 @@ def test_cli_help_documents_both_formats(monkeypatch, capsys):
 
 def test_cli_reports_ir_feature_not_supported_by_xmind(tmp_path, monkeypatch, capsys):
     source = tmp_path / "mapa.md"
-    source.write_text("# Raíz\\n![Imagen](imagen.png)\\n", encoding="utf-8")
-
-    result = _run_cli(monkeypatch, source, "--output", tmp_path / "mapa.xmind")
-
-    assert result == 2
-    assert "aún no está implementada" in capsys.readouterr().err
-
-
-def test_cli_reports_unresolved_style_for_xmind(tmp_path, monkeypatch, capsys):
-    source = tmp_path / "mapa.md"
     source.write_text(
-        "# Raíz\\n:::xmind\\nstyle: inexistente\\n:::\\n## Rama\\n",
+        "# Raíz\\n"
+        ":::xmind\\nid: tema_a\\n:::\\n## A\\n"
+        ":::xmind\\nid: tema_b\\n:::\\n## B\\n"
+        ":::xmind-summary\\nid: resumen\\ntopics: [tema_a, tema_b]\\n:::\\n",
         encoding="utf-8",
     )
 
     result = _run_cli(monkeypatch, source, "--output", tmp_path / "mapa.xmind")
 
     assert result == 2
-    assert "no definido" in capsys.readouterr().err
+    assert "summaries" in capsys.readouterr().err
+
+
+def test_cli_reports_unresolved_style_for_xmind(tmp_path, monkeypatch, capsys):
+    source = tmp_path / "mapa.md"
+    source.write_text(
+        "---\\nstyle_set: INEXISTENTE\\n---\\n# Raíz\\n",
+        encoding="utf-8",
+    )
+
+    result = _run_cli(monkeypatch, source, "--output", tmp_path / "mapa.xmind")
+
+    assert result == 2
+    assert "INEXISTENTE" in capsys.readouterr().err

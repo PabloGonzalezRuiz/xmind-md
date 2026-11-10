@@ -58,3 +58,23 @@ el SDK externo ni añade dependencias de ejecución al proyecto.
 
 La validación visual requiere abrir el archivo generado y guardarlo desde una
 versión identificada de XMind Desktop. Esa comprobación manual queda pendiente.
+
+## Archivo para comprobación manual en XMind Desktop
+
+El workflow también ejecuta scripts/create_xmind_smoke.py y publica el
+resultado como artefacto xmind-desktop-smoke-test. El archivo se construye
+a partir de examples/xmind-smoke-test.md y contiene dos ramas, una nota,
+una etiqueta, un marcador y una relación.
+
+Para realizar la comprobación:
+
+1. Abre la última ejecución correcta de CI.
+2. Descarga el artefacto xmind-desktop-smoke-test.
+3. Extrae xmind-md-smoke-test.xmind.
+4. Ábrelo con XMind Desktop.
+5. Comprueba que aparecen la raíz, las dos ramas, el detalle, la nota, la
+   etiqueta, el marcador y la relación.
+6. Guarda una copia desde XMind Desktop y, si es posible, vuelve a abrirla.
+
+La compatibilidad visual solo podrá darse por verificada cuando se conozca la
+versión de XMind Desktop y se confirme el resultado de esa comprobación.

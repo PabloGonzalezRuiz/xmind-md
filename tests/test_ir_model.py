@@ -3,6 +3,7 @@
 import pytest
 
 from xmind_md.ir import (
+    Annotation,
     Asset,
     Boundary,
     ContentBlock,
@@ -24,9 +25,7 @@ def make_map() -> MindMap:
         id="topic_child",
         title="Hijo",
         content=[ContentBlock("paragraph", {"text": "Contenido"})],
-        annotations=__import__("xmind_md.ir", fromlist=["Annotation"]).Annotation(
-            labels=[Label("label_child", "IMPORTANTE")]
-        ),
+        annotations=Annotation(labels=[Label("label_child", "IMPORTANTE")]),
         resources=ResourceReferences(images=["asset_image"]),
     )
     root = Topic(id="topic_root", title="Raíz", children=[child])
@@ -144,4 +143,23 @@ def test_link_kind_and_target_are_validated():
     )
 
     with pytest.raises(IRValidationError, match="kind"):
+        validate_mind_map(mind_map)
+
+
+
+def test_topic_link_must_reference_existing_topic():
+    mind_map = make_map()
+    mind_map.sheet.root_topic.links.append(
+        {"id": "link_1", "kind": "topic", "target": "missing"}
+    )
+
+    with pytest.raises(IRValidationError, match="tema enlazado inexistente"):
+        validate_mind_map(mind_map)
+
+
+def test_style_reference_must_exist():
+    mind_map = make_map()
+    mind_map.sheet.root_topic.style.ref = "missing"
+
+    with pytest.raises(IRValidationError, match="estilo inexistente"):
         validate_mind_map(mind_map)

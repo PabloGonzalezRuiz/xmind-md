@@ -16,8 +16,8 @@ Este documento explica la finalidad de cada archivo versionado y qué tipo de ca
 |---|---|---|
 | __init__.py | Identidad del paquete y versión pública. | Ejecutar el programa o importar adaptadores innecesariamente. |
 | __main__.py | Permite python -m xmind_md. | Duplicar la lógica de la CLI. |
-| model.py | Define MindMap y Topic, el modelo intermedio. | Conocer XMind, Markdown o detalles de serialización externos. |
-| parser.py | Convierte la gramática Markdown enriquecida en el modelo. | Escribir archivos ni resolver propiedades visuales específicas de XMind. |
+| model.py | Define MindMap y Topic, el modelo intermedio y los bloques de contenido estructurados. | Conocer XMind, Markdown o detalles de serialización externos. |
+| parser.py | Convierte front matter, encabezados, directivas y bloques Markdown en el IR; valida jerarquía e IDs. | Escribir archivos ni resolver propiedades visuales específicas de XMind. |
 | styles.py | Lee YAML y resuelve conjuntos/estilos. | Convertir propiedades a XML/JSON interno de XMind. |
 | cli.py | Coordina las operaciones y gestiona argumentos/errores. | Acumular reglas de parsing o exportación. |
 
@@ -61,7 +61,7 @@ Los ejemplos también actúan como fixtures legibles: al cambiar la gramática, 
 
 | Archivo | Función |
 |---|---|
-| test_parser.py | Comprueba parsing, jerarquía, metadatos y errores de sintaxis. |
+| test_parser.py | Comprueba gramática enriquecida, bloques estructurados, directivas, referencias y errores. |
 | test_styles.py | Comprueba la resolución de estilos desde un conjunto heredado. |
 
 Toda funcionalidad nueva debe tener pruebas. No basta con modificar un ejemplo o comprobar visualmente el JSON.

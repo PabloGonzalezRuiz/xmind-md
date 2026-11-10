@@ -5,7 +5,7 @@ import argparse
 from pathlib import Path
 
 from xmind_md.adapters.xmind_adapter import write_xmind
-from xmind_md.parser import parse_file
+from xmind_md.ir_parser import parse_file_ir
 
 
 def main() -> None:
@@ -21,7 +21,7 @@ def main() -> None:
     args = parser.parse_args()
 
     source = project_root / "examples" / "xmind-smoke-test.md"
-    mind_map = parse_file(source)
+    mind_map = parse_file_ir(source)
     result = write_xmind(mind_map, args.output)
     print(f"Archivo XMind generado: {result}")
 

@@ -75,3 +75,11 @@ Toda funcionalidad nueva debe tener pruebas. No basta con modificar un ejemplo o
 ## Salida: output/
 
 El directorio está reservado para resultados locales. .gitkeep conserva el directorio en Git y .gitignore excluye los resultados generados.
+
+
+## Cambios del paso 5 (segunda fase)
+
+- `parser.py`: loader YAML seguro con detección de claves duplicadas, listas anidadas, validación de IDs explícitos, tipos de directivas y referencias globales.
+- `styles.py`: carga de estilos globales y conjuntos; fusión recursiva; herencia de conjuntos; precedencia de definiciones del documento frente a las externas; overrides locales.
+- `tests/test_parser.py`: casos de listas anidadas, YAML duplicado, IDs inválidos y tipos del front matter.
+- `tests/test_styles.py`: precedencia, herencia, fusión y errores de referencias.

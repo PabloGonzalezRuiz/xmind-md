@@ -4,7 +4,7 @@
 
 - **Última actualización:** 2026-11-10
 - **Rama de referencia:** `main`
-- **Último commit de implementación:** `f2f491cd52e668a53d31c1dddbf321c30f262882`
+- **Último commit de implementación:** `da3c95034e200996a8e7c2a463fdce1796d43de2`
 - **Contrato objetivo:** IR 1.0.0
 - **Estado global:** prototipo en migración hacia el IR 1.0.0; todavía no declarar compatibilidad completa.
 
@@ -120,7 +120,7 @@ No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar
 | 5 | Adaptar los exportadores JSON y XMind | **Completada** | Consumen el modelo canónico y notifican pérdidas |
 | 6 | Validar el esquema JSON y los ejemplos | **Completada** | Draft 2020-12 validado por herramienta y ejemplos conformes |
 | 7 | Completar y probar la gramática Markdown | **Completada** | Subconjunto implementado auditado, limitaciones explícitas y suite CI verde |
-| 8 | Ampliar y probar las capacidades del adaptador XMind | Pendiente | Matriz de capacidades y pruebas por entidad/propiedad |
+| 8 | Ampliar y probar las capacidades del adaptador XMind | **Completada** | Matriz de capacidades, conversiones adicionales y suite CI verde |
 | 9 | Integrar la exportación XMind en la CLI | Pendiente | Comando/opción documentado y probado |
 | 10 | Completar las pruebas con XMind Desktop | Pendiente | Apertura, inspección y guardado comprobados y registrados |
 | 11 | Verificar ejecución local en Windows | Pendiente | Instalación, CLI y pruebas ejecutadas en entorno Windows |
@@ -221,6 +221,22 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 - **Limitaciones deliberadas:** no se implementan CommonMark/GFM completos, fórmulas, HTML, enlaces de referencia, listas laxas, imágenes inline con inventario de assets, ni notas con bloques estructurados. Están enumeradas en docs/grammar.md.
 - **No ejecutado:** Ruff, ejecución local Windows y apertura/guardado manual del artefacto en XMind Desktop siguen pendientes en sus tareas correspondientes.
 
+### Tarea 8 — Ampliación y auditoría de capacidades del adaptador XMind
+
+- **Estado:** completada y verificada en GitHub Actions.
+- **Archivos:** `src/xmind_md/adapters/xmind_adapter.py`, `tests/test_xmind_adapter.py`, `docs/xmind-adapter.md`, `docs/xmind-integration-tests.md`, `docs/ir-migration-plan.md`.
+- **Auditoría:** contrastadas las capacidades IR 1.0.0 con el modelo JSON oficial de XMind. La matriz de `docs/xmind-adapter.md` clasifica cada entidad/capacidad como soportada, parcial o no soportada y describe las pérdidas intencionadas.
+- **Temas:** el adaptador exporta hijos `attached`, `detached` y `callout` en las colecciones XMind correspondientes. La raíz debe ser `attached`; los temas `detached` requieren `layout.position` con coordenadas numéricas finitas.
+- **Layout de tema:** se mapean `position`, `structure_class`, `branch=folded` y `width` a `position`, `structureClass`, `branch` y `customWidth`. Se rechazan propiedades desconocidas, valores inválidos y números no finitos.
+- **Enlaces:** un enlace `topic` se convierte a `href` `xmind:#<UUID>` tras resolver el ID destino; los enlaces `file` se admiten solo con URI `file://`; se conserva el comportamiento `web`. Se rechazan enlaces múltiples, tipo `internal`, títulos adicionales y destinos internos inexistentes.
+- **Pérdidas documentadas:** el contenido de bloques se aplana a notas de texto; se pierden los estilos inline y destinos de enlaces inline, los IDs auxiliares y la procedencia; los catálogos de estilos se materializan en propiedades resueltas. Estas pérdidas constan en la matriz.
+- **No soportado y rechazado explícitamente:** `kind=summary` y otras clases de tema, `Boundary`, `Summary`, assets y recursos, imágenes, audio, adjuntos, tareas, extensiones, metadatos de hoja, layouts de hoja no predeterminados, estilos visuales de notas y propiedades de estilo no reconocidas.
+- **Pruebas nuevas:** casos positivos de temas detached/callout, layout y enlaces topic/file; casos negativos de raíz inválida, clases/layout inválidos, coordenadas/anchuras no finitas, enlaces inválidos o con pérdida, tareas, metadatos, notas con estilo, ecuaciones y enlaces múltiples. La prueba de no mutación IR existente continúa pasando.
+- **CI final de código/pruebas:** #192, run `42841141633`, commit `da3c95034e200996a8e7c2a463fdce1796d43de2`: **122 pruebas superadas en 0,35 s**; pasos `Tests`, `Build XMind Desktop smoke test` y `Upload XMind smoke test` correctos. Entorno: GitHub Actions, Ubuntu, Python 3.12.16. https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42841141633
+- **Correcciones durante CI:** #182–#183 detectaron una comprobación residual que seguía rechazando todo `Topic.layout` y una expectativa antigua para la raíz; #191 reveló cuatro defectos en pruebas negativas (mensajes esperados y selección de nota/enlace). Se corrigieron antes de #192.
+- **Commits relevantes:** soporte de tipos/layout/enlaces `5731ca68215772129581ef5cc056c69ef58fb322`, `c90c29b26fff7d7bf8cec916d944dca5ba56c98f`; pruebas `403f51743b8bb40115fa3c219e219be0de93f823`, `ff3f1326acd7949fbc94492dba976c6acc1259d3`, `0de66bbfceaa1fee45f7546c16dfe97c4651921f`, `2a473e1c6860744dbb8abeac31b19aa1bf2ecb28`, `da3c95034e200996a8e7c2a463fdce1796d43de2`; documentación `d7418cf996ed7469689aa5650439937c6380014f`, `5840eb67e2c96ddcc6bc47c20fd7a60de1cb06f9`, `fb62dd8d413b71462df8ff0376286c653acd1dae`, `a1f327e2d3b566f0c18625bafe1ca44a28e6970c`.
+- **No ejecutado:** Ruff, ejecución local Windows y apertura/guardado manual del artefacto en XMind Desktop. La generación y subida del smoke test CI no acredita compatibilidad visual en la aplicación.
+
 ## 7. Próxima tarea
 
 ### Tarea 8 — Ampliar y probar las capacidades del adaptador XMind
@@ -241,6 +257,29 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 - No se descarta información silenciosamente ni se muta el IR.
 - La suite completa pasa en CI y se genera el artefacto smoke.
 - La documentación coincide con el comportamiento real.
+
+No iniciar esta tarea hasta recibir autorización expresa.
+
+## 7. Próxima tarea
+
+### Tarea 9 — Integrar la exportación XMind en la CLI
+
+**Estado:** pendiente de autorización expresa.
+
+**Alcance propuesto:**
+- Auditar la CLI actual y sus consumidores para definir una interfaz de exportación XMind coherente con la ruta IR canónica.
+- Incorporar un comando u opción explícita de salida `.xmind`, sin romper la exportación JSON ni la API legacy.
+- Conectar lectura Markdown, validación IR, resolución de estilos y adaptador XMind en el orden correcto.
+- Definir errores CLI claros para características IR no exportables y rutas de salida inválidas.
+- Añadir pruebas CLI positivas y negativas, incluyendo el artefacto generado y la preservación del comportamiento JSON.
+- Actualizar README y documentación de uso de CLI si procede.
+
+**Criterios de aceptación:**
+- La CLI genera un `.xmind` desde Markdown usando exclusivamente el IR canónico.
+- La exportación JSON existente sigue funcionando.
+- Los errores de validación/exportación tienen códigos de salida y mensajes comprobados.
+- Las pruebas automatizadas y el smoke test CI pasan.
+- La ayuda y la documentación describen las opciones reales.
 
 No iniciar esta tarea hasta recibir autorización expresa.
 

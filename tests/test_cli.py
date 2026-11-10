@@ -101,7 +101,7 @@ def test_cli_reports_ir_feature_not_supported_by_xmind(tmp_path, monkeypatch, ca
     result = _run_cli(monkeypatch, source, "--output", tmp_path / "mapa.xmind")
 
     assert result == 2
-    assert "no está soportado" in capsys.readouterr().err
+    assert "aún no está implementada" in capsys.readouterr().err
 
 
 def test_cli_reports_unresolved_style_for_xmind(tmp_path, monkeypatch, capsys):

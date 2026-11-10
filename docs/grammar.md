@@ -1,6 +1,6 @@
 # Gramática Markdown enriquecida de XMind MD
 
-**Versión de gramática:** 1.0-draft  
+**Versión de gramática:** 1.0-draft (subconjunto implementado documentado)  
 **Contrato IR objetivo:** 1.0.0  
 **Estado:** especificación 1.0-draft; implementación parcial en `parser.py`. Consultar las limitaciones de implementación al final.
 
@@ -93,7 +93,7 @@ Reglas:
 - El nivel Markdown es una ayuda de sintaxis; no se conserva como propiedad visual obligatoria del IR.
 - Los encabezados Setext (`===` y `---`) no crean temas en la gramática 1.0. Los IDs generados dependen de la ruta del archivo, la ruta jerárquica de títulos y la ocurrencia entre hermanos; para conservar IDs al renombrar o mover temas, se recomienda declarar `id` explícitamente.
 - Los encabezados dentro de bloques de código cercados no crean temas.
-- El texto del encabezado se interpreta como título; los atributos de formato se conservan cuando el parser pueda representarlos.
+- El texto del encabezado se interpreta literalmente como título. El formato inline dentro de los encabezados no se transforma en estilos IR.
 
 No se admiten dos temas raíz en un mismo archivo. Para otro mapa se utiliza otro archivo Markdown.
 
@@ -196,7 +196,7 @@ Se utiliza la sintaxis Markdown estándar:
 - Una imagen se convierte en bloque de contenido `image` y referencia un asset del mapa.
 - Las rutas relativas se resuelven respecto al archivo Markdown.
 - No se descargan recursos remotos durante el parsing.
-- Los enlaces internos a temas pueden usar el ID explícito del tema como destino: `[Artículo 14](topic:topic_articulo_14)`.
+- Los enlaces internos a temas pueden usar el ID explícito del tema como destino: `[Artículo 14](topic:topic_articulo_14)`. La referencia se valida al construir el IR.\n- Los enlaces inline admitidos usan la forma `[texto](destino)` sin paréntesis anidados en el destino. No se implementan enlaces de referencia, autolinks ni destinos con paréntesis sin escapar.\n- Las imágenes inline dentro de párrafos o celdas no se consideran recursos completos; utiliza una imagen independiente en su propia línea.
 
 ## 6. Notas y directivas de bloque
 
@@ -395,35 +395,53 @@ La especificación fija la sintaxis y la semántica previstas. No implica que el
 La implementación se hará por fases y cada bloque gramatical deberá disponer de pruebas positivas, negativas y de serialización al IR. Las funciones no implementadas deben indicarse en la documentación y en los mensajes de la CLI.
 
 
-## 15. Estado real del parser (paso 5)
+## 15. Estado real del parser (auditoría de tarea 7)
 
-La implementación actual reconoce:
+La gramática de este documento describe un subconjunto propio de Markdown enriquecido. **No debe interpretarse como compatibilidad completa con CommonMark o GitHub Flavored Markdown (GFM).** La matriz siguiente delimita el comportamiento que debe comprobarse en código y pruebas.
 
-- Front matter YAML con metadatos de mapa, estilos, conjuntos y layout.
-- Encabezados ATX con una única raíz H1.
-- IDs explícitos y generación determinista de IDs cuando faltan.
-- Directivas de tema `:::xmind` y compatibilidad transitoria con `@conjunto(...)` y `@estilo(...)`.
-- Notas mediante `:::xmind-note`.
-- Directivas globales de relaciones, límites y resúmenes con validación de referencias.
-- Párrafos, listas, tablas, citas, bloques de código, separadores e imágenes como bloques tipados.
-- Fragmentos inline básicos: negrita, cursiva, código y enlaces.
+### 15.1 Construcciones implementadas
 
-La implementación todavía no cubre toda la gramática. En particular, las fórmulas, enlaces internos especiales, referencias de assets, validación exhaustiva de todos los tipos de propiedades, actualización completa de rangos de origen y preservación CommonMark avanzada necesitan trabajo adicional. La gramática debe considerarse una especificación objetivo, no una afirmación de compatibilidad completa.
+| Construcción | Comportamiento implementado | Restricciones |
+|---|---|---|
+| Front matter | YAML al inicio, delimitado por `---` o `...`; claves duplicadas y campos superiores desconocidos rechazados | Un único bloque inicial; no se admiten varios front matter |
+| Encabezados | ATX H1–H6; una raíz H1; IDs explícitos o deterministas | Setext no admitido; título literal, sin formato inline; sin atributos de encabezado |
+| Jerarquía | Se anidan por el encabezado abierto de nivel inferior más próximo | Se permiten saltos de nivel; no se conservan niveles como propiedad visual IR |
+| Directiva `:::xmind` | YAML asociado al encabezado siguiente; valida propiedades reconocidas y varios tipos | Solo una directiva pendiente; comentarios o contenido intermedio no admitidos |
+| Directivas legacy | `@conjunto(...)` y `@estilo(...)` | Compatibilidad transitoria; no utilizar en documentos nuevos |
+| Notas | `:::xmind-note` asociada al tema activo; formato inline convertido a runs | El cuerpo se trata como una nota de texto; no se estructuran listas, tablas, citas ni código internos |
+| Directivas globales | Relaciones, límites y resúmenes YAML; referencias y unicidad de IDs validadas tras el árbol | No se admiten propiedades arbitrarias fuera de las documentadas |
+| Párrafos | Líneas consecutivas no vacías se unen con espacios; bloques separados por líneas vacías | No se conservan saltos duros ni blandos como nodos separados |
+| Formato inline | Negrita (`**...`/`__...__`), cursiva (`*...*`/`_..._`), tachado (`~~...~~`), código inline y enlaces inline | Sin anidamiento de énfasis, escapes CommonMark completos, enlaces de referencia ni destinos con paréntesis anidados |
+| Enlaces a temas | `[texto](topic:ID)` se convierte en enlace IR de tipo `topic` y se valida | El ID debe existir en el mismo mapa |
+| Listas | Ordenadas y no ordenadas; anidamiento por sangría de espacios o tabuladores | No se admiten párrafos continuados, listas separadas por líneas vacías ni contenido mixto complejo; el tipo de lista anidada no se conserva como propiedad independiente |
+| Tablas | Tablas pipe con fila de encabezado, separador y filas de igual anchura; pipe escapado (`\\|`) dentro de celdas | No se admiten celdas multilínea; la alineación del separador no se conserva |
+| Citas | Líneas consecutivas que comienzan por `>` | Sin bloques anidados ni párrafos múltiples |
+| Código cercado | Cercas de tres o más acentos graves o virgulillas; cierre con el mismo carácter y longitud igual o mayor | No es un parser CommonMark completo; no se admiten bloques de código indentados |
+| Separador | Una línea formada por al menos tres guiones, asteriscos o guiones bajos (con espacios opcionales) | No se admiten variantes HTML |
+| Imagen | Imagen Markdown independiente en su propia línea; se crea asset y referencia del tema | No se comprueba la existencia física del fichero ni se descargan URLs remotas |
+| Procedencia | Temas y bloques principales conservan archivo y rango de líneas | No se conserva todavía procedencia por celda, elemento de lista, run inline, nota ni directiva global |
 
+### 15.2 Construcciones no implementadas o limitadas explícitamente
 
-### 15.1 Ampliaciones verificables de la segunda fase del paso 5
+- Encabezados Setext, HTML embebido, bloques HTML y comentarios HTML.
+- Fórmulas matemáticas y bloques `equation`.
+- Bloques `raw` declarados por el usuario; el tipo se reserva para conversiones internas.
+- Enlaces de referencia, autolinks, enlaces con destinos que contienen paréntesis anidados y sintaxis de título de destino.
+- Imágenes inline con inventario completo de assets, imágenes remotas y adjuntos/audio.
+- Énfasis anidado, escapes completos de caracteres Markdown, subrayado y tachado alternativo.
+- Listas con párrafos continuados, listas laxas, tareas Markdown `- [ ]`, elementos con varios bloques y mezcla compleja de listas ordenadas/no ordenadas.
+- Tablas multilínea, alineación visual y sintaxis extendida GFM.
+- Citas anidadas, atribución de citas y varios párrafos estructurados en una misma cita.
+- Notas con bloques estructurados; por ahora se conserva el texto y se reconoce su formato inline.
+- Atributos de encabezado, identificadores automáticos de ancla y extensiones de Markdown de terceros.
+- Diagnósticos acumulados: el parser detiene el análisis en el primer error estructural que impide continuar.
 
-La implementación del parser se ha ampliado con:
+### 15.3 Procedencia y contrato IR
 
-- Listas ordenadas y no ordenadas con anidamiento recursivo; los elementos y sus sublistas se conservan como estructura, no como texto plano.
-- Se admite sangría con espacios o tabuladores en los niveles de lista.
-- Las tablas validan la anchura de cada fila y la correspondencia del separador con las columnas del encabezado.
-- Rechazo de claves YAML duplicadas en front matter, directivas y archivos externos de estilos.
-- Validación del formato de IDs explícitos de mapas, temas y entidades globales.
-- Validación de tipos para estilos, conjuntos, enlaces, marcadores y referencias de relaciones, límites y resúmenes.
-- Rechazo de referencias globales repetidas o inexistentes.
-- Validación de los objetos `styles`, `style_sets` y `extensions` del front matter.
+Cada tema conserva el archivo y la línea de su encabezado. Los bloques principales de contenido conservan `source.file`, `source.line_start` y `source.line_end` en los datos del bloque IR. Los rangos son inclusivos. La procedencia granular de subelementos queda pendiente.
 
-El resolutor de estilos aplica fusión recursiva de propiedades, herencia del conjunto de estilos por rama, estilo nombrado y overrides locales. Las definiciones del Markdown prevalecen sobre las definiciones externas con el mismo nombre. Los valores `null` se conservan como instrucciones explícitas para el adaptador.
+El parser canónico utiliza `parse_markdown_ir()` y `parse_file_ir()`. La conversión debe preservar el orden de los bloques, el orden de los temas y las referencias internas. La salida se comprueba con `validate_mind_map()`; la validación semántica no implica que el adaptador XMind pueda exportar todas las capacidades.
 
-Estas ampliaciones no convierten todavía el parser en una implementación CommonMark completa ni implican que todos los campos del contrato IR estén cubiertos.
+### 15.4 Política de compatibilidad
+
+La gramática implementada se limita a las construcciones de la sección 15.1. Las construcciones de la sección 15.2 deben rechazarse cuando puedan confundirse con sintaxis admitida, o permanecer como texto literal cuando su interpretación sea inequívoca. No se debe anunciar compatibilidad CommonMark/GFM completa ni descartar silenciosamente contenido que el parser haya reconocido como estructura.

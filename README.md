@@ -7,7 +7,7 @@ La idea central es separar cuatro capas:
 1. **Documento fuente:** Markdown legible y editable.
 2. **Parser:** interpreta encabezados y metadatos.
 3. **Modelo intermedio:** representa el mapa sin depender de XMind ni de una biblioteca concreta.
-4. **Adaptadores:** transforman el modelo al formato de destino (el primer objetivo es `.xmind`).
+4. **Adaptadores:** transforman el modelo al formato de destino (JSON de inspección y XMind moderno).
 
 ## Documentación del proyecto
 
@@ -19,6 +19,7 @@ La documentación está organizada para que una persona o una IA pueda entender,
 - [Gramática Markdown](docs/grammar.md): sintaxis reconocida y limitaciones actuales.
 - [Guía de desarrollo](docs/development.md): instalación, ejecución, pruebas y ciclo de contribución.
 - [Evaluación del motor XMind](docs/xmind-engine-evaluation.md): alternativas estudiadas y decisión técnica para generar `.xmind`.
+- [Adaptador XMind](docs/xmind-adapter.md): formato generado, mapeos implementados y limitaciones actuales.
 
 ## Estado actual
 
@@ -31,9 +32,10 @@ Esta primera versión implementa:
 - Modelo intermedio JSON.
 - Resolución inicial de estilos definidos en YAML.
 - CLI para validar y generar el JSON intermedio.
-- Pruebas automatizadas y workflow de GitHub Actions.
+- Primera versión programática del adaptador XMind moderno (ZIP + JSON), con temas jerárquicos, IDs estables, relaciones, notas, etiquetas, marcadores y estilos básicos.
+- Pruebas automatizadas del adaptador y workflow de GitHub Actions.
 
-**Todavía no exporta archivos `.xmind`.** El adaptador actual escribe JSON para poder validar primero la gramática y el modelo. La exportación real se incorporará cuando esté verificada contra el formato y la versión objetivo de XMind.
+**El adaptador XMind es todavía experimental.** No está integrado en la CLI y su compatibilidad con XMind Desktop no se ha verificado abriendo un archivo generado. Las limitaciones están detalladas en [xmind-adapter.md](docs/xmind-adapter.md).
 
 ## Instalación local
 
@@ -78,7 +80,7 @@ Los metadatos deben aparecer antes del encabezado al que se aplican. Los element
 
 ## Estructura
 
-- `src/xmind_md/`: parser, modelo, estilos y adaptadores.
+- `src/xmind_md/`: parser, modelo, estilos y adaptadores JSON/XMind.
 - `config/`: conjuntos de estilos.
 - `examples/`: documentos de ejemplo.
 - `tests/`: pruebas.

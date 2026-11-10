@@ -20,6 +20,7 @@ La documentación está organizada para que una persona o una IA pueda entender,
 - [Guía de desarrollo](docs/development.md): instalación, ejecución, pruebas y ciclo de contribución.
 - [Evaluación del motor XMind](docs/xmind-engine-evaluation.md): alternativas estudiadas y decisión técnica para generar `.xmind`.
 - [Adaptador XMind](docs/xmind-adapter.md): formato generado, mapeos implementados y limitaciones actuales.
+- [Pruebas de integración XMind](docs/xmind-integration-tests.md): fixture externo, validaciones automatizadas y límites de compatibilidad.
 
 ## Estado actual
 
@@ -33,7 +34,7 @@ Esta primera versión implementa:
 - Resolución inicial de estilos definidos en YAML.
 - CLI para validar y generar el JSON intermedio.
 - Primera versión programática del adaptador XMind moderno (ZIP + JSON), con temas jerárquicos, IDs estables, relaciones, notas, etiquetas, marcadores y estilos básicos.
-- Pruebas automatizadas del adaptador y workflow de GitHub Actions.
+- Pruebas automatizadas del adaptador y de integración con un fixture `.xmind` externo descargado por GitHub Actions.
 
 **El adaptador XMind es todavía experimental.** No está integrado en la CLI y su compatibilidad con XMind Desktop no se ha verificado abriendo un archivo generado. Las limitaciones están detalladas en [xmind-adapter.md](docs/xmind-adapter.md).
 

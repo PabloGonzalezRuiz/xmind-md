@@ -181,6 +181,7 @@ def _topic(old: Any, assets: dict[str, Asset]) -> Topic:
         links=links,
         style=StyleState(
             ref=old.style_ref,
+            style_set=old.style_set,
             overrides=dict(old.style_overrides),
             resolved=dict(old.resolved_style),
         ),

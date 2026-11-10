@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-11-10  
 **Fase:** paso 6 de la hoja de ruta  
-**Estado:** decisión de arquitectura aprobada para iniciar el adaptador; compatibilidad real pendiente de pruebas
+**Estado:** decisión de arquitectura aplicada en una primera versión del adaptador; pruebas CI y compatibilidad real con XMind Desktop pendientes de confirmación
 
 ## 1. Objetivo y criterios
 
@@ -218,19 +218,21 @@ Reglas:
 
 ## 7. Plan de verificación del adaptador
 
-El paso 7 deberá implementar una primera versión mínima y verificable del adaptador:
+La primera implementación del paso 7 ya contiene:
 
-1. Crear un archivo mínimo con una hoja y un tema raíz.
-2. Añadir temas hijos anidados e IDs deterministas.
-3. Serializar notas, etiquetas y marcadores.
-4. Traducir estilos de tema y estilos locales sencillos.
-5. Construir el ZIP y verificar entradas, orden y MIME.
-6. Validar `content.json` contra las estructuras de referencia, complementando las validaciones cuando los esquemas oficiales sean incompletos.
-7. Abrir los archivos generados en XMind Desktop y comprobar que se muestran y se pueden volver a guardar.
-8. Añadir fixtures de archivos guardados desde XMind para comparar estructura y comportamiento.
-9. Incorporar pruebas para relaciones, límites, resúmenes, imágenes y extensiones antes de declarar esas funciones soportadas.
+1. Una hoja y un tema raíz.
+2. Temas hijos anidados e IDs UUID5 deterministas derivados de los IDs del IR.
+3. Notas, etiquetas y marcadores.
+4. Un subconjunto de estilos de tema.
+5. Escritura ZIP con `mimetype`, `content.json`, `metadata.json`, `manifest.json` y miniatura.
+6. Relaciones con extremos traducidos a los IDs de salida.
+7. Pruebas unitarias para JSON, ZIP, IDs, relaciones, estilos y rechazo de características no soportadas.
 
-La prueba con XMind real es condición necesaria. Que el ZIP sea válido o que el JSON pase un esquema no demuestra que XMind acepte o represente correctamente el archivo.
+**Pendiente de confirmar:** resultado de GitHub Actions tras estos cambios. También está pendiente abrir un archivo generado en XMind Desktop y volver a guardarlo para comprobar interoperabilidad real.
+
+**Fuera del alcance de esta primera versión:** recursos/imágenes, boundaries, summaries, temas detached, callouts, extensiones, notas HTML enriquecidas, varios enlaces por tema y propiedades de estilo no incluidas en el catálogo inicial. El detalle está en [xmind-adapter.md](xmind-adapter.md).
+
+La prueba con XMind real es condición necesaria. Que el ZIP sea válido o que el JSON pase pruebas estructurales no demuestra que XMind acepte o represente correctamente el archivo.
 
 ## 8. Fuentes técnicas
 
@@ -247,4 +249,6 @@ La prueba con XMind real es condición necesaria. Que el ZIP sea válido o que e
 
 **Decisión tomada:** escritura nativa Python del formato moderno ZIP + JSON, usando el SDK y el modelo oficial como referencias técnicas.
 
-**No implementado todavía:** el adaptador, la serialización final, la validación de archivos generados y la apertura en XMind. Esas tareas corresponden al paso 7 y al paso 8.
+**Implementado inicialmente:** adaptador Python, generación del paquete ZIP + JSON, árbol jerárquico, IDs estables, relaciones, notas, etiquetas, marcadores y subconjunto de estilos. Se han añadido pruebas automatizadas para el adaptador; el resultado CI de esta iteración debe consultarse antes de declarar las pruebas superadas.
+
+**Pendiente:** integración en CLI, recursos/imágenes, boundaries, summaries, callouts, extensiones, mayor cobertura de estilos y, especialmente, apertura y guardado de un archivo generado en XMind Desktop. No se declara compatibilidad completa con XMind hasta superar esa prueba.

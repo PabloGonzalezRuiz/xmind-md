@@ -27,7 +27,7 @@ Este documento explica la finalidad de cada archivo versionado y qué tipo de ca
 |---|---|
 | __init__.py | Declara el paquete de adaptadores y su contrato general. |
 | json_adapter.py | Escribe una representación JSON del modelo intermedio. |
-| xmind_adapter.py (futuro) | Generará el formato moderno `.xmind` desde el IR mediante ZIP + JSON nativo Python. No está implementado todavía. |
+| xmind_adapter.py | Genera una primera versión del formato moderno `.xmind` mediante ZIP + JSON nativo Python; valida el subconjunto soportado y rechaza características pendientes. La compatibilidad con XMind Desktop aún no está verificada. |
 
 El futuro adaptador XMind debe añadirse como módulo separado, por ejemplo xmind_adapter.py, sin reemplazar el modelo neutral.
 
@@ -50,6 +50,7 @@ No incluir aquí identificadores ni estructuras privadas de una biblioteca de ex
 | ai-reconstruction-prompt.md | Prompt autónomo para que otra IA reconstruya y continúe el proyecto. |
 | development.md | Instalación, ejecución, pruebas y ciclo de contribución. |
 | xmind-engine-evaluation.md | Comparación de motores y decisión de arquitectura para el adaptador XMind. |
+| xmind-adapter.md | Contrato, mapeos, características soportadas y limitaciones de la primera versión del adaptador. |
 
 ## Ejemplos: examples/
 
@@ -65,6 +66,7 @@ Los ejemplos también actúan como fixtures legibles: al cambiar la gramática, 
 |---|---|
 | test_parser.py | Comprueba gramática enriquecida, bloques estructurados, directivas, referencias y errores. |
 | test_styles.py | Comprueba la resolución de estilos desde un conjunto heredado. |
+| test_xmind_adapter.py | Comprueba JSON, árbol de temas, IDs, relaciones, estilos básicos y estructura ZIP del adaptador XMind. |
 
 Toda funcionalidad nueva debe tener pruebas. No basta con modificar un ejemplo o comprobar visualmente el JSON.
 

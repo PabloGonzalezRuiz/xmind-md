@@ -1,126 +1,327 @@
-"""Parser de la gramática inicial de XMind MD.
-
-En esta fase se reconocen encabezados Markdown y dos directivas:
-@conjunto(NOMBRE) y @estilo(NOMBRE). El texto restante se conserva
-como contenido del tema activo. Este parser no pretende implementar todo
-CommonMark ni convertir listas en nodos.
-"""
-
+"""Parser Markdown enriquecido de XMind MD."""
 from __future__ import annotations
 
 import re
 from pathlib import Path
+from typing import Any
+from uuid import NAMESPACE_URL, uuid5
+
+import yaml
 
 from .model import MindMap, Topic
 
-# Solo se aceptan estas dos directivas, con el argumento entre paréntesis.
-_METADATA_RE = re.compile(r"^@(conjunto|estilo)\(([^()]*)\)\s*$")
-
 
 class MarkdownParseError(ValueError):
-    """Error de sintaxis o de estructura en un documento Markdown enriquecido."""
+    """Error sintáctico o estructural del documento fuente."""
 
 
-def parse_markdown(text: str) -> MindMap:
-    """Convierte encabezados Markdown y metadatos en un árbol de temas.
+_HEADING_RE = re.compile(r"^(#{1,6})[ \t]+(.+?)\s*#*\s*$")
+_OLD_DIRECTIVE_RE = re.compile(r"^@(conjunto|estilo)\(([^()]*)\)\s*$")
+_DIRECTIVES = {"xmind", "xmind-note", "xmind-relationship", "xmind-boundary", "xmind-summary"}
 
-    Las directivas se acumulan hasta el siguiente encabezado. El nivel del
-    encabezado determina la jerarquía: al encontrar un nivel igual o superior
-    se cierran los temas anteriores de la pila.
-    """
-    # Los temas raíz se mantienen separados de la pila de ancestros.
+
+def _yaml_mapping(source: str, line: int, label: str) -> dict[str, Any]:
+    try:
+        value = yaml.safe_load(source) or {}
+    except yaml.YAMLError as exc:
+        raise MarkdownParseError(f"YAML inválido en {label}, línea {line}: {exc}") from exc
+    if not isinstance(value, dict):
+        raise MarkdownParseError(f"{label} debe contener un objeto YAML (línea {line})")
+    return value
+
+
+def _stable_id(prefix: str, seed: str) -> str:
+    return f"{prefix}_{uuid5(NAMESPACE_URL, seed).hex[:16]}"
+
+
+def _inline_runs(text: str) -> list[dict[str, Any]]:
+    """Reconoce énfasis, código inline y enlaces; conserva el resto del texto."""
+    tick = chr(96)
+    token = re.compile(r"(!?\[[^\]]*\]\([^)]*\)|\*\*[^*]+\*\*|(?<!\*)\*[^*]+\*(?!\*)|" + re.escape(tick) + r"[^" + re.escape(tick) + r"]+" + re.escape(tick) + r")")
+    runs: list[dict[str, Any]] = []
+    cursor = 0
+    for match in token.finditer(text):
+        if match.start() > cursor:
+            runs.append({"text": text[cursor:match.start()]})
+        value = match.group(0)
+        if value.startswith("!["):
+            inner = re.match(r"!\[([^\]]*)\]\(([^)]*)\)", value)
+            runs.append({"type": "image", "alt": inner.group(1), "src": inner.group(2)})
+        elif value.startswith("["):
+            inner = re.match(r"\[([^\]]*)\]\(([^)]*)\)", value)
+            runs.append({"type": "link", "text": inner.group(1), "url": inner.group(2)})
+        elif value.startswith("**"):
+            runs.append({"text": value[2:-2], "style": {"bold": True}})
+        elif value.startswith("*"):
+            runs.append({"text": value[1:-1], "style": {"italic": True}})
+        else:
+            runs.append({"text": value[1:-1], "style": {"code": True}})
+        cursor = match.end()
+    if cursor < len(text):
+        runs.append({"text": text[cursor:]})
+    return runs or [{"text": text}]
+
+
+def _parse_list(lines: list[str], start: int) -> tuple[dict[str, Any], int]:
+    first = re.match(r"^(\s*)([-+*]|\d+[.)])\s+(.+)$", lines[start])
+    assert first is not None
+    base_indent = len(first.group(1).expandtabs(4))
+    ordered = first.group(2)[0].isdigit()
+    items: list[dict[str, Any]] = []
+    i = start
+    while i < len(lines):
+        match = re.match(r"^(\s*)([-+*]|\d+[.)])\s+(.+)$", lines[i])
+        if not match:
+            break
+        indent = len(match.group(1).expandtabs(4))
+        if indent < base_indent:
+            break
+        if indent > base_indent:
+            if items:
+                items[-1].setdefault("children", []).append({"content": _inline_runs(match.group(3))})
+            i += 1
+            continue
+        items.append({"content": _inline_runs(match.group(3))})
+        i += 1
+    return {"type": "list", "ordered": ordered, "items": items}, i
+
+
+def _parse_table(lines: list[str], start: int) -> tuple[dict[str, Any], int]:
+    def cells(line: str) -> list[str]:
+        return [cell.strip() for cell in line.strip().strip("|").split("|")]
+    header = cells(lines[start])
+    i = start + 2
+    rows = []
+    while i < len(lines) and "|" in lines[i] and lines[i].strip():
+        rows.append(cells(lines[i]))
+        i += 1
+    return {"type": "table", "header": [_inline_runs(c) for c in header],
+            "rows": [[_inline_runs(c) for c in row] for row in rows]}, i
+
+
+def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
+    """Analiza front matter, temas, bloques Markdown y directivas XMind."""
+    lines = text.splitlines()
+    metadata: dict[str, Any] = {}
+    i = 0
+    if lines and lines[0].strip() == "---":
+        end = next((n for n in range(1, len(lines)) if lines[n].strip() in {"---", "..."}), None)
+        if end is None:
+            raise MarkdownParseError("Front matter sin delimitador de cierre (línea 1)")
+        metadata = _yaml_mapping("\n".join(lines[1:end]), 2, "front matter")
+        i = end + 1
+
     roots: list[Topic] = []
-    # La pila contiene el camino desde la raíz hasta el tema actual.
     stack: list[Topic] = []
-    # Las directivas pendientes se aplican al siguiente encabezado encontrado.
-    pending: dict[str, str] = {}
-    document_title = "Mapa sin título"
+    pending: dict[str, Any] | None = None
+    globals_: dict[str, list[dict[str, Any]]] = {
+        "relationships": [], "boundaries": [], "summaries": []
+    }
+    assets: list[dict[str, Any]] = []
+    fence_char = chr(96)
 
-    # Enumerar desde 1 permite ofrecer errores con números de línea útiles.
-    for line_number, raw_line in enumerate(text.splitlines(), start=1):
-        line = raw_line.rstrip()
-        stripped = line.strip()
-
-        # Las líneas vacías no alteran la pila ni las directivas pendientes.
+    while i < len(lines):
+        raw = lines[i]
+        stripped = raw.strip()
+        line_no = i + 1
         if not stripped:
+            i += 1
             continue
 
-        # Primero se comprueba si la línea contiene una directiva reconocida.
-        metadata_match = _METADATA_RE.fullmatch(stripped)
-        if metadata_match:
-            key, value = metadata_match.groups()
-            if not value.strip():
-                raise MarkdownParseError(
-                    f"Metadato vacío en la línea {line_number}: {stripped}"
-                )
-            # Traducir los nombres de directiva a campos del modelo intermedio.
-            pending["style_set" if key == "conjunto" else "style_ref"] = value.strip()
+        # Código cercado: su contenido es literal y no se analiza como Markdown.
+        fence = re.match(r"^\s*(" + re.escape(fence_char) + r"{3,}|~{3,})(.*)$", raw)
+        if fence:
+            if not stack:
+                raise MarkdownParseError(f"Código antes del tema raíz (línea {line_no})")
+            marker, language = fence.groups()
+            code_lines = []
+            i += 1
+            closing = re.compile(r"^\s*" + re.escape(marker[0]) + "{" + str(len(marker)) + r",}\s*$")
+            while i < len(lines) and not closing.match(lines[i]):
+                code_lines.append(lines[i])
+                i += 1
+            if i >= len(lines):
+                raise MarkdownParseError(f"Bloque de código sin cierre (línea {line_no})")
+            code = "\n".join(code_lines)
+            stack[-1].content_blocks.append({"type": "code", "language": language.strip() or None, "text": code})
+            stack[-1].content.append(code)
+            i += 1
             continue
 
-        # Los encabezados son los únicos elementos que crean nodos en esta versión.
-        heading_match = re.match(r"^(#{1,6})\s+(.+?)\s*#*\s*$", line)
-        if heading_match:
-            level = len(heading_match.group(1))
-            title = heading_match.group(2).strip()
+        directive = re.match(r"^:::([a-z][a-z0-9-]*)\s*$", stripped)
+        if directive:
+            name = directive.group(1)
+            if name not in _DIRECTIVES:
+                raise MarkdownParseError(f"Directiva desconocida '{name}' (línea {line_no})")
+            end = next((n for n in range(i + 1, len(lines)) if lines[n].strip() == ":::"), None)
+            if end is None:
+                raise MarkdownParseError(f"Directiva {name} sin cierre (línea {line_no})")
+            payload_text = "\n".join(lines[i + 1:end])
+            payload = _yaml_mapping(payload_text, line_no + 1, name) if payload_text.strip() else {}
+            if name == "xmind":
+                if pending is not None:
+                    raise MarkdownParseError(f"Directivas de tema consecutivas (línea {line_no})")
+                pending = payload
+            elif name == "xmind-note":
+                if not stack:
+                    raise MarkdownParseError(f"Nota antes del tema raíz (línea {line_no})")
+                stack[-1].annotations.setdefault("notes", []).append(payload_text)
+            else:
+                key = {"xmind-relationship": "relationships", "xmind-boundary": "boundaries",
+                       "xmind-summary": "summaries"}[name]
+                globals_[key].append(payload)
+            i = end + 1
+            continue
+
+        legacy = _OLD_DIRECTIVE_RE.fullmatch(stripped)
+        if legacy:
+            if pending is None:
+                pending = {}
+            key, value = legacy.groups()
+            pending["style_set" if key == "conjunto" else "style"] = value.strip()
+            i += 1
+            continue
+        if stripped.startswith("@"):
+            raise MarkdownParseError(f"Directiva no reconocida (línea {line_no}): {stripped}")
+
+        heading = _HEADING_RE.match(raw)
+        if heading:
+            level = len(heading.group(1))
+            title = heading.group(2).strip()
             if not title:
-                raise MarkdownParseError(f"Encabezado vacío en la línea {line_number}")
-
-            # Consumir las directivas pendientes al crear el nuevo tema.
+                raise MarkdownParseError(f"Encabezado vacío (línea {line_no})")
+            props = pending or {}
+            allowed = {"id", "kind", "style_set", "style", "style_overrides", "labels",
+                       "markers", "task", "layout", "links", "extensions"}
+            unknown = set(props) - allowed
+            if unknown:
+                raise MarkdownParseError(f"Propiedades desconocidas en :::xmind: {sorted(unknown)} (línea {line_no})")
+            seed = f"{source_path}|{level}|{title}|{line_no}"
             topic = Topic(
-                title=title,
-                level=level,
-                style_set=pending.pop("style_set", None),
-                style_ref=pending.pop("style_ref", None),
+                id=props.get("id") or _stable_id("topic", seed), title=title, level=level,
+                kind=props.get("kind", "attached"), style_set=props.get("style_set"),
+                style_ref=props.get("style"), style_overrides=props.get("style_overrides", {}),
+                annotations={k: props[k] for k in ("labels", "markers", "task") if k in props},
+                links=props.get("links", []), layout=props.get("layout", {}),
+                extensions=props.get("extensions", {}),
+                source={"file": source_path, "line_start": line_no, "line_end": line_no},
             )
-            # Si queda alguna clave, se trata de una directiva sin destino válido.
-            if pending:
-                raise MarkdownParseError(
-                    f"Metadatos sin destino antes de la línea {line_number}: {pending}"
-                )
-
-            # Retirar de la pila los temas del mismo nivel o de niveles inferiores.
+            pending = None
             while stack and stack[-1].level >= level:
                 stack.pop()
-
-            # El último tema restante es el padre; si no existe, el tema es raíz.
             if stack:
                 stack[-1].children.append(topic)
             else:
                 roots.append(topic)
-                # El primer encabezado raíz se utiliza como título del documento.
-                if len(roots) == 1:
-                    document_title = title
-
-            # El tema recién creado pasa a ser el posible padre de los siguientes.
             stack.append(topic)
+            i += 1
             continue
 
-        # Una línea que empieza por @ y no coincide con la gramática es un error.
-        if stripped.startswith("@"):
-            raise MarkdownParseError(
-                f"Metadato no reconocido en la línea {line_number}: {stripped}"
-            )
-
-        # No se permite contenido sin un tema al que asociarlo.
+        if pending is not None:
+            raise MarkdownParseError(f":::xmind debe preceder inmediatamente a un encabezado (línea {line_no})")
         if not stack:
-            raise MarkdownParseError(
-                f"Contenido antes del primer encabezado (línea {line_number})"
-            )
+            raise MarkdownParseError(f"Contenido antes del tema raíz (línea {line_no})")
 
-        # Conservar texto y listas literalmente, sin convertirlos aún en subtemas.
-        stack[-1].content.append(stripped)
+        topic = stack[-1]
+        if stripped.startswith(">"):
+            quote = []
+            while i < len(lines) and lines[i].lstrip().startswith(">"):
+                quote.append(lines[i].lstrip()[1:].lstrip())
+                i += 1
+            topic.content_blocks.append({"type": "quote", "content": [
+                {"type": "paragraph", "runs": _inline_runs(value)} for value in quote]})
+            topic.content.extend(quote)
+            continue
+        if re.match(r"^\s*([-+*]|\d+[.)])\s+", raw):
+            block, i = _parse_list(lines, i)
+            topic.content_blocks.append(block)
+            topic.content.append("\n".join("".join(r.get("text", "") for r in item["content"]) for item in block["items"]))
+            continue
+        if "|" in raw and i + 1 < len(lines) and re.match(r"^\s*\|?\s*:?-{3,}", lines[i + 1]):
+            block, i = _parse_table(lines, i)
+            topic.content_blocks.append(block)
+            continue
+        if re.match(r"^\s*([-*_])(?:\s*\1){2,}\s*$", raw):
+            topic.content_blocks.append({"type": "divider"})
+            i += 1
+            continue
+        if stripped.startswith("!["):
+            match = re.match(r"!\[([^\]]*)\]\(([^)]*)\)", stripped)
+            if match:
+                asset = {"alt": match.group(1), "src": match.group(2)}
+                assets.append(asset)
+                topic.content_blocks.append({"type": "image", **asset})
+                topic.resources.append(asset)
+                i += 1
+                continue
 
-    # Detectar directivas que nunca llegaron a asociarse a un encabezado.
-    if pending:
-        raise MarkdownParseError(f"Metadatos al final del documento sin encabezado: {pending}")
-    if not roots:
-        raise MarkdownParseError("El documento no contiene ningún encabezado Markdown")
+        paragraph = [stripped]
+        i += 1
+        while i < len(lines) and lines[i].strip():
+            candidate = lines[i]
+            if (_HEADING_RE.match(candidate) or candidate.lstrip().startswith((":::", ">", fence_char * 3, "~~~", "!["))
+                    or re.match(r"^\s*([-+*]|\d+[.)])\s+", candidate)):
+                break
+            paragraph.append(candidate.strip())
+            i += 1
+        joined = " ".join(paragraph)
+        topic.content.append(joined)
+        topic.content_blocks.append({"type": "paragraph", "runs": _inline_runs(joined)})
 
-    # Devolver el árbol completo sin acoplarlo a ningún formato de exportación.
-    return MindMap(title=document_title, topics=roots)
+    if pending is not None:
+        raise MarkdownParseError("Directiva de tema al final del documento sin encabezado")
+    if len(roots) != 1:
+        raise MarkdownParseError("El documento debe contener un único tema raíz (un H1)")
+
+    topic_index: dict[str, Topic] = {}
+    def index_topic(topic: Topic) -> None:
+        if not topic.id or topic.id in topic_index:
+            raise MarkdownParseError(f"ID de tema vacío o duplicado: {topic.id!r}")
+        topic_index[topic.id] = topic
+        for child in topic.children:
+            index_topic(child)
+    index_topic(roots[0])
+
+    entity_ids: set[str] = set()
+    for kind, entries in globals_.items():
+        for entry in entries:
+            required = {"relationships": ("id", "source", "target"),
+                        "boundaries": ("id", "topics"), "summaries": ("id", "topics")}[kind]
+            missing = [key for key in required if key not in entry]
+            if missing:
+                raise MarkdownParseError(f"{kind}: faltan campos obligatorios {missing}")
+            if entry["id"] in entity_ids:
+                raise MarkdownParseError(f"ID de entidad global duplicado: {entry['id']}")
+            entity_ids.add(entry["id"])
+            refs = [entry["source"], entry["target"]] if kind == "relationships" else entry["topics"]
+            if not isinstance(refs, list) and kind != "relationships":
+                raise MarkdownParseError(f"{kind}: topics debe ser una lista")
+            if any(ref not in topic_index for ref in refs):
+                raise MarkdownParseError(f"{kind}: referencia a tema inexistente")
+            if kind == "relationships" and entry["source"] == entry["target"]:
+                raise MarkdownParseError("Una relación no puede conectar un tema consigo mismo")
+
+    title = metadata.get("title") or roots[0].title
+    if not isinstance(title, str) or not title.strip():
+        raise MarkdownParseError("title del front matter debe ser texto no vacío")
+    known = {"title", "id", "author", "description", "style_set", "layout", "styles", "style_sets", "extensions"}
+    unknown = set(metadata) - known
+    if unknown:
+        raise MarkdownParseError(f"Campos desconocidos en front matter: {sorted(unknown)}")
+    layout = metadata.get("layout", {})
+    if not isinstance(layout, dict):
+        raise MarkdownParseError("layout del front matter debe ser un objeto")
+
+    return MindMap(
+        id=metadata.get("id") or _stable_id("map", f"{source_path}|{title}"),
+        title=title, topics=roots, metadata=metadata, styles=metadata.get("styles", {}),
+        style_sets=metadata.get("style_sets", {}), assets=assets,
+        relationships=globals_["relationships"], boundaries=globals_["boundaries"],
+        summaries=globals_["summaries"], layout=layout, extensions=metadata.get("extensions", {}),
+    )
 
 
 def parse_file(path: str | Path) -> MindMap:
-    """Lee un archivo UTF-8 y delega su interpretación al parser de cadenas."""
-    # Separar la lectura del análisis facilita probar el parser con cadenas directas.
-    return parse_markdown(Path(path).read_text(encoding="utf-8"))
+    """Lee UTF-8 y utiliza la ruta como origen para IDs deterministas."""
+    source = Path(path)
+    return parse_markdown(source.read_text(encoding="utf-8"), source_path=source.as_posix())

@@ -53,7 +53,7 @@ El modelo no importa parser, PyYAML ni bibliotecas de exportación. Las entidade
 - Conserva trazabilidad de origen.
 - El resolutor IR aplica la cascada de estilos y almacena el resultado en \`style.resolved\`.
 - \`StyleState.style_set\` conserva la selección de conjunto por tema y permite herencia/sustitución por rama.
-- La gramática Markdown completa sigue pendiente.
+- El subconjunto de gramática Markdown implementado está auditado y documentado en `docs/grammar.md`; la compatibilidad CommonMark/GFM completa queda fuera de alcance y sus limitaciones están enumeradas.
 
 ### Fase C — Adaptadores
 
@@ -68,14 +68,14 @@ El modelo no importa parser, PyYAML ni bibliotecas de exportación. Las entidade
 
 ### Fase D — Validación y documentación
 
-**Estado: validación formal del esquema y ejemplo completada; resto pendiente.**
+**Estado: validación formal del esquema y ejemplo, y auditoría de gramática implementadas; otras comprobaciones globales pendientes.**
 
 - `docs/ir-schema.json` comprobado con `Draft202012Validator.check_schema()`.
 - Todos los archivos JSON bajo `examples/ir/` validados con `FormatChecker`.
 - Pruebas negativas para versión, propiedad obligatoria, tipo de enlace y formato date-time.
 - CI #165: 90 pruebas superadas.
 - Pruebas de ida y vuelta y validación ampliada del contrato.
-- Cobertura completa de la gramática.
+- Gramática implementada delimitada mediante matriz de capacidades, pruebas positivas/negativas y limitaciones explícitas.
 - Ejecución de Ruff.
 - Sincronización documental general y auditoría final.
 
@@ -96,7 +96,7 @@ La validación formal del esquema y el ejemplo ya está automatizada. La consoli
 
 ## 6. Fuera de alcance de esta migración
 
-- Completar toda la gramática Markdown.
+- Compatibilidad completa con CommonMark/GFM y extensiones Markdown avanzadas.
 - Implementar todas las propiedades visuales de XMind.
 - Garantizar compatibilidad total con XMind Desktop.
 - Integrar una opción de exportación XMind en la CLI.

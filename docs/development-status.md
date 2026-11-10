@@ -44,7 +44,7 @@ Prioridad: contrato IR aprobado para la estructura objetivo; código y pruebas p
 
 ### 3.1 Modelo intermedio
 
-**Estado: modelo canónico creado; integración y verificación pendientes.**
+**Estado: modelo canónico, puente del parser y resolutor IR integrados parcialmente; adaptadores y CLI aún pendientes.**
 
 Se ha añadido `src/xmind_md/ir/` con entidades canónicas IR 1.0.0, serialización y validación semántica. El módulo `src/xmind_md/model.py` se conserva temporalmente para que parser, estilos y adaptadores actuales sigan funcionando mientras se migran en las tareas siguientes. Por tanto, la aplicación todavía no produce IR 1.0.0 de extremo a extremo.
 
@@ -58,7 +58,7 @@ El modelo legacy `src/xmind_md/model.py` todavía presenta estas diferencias:
 - Relaciones, límites y resúmenes están en `MindMap`, no dentro de `Sheet`.
 - No existe todavía una entidad `Sheet` en el modelo Python.
 
-El parser, los resolutores, los adaptadores y las pruebas consumen partes de esta estructura antigua. La migración debe ser coordinada para no dejar consumidores rotos.
+El puente del parser y el resolutor ya disponen de rutas canónicas IR. La CLI y los adaptadores siguen dependiendo del modelo legacy; la migración de estos consumidores debe coordinarse para no dejarlos rotos.
 
 ### 3.2 Parser Markdown
 
@@ -91,7 +91,7 @@ No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar
 - La CLI permite generar el JSON intermedio.
 - Hay pruebas unitarias y de integración en `tests/`.
 - GitHub Actions contiene un flujo de CI y una generación de artefacto XMind de prueba.
-- La ejecución CI #123 finalizó correctamente: 65 pruebas superadas y artefacto XMind de comprobación generado.
+- La ejecución CI #149 finalizó correctamente sobre la actualización documental final de esta fase: **77 pruebas superadas** y artefacto XMind de comprobación generado. La ejecución #144 ya había validado el commit de implementación de la tarea 4 con los mismos 77 tests.
 - Ruff no forma parte todavía de los pasos del workflow y debe verificarse expresamente.
 - La ejecución local en Windows sigue pendiente; la existencia de configuración o documentación no demuestra que haya pasado.
 

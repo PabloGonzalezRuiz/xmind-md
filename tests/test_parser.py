@@ -145,3 +145,21 @@ def test_table_separator_must_match_header_width():
 def test_tab_indented_nested_list_is_preserved():
     result = parse_markdown("# Raíz\n- Padre\n\t- Hijo\n")
     assert len(result.topics[0].content_blocks[0]["items"][0]["children"]) == 1
+
+
+
+def test_escaped_pipe_in_table_cell_is_not_a_column_separator():
+    result = parse_markdown("# Raíz\n| Expresión | Valor |\n|---|---|\n| A \\| B | correcto |\n")
+    table = result.topics[0].content_blocks[0]
+    assert len(table["header"]) == 2
+    assert len(table["rows"][0]) == 2
+    assert table["rows"][0][0][0]["text"] == "A | B"
+
+
+def test_global_entity_id_cannot_collide_with_topic_id():
+    source = (
+        "# Raíz\n:::xmind\nid: repetido\n:::\n## Hijo\n"
+        ":::xmind-relationship\nid: repetido\nsource: repetido\ntarget: repetido\n:::\n"
+    )
+    with pytest.raises(MarkdownParseError, match="duplicado"):
+        parse_markdown(source)

@@ -237,7 +237,10 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
                     raise MarkdownParseError(f"task.progress debe ser un entero entre 0 y 100 (línea {line_no})")
             if not stack and (roots or level != 1):
                 raise MarkdownParseError("El primer encabezado debe ser H1 y solo puede existir una raíz")
-            seed = f"{source_path}|{level}|{title}|{line_no}"
+            siblings = stack[-1].children if stack else roots
+            occurrence = sum(1 for sibling in siblings if sibling.title == title)
+            hierarchy = "/".join([ancestor.title for ancestor in stack] + [title])
+            seed = f"{source_path}|{hierarchy}|{occurrence}"
             topic = Topic(
                 id=props.get("id") or _stable_id("topic", seed), title=title, level=level,
                 style_set=props.get("style_set") or (metadata.get("style_set") if not stack else None),

@@ -248,7 +248,7 @@ def _convert(old: Any, source_path: str) -> MindMap:
     )
     metadata = {
         key: old.metadata[key]
-        for key in ("author", "description")
+        for key in ("author", "description", "style_set")
         if key in old.metadata
     }
     metadata["source_file"] = source_path

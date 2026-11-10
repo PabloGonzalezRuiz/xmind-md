@@ -48,6 +48,20 @@ El workflow `.github/workflows/ci.yml` descarga el fixture desde una URL
 inmutable de GitHub antes de ejecutar `pytest`. La prueba no necesita instalar
 el SDK externo ni añade dependencias de ejecución al proyecto.
 
+## Cobertura del perfil ampliado del adaptador
+
+Las pruebas unitarias de `tests/test_xmind_adapter.py` incluyen además:
+
+- Temas `detached` y `callout` agrupados bajo las claves correspondientes de `children`.
+- Requisito de posición numérica para temas `detached`.
+- Conversión de `position`, `structure_class`, `branch=folded` y `width` a los campos XMind correspondientes.
+- Enlaces internos entre temas, traducidos a `href` con esquema `xmind:#` y UUID del tema destino.
+- Enlaces a archivo limitados a URI `file://`.
+- Rechazo de clases de tema, layouts, enlaces y destinos no admitidos.
+- Comprobación de que el tema raíz debe ser `attached`.
+
+Estas pruebas verifican la estructura JSON generada. No sustituyen la apertura y comprobación visual en XMind Desktop.
+
 ## Lo que todavía no demuestra
 
 - Que XMind Desktop abra el archivo generado.

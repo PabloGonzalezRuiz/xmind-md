@@ -112,7 +112,7 @@ No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar
 | N.º | Tarea | Estado | Criterio de cierre |
 |---:|---|---|---|
 | 1 | Consolidar el contrato IR 1.0.0 y preparar la migración | **Completada** | Especificación, esquema, ejemplo y plan de migración disponibles |
-| 2 | Implementar el modelo Python conforme al IR | **Implementación añadida; corrección de test enviada; CI pendiente** | Entidades canónicas, invariantes y pruebas del modelo ejecutadas con éxito |
+| 2 | Implementar el modelo Python conforme al IR | **Completada** | Entidades canónicas, invariantes y pruebas del modelo ejecutadas con éxito |
 | 3 | Adaptar el parser al nuevo modelo | Pendiente | Parser construye el IR canónico y conserva la sintaxis probada |
 | 4 | Adaptar el resolutor de estilos | Pendiente | Cascada conforme a IR y pruebas de precedencia |
 | 5 | Adaptar los exportadores JSON y XMind | Pendiente | Consumen el modelo canónico y notifican pérdidas |
@@ -130,16 +130,17 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 
 ## 6. Registro de tareas terminadas y actividad
 
-### Tarea 2 — Modelo canónico IR 1.0.0 (implementación pendiente de verificación)
+### Tarea 2 — Modelo canónico IR 1.0.0
 
-- **Estado:** código y pruebas añadidos; no se cierra la tarea hasta ejecutar las pruebas.
+- **Estado:** completada y verificada mediante GitHub Actions.
 - **Archivos:** `src/xmind_md/ir/entities.py`, `src/xmind_md/ir/validation.py`, `src/xmind_md/ir/__init__.py`, `tests/test_ir_model.py`.
 - **Resultado:** entidades tipadas para mapa, hoja, tema, contenido, anotaciones, estilos, recursos, relaciones, límites y resúmenes; serialización con forma canónica; validación de IDs, árbol, estilos y referencias.
 - **Compatibilidad:** `src/xmind_md/model.py` no se ha sustituido todavía. Los consumidores actuales siguen usando el modelo legacy hasta las tareas de migración del parser, estilos y adaptadores.
-- **Pruebas CI:** ejecución #114 (`42823184882`, commit `1676f4594c941a0625f4c73fc098d862e29b156a`): **58 pasadas, 1 fallida**. La única falla fue `test_serialization_matches_ir_document_shape`: el test inspeccionaba el tema raíz aunque los datos de contenido, etiqueta y recurso se habían asignado al tema hijo.
-- **Corrección enviada:** `tests/test_ir_model.py` ahora inspecciona `root_topic.children[0]`. Commit: `a94c0c93c0ba542c4c7bde85e60351c31d20a446`.
-- **Verificación posterior:** CI #115 (`42823555030`) se ha iniciado automáticamente para el commit de corrección; resultado todavía pendiente. No se afirma que las pruebas pasen.
-- **Advertencias de runner:** Node.js 20 de las acciones y la futura migración de `ubuntu-latest` son advertencias independientes de la falla de pytest; no explican el `IndexError`.
+- **Fallo inicial:** CI #114 (`42823184882`, commit `1676f4594c941a0625f4c73fc098d862e29b156a`): 58 pasadas y 1 fallida. El test inspeccionaba el tema raíz aunque el contenido, etiqueta y recurso se habían asignado al tema hijo.
+- **Corrección:** `tests/test_ir_model.py` ahora inspecciona `root_topic.children[0]`. Commit: `a94c0c93c0ba542c4c7bde85e60351c31d20a446`.
+- **Verificación:** CI #115 (`42823555030`), sobre el commit de corrección: **59 pruebas superadas**. Los pasos `Tests`, `Build XMind Desktop smoke test` y `Upload XMind smoke test` finalizaron correctamente. Entorno: GitHub Actions, Ubuntu runner, Python 3.12.16.
+- **Artefacto:** generado y publicado con el nombre `xmind-desktop-smoke-test` en esa ejecución; esto acredita la generación, no la apertura manual en XMind Desktop.
+- **Advertencias de runner:** Node.js 20 de las acciones y la futura migración de `ubuntu-latest` son independientes del fallo inicial de pytest.
 
 ### Tarea 1 — Contrato IR y plan de migración
 
@@ -151,19 +152,15 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 
 ## 7. Próxima tarea
 
-### Verificación pendiente de la tarea 2
+### Tarea 3 — Adaptar el parser al IR 1.0.0
 
-**Situación:** ejecutar las pruebas del nuevo modelo antes de cerrar la tarea y pasar al parser.
+**Situación:** pendiente de autorización. La tarea 2 está cerrada con 59 pruebas superadas y generación del artefacto XMind de comprobación.
 
-Comando:
+**Alcance propuesto:** adaptar el parser para construir el modelo canónico `MindMap.sheet.root_topic`, conservando la sintaxis ya cubierta y evitando cambios en el resolutor de estilos o los adaptadores, que corresponden a tareas posteriores.
 
-```bash
-python -m pytest tests/test_ir_model.py -q
-```
+**Criterios de aceptación propuestos:** las pruebas del parser pasan; los casos existentes producen el modelo IR; se añaden pruebas para la estructura de hoja y tema raíz; no se rompen los consumidores legacy que aún no se hayan migrado.
 
-Si se ejecuta desde un entorno nuevo, instalar primero las dependencias de desarrollo con `python -m pip install -e ".[dev]"`.
-
-**Alcance ya implementado:**
+**Alcance ya implementado en tarea 2:**
 
 - Definir las entidades canónicas, incluida `Sheet`.
 - Representar una única raíz mediante `MindMap.sheet.root_topic`.

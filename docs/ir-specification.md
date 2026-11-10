@@ -198,6 +198,8 @@ Cada elemento estilizable utiliza:
 
 La referencia `style_set` forma parte de `StyleState` para conservar en el IR la selección de conjunto que permite la sintaxis Markdown. Un tema puede sustituir el conjunto heredado declarando otro; los descendientes heredan el conjunto efectivo salvo que lo sustituyan a su vez.
 
+Los valores generales del mapa pueden declararse en `metadata.style_defaults`, organizados por tipo de elemento (`topic`, `relationship`, `boundary`, `summary` y `notes`). Los valores predeterminados del sistema se suministran al resolutor como configuración, sin incorporarlos a las definiciones del documento.
+
 La procedencia de los valores resueltos debe poder recuperarse en diagnóstico, aunque no sea necesario duplicarla en cada exportación.
 
 ## 6. Extensiones específicas de motores

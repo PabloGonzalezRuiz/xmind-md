@@ -13,7 +13,7 @@ Desde la raíz del repositorio:
 
 ~~~powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\Activate.ps1
+.\\.venv\\Scripts\\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
 ~~~
@@ -21,8 +21,8 @@ python -m pip install -e ".[dev]"
 Si PowerShell bloquea la activación, puede ejecutarse el intérprete del entorno directamente:
 
 ~~~powershell
-.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
-.\.venv\Scripts\python.exe -m pytest
+.\\.venv\\Scripts\\python.exe -m pip install -e ".[dev]"
+.\\.venv\\Scripts\\python.exe -m pytest
 ~~~
 
 ## Preparar el entorno en Linux/macOS
@@ -36,19 +36,31 @@ python -m pip install -e ".[dev]"
 
 ## Ejecutar el proyecto
 
-Con el comando instalado:
+El formato de salida se deduce de la extensión:
 
 ~~~bash
+# Modelo intermedio JSON
 xmind-md examples/constitucion.md --styles config/styles.yaml --output output/constitucion.json
+
+# Libro XMind moderno
+xmind-md examples/constitucion.md --styles config/styles.yaml --output output/constitucion.xmind
+~~~
+
+También se puede seleccionar explícitamente:
+
+~~~bash
+xmind-md examples/constitucion.md --output output/constitucion.xmind --format xmind
 ~~~
 
 Como módulo:
 
 ~~~bash
-python -m xmind_md examples/constitucion.md --styles config/styles.yaml --output output/constitucion.json
+python -m xmind_md examples/constitucion.md --styles config/styles.yaml --output output/constitucion.xmind
 ~~~
 
-El resultado actual es JSON del modelo intermedio. No es todavía un archivo .xmind.
+La CLI analiza el Markdown y construye el IR canónico. Para XMind, resuelve los estilos y pasa el resultado al adaptador; para JSON, serializa el IR. Las extensiones conocidas `.json` y `.xmind` deben concordar con `--format`. Si se usa una extensión distinta, hay que indicar `--format`.
+
+La exportación XMind sigue siendo parcial: las capacidades no representables se rechazan explícitamente. Consulta [xmind-adapter.md](xmind-adapter.md).
 
 ## Ejecutar pruebas
 

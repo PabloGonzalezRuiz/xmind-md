@@ -4,7 +4,7 @@
 
 - **Última actualización:** 2026-11-10
 - **Rama de referencia:** `main`
-- **Último commit de implementación:** `c81121bc0536841cc638e3169c0c505d2a6b5645`
+- **Último commit de implementación:** `5dc36fa038fc9bb78ecbffa746461e240a7660c9`
 - **Contrato objetivo:** IR 1.0.0
 - **Estado global:** prototipo en migración hacia el IR 1.0.0; todavía no declarar compatibilidad completa.
 
@@ -74,13 +74,13 @@ El puente del parser y el resolutor ya disponen de rutas canónicas IR. La CLI y
 
 ### 3.4 Adaptadores y exportación
 
-**Estado: adaptadores existentes; exportación XMind experimental.**
+**Estado: adaptadores migrados al IR 1.0.0; validación CI de la migración en curso.**
 
-- Existe un adaptador JSON de inspección.
-- Existe un adaptador XMind basado en ZIP y JSON.
-- La exportación XMind cubre solo una parte de las entidades y propiedades del contrato.
-- La exportación XMind todavía no está integrada en la CLI.
-- No se ha acreditado aquí una apertura y posterior guardado satisfactorios del archivo generado en XMind Desktop.
+- `json_adapter.py` serializa exclusivamente `MindMap.to_dict()` del IR 1.0.0.
+- `xmind_adapter.py` consume `MindMap.sheet`, entidades `Topic`, `Relationship`, `Annotation` y `StyleState` canónicas; no importa el modelo legacy.
+- La exportación XMind mantiene un perfil parcial y rechaza recursos, imágenes, boundaries, summaries, layouts no predeterminados y extensiones no soportadas.
+- La CLI JSON y el script de smoke test construyen IR mediante `parse_file_ir()`.
+- La apertura y el guardado manual en XMind Desktop siguen sin acreditarse.
 
 No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar esa comprobación.
 
@@ -116,7 +116,7 @@ No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar
 | 2 | Implementar el modelo Python conforme al IR | **Completada** | Entidades canónicas, invariantes y pruebas del modelo ejecutadas con éxito |
 | 3 | Adaptar el parser al nuevo modelo | **Completada** | Parser construye el IR canónico y conserva la sintaxis probada |
 | 4 | Adaptar el resolutor de estilos | **Completada** | Cascada conforme a IR y pruebas de precedencia |
-| 5 | Adaptar los exportadores JSON y XMind | Pendiente | Consumen el modelo canónico y notifican pérdidas |
+| 5 | Adaptar los exportadores JSON y XMind | **En curso** | Consumen el modelo canónico y notifican pérdidas |
 | 6 | Validar el esquema JSON y los ejemplos | Pendiente | Draft 2020-12 validado por herramienta y ejemplos conformes |
 | 7 | Completar y probar la gramática Markdown | Pendiente | Gramática y pruebas cubren las construcciones declaradas |
 | 8 | Ampliar y probar las capacidades del adaptador XMind | Pendiente | Matriz de capacidades y pruebas por entidad/propiedad |
@@ -178,11 +178,25 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 - **Commit del plan de migración:** `9df7ee3e1dbe6c78bb045d325495ed613d093042`.
 - **Limitación pendiente:** la existencia del esquema no equivale a haberlo validado todavía con un validador Draft 2020-12.
 
+
+### Actividad actual — Tarea 5, migración de adaptadores
+
+- **Rama:** `main`.
+- **Commit de implementación:** `5a52a84b4a36b5e029fdfb26252e811ff637f592`.
+- **Corrección de pruebas de integración:** `638cf3392947841332a06099a95e09807a359553`.
+- **Migración del smoke test:** `5dc36fa038fc9bb78ecbffa746461e240a7660c9`.
+- **Cambios:** JSON y XMind importan el IR canónico; se migró la CLI JSON a `parse_file_ir()`; se actualizaron las pruebas XMind unitarias e integración y el generador del artefacto smoke.
+- **Evidencia CI #151:** 80 pruebas pasaron y 2 pruebas de integración fallaron porque aún construían el modelo legacy.
+- **Evidencia CI #152:** **82 pruebas pasaron**; falló después el paso `Build XMind Desktop smoke test`, porque `scripts/create_xmind_smoke.py` todavía llamaba al parser legacy. El script se migró en el commit indicado.
+- **Estado de la verificación final:** pendiente de una ejecución CI sobre `5dc36fa038fc9bb78ecbffa746461e240a7660c9`. No se declara todavía el workflow completo como verde.
+- **Entorno de CI:** GitHub Actions, Ubuntu runner, Python 3.12.16.
+- **Limitación:** no se ha comprobado apertura/guardado manual en XMind Desktop. La generación del ZIP no equivale a esa validación.
+
 ## 7. Próxima tarea
 
 ### Tarea 5 — Adaptar los exportadores JSON y XMind al IR 1.0.0
 
-**Estado:** pendiente de autorización expresa.
+**Estado:** autorizada y en curso. Adaptadores y consumidores directos migrados; falta cerrar la validación CI tras corregir las pruebas de integración y el script de smoke test.
 
 **Alcance propuesto:**
 - Hacer que el adaptador JSON serialice directamente el modelo canónico.
@@ -198,7 +212,7 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 - No se declara compatibilidad completa con XMind Desktop sin validación manual.
 - Actualización de esta documentación al cerrar la tarea.
 
-No iniciar esta tarea hasta recibir autorización expresa.
+La autorización ya fue recibida. No iniciar la tarea 6 hasta cerrar los criterios de aceptación y recibir autorización expresa.
 
 ## 9. Protocolo obligatorio de actualización
 

@@ -131,7 +131,7 @@ No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar
 | 9 | Integrar la exportación XMind en la CLI | **Completada** | CLI XMind y JSON probadas, errores controlados y documentación actualizada |
 | 10 | Completar las pruebas con XMind Desktop | **Completada** | Apertura, inspección, guardado y reapertura confirmados; versión y resultados registrados |
 | 11 | Auditar y verificar la ejecución en GitHub Actions | **Completada** | Workflow y último run inspeccionados; 131 pruebas y artefacto generados correctamente |
-| 12 | Completar CI, Ruff y comprobaciones automáticas | Pendiente | Workflow verde con pruebas y lint |
+| 12 | Completar CI, Ruff y comprobaciones automáticas | **En curso** | Workflow verde con pruebas y lint en Linux y Windows |
 | 13 | Sincronizar README y documentación técnica | Pendiente | Documentación coherente con el comportamiento real |
 | 14 | Auditoría final y publicación estable | Pendiente | Criterios de aceptación globales cumplidos |
 
@@ -348,7 +348,18 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 
 ### Tarea 12 — Completar CI, Ruff y comprobaciones automáticas
 
-**Siguiente tarea pendiente; todavía no iniciada.**
+**Estado: en curso; primera modificación del workflow publicada.**
+
+- Autorización del usuario recibida el 2026-11-10.
+- Commit de implementación inicial: `509fd41869429526c6a903e3a3bdc2f2507a2be9` (`ci: add Ruff and Windows/Linux test matrix`).
+- Archivo modificado: `.github/workflows/ci.yml`.
+- Se añadió una matriz `ubuntu-latest` y `windows-latest`, ambos con Python 3.12.
+- Se añadieron `python -m ruff check src tests` y `python -m ruff format --check src tests`.
+- Se sustituyó el paso de descarga basado en `mkdir`/`curl` por una descarga con `urllib` desde Python, para evitar diferencias entre shells de Linux y PowerShell.
+- Los artefactos usan nombres diferenciados por sistema operativo para evitar colisiones entre los jobs de matriz.
+- **Validación pendiente:** no se dispone aún de una lectura verificable del run generado por este commit; por tanto, no se afirma que Ruff, pytest ni Windows hayan pasado. Hay que inspeccionar el workflow y corregir cualquier fallo antes de cerrar la tarea.
+
+
 
 Alcance propuesto:
 

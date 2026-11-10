@@ -95,3 +95,10 @@ def test_repository_example_parses_as_complete_document():
     assert len(result.boundaries) == 1
     assert len(result.summaries) == 1
     assert result.assets[0]["src"] == "assets/escudo.png"
+
+
+def test_generated_topic_ids_do_not_depend_on_line_numbers():
+    first = parse_markdown("# Raíz\\n## Rama\\n")
+    second = parse_markdown("# Raíz\\n\\nPárrafo añadido.\\n\\n## Rama\\n")
+    assert first.topics[0].id == second.topics[0].id
+    assert first.topics[0].children[0].id == second.topics[0].children[0].id

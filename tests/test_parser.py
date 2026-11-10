@@ -68,3 +68,10 @@ def test_relationship_references_are_validated_after_parse():
 def test_invalid_documents_fail(source):
     with pytest.raises(MarkdownParseError):
         parse_markdown(source)
+
+
+def test_note_directive_keeps_markdown_body():
+    result = parse_markdown(
+        "# Raíz\\n:::xmind-note\\nNota con **énfasis** y texto.\\n:::\\n"
+    )
+    assert result.topics[0].annotations["notes"] == ["Nota con **énfasis** y texto."]

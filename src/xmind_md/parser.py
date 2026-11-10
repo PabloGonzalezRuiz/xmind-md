@@ -196,10 +196,13 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             unknown = set(props) - allowed
             if unknown:
                 raise MarkdownParseError(f"Propiedades desconocidas en :::xmind: {sorted(unknown)} (línea {line_no})")
+            if not stack and (roots or level != 1):
+                raise MarkdownParseError("El primer encabezado debe ser H1 y solo puede existir una raíz")
             seed = f"{source_path}|{level}|{title}|{line_no}"
             topic = Topic(
                 id=props.get("id") or _stable_id("topic", seed), title=title, level=level,
-                kind=props.get("kind", "attached"), style_set=props.get("style_set"),
+                style_set=props.get("style_set") or (metadata.get("style_set") if not stack else None),
+                kind=props.get("kind", "attached"),
                 style_ref=props.get("style"), style_overrides=props.get("style_overrides", {}),
                 annotations={k: props[k] for k in ("labels", "markers", "task") if k in props},
                 links=props.get("links", []), layout=props.get("layout", {}),

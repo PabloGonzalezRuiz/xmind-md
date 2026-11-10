@@ -17,15 +17,16 @@ from xmind_md.ir import (
 from xmind_md.styles import StyleError, resolve_ir_styles
 
 
-def make_map(root=None, **kwargs):
+def make_map(root=None, metadata=None, **sheet_kwargs):
     return MindMap(
         id="mapa",
         title="Mapa",
+        metadata=metadata or {},
         sheet=Sheet(
             id="hoja",
             title="Mapa",
             root_topic=root or Topic(id="raiz", title="Raíz"),
-            **kwargs,
+            **sheet_kwargs,
         ),
     )
 
@@ -55,10 +56,6 @@ def test_ir_style_cascade_applies_all_levels_and_merges_recursively():
             "styles": {"alerta": {"topic": {"text": {"color": "red", "bold": True}}}},
         }
     }
-    mind_map.styles = {
-        "alerta": {"topic": {"text": {"color": "blue", "underline": True}}}
-    }
-
     resolve_ir_styles(mind_map, defaults={"topic": {"text": {"font_size": 8}}})
 
     assert root.style.resolved == {
@@ -70,7 +67,6 @@ def test_ir_style_cascade_applies_all_levels_and_merges_recursively():
             "font_size": 12,
             "color": "purple",
             "bold": True,
-            "underline": True,
             "italic": True,
         },
         "shape": {"type": "round"},

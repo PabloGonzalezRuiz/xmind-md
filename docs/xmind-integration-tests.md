@@ -64,14 +64,12 @@ Estas pruebas verifican la estructura JSON generada. No sustituyen la apertura y
 
 ## Lo que todavía no demuestra
 
-- Que XMind Desktop abra el archivo generado.
-- Que el trazado visual de las relaciones sea correcto.
 - Que todos los estilos se representen igual en todas las versiones de XMind.
 - Que el paquete generado preserve los elementos auxiliares opcionales del
   fixture de referencia.
+- Que todas las capacidades del formato XMind estén implementadas por el adaptador.
 
-La validación visual requiere abrir el archivo generado y guardarlo desde una
-versión identificada de XMind Desktop. Esa comprobación manual queda pendiente.
+La validación manual del fixture de integración sí se ha completado; su alcance y versión se registran a continuación.
 
 ## Archivo para comprobación manual en XMind Desktop
 
@@ -92,3 +90,25 @@ Para realizar la comprobación:
 
 La compatibilidad visual solo podrá darse por verificada cuando se conozca la
 versión de XMind Desktop y se confirme el resultado de esa comprobación.
+
+
+## Resultado de la prueba manual — 2026-11-10
+
+- **Estado:** superada por confirmación del usuario.
+- **Sistema operativo:** Windows.
+- **Aplicación:** XMind Desktop **26.05.01107**.
+- **Archivo:** `tests/fixtures/xmind/xmind-md-smoke-test.xmind`.
+- **Descarga:** realizada correctamente desde el repositorio.
+- **Apertura:** realizada sin errores; el usuario confirmó que el mapa se visualizaba correctamente.
+- **Elementos inspeccionados:**
+  - Tema central: `XMind MD · Prueba de apertura`.
+  - Ramas principales: `Rama A` y `Rama B`.
+  - Subtema: `Detalle de rama A`, hijo de Rama A.
+  - Nota desplegable de Rama A: `Nota de prueba asociada a la rama A.`.
+  - Etiqueta de Rama A: `IMPORTANTE`.
+  - Marcador de prioridad de Rama A: icono con número `1`.
+  - Relación entre las ramas: `Relación de prueba`.
+- **Persistencia:** el usuario guardó el archivo, lo cerró y volvió a abrirlo; confirmó que funcionaba correctamente y que se conservaba el contenido.
+- **Conclusión:** el fixture y las capacidades enumeradas quedan comprobados visualmente en XMind Desktop 26.05.01107 para Windows. Esta evidencia no debe extrapolarse a otras versiones ni a capacidades no incluidas en el fixture.
+
+La prueba manual se considera cerrada para este fixture. La ejecución local de la aplicación/CLI y de la suite de pruebas en Windows sigue siendo una tarea independiente.

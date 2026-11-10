@@ -4,7 +4,7 @@
 
 - **Última actualización:** 2026-11-10
 - **Rama de referencia:** `main`
-- **Último commit de implementación:** `7951fe82652c251cff4288bb9426f008b638c684`
+- **Último commit de implementación:** `a94c0c93c0ba542c4c7bde85e60351c31d20a446`
 - **Contrato objetivo:** IR 1.0.0
 - **Estado global:** prototipo en migración hacia el IR 1.0.0; todavía no declarar compatibilidad completa.
 
@@ -112,7 +112,7 @@ No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar
 | N.º | Tarea | Estado | Criterio de cierre |
 |---:|---|---|---|
 | 1 | Consolidar el contrato IR 1.0.0 y preparar la migración | **Completada** | Especificación, esquema, ejemplo y plan de migración disponibles |
-| 2 | Implementar el modelo Python conforme al IR | **Implementación añadida; pruebas pendientes de ejecución** | Entidades canónicas, invariantes y pruebas del modelo ejecutadas con éxito |
+| 2 | Implementar el modelo Python conforme al IR | **Implementación añadida; corrección de test enviada; CI pendiente** | Entidades canónicas, invariantes y pruebas del modelo ejecutadas con éxito |
 | 3 | Adaptar el parser al nuevo modelo | Pendiente | Parser construye el IR canónico y conserva la sintaxis probada |
 | 4 | Adaptar el resolutor de estilos | Pendiente | Cascada conforme a IR y pruebas de precedencia |
 | 5 | Adaptar los exportadores JSON y XMind | Pendiente | Consumen el modelo canónico y notifican pérdidas |
@@ -136,8 +136,10 @@ Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tar
 - **Archivos:** `src/xmind_md/ir/entities.py`, `src/xmind_md/ir/validation.py`, `src/xmind_md/ir/__init__.py`, `tests/test_ir_model.py`.
 - **Resultado:** entidades tipadas para mapa, hoja, tema, contenido, anotaciones, estilos, recursos, relaciones, límites y resúmenes; serialización con forma canónica; validación de IDs, árbol, estilos y referencias.
 - **Compatibilidad:** `src/xmind_md/model.py` no se ha sustituido todavía. Los consumidores actuales siguen usando el modelo legacy hasta las tareas de migración del parser, estilos y adaptadores.
-- **Pruebas:** `python -m pytest tests/test_ir_model.py -q` está **pendiente de ejecución**. El entorno de trabajo no pudo acceder a GitHub para clonar el repositorio; tampoco se ha obtenido un resultado CI para los commits de esta implementación. No se afirma que las pruebas pasen.
-- **Último commit de código:** `7951fe82652c251cff4288bb9426f008b638c684`.
+- **Pruebas CI:** ejecución #114 (`42823184882`, commit `1676f4594c941a0625f4c73fc098d862e29b156a`): **58 pasadas, 1 fallida**. La única falla fue `test_serialization_matches_ir_document_shape`: el test inspeccionaba el tema raíz aunque los datos de contenido, etiqueta y recurso se habían asignado al tema hijo.
+- **Corrección enviada:** `tests/test_ir_model.py` ahora inspecciona `root_topic.children[0]`. Commit: `a94c0c93c0ba542c4c7bde85e60351c31d20a446`.
+- **Verificación posterior:** CI #115 (`42823555030`) se ha iniciado automáticamente para el commit de corrección; resultado todavía pendiente. No se afirma que las pruebas pasen.
+- **Advertencias de runner:** Node.js 20 de las acciones y la futura migración de `ubuntu-latest` son advertencias independientes de la falla de pytest; no explican el `IndexError`.
 
 ### Tarea 1 — Contrato IR y plan de migración
 

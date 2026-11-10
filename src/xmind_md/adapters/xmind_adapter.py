@@ -7,7 +7,6 @@ evitar pérdidas silenciosas.
 from __future__ import annotations
 
 import json
-import re
 import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
@@ -38,6 +37,8 @@ _STYLE_KEYS = {
     "text.font_family": "fo:font-family",
     "text.font_size": "fo:font-size",
     "text.font_weight": "fo:font-weight",
+    "text.bold": "fo:font-weight",
+    "text.italic": "fo:font-style",
     "text.color": "fo:color",
     "text.decoration": "fo:text-decoration",
     "background.color": "svg:fill",

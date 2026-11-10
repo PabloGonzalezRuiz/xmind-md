@@ -99,9 +99,9 @@ def _validate_supported_features(mind_map: MindMap) -> None:
             raise XMindAdapterError(
                 f"Anotaciones no soportadas en '{topic.title}': {names}."
             )
-        if topic.style_ref and not (topic.resolved_style or topic.style_overrides):
+        if (topic.style_ref or topic.style_set) and not topic.resolved_style:
             raise XMindAdapterError(
-                f"El estilo '{topic.style_ref}' de '{topic.title}' no está resuelto. "
+                f"Los estilos de '{topic.title}' no están resueltos. "
                 "Ejecuta resolve_styles antes de exportar."
             )
         for child in topic.children:

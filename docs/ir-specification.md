@@ -2,7 +2,7 @@
 
 **Proyecto:** XMind MD  
 **Versión del contrato:** 1.0.0  
-**Estado:** especificación aprobada; implementación pendiente  
+**Estado:** especificación aprobada; implementación parcial en migración  
 **Esquema asociado:** [ir-schema.json](ir-schema.json)  
 **Ejemplo:** [constitucion.json](../examples/ir/constitucion.json)
 

@@ -285,7 +285,7 @@ Se conserva `0.1.0`, ya centralizada en `src/xmind_md/__init__.py` y leída din�
 
 - `CHANGELOG.md`: alcance, cambios, pruebas y limitaciones de 0.1.0.
 - `docs/releases/v0.1.0.md`: notas específicas de la publicación.
-- `.github/workflows/release.yml`: workflow `workflow_dispatch` que solo acepta `main`, exige confirmación explícita de la inspección manual del smoke, comprueba CI exitosa para el SHA exacto, verifica que el tag no exista, construye y verifica wheel/sdist y usa `gh release create` para crear tag y GitHub Release con ambos paquetes.
+- `.github/workflows/release.yml`: workflow `workflow_dispatch` que solo acepta `main`, exige confirmación explícita de la inspección manual del smoke, comprueba CI exitosa para el SHA exacto, verifica que el tag no exista, construye y verifica wheel/sdist y genera `SHA256SUMS.txt` y usa `gh release create --prerelease` para crear tag y GitHub Release Alpha con wheel, sdist y checksums.
 - README y catálogo de archivos actualizados; `THIRD_PARTY_NOTICES.md` ya no conserva el hallazgo histórico de `escudo.png` como pendiente.
 - Se mantiene visible que el inventario de terceros no es SBOM transitivo completo. No se redistribuye un bundle de dependencias; PyYAML queda como dependencia declarada de instalación.
 

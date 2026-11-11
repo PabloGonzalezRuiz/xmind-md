@@ -445,8 +445,14 @@ def write_xmind(mind_map: MindMap, destination: str | Path) -> Path:
         mimetype_info = zipfile.ZipInfo("mimetype")
         mimetype_info.compress_type = zipfile.ZIP_STORED
         archive.writestr(mimetype_info, MIMETYPE)
-        archive.writestr("content.json", json.dumps(content, ensure_ascii=False, indent=2, allow_nan=False))
-        archive.writestr("metadata.json", json.dumps(metadata, ensure_ascii=False, indent=2, allow_nan=False))
-        archive.writestr("manifest.json", json.dumps(manifest, ensure_ascii=False, indent=2, allow_nan=False))
+        archive.writestr(
+            "content.json", json.dumps(content, ensure_ascii=False, indent=2, allow_nan=False)
+        )
+        archive.writestr(
+            "metadata.json", json.dumps(metadata, ensure_ascii=False, indent=2, allow_nan=False)
+        )
+        archive.writestr(
+            "manifest.json", json.dumps(manifest, ensure_ascii=False, indent=2, allow_nan=False)
+        )
         archive.writestr("Thumbnails/thumbnail.png", THUMBNAIL_PNG)
     return path

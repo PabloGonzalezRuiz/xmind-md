@@ -542,3 +542,20 @@ Procedimiento obligatorio al retomar:
 ### Siguiente acción
 
 Corregir el formato de los 17 archivos señalados por Ruff y volver a ejecutar CI. No marcar la tarea 12 como completada hasta que Ruff lint, Ruff format, fixture, pytest, generación XMind y subida del artefacto estén todos verificados como satisfactorios.
+
+
+## 9. Objetivo de publicación: primera Release estable
+
+El usuario ha solicitado que, en cuanto el proyecto alcance condiciones suficientes, se genere y publique una Release completa y estable. Esta publicación queda integrada en la tarea final de auditoría y publicación (tarea 14 de la hoja de ruta), no como una versión provisional mientras la CI siga fallando.
+
+Criterios mínimos de salida:
+1. CI verde en el commit candidato: instalación, Ruff lint, Ruff format, suite de pruebas, descarga del fixture, generación XMind y publicación del artefacto.
+2. Prueba de interoperabilidad con XMind Desktop: apertura, inspección, guardado y reapertura del fichero generado; distinguir lo comprobado de las capacidades aún no verificadas.
+3. Auditoría funcional del alcance y limitaciones del parser, IR, estilos, CLI y adaptador XMind; no anunciar compatibilidad total si no está demostrada.
+4. Documentación sincronizada: README, instalación, uso de CLI, formato de entrada, capacidades, limitaciones, dependencias y licencia.
+5. Metadatos de distribución coherentes: versión única, changelog/notas, etiqueta Git y procedimiento de instalación reproducible.
+6. Publicación de una GitHub Release con código fuente y los artefactos binarios/distribuibles que realmente se hayan construido y probado. No adjuntar artefactos de smoke test como si fueran el paquete de distribución.
+
+La versión se elegirá después de auditar el versionado existente y el estado de empaquetado; no fijar número ni declarar estabilidad por adelantado. La publicación queda autorizada por la instrucción expresa del usuario, pero solo cuando se cumplan los criterios anteriores.
+
+Estado a 2026-11-11: **no apto todavía para Release**. El run CI más reciente inspeccionado es 42983767866 (commit `34c0274f5a5f6e80bf65d6c4b55ff895471b5437`): instalación y Ruff lint pasan, Ruff format falla porque 17 archivos requieren formato; pytest, generación y artefacto quedan omitidos. La tarea 12 sigue abierta.

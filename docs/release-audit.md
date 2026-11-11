@@ -291,6 +291,8 @@ Se conserva `0.1.0`, ya centralizada en `src/xmind_md/__init__.py` y leída din�
 
 ### Condición previa obligatoria
 
-La última salida smoke disponible para inspección se generó en CI #43010217583, commit `e4945f0a154c860ea631da950c9c80c9aeeaa007`, artefacto `xmind-desktop-smoke-test-py3.12` ID `13850915238`. Esa salida debe abrirse, guardarse, cerrarse y reabrirse en XMind Desktop. Sin esa inspección no se cumple el criterio de publicación. Tras los cambios documentales/workflow de tarea 8, se ejecutará CI sobre el SHA final y se generará un smoke nuevo; se debe inspeccionar el artefacto del SHA exacto que se publicará.
+La CI de preparación [43011780314](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43011780314), commit `12e876f02a87ffa954292310f089fd9a81345496`, finalizó `completed / success`: 161 pruebas por versión en Python 3.10/3.11/3.12, Ruff lint/format, tres smoke XMind y build/verificación/instalación limpia de wheel y sdist con conversiones CLI JSON/XMind. Artefacto `python-distributions` ID `13851276208`; smoke Python 3.12 ID `13850228137`.
+
+El smoke del run anterior no se utiliza como confirmación manual. El artefacto del commit final de publicación debe inspeccionarse en XMind Desktop. El run anterior acredita la validación automatizada del contenido de preparación; el SHA final que se publique tendrá su propia CI obligatoria.
 
 **No se ha creado tag ni GitHub Release.** El workflow no debe ejecutarse hasta que el usuario confirme la inspección del smoke generado desde el commit final y la CI de ese mismo SHA haya terminado con success.

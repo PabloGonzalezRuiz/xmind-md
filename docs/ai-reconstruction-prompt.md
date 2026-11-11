@@ -264,7 +264,7 @@ ruff check src tests
 ruff format --check src tests
 ~~~
 
-CI en `.github/workflows/ci.yml` configura actualmente una matriz `ubuntu-latest` y `windows-latest`, Python 3.12, Ruff lint y formato, pytest, descarga del fixture XMind, generación del smoke y artefactos separados por sistema. Esta configuración está publicada en el commit `509fd41869429526c6a903e3a3bdc2f2507a2be9`; no afirmes que ha pasado hasta consultar los runs reales.
+CI en `.github/workflows/ci.yml` utiliza exclusivamente `ubuntu-latest`, Python 3.12, Ruff lint y formato, pytest, descarga del fixture XMind, generación del smoke y publicación de un artefacto. La configuración Ubuntu-only se publicó en el commit `41983b75ce45626327d2484e5ddc9b55b9d90929`; no afirmes que ha pasado hasta consultar el run real.
 
 ## 10. Estado comprobado a 2026-11-11
 
@@ -377,3 +377,33 @@ La inspección de los archivos completos de `main` corrige la interpretación an
 - Test de integración: `ae81408334b7b17678e25b43f5d2cf4fae3625a2`
 
 El run 42982298488 instaló correctamente las dependencias en ambos runners, pero Ruff lint volvió a fallar. Ruff format, pytest, fixture, generación XMind y artefactos no se ejecutaron. La tarea 12 sigue abierta hasta revisar el nuevo run generado por los tres commits más recientes y comprobar todos los pasos en ambos sistemas.
+
+
+## 14. Decisión CI actualizada — 2026-11-11: solo Ubuntu
+
+Esta sección prevalece sobre las referencias históricas anteriores a una matriz Ubuntu/Windows.
+
+El usuario autorizó simplificar la CI para que GitHub Actions ejecute todas las comprobaciones exclusivamente en Linux. El cambio está publicado en `.github/workflows/ci.yml`, commit `41983b75ce45626327d2484e5ddc9b55b9d90929`.
+
+Configuración vigente:
+- `runs-on: ubuntu-latest`; ya no existe matriz de sistemas operativos.
+- Un job denominado `Tests (Ubuntu)`.
+- Python 3.12.
+- Instalación editable con dependencias dev.
+- `ruff check src tests`.
+- `ruff format --check src tests`.
+- Descarga del fixture XMind de referencia.
+- `python -m pytest`.
+- Generación mediante `python scripts/create_xmind_smoke.py`.
+- Publicación de un único artefacto `xmind-desktop-smoke-test`.
+
+Motivo: el archivo `.xmind` generado no depende del sistema operativo que lo crea. La compatibilidad del artefacto con XMind Desktop para Windows se verifica mediante la prueba manual de apertura, inspección, guardado y reapertura que el usuario ya completó. La CI no necesita un runner Windows adicional para ese objetivo.
+
+**No confundir**:
+- CI en Ubuntu valida instalación, lint, formato, tests y generación/publicación del archivo.
+- La prueba manual en XMind Desktop para Windows valida la interoperabilidad del artefacto con esa aplicación.
+- La decisión de quitar Windows de CI no demuestra que el paquete Python funcione nativamente en Windows; simplemente deja de ser un objetivo de la matriz automática actual.
+
+La tarea 12 sigue abierta hasta inspeccionar el run disparado por el commit `41983b75ce45626327d2484e5ddc9b55b9d90929` y comprobar todos los pasos del job Ubuntu. El usuario no desea instalar Python ni ejecutar comandos localmente.
+
+La siguiente acción es consultar el run nuevo cuando esté disponible; no iniciar la tarea 13 hasta que la tarea 12 esté cerrada y el usuario autorice el siguiente punto.

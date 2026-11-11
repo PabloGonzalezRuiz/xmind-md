@@ -160,3 +160,49 @@ def test_global_entity_id_cannot_collide_with_topic_id():
     )
     with pytest.raises(MarkdownParseError, match="duplicado"):
         parse_markdown(source)
+
+
+
+def test_detached_topic_kind_is_accepted_with_position():
+    result = parse_markdown(
+        "# Raíz\n"
+        ":::xmind\nkind: detached\nlayout: {position: {x: 10, y: -5}}\n:::\n"
+        "## Independiente\n"
+    )
+    child = result.topics[0].children[0]
+    assert child.kind == "detached"
+    assert child.layout["position"] == {"x": 10, "y": -5}
+
+
+@pytest.mark.parametrize(
+    "directive",
+    [
+        "kind: []",
+        "kind: {invalid: true}",
+        "links: [{kind: [], target: https://example.com}]",
+    ],
+)
+def test_malformed_topic_properties_raise_markdown_parse_error(directive):
+    with pytest.raises(MarkdownParseError):
+        parse_markdown(f"# Raíz\n:::xmind\n{directive}\n:::\n## Hijo\n")
+
+
+def test_global_extensions_are_allowed_but_unknown_fields_are_rejected():
+    source = (
+        "# Raíz\n"
+        ":::xmind\nid: a\n:::\n## A\n"
+        ":::xmind-relationship\nid: rel\nsource: a\ntarget: a2\n"
+        "extensions: {vendor: {flag: true}}\n:::\n"
+        ":::xmind\nid: a2\n:::\n## A2\n"
+    )
+    result = parse_markdown(source)
+    assert result.relationships[0]["extensions"] == {"vendor": {"flag": True}}
+
+    bad = source.replace("extensions: {vendor: {flag: true}}", "unexpected: true")
+    with pytest.raises(MarkdownParseError, match="campos desconocidos"):
+        parse_markdown(bad)
+
+
+def test_legacy_list_text_is_not_empty():
+    result = parse_markdown("# Raíz\n- Uno\n  - Uno A\n- Dos\n")
+    assert result.topics[0].content == ["Uno\nUno A\nDos"]

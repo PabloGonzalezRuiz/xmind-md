@@ -130,7 +130,7 @@ Reglas de asociación:
 | Propiedad | Función |
 |---|---|
 | `id` | ID estable del tema |
-| `kind` | Tipo semántico: `attached`, `callout` o `summary` |
+| `kind` | Tipo semántico: `attached`, `detached`, `callout` o `summary`; la raíz siempre debe ser `attached` |
 | `style_set` | Selecciona el conjunto para este tema y sus descendientes |
 | `style` | Selecciona un estilo para este tema |
 | `style_overrides` | Modificaciones visuales locales |
@@ -196,7 +196,7 @@ Se utiliza la sintaxis Markdown estándar:
 - Una imagen se convierte en bloque de contenido `image` y referencia un asset del mapa.
 - Las rutas relativas se resuelven respecto al archivo Markdown.
 - No se descargan recursos remotos durante el parsing.
-- Los enlaces internos a temas pueden usar el ID explícito del tema como destino: `[Artículo 14](topic:topic_articulo_14)`. La referencia se valida al construir el IR.\n- Los enlaces inline admitidos usan la forma `[texto](destino)` sin paréntesis anidados en el destino. No se implementan enlaces de referencia, autolinks ni destinos con paréntesis sin escapar.\n- Las imágenes inline dentro de párrafos o celdas no se consideran recursos completos; utiliza una imagen independiente en su propia línea.
+- Los enlaces internos a temas pueden usar el ID explícito del tema como destino: `[Artículo 14](topic:topic_articulo_14)`. La referencia se valida al construir el IR.\n- Los enlaces inline admitidos usan la forma `[texto](destino)` sin paréntesis anidados en el destino. No se implementan enlaces de referencia, autolinks ni destinos con paréntesis sin escapar.\n- Las imágenes inline dentro de párrafos o celdas no se consideran recursos completos; utiliza una imagen independiente en su propia línea. Si un run inline contiene una imagen, el adaptador XMind la rechaza explícitamente.
 
 ## 6. Notas y directivas de bloque
 
@@ -308,21 +308,32 @@ Se admiten dos fuentes:
 1. Archivo YAML externo indicado por la CLI.
 2. Front matter y directivas locales del Markdown.
 
-El archivo externo puede contener `style_sets` y `styles`:
+El archivo externo utiliza el esquema que consume el resolutor: `style_sets` y `styles`. Dentro de cada conjunto, las propiedades se agrupan directamente por tipo de elemento; los estilos concretos pueden anidarse en `styles`. El catálogo global `styles` también agrupa cada definición por tipo de elemento.
 
 ~~~yaml
 style_sets:
-  TAI_LEGISLACION:
+  BASE_ACADEMICO:
     topic:
-      typography:
+      text:
         font_family: Arial
         font_size: 14
+        color: "#263B5A"
+  TAI_LEGISLACION:
+    topic:
+      text:
+        font_family: Arial
+        font_size: 14
+      background:
+        color: "#FFFFFF"
     styles:
       concepto_importante:
         topic:
           text:
-            color: "#C62828"
+            color: "#9C0006"
             bold: true
+          border:
+            color: "#C00000"
+            width: 1.5
 
 styles:
   relacion_default:
@@ -330,7 +341,10 @@ styles:
       line:
         color: "#607D8B"
         width: 1.5
+        pattern: solid
 ~~~
+
+Este formato no incluye actualmente secciones superiores `version`, `defaults`, `elements` ni herencia `extends`. No copiar al YAML ejecutable los esquemas conceptuales de secciones anteriores de esta especificación.
 
 Precedencia de menor a mayor:
 
@@ -401,9 +415,12 @@ La gramática de este documento describe un subconjunto propio de Markdown enriq
 
 ### 15.1 Construcciones implementadas
 
+La directiva `:::xmind` admite `kind: attached`, `detached`, `callout` y `summary`; la raíz debe ser `attached`. El IR representa los cuatro tipos. El adaptador XMind exporta `attached`, `detached` y `callout`; `detached` exige `layout.position.x/y`, mientras que `summary` se rechaza en ese adaptador.
+
 | Construcción | Comportamiento implementado | Restricciones |
 |---|---|---|
 | Front matter | YAML al inicio, delimitado por `---` o `...`; claves duplicadas y campos superiores desconocidos rechazados | Un único bloque inicial; no se admiten varios front matter |
+| Valores YAML | Se normalizan a valores compatibles con JSON; fechas/fechas-hora se convierten a ISO 8601 | Se rechazan NaN, infinito, bytes, sets, valores no representables y claves que colisionan al convertirse a texto |
 | Encabezados | ATX H1–H6; una raíz H1; IDs explícitos o deterministas | Setext no admitido; título literal, sin formato inline; sin atributos de encabezado |
 | Jerarquía | Se anidan por el encabezado abierto de nivel inferior más próximo | Se permiten saltos de nivel; no se conservan niveles como propiedad visual IR |
 | Directiva `:::xmind` | YAML asociado al encabezado siguiente; valida propiedades reconocidas y varios tipos | Solo una directiva pendiente; comentarios o contenido intermedio no admitidos |

@@ -140,12 +140,14 @@ def validate_mind_map(mind_map: MindMap) -> MindMap:
     asset_ids = set(mind_map.assets)
     for asset_id, asset in mind_map.assets.items():
         _register(asset_id, f"assets[{asset_id!r}]", seen)
-        if asset.kind not in {"image", "attachment", "audio"}:
+        if not isinstance(asset.kind, str) or asset.kind not in {"image", "attachment", "audio"}:
             raise IRValidationError(f"assets[{asset_id!r}].kind: tipo no válido")
-        if not asset.path:
-            raise IRValidationError(f"assets[{asset_id!r}].path: ruta vacía")
-        if asset.size is not None and asset.size < 0:
-            raise IRValidationError(f"assets[{asset_id!r}].size: no puede ser negativo")
+        if not isinstance(asset.path, str) or not asset.path:
+            raise IRValidationError(f"assets[{asset_id!r}].path: ruta vacía o no textual")
+        if asset.size is not None and (
+            not isinstance(asset.size, int) or isinstance(asset.size, bool) or asset.size < 0
+        ):
+            raise IRValidationError(f"assets[{asset_id!r}].size: debe ser un entero no negativo")
 
     topic_ids: set[str] = set()
     _walk_topics(

@@ -96,7 +96,7 @@ def test_repository_example_parses_as_complete_document():
     assert len(result.relationships) == 1
     assert len(result.boundaries) == 1
     assert len(result.summaries) == 1
-    assert result.assets[0]["src"] == "assets/escudo.png"
+    assert result.assets[0]["src"] == "assets/escudo.svg"
 
 
 def test_generated_topic_ids_do_not_depend_on_line_numbers():

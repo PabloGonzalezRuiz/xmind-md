@@ -588,7 +588,7 @@ Esta sección prevalece sobre las referencias históricas de este prompt que ind
 
 1. **Completada:** smoke XMind desde wheel y sdist instalados; ZIP, MIME, content.json e integridad verificados en CI #42990025087.
 2. **Siguiente:** inventariar licencias/procedencia de dependencias, fixtures y ejemplos.
-3. Ampliar CI a Python 3.10/3.11/3.12 o ajustar compatibilidad declarada.
+3. **Completada:** matriz CI Python 3.10/3.11/3.12; run #42995180722.
 4. Actualizar las acciones CI para eliminar aviso Node.js 20.
 5. Unificar/verificar versión y completar metadatos de distribución.
 6. Auditar funcionalidad y cobertura; corregir defectos prioritarios.
@@ -624,7 +624,7 @@ Hallazgos registrados:
 - No se encontró código fuente vendorizado, imágenes, fuentes tipográficas ni bibliotecas externas en el árbol.
 - No hay lockfile ni SBOM; la auditoría no cubre todas las dependencias transitivas y no es asesoramiento jurídico.
 
-La tarea 2 está documentada en THIRD_PARTY_NOTICES.md, docs/license-adoption.md, docs/release-audit.md y docs/development-status.md. La siguiente fase de la hoja de ruta es ampliar la matriz de CI a Python 3.10/3.11/3.12; no empezarla hasta autorización expresa.
+La tarea 2 está documentada en THIRD_PARTY_NOTICES.md, docs/license-adoption.md, docs/release-audit.md y docs/development-status.md. La tarea 3 (matriz CI Python 3.10/3.11/3.12) también está completada; la siguiente tarea es actualizar las acciones de GitHub para retirar Node.js 20, pendiente de autorización.
 
 
 ### Evidencia CI posterior a la auditoría de terceros
@@ -676,6 +676,6 @@ Los digest corresponden a contenedores ZIP de artefactos Actions, no a los archi
 
 **Importante sobre Python 3.10:** está fuera de soporte de seguridad desde 2026-10-01. Se mantiene en matriz porque el proyecto aún declara `requires-python >=3.10`. La matriz acredita compatibilidad técnica observada; no soporte de seguridad. No modificar el mínimo en esta tarea. Evaluarlo durante versionado/metadatos.
 
-La documentación de cierre se ha actualizado en `docs/development-status.md` y `docs/release-audit.md`; este prompt queda sincronizado con la evidencia. Hay que esperar a que la CI disparada por estas actualizaciones documentales termine y verificar que siga verde.
+La documentación de cierre se ha actualizado en `docs/development-status.md` y `docs/release-audit.md`; este prompt queda sincronizado con la evidencia. Las actualizaciones documentales quedaron validadas en run [42995377488](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42995377488), commit `1e2e6c20fd35bb070c298b80674ef98200f8abf8`: los tres jobs de Python y el job de distribuciones finalizaron success.
 
 **Siguiente tarea propuesta:** actualizar acciones GitHub para eliminar el aviso Node.js 20. No empezarla hasta recibir autorización expresa.

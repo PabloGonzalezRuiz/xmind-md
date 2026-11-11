@@ -582,6 +582,16 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             missing = [key for key in required if key not in entry]
             if missing:
                 raise MarkdownParseError(f"{kind}: faltan campos obligatorios {missing}")
+            allowed = {
+                "relationships": {"id", "source", "target", "title", "style", "extensions"},
+                "boundaries": {"id", "topics", "title", "style", "extensions"},
+                "summaries": {"id", "topics", "title", "style", "extensions"},
+            }[kind]
+            unknown = set(entry) - allowed
+            if unknown:
+                raise MarkdownParseError(f"{kind}: campos desconocidos {sorted(unknown)}")
+            if "extensions" in entry and not isinstance(entry["extensions"], dict):
+                raise MarkdownParseError(f"{kind}: extensions debe ser un objeto")
             entity_id = _validate_id(entry["id"], f"id de {kind}", 1)
             if entity_id in entity_ids or entity_id in topic_index:
                 raise MarkdownParseError(f"ID de entidad global duplicado: {entity_id}")

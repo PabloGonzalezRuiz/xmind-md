@@ -43,9 +43,7 @@ def test_cli_accepts_explicit_format_without_known_extension(tmp_path, monkeypat
     output = tmp_path / "resultado"
     source.write_text("# Raíz\n", encoding="utf-8")
 
-    assert _run_cli(
-        monkeypatch, source, "--output", output, "--format", "xmind"
-    ) == 0
+    assert _run_cli(monkeypatch, source, "--output", output, "--format", "xmind") == 0
     assert zipfile.is_zipfile(output)
 
 
@@ -53,17 +51,13 @@ def test_cli_rejects_format_extension_mismatch(tmp_path, monkeypatch, capsys):
     source = tmp_path / "mapa.md"
     source.write_text("# Raíz\n", encoding="utf-8")
 
-    result = _run_cli(
-        monkeypatch, source, "--output", tmp_path / "mapa.json", "--format", "xmind"
-    )
+    result = _run_cli(monkeypatch, source, "--output", tmp_path / "mapa.json", "--format", "xmind")
 
     assert result == 2
     assert "no coincide con la extensión .json" in capsys.readouterr().err
 
 
-def test_cli_rejects_unknown_extension_without_explicit_format(
-    tmp_path, monkeypatch, capsys
-):
+def test_cli_rejects_unknown_extension_without_explicit_format(tmp_path, monkeypatch, capsys):
     source = tmp_path / "mapa.md"
     source.write_text("# Raíz\n", encoding="utf-8")
 
@@ -73,12 +67,8 @@ def test_cli_rejects_unknown_extension_without_explicit_format(
     assert "No se puede deducir el formato" in capsys.readouterr().err
 
 
-def test_cli_reports_missing_input_with_nonzero_exit_code(
-    tmp_path, monkeypatch, capsys
-):
-    result = _run_cli(
-        monkeypatch, tmp_path / "inexistente.md", "--output", tmp_path / "mapa.xmind"
-    )
+def test_cli_reports_missing_input_with_nonzero_exit_code(tmp_path, monkeypatch, capsys):
+    result = _run_cli(monkeypatch, tmp_path / "inexistente.md", "--output", tmp_path / "mapa.xmind")
 
     assert result == 2
     assert "Error:" in capsys.readouterr().err
@@ -122,4 +112,3 @@ def test_cli_reports_unresolved_style_for_xmind(tmp_path, monkeypatch, capsys):
 
     assert result == 2
     assert "INEXISTENTE" in capsys.readouterr().err
-

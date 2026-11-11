@@ -34,22 +34,26 @@ def make_map() -> MindMap:
     child = Topic(
         id="topic_child",
         title="Hijo",
-        content=[ContentBlock(
-            "paragraph",
-            {"text": "Texto del hijo", "runs": [{"text": "Texto "}, {"text": "del hijo"}]},
-        )],
+        content=[
+            ContentBlock(
+                "paragraph",
+                {"text": "Texto del hijo", "runs": [{"text": "Texto "}, {"text": "del hijo"}]},
+            )
+        ],
         annotations=Annotation(
             labels=[Label("label_1", "IMPORTANTE")],
             markers=[Marker("marker_1", "priority", 1)],
             notes=[Note("note_1", [ContentBlock("paragraph", {"text": "Nota adicional"})])],
         ),
         links=[{"id": "link_1", "kind": "web", "target": "https://example.com"}],
-        style=StyleState(resolved={
-            "shape": "org.xmind.topicShape.roundRect",
-            "text": {"font_size": 14, "bold": True, "color": "#123456"},
-            "background": {"color": "#ffffff"},
-            "border": {"color": "#000000", "width": 2},
-        }),
+        style=StyleState(
+            resolved={
+                "shape": "org.xmind.topicShape.roundRect",
+                "text": {"font_size": 14, "bold": True, "color": "#123456"},
+                "background": {"color": "#ffffff"},
+                "border": {"color": "#000000", "width": 2},
+            }
+        ),
     )
     root = Topic(id="topic_root", title="Raíz", children=[child])
     return MindMap(
@@ -119,7 +123,10 @@ def test_write_xmind_creates_valid_zip_package(tmp_path):
     assert result == destination
     with zipfile.ZipFile(destination) as archive:
         assert archive.namelist() == [
-            "mimetype", "content.json", "metadata.json", "manifest.json",
+            "mimetype",
+            "content.json",
+            "metadata.json",
+            "manifest.json",
             "Thumbnails/thumbnail.png",
         ]
         assert archive.getinfo("mimetype").compress_type == zipfile.ZIP_STORED
@@ -137,7 +144,10 @@ def test_write_xmind_creates_valid_zip_package(tmp_path):
     "change, message",
     [
         (lambda m: setattr(m.sheet.root_topic, "kind", "detached"), "raíz XMind debe ser"),
-        (lambda m: setattr(m.sheet.root_topic, "resources", ResourceReferences(images=["a1"])), "recursos"),
+        (
+            lambda m: setattr(m.sheet.root_topic, "resources", ResourceReferences(images=["a1"])),
+            "recursos",
+        ),
         (lambda m: m.assets.update({"a1": Asset("image", "image.png")}), "recursos"),
         (lambda m: m.sheet.boundaries.append(Boundary("b1", ["topic_child"])), "boundaries"),
         (lambda m: m.sheet.summaries.append(Summary("s1", ["topic_child"])), "summaries"),
@@ -179,6 +189,7 @@ def test_relationship_style_uses_resolved_state():
     relationship = build_xmind_content(mind_map)[0]["relationships"][0]
     assert relationship["style"]["properties"] == {"fo:font-weight": "bold"}
 
+
 def test_export_does_not_mutate_the_original_ir():
     mind_map = make_map()
     original = mind_map.to_dict()
@@ -187,14 +198,13 @@ def test_export_does_not_mutate_the_original_ir():
 
     assert mind_map.to_dict() == original
 
+
 def test_unsupported_map_metadata_is_not_silently_dropped():
     mind_map = make_map()
     mind_map.metadata["description"] = "Descripción no exportable"
 
     with pytest.raises(XMindAdapterError, match="Metadatos del mapa no soportados"):
         build_xmind_content(mind_map)
-
-
 
 
 def test_detached_and_callout_topics_are_exported_in_their_xmind_child_groups():
@@ -300,7 +310,6 @@ def test_internal_link_with_unmapped_kind_is_rejected():
         build_xmind_content(mind_map)
 
 
-
 @pytest.mark.parametrize(
     "layout",
     [
@@ -330,17 +339,42 @@ def test_link_title_is_rejected_when_it_cannot_be_preserved_in_href():
         build_xmind_content(mind_map)
 
 
-
 @pytest.mark.parametrize(
     "change, message",
     [
-        (lambda m: setattr(m.sheet.root_topic.annotations, "task", {"status": "done"}), "anotación task"),
+        (
+            lambda m: setattr(m.sheet.root_topic.annotations, "task", {"status": "done"}),
+            "anotación task",
+        ),
         (lambda m: setattr(m.sheet.layout, "structure", "org_chart"), "layout de hoja"),
-        (lambda m: m.sheet.metadata.update({"description": "No exportable"}), "metadatos específicos de hoja"),
-        (lambda m: setattr(m.sheet.root_topic.children[0].annotations.notes[0].style, "resolved", {"text": {"bold": True}}), "estilo visual de las notas"),
-        (lambda m: m.sheet.relationships[0].extensions.update({"custom": True}), "extensiones no soportadas"),
-        (lambda m: m.sheet.root_topic.content.append(ContentBlock("equation", {"expression": "x^2"})), "no reconocido: 'equation'"),
-        (lambda m: m.sheet.root_topic.children[0].links.append({"id": "link_2", "kind": "web", "target": "https://example.org"}), "varios enlaces"),
+        (
+            lambda m: m.sheet.metadata.update({"description": "No exportable"}),
+            "metadatos específicos de hoja",
+        ),
+        (
+            lambda m: setattr(
+                m.sheet.root_topic.children[0].annotations.notes[0].style,
+                "resolved",
+                {"text": {"bold": True}},
+            ),
+            "estilo visual de las notas",
+        ),
+        (
+            lambda m: m.sheet.relationships[0].extensions.update({"custom": True}),
+            "extensiones no soportadas",
+        ),
+        (
+            lambda m: m.sheet.root_topic.content.append(
+                ContentBlock("equation", {"expression": "x^2"})
+            ),
+            "no reconocido: 'equation'",
+        ),
+        (
+            lambda m: m.sheet.root_topic.children[0].links.append(
+                {"id": "link_2", "kind": "web", "target": "https://example.org"}
+            ),
+            "varios enlaces",
+        ),
     ],
 )
 def test_remaining_unsupported_features_are_rejected_explicitly(change, message):

@@ -46,5 +46,6 @@ def test_write_json_preserves_unicode_and_adds_final_newline(tmp_path):
 
 def test_write_json_rejects_legacy_model():
     from xmind_md.model import MindMap as LegacyMindMap
+
     with pytest.raises(TypeError, match="IR 1.0.0"):
         write_json(LegacyMindMap(title="legacy"), "unused.json")

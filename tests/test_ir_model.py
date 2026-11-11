@@ -49,19 +49,21 @@ def test_serialization_matches_ir_document_shape():
     result = make_map().to_dict()
 
     assert set(result) == {
-        "ir_version", "id", "title", "metadata", "styles",
-        "style_sets", "assets", "sheet",
+        "ir_version",
+        "id",
+        "title",
+        "metadata",
+        "styles",
+        "style_sets",
+        "assets",
+        "sheet",
     }
     assert result["ir_version"] == "1.0.0"
     assert "root_topic" in result["sheet"]
     assert "topics" not in result
     topic = result["sheet"]["root_topic"]["children"][0]
-    assert topic["content"][0] == {
-        "type": "paragraph", "text": "Contenido"
-    }
-    assert topic["annotations"]["labels"] == [
-        {"id": "label_child", "text": "IMPORTANTE"}
-    ]
+    assert topic["content"][0] == {"type": "paragraph", "text": "Contenido"}
+    assert topic["annotations"]["labels"] == [{"id": "label_child", "text": "IMPORTANTE"}]
     assert topic["resources"]["images"] == ["asset_image"]
 
 
@@ -139,20 +141,15 @@ def test_asset_metadata_is_checked():
 
 def test_link_kind_and_target_are_validated():
     mind_map = make_map()
-    mind_map.sheet.root_topic.links.append(
-        {"id": "link_1", "kind": "ftp", "target": "example"}
-    )
+    mind_map.sheet.root_topic.links.append({"id": "link_1", "kind": "ftp", "target": "example"})
 
     with pytest.raises(IRValidationError, match="kind"):
         validate_mind_map(mind_map)
 
 
-
 def test_topic_link_must_reference_existing_topic():
     mind_map = make_map()
-    mind_map.sheet.root_topic.links.append(
-        {"id": "link_1", "kind": "topic", "target": "missing"}
-    )
+    mind_map.sheet.root_topic.links.append({"id": "link_1", "kind": "topic", "target": "missing"})
 
     with pytest.raises(IRValidationError, match="tema enlazado inexistente"):
         validate_mind_map(mind_map)

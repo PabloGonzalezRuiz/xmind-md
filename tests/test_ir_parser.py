@@ -27,7 +27,12 @@ def test_parser_converts_structured_content_to_ir_blocks():
     result = parse_markdown_ir(source)
     blocks = result.sheet.root_topic.content
     assert [block.type for block in blocks] == [
-        "paragraph", "list", "table", "code", "quote", "divider"
+        "paragraph",
+        "list",
+        "table",
+        "code",
+        "quote",
+        "divider",
     ]
     assert blocks[0].data["text"] == "Texto importante."
     assert blocks[1].data["items"][0]["content"][0]["type"] == "paragraph"
@@ -110,11 +115,9 @@ def test_parser_preserves_document_level_style_set():
     assert validate_mind_map(result) is result
 
 
-
 def test_parser_preserves_internal_topic_links_and_validates_target():
     source = (
-        "# Raíz\n:::xmind\nid: destino\n:::\n## Destino\n"
-        "Referencia a [destino](topic:destino).\n"
+        "# Raíz\n:::xmind\nid: destino\n:::\n## Destino\nReferencia a [destino](topic:destino).\n"
     )
     result = parse_markdown_ir(source)
     runs = result.sheet.root_topic.children[0].content[0].data["runs"]
@@ -122,10 +125,7 @@ def test_parser_preserves_internal_topic_links_and_validates_target():
 
 
 def test_parser_preserves_inline_strikethrough_and_note_formatting():
-    source = (
-        "# Raíz\nTexto ~~obsoleto~~.\n"
-        ":::xmind-note\nNota **importante**.\n:::\n"
-    )
+    source = "# Raíz\nTexto ~~obsoleto~~.\n:::xmind-note\nNota **importante**.\n:::\n"
     root = parse_markdown_ir(source).sheet.root_topic
     assert root.content[0].data["runs"][1]["style"] == {"strikethrough": True}
     note_runs = root.annotations.notes[0].content[0].data["runs"]
@@ -135,15 +135,12 @@ def test_parser_preserves_inline_strikethrough_and_note_formatting():
 def test_parser_preserves_content_block_source_ranges():
     result = parse_markdown_ir("# Raíz\nPrimera línea.\nSegunda línea.\n")
     block = result.sheet.root_topic.content[0]
-    assert block.data["source"] == {
-        "file": "<string>", "line_start": 2, "line_end": 3
-    }
+    assert block.data["source"] == {"file": "<string>", "line_start": 2, "line_end": 3}
 
 
 def test_internal_topic_link_to_missing_target_is_rejected():
     with pytest.raises(IRValidationError, match="tema enlazado inexistente"):
         parse_markdown_ir("# Raíz\n[no existe](topic:ausente)\n")
-
 
 
 def test_all_primary_content_blocks_keep_inclusive_source_ranges():
@@ -160,11 +157,16 @@ def test_all_primary_content_blocks_keep_inclusive_source_ranges():
     result = parse_markdown_ir(source, source_path="ejemplo.md")
     blocks = result.sheet.root_topic.content
     assert [block.type for block in blocks] == [
-        "paragraph", "list", "table", "code", "quote", "divider", "image"
+        "paragraph",
+        "list",
+        "table",
+        "code",
+        "quote",
+        "divider",
+        "image",
     ]
     expected = [(2, 2), (4, 4), (6, 8), (10, 12), (14, 14), (16, 16), (18, 18)]
     assert [
-        (block.data["source"]["line_start"], block.data["source"]["line_end"])
-        for block in blocks
+        (block.data["source"]["line_start"], block.data["source"]["line_end"]) for block in blocks
     ] == expected
     assert all(block.data["source"]["file"] == "ejemplo.md" for block in blocks)

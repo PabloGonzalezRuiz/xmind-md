@@ -1,4 +1,5 @@
 """Parser Markdown enriquecido de XMind MD."""
+
 from __future__ import annotations
 
 import re
@@ -44,13 +45,17 @@ def _construct_unique_mapping(loader: _UniqueKeyLoader, node: yaml.MappingNode, 
             duplicate = key in mapping
         except TypeError as exc:
             raise yaml.constructor.ConstructorError(
-                "while constructing a mapping", node.start_mark,
-                "unhashable mapping key", key_node.start_mark,
+                "while constructing a mapping",
+                node.start_mark,
+                "unhashable mapping key",
+                key_node.start_mark,
             ) from exc
         if duplicate:
             raise yaml.constructor.ConstructorError(
-                "while constructing a mapping", node.start_mark,
-                f"duplicate key {key!r}", key_node.start_mark,
+                "while constructing a mapping",
+                node.start_mark,
+                f"duplicate key {key!r}",
+                key_node.start_mark,
             )
         mapping[key] = loader.construct_object(value_node, deep=deep)
     return mapping
@@ -97,7 +102,7 @@ def _inline_runs(text: str) -> list[dict[str, Any]]:
     cursor = 0
     for match in token.finditer(text):
         if match.start() > cursor:
-            runs.append({"text": text[cursor:match.start()]})
+            runs.append({"text": text[cursor : match.start()]})
         value = match.group(0)
         kind = match.lastgroup
         if kind == "image":
@@ -222,8 +227,11 @@ def _parse_table(lines: list[str], start: int) -> tuple[dict[str, Any], int]:
             )
         rows.append(row)
         i += 1
-    return {"type": "table", "header": [_inline_runs(c) for c in header],
-            "rows": [[_inline_runs(c) for c in row] for row in rows]}, i
+    return {
+        "type": "table",
+        "header": [_inline_runs(c) for c in header],
+        "rows": [[_inline_runs(c) for c in row] for row in rows],
+    }, i
 
 
 def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
@@ -242,7 +250,9 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
     stack: list[Topic] = []
     pending: dict[str, Any] | None = None
     globals_: dict[str, list[dict[str, Any]]] = {
-        "relationships": [], "boundaries": [], "summaries": []
+        "relationships": [],
+        "boundaries": [],
+        "summaries": [],
     }
     assets: list[dict[str, Any]] = []
     fence_char = chr(96)
@@ -263,17 +273,23 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             marker, language = fence.groups()
             code_lines = []
             i += 1
-            closing = re.compile(r"^\s*" + re.escape(marker[0]) + "{" + str(len(marker)) + r",}\s*$")
+            closing = re.compile(
+                r"^\s*" + re.escape(marker[0]) + "{" + str(len(marker)) + r",}\s*$"
+            )
             while i < len(lines) and not closing.match(lines[i]):
                 code_lines.append(lines[i])
                 i += 1
             if i >= len(lines):
                 raise MarkdownParseError(f"Bloque de código sin cierre (línea {line_no})")
             code = "\n".join(code_lines)
-            stack[-1].content_blocks.append({
-                "type": "code", "language": language.strip() or None, "text": code,
-                "source": {"file": source_path, "line_start": line_no, "line_end": i + 1},
-            })
+            stack[-1].content_blocks.append(
+                {
+                    "type": "code",
+                    "language": language.strip() or None,
+                    "text": code,
+                    "source": {"file": source_path, "line_start": line_no, "line_end": i + 1},
+                }
+            )
             stack[-1].content.append(code)
             i += 1
             continue
@@ -286,9 +302,12 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             end = next((n for n in range(i + 1, len(lines)) if lines[n].strip() == ":::"), None)
             if end is None:
                 raise MarkdownParseError(f"Directiva {name} sin cierre (línea {line_no})")
-            payload_text = "\n".join(lines[i + 1:end])
-            payload = (_yaml_mapping(payload_text, line_no + 1, name)
-                       if payload_text.strip() and name != "xmind-note" else {})
+            payload_text = "\n".join(lines[i + 1 : end])
+            payload = (
+                _yaml_mapping(payload_text, line_no + 1, name)
+                if payload_text.strip() and name != "xmind-note"
+                else {}
+            )
             if name == "xmind":
                 if pending is not None:
                     raise MarkdownParseError(f"Directivas de tema consecutivas (línea {line_no})")
@@ -298,8 +317,11 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
                     raise MarkdownParseError(f"Nota antes del tema raíz (línea {line_no})")
                 stack[-1].annotations.setdefault("notes", []).append(payload_text)
             else:
-                key = {"xmind-relationship": "relationships", "xmind-boundary": "boundaries",
-                       "xmind-summary": "summaries"}[name]
+                key = {
+                    "xmind-relationship": "relationships",
+                    "xmind-boundary": "boundaries",
+                    "xmind-summary": "summaries",
+                }[name]
                 globals_[key].append(payload)
             i = end + 1
             continue
@@ -322,16 +344,31 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             if not title:
                 raise MarkdownParseError(f"Encabezado vacío (línea {line_no})")
             props = pending or {}
-            allowed = {"id", "kind", "style_set", "style", "style_overrides", "labels",
-                       "markers", "task", "layout", "links", "extensions"}
+            allowed = {
+                "id",
+                "kind",
+                "style_set",
+                "style",
+                "style_overrides",
+                "labels",
+                "markers",
+                "task",
+                "layout",
+                "links",
+                "extensions",
+            }
             unknown = set(props) - allowed
             if unknown:
-                raise MarkdownParseError(f"Propiedades desconocidas en :::xmind: {sorted(unknown)} (línea {line_no})")
+                raise MarkdownParseError(
+                    f"Propiedades desconocidas en :::xmind: {sorted(unknown)} (línea {line_no})"
+                )
             if props.get("kind", "attached") not in {"attached", "callout", "summary"}:
                 raise MarkdownParseError(f"kind no válido en :::xmind (línea {line_no})")
             for field_name in ("style_overrides", "layout", "extensions"):
                 if field_name in props and not isinstance(props[field_name], dict):
-                    raise MarkdownParseError(f"{field_name} debe ser un objeto YAML (línea {line_no})")
+                    raise MarkdownParseError(
+                        f"{field_name} debe ser un objeto YAML (línea {line_no})"
+                    )
             if "links" in props and (
                 not isinstance(props["links"], list)
                 or any(not isinstance(link, dict) for link in props["links"])
@@ -365,23 +402,36 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
                     raise MarkdownParseError(f"task debe ser un objeto YAML (línea {line_no})")
                 progress = task.get("progress")
                 if progress is not None and (
-                    not isinstance(progress, int) or isinstance(progress, bool) or not 0 <= progress <= 100
+                    not isinstance(progress, int)
+                    or isinstance(progress, bool)
+                    or not 0 <= progress <= 100
                 ):
-                    raise MarkdownParseError(f"task.progress debe ser un entero entre 0 y 100 (línea {line_no})")
+                    raise MarkdownParseError(
+                        f"task.progress debe ser un entero entre 0 y 100 (línea {line_no})"
+                    )
             if not stack and (roots or level != 1):
-                raise MarkdownParseError("El primer encabezado debe ser H1 y solo puede existir una raíz")
+                raise MarkdownParseError(
+                    "El primer encabezado debe ser H1 y solo puede existir una raíz"
+                )
             siblings = stack[-1].children if stack else roots
             occurrence = sum(1 for sibling in siblings if sibling.title == title)
             hierarchy = "/".join([ancestor.title for ancestor in stack] + [title])
             seed = f"{source_path}|{hierarchy}|{occurrence}"
-            explicit_id = _validate_id(props["id"], "id del tema", line_no) if "id" in props else None
+            explicit_id = (
+                _validate_id(props["id"], "id del tema", line_no) if "id" in props else None
+            )
             topic = Topic(
-                id=explicit_id or _stable_id("topic", seed), title=title, level=level,
-                style_set=props.get("style_set") or (metadata.get("style_set") if not stack else None),
+                id=explicit_id or _stable_id("topic", seed),
+                title=title,
+                level=level,
+                style_set=props.get("style_set")
+                or (metadata.get("style_set") if not stack else None),
                 kind=props.get("kind", "attached"),
-                style_ref=props.get("style"), style_overrides=props.get("style_overrides", {}),
+                style_ref=props.get("style"),
+                style_overrides=props.get("style_overrides", {}),
                 annotations={k: props[k] for k in ("labels", "markers", "task") if k in props},
-                links=props.get("links", []), layout=props.get("layout", {}),
+                links=props.get("links", []),
+                layout=props.get("layout", {}),
                 extensions=props.get("extensions", {}),
                 source={"file": source_path, "line_start": line_no, "line_end": line_no},
             )
@@ -397,7 +447,9 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             continue
 
         if pending is not None:
-            raise MarkdownParseError(f":::xmind debe preceder inmediatamente a un encabezado (línea {line_no})")
+            raise MarkdownParseError(
+                f":::xmind debe preceder inmediatamente a un encabezado (línea {line_no})"
+            )
         if not stack:
             raise MarkdownParseError(f"Contenido antes del tema raíz (línea {line_no})")
 
@@ -407,18 +459,26 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             while i < len(lines) and lines[i].lstrip().startswith(">"):
                 quote.append(lines[i].lstrip()[1:].lstrip())
                 i += 1
-            topic.content_blocks.append({
-                "type": "quote",
-                "content": [{"type": "paragraph", "runs": _inline_runs(value)} for value in quote],
-                "source": {"file": source_path, "line_start": line_no, "line_end": i},
-            })
+            topic.content_blocks.append(
+                {
+                    "type": "quote",
+                    "content": [
+                        {"type": "paragraph", "runs": _inline_runs(value)} for value in quote
+                    ],
+                    "source": {"file": source_path, "line_start": line_no, "line_end": i},
+                }
+            )
             topic.content.extend(quote)
             continue
         if re.match(r"^\s*([-+*]|\d+[.)])\s+", raw):
             block, i = _parse_list(lines, i)
             block["source"] = {"file": source_path, "line_start": line_no, "line_end": i}
             topic.content_blocks.append(block)
-            topic.content.append("\n".join("".join(r.get("text", "") for r in item["content"]) for item in block["items"]))
+            topic.content.append(
+                "\n".join(
+                    "".join(r.get("text", "") for r in item["content"]) for item in block["items"]
+                )
+            )
             continue
         if "|" in raw and i + 1 < len(lines) and re.match(r"^\s*\|?\s*:?-{3,}", lines[i + 1]):
             block, i = _parse_table(lines, i)
@@ -426,10 +486,12 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             topic.content_blocks.append(block)
             continue
         if re.match(r"^\s*([-*_])(?:\s*\1){2,}\s*$", raw):
-            topic.content_blocks.append({
-                "type": "divider",
-                "source": {"file": source_path, "line_start": line_no, "line_end": line_no},
-            })
+            topic.content_blocks.append(
+                {
+                    "type": "divider",
+                    "source": {"file": source_path, "line_start": line_no, "line_end": line_no},
+                }
+            )
             i += 1
             continue
         if stripped.startswith("!["):
@@ -437,10 +499,13 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             if match:
                 asset = {"alt": match.group(1), "src": match.group(2)}
                 assets.append(asset)
-                topic.content_blocks.append({
-                    "type": "image", **asset,
-                    "source": {"file": source_path, "line_start": line_no, "line_end": line_no},
-                })
+                topic.content_blocks.append(
+                    {
+                        "type": "image",
+                        **asset,
+                        "source": {"file": source_path, "line_start": line_no, "line_end": line_no},
+                    }
+                )
                 topic.resources.append(asset)
                 i += 1
                 continue
@@ -450,17 +515,23 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
         i += 1
         while i < len(lines) and lines[i].strip():
             candidate = lines[i]
-            if (_HEADING_RE.match(candidate) or candidate.lstrip().startswith((":::", ">", fence_char * 3, "~~~", "!["))
-                    or re.match(r"^\s*([-+*]|\d+[.)])\s+", candidate)):
+            if (
+                _HEADING_RE.match(candidate)
+                or candidate.lstrip().startswith((":::", ">", fence_char * 3, "~~~", "!["))
+                or re.match(r"^\s*([-+*]|\d+[.)])\s+", candidate)
+            ):
                 break
             paragraph.append(candidate.strip())
             i += 1
         joined = " ".join(paragraph)
         topic.content.append(joined)
-        topic.content_blocks.append({
-            "type": "paragraph", "runs": _inline_runs(joined),
-            "source": {"file": source_path, "line_start": paragraph_start, "line_end": i},
-        })
+        topic.content_blocks.append(
+            {
+                "type": "paragraph",
+                "runs": _inline_runs(joined),
+                "source": {"file": source_path, "line_start": paragraph_start, "line_end": i},
+            }
+        )
 
     if pending is not None:
         raise MarkdownParseError("Directiva de tema al final del documento sin encabezado")
@@ -468,19 +539,24 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
         raise MarkdownParseError("El documento debe contener un único tema raíz (un H1)")
 
     topic_index: dict[str, Topic] = {}
+
     def index_topic(topic: Topic) -> None:
         if not topic.id or topic.id in topic_index:
             raise MarkdownParseError(f"ID de tema vacío o duplicado: {topic.id!r}")
         topic_index[topic.id] = topic
         for child in topic.children:
             index_topic(child)
+
     index_topic(roots[0])
 
     entity_ids: set[str] = set()
     for kind, entries in globals_.items():
         for entry in entries:
-            required = {"relationships": ("id", "source", "target"),
-                        "boundaries": ("id", "topics"), "summaries": ("id", "topics")}[kind]
+            required = {
+                "relationships": ("id", "source", "target"),
+                "boundaries": ("id", "topics"),
+                "summaries": ("id", "topics"),
+            }[kind]
             missing = [key for key in required if key not in entry]
             if missing:
                 raise MarkdownParseError(f"{kind}: faltan campos obligatorios {missing}")
@@ -491,11 +567,14 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             if kind == "relationships":
                 refs = [entry["source"], entry["target"]]
                 if any(not isinstance(ref, str) or not ref for ref in refs):
-                    raise MarkdownParseError("relationships: source y target deben ser IDs de texto")
+                    raise MarkdownParseError(
+                        "relationships: source y target deben ser IDs de texto"
+                    )
             else:
                 refs = entry["topics"]
                 if (
-                    not isinstance(refs, list) or not refs
+                    not isinstance(refs, list)
+                    or not refs
                     or any(not isinstance(ref, str) or not ref for ref in refs)
                 ):
                     raise MarkdownParseError(f"{kind}: topics debe ser una lista no vacía de IDs")
@@ -506,13 +585,27 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             if kind == "relationships" and entry["source"] == entry["target"]:
                 raise MarkdownParseError("Una relación no puede conectar un tema consigo mismo")
             for optional_text in ("title", "style"):
-                if optional_text in entry and entry[optional_text] is not None and not isinstance(entry[optional_text], str):
+                if (
+                    optional_text in entry
+                    and entry[optional_text] is not None
+                    and not isinstance(entry[optional_text], str)
+                ):
                     raise MarkdownParseError(f"{kind}: {optional_text} debe ser texto")
 
     title = metadata["title"] if "title" in metadata else roots[0].title
     if not isinstance(title, str) or not title.strip():
         raise MarkdownParseError("title del front matter debe ser texto no vacío")
-    known = {"title", "id", "author", "description", "style_set", "layout", "styles", "style_sets", "extensions"}
+    known = {
+        "title",
+        "id",
+        "author",
+        "description",
+        "style_set",
+        "layout",
+        "styles",
+        "style_sets",
+        "extensions",
+    }
     unknown = set(metadata) - known
     if unknown:
         raise MarkdownParseError(f"Campos desconocidos en front matter: {sorted(unknown)}")
@@ -520,7 +613,11 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
     if not isinstance(layout, dict):
         raise MarkdownParseError("layout del front matter debe ser un objeto")
 
-    map_id = _validate_id(metadata["id"], "id del mapa", 1) if "id" in metadata else _stable_id("map", f"{source_path}|{title}")
+    map_id = (
+        _validate_id(metadata["id"], "id del mapa", 1)
+        if "id" in metadata
+        else _stable_id("map", f"{source_path}|{title}")
+    )
     for field_name in ("styles", "style_sets", "extensions"):
         if field_name in metadata and not isinstance(metadata[field_name], dict):
             raise MarkdownParseError(f"{field_name} del front matter debe ser un objeto")
@@ -528,10 +625,17 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
         raise MarkdownParseError("style_set del front matter debe ser texto")
     return MindMap(
         id=map_id,
-        title=title, topics=roots, metadata=metadata, styles=metadata.get("styles", {}),
-        style_sets=metadata.get("style_sets", {}), assets=assets,
-        relationships=globals_["relationships"], boundaries=globals_["boundaries"],
-        summaries=globals_["summaries"], layout=layout, extensions=metadata.get("extensions", {}),
+        title=title,
+        topics=roots,
+        metadata=metadata,
+        styles=metadata.get("styles", {}),
+        style_sets=metadata.get("style_sets", {}),
+        assets=assets,
+        relationships=globals_["relationships"],
+        boundaries=globals_["boundaries"],
+        summaries=globals_["summaries"],
+        layout=layout,
+        extensions=metadata.get("extensions", {}),
     )
 
 

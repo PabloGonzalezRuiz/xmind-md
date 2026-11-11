@@ -654,3 +654,28 @@ Estado al retomar:
 - Cerrar la tarea solo cuando pasen las tres versiones y el job de wheel/sdist, documentar evidencia real en `docs/development-status.md` y en este prompt, y validar la actualización documental en CI.
 - La siguiente tarea después de esta es la revisión de las acciones de GitHub para eliminar el aviso Node.js 20. No empezarla sin autorización expresa.
 - El usuario no quiere instalar Python localmente ni ejecutar comandos en su equipo.
+
+## Cierre de tarea 3 — matriz de compatibilidad Python (2026-11-11)
+
+**Tarea completada y validada.** El usuario autorizó probar Python 3.10, 3.11 y 3.12. Workflow actualizado en commit `db241f04b489de23c429d4189c589859aaffc8fb`.
+
+Run [42995180722](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42995180722): completed/success. Los tres jobs de matriz terminaron success:
+- Python 3.10: Ruff lint/format success; **131 passed in 0.54s**; XMind smoke generado y artefacto subido.
+- Python 3.11: Ruff lint/format success; **131 passed in 0.39s**; XMind smoke generado y artefacto subido.
+- Python 3.12: Ruff lint/format success; **131 passed in 0.37s**; XMind smoke generado y artefacto subido.
+
+El job `Build and install distributions (Ubuntu)` también terminó success: wheel y sdist construidos, verificados, instalados en virtualenvs separados; ambos generaron JSON y XMind; se comprobaron estructura ZIP, MIME, `content.json` e integridad.
+
+Artefactos smoke:
+- Python 3.10: ID `13843133705`, digest ZIP `210cb7846d26b3c569ce145fbdcd77223fa3198c342ab642accda4038c54567a`.
+- Python 3.11: ID `13843223449`, digest ZIP `4248f5338c3125ae7f2207122ed6469ada1c4600613d2e921373038046edf60c`.
+- Python 3.12: ID `13843358216`, digest ZIP `c93c7fb70d11e581035a0222a3ad794b7401b3cb25de63e2d1dc098f6c000054`.
+- Distribuciones: ID `13842698603`, digest ZIP `f351a55f4d90b4f98be796caf5e904698f01219028e3fceca93388e0f8ec0b88`.
+
+Los digest corresponden a contenedores ZIP de artefactos Actions, no a los archivos de distribución internos.
+
+**Importante sobre Python 3.10:** está fuera de soporte de seguridad desde 2026-10-01. Se mantiene en matriz porque el proyecto aún declara `requires-python >=3.10`. La matriz acredita compatibilidad técnica observada; no soporte de seguridad. No modificar el mínimo en esta tarea. Evaluarlo durante versionado/metadatos.
+
+La documentación de cierre se ha actualizado en `docs/development-status.md` y `docs/release-audit.md`; este prompt queda sincronizado con la evidencia. Hay que esperar a que la CI disparada por estas actualizaciones documentales termine y verificar que siga verde.
+
+**Siguiente tarea propuesta:** actualizar acciones GitHub para eliminar el aviso Node.js 20. No empezarla hasta recibir autorización expresa.

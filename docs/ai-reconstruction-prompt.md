@@ -560,3 +560,46 @@ Pendiente inmediato: extender GitHub Actions para construir wheel y sdist, inspe
 Run [42986904524](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42986904524), commit `a64921cfdcc49016b5fd8eeb90cb7703ebb5355a`, finalizó success en Ubuntu. Instalación, Ruff lint, Ruff format, fixture, **131 pruebas**, generación XMind y artefacto finalizaron correctamente. El artefacto smoke tiene ID `13840285930` y SHA-256 `24e880172a25dcc52046db2f4978ff8d5dfdc8ebd2548d6890d5ebd551cf6a84`.
 
 La CI solo confirma el flujo de instalación editable actual. Todavía no construye ni instala wheel/sdist.
+
+
+## 15. Auditoría integral vigente — 2026-11-11
+
+Esta sección prevalece sobre las referencias históricas de este prompt que indiquen que wheel/sdist no se construyen o que su instalación está pendiente.
+
+### Estado comprobado de main
+
+- Commit auditado: `81b514195f1ea9a7bb0225c3353717f29251c615`.
+- CI run [42988289597](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42988289597): completed/success.
+- Job Tests Ubuntu: Ruff lint/format success; **131 passed in 0.36s**; smoke XMind generado y subido.
+- Job Build and install distributions Ubuntu: wheel y sdist construidos; `scripts/verify_distributions.py` confirmó metadatos MIT, LICENSE y módulos esenciales; ambas distribuciones se instalaron en virtualenvs limpios separados y ejecutaron la CLI para producir JSON válido.
+- Artefactos: `python-distributions` ID 13839594760 (72.878 bytes; SHA-256 ZIP `9b4a1960284e323fb00e4edaae19e12e00ec69377022a48730b8dd8ffe43ec59`); `xmind-desktop-smoke-test` ID 13840690878 (1.331 bytes; SHA-256 ZIP `e4596bf69bac18c669d709089f4b8eabb0f9daec63e171856cc1e447510b618c`).
+- Los hashes identifican ZIPs de artefactos de Actions, no los ficheros individuales wheel/sdist.
+
+### Hallazgos de auditoría
+
+1. El smoke de distribuciones instaladas solo genera JSON; falta probar `.xmind` desde wheel y sdist limpios.
+2. El proyecto declara Python >=3.10, pero la CI solo prueba 3.12 en Ubuntu.
+3. La versión `0.1.0` está repetida en TOML, paquete y verificador.
+4. Actions muestra aviso de deprecación Node.js 20 en checkout@v4, setup-python@v5 y upload-artifact@v4.
+5. Revisar procedencia/licencias del fixture XMind externo, fixture binario propio, ejemplos y dependencias antes de distribuir.
+6. El parser es un subconjunto Markdown propio; el adaptador XMind exporta un perfil parcial y rechaza capacidades no soportadas. La matriz de gramática y adaptador es normativa para las afirmaciones públicas.
+
+### Hoja de ruta de tarea 14
+
+1. **En curso/siguiente:** añadir smoke XMind a las instalaciones limpias wheel y sdist; comprobar ZIP, mimetype y content.json; ejecutar CI.
+2. Inventariar licencias/procedencia de dependencias, fixtures y ejemplos.
+3. Ampliar CI a Python 3.10/3.11/3.12 o ajustar compatibilidad declarada.
+4. Actualizar las acciones CI para eliminar aviso Node.js 20.
+5. Unificar/verificar versión y completar metadatos de distribución.
+6. Auditar funcionalidad y cobertura; corregir defectos prioritarios.
+7. Reconciliar documentación final.
+8. Preparar changelog, tag y Release.
+
+### Instrucciones para retomar
+
+1. Leer este prompt, `docs/development-status.md` y `docs/release-audit.md`.
+2. Consultar el último run de `main` mediante GitHub REST API, sin pedir URL al usuario salvo que el endpoint falle.
+3. Inspeccionar jobs, pasos, logs y artefactos; no inferir resultados.
+4. La tarea 1 de la lista anterior es la primera autorizada por el usuario. Ejecutarla ahora; no iniciar la tarea 2 sin presentar resultados y pedir autorización.
+5. Toda comprobación se realiza en GitHub Actions; el usuario no quiere instalar Python localmente.
+6. Actualizar status, prompt y documentos afectados al finalizar cada tarea.

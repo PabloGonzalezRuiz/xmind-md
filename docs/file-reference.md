@@ -89,7 +89,7 @@ Este documento identifica los principales archivos versionados y la responsabili
 | Ruta | Función |
 |---|---|
 | `.github/workflows/ci.yml` | CI Ubuntu: tests/Ruff/XMind y job dependiente de build, verificación e instalación de wheel/sdist. |
-| `.github/workflows/release.yml` | Publicación manual protegida: verifica CI/versión, exige confirmación Desktop, construye distribuciones y crea tag/Release. |
+| `.github/workflows/release.yml` | Publicación manual protegida: verifica CI/versión, exige confirmación Desktop, construye distribuciones, checksums SHA-256 y crea tag/prerelease. |
 | `output/` | Salidas locales; el contenido generado no se versiona salvo fixtures expresamente ubicados en tests. |
 
 El catálogo no sustituye a las pruebas: antes de modificar un módulo, inspecciona su implementación y sus tests actuales.

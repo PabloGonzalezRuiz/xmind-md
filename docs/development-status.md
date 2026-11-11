@@ -2,12 +2,12 @@
 
 > **Documento de seguimiento operativo del proyecto.** Debe actualizarse al terminar cada tarea de desarrollo autorizada y cuando cambie una decisión técnica relevante.
 
-- **Última actualización:** 2026-11-11 (remediación Ruff)
+- **Última actualización:** 2026-11-11 (simplificación CI: solo Ubuntu)
 - **Rama de referencia:** `main`
 - **Última prueba manual XMind Desktop:** superada en Windows, XMind 26.05.01107.
 - **Commit de incorporación del fixture XMind permanente:** `a1cf99861c819d9f148a7c7a3d779df6a95fc394`.
 - **Contrato objetivo:** IR 1.0.0
-- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; fixture comprobado manualmente en XMind Desktop 26.05.01107; CI histórica Linux/Python 3.12 con 131 pruebas superadas. El workflow actual ya incorpora matriz Ubuntu/Windows y Ruff, pero las ejecuciones de esa nueva configuración aún no están verificadas. El usuario ha decidido no instalar ni ejecutar herramientas localmente por ahora.
+- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; fixture comprobado manualmente en XMind Desktop 26.05.01107; CI histórica Linux/Python 3.12 con 131 pruebas superadas. El workflow actual ejecuta Ruff, pytest y generación del artefacto exclusivamente en Ubuntu; la nueva configuración está publicada y pendiente de verificar en Actions. El usuario ha decidido no instalar ni ejecutar herramientas localmente por ahora.
 
 ## 1. Para qué sirve este documento
 
@@ -87,7 +87,7 @@ La prueba manual acredita el fixture y los elementos comprobados, no compatibili
 
 ### 3.5 CLI, pruebas y automatización
 
-**Estado: suite y generación de artefacto verificadas históricamente; prueba manual del fixture superada; matriz CI actualizada a Ubuntu/Windows y correcciones Ruff publicadas, pendientes de nueva verificación.**
+**Estado: suite y generación de artefacto verificadas históricamente; prueba manual del fixture superada; CI simplificada a Ubuntu con Ruff, pendiente de nueva verificación.**
 
 - La CLI genera JSON (`.json`) o libros XMind (`.xmind`) a partir de `parse_file_ir()`; admite `--format` explícito y deducción por extensión.
 - La exportación XMind resuelve estilos antes de invocar el adaptador; la salida JSON conserva el comportamiento anterior y solo resuelve estilos si se proporciona `--styles`.
@@ -134,7 +134,7 @@ La prueba manual acredita el fixture y los elementos comprobados, no compatibili
 | 9 | Integrar la exportación XMind en la CLI | **Completada** | CLI XMind y JSON probadas, errores controlados y documentación actualizada |
 | 10 | Completar las pruebas con XMind Desktop | **Completada** | Apertura, inspección, guardado y reapertura confirmados; versión y resultados registrados |
 | 11 | Auditar y verificar la ejecución en GitHub Actions | **Completada** | Workflow y último run inspeccionados; 131 pruebas y artefacto generados correctamente |
-| 12 | Completar CI, Ruff y comprobaciones automáticas | **En curso** | Workflow verde con pruebas y lint en Linux y Windows |
+| 12 | Completar CI, Ruff y comprobaciones automáticas | **En curso** | Workflow Ubuntu verde con Ruff, pruebas y generación/publicación del artefacto XMind |
 | 13 | Sincronizar README y documentación técnica | Pendiente | Documentación coherente con el comportamiento real |
 | 14 | Auditoría final y publicación estable | Pendiente | Criterios de aceptación globales cumplidos |
 
@@ -478,3 +478,30 @@ El siguiente trabajo sigue siendo la tarea 12. Antes de cerrarla hay que obtener
   - Pruebas de integración: `ae81408334b7b17678e25b43f5d2cf4fae3625a2`
 - **Corrección del diagnóstico anterior:** los commits `6a3313c`, `aa67bf2` y `0f3c8fe` añadieron/restauraron la separación tras el future import, pero no resolvieron el I001 porque la causa real estaba al final del bloque de imports. No presentar esa intervención como solución.
 - Estado: tarea 12 sigue abierta. Hay que inspeccionar el run disparado por los tres commits correctivos más recientes y comprobar todos los pasos en Ubuntu y Windows. No afirmar que lint, formato, pruebas o artefactos hayan pasado hasta disponer de logs y artefactos verificables.
+
+
+## 7. Decisión y actualización CI — 2026-11-11: runner exclusivamente Ubuntu
+
+El usuario ha autorizado eliminar Windows de la matriz de GitHub Actions. La CI no necesita ejecutar el mismo conjunto de pruebas en dos sistemas para generar archivos XMind que después se abrirán en XMind Desktop para Windows. El formato de salida es independiente del sistema operativo que lo genera; la interoperabilidad con XMind Desktop se comprueba por separado mediante el fixture abierto, guardado y reabierto manualmente por el usuario.
+
+### Cambio publicado
+
+- Archivo: `.github/workflows/ci.yml`.
+- Commit: `41983b75ce45626327d2484e5ddc9b55b9d90929`.
+- Mensaje: `ci: run checks only on Ubuntu`.
+- Runner: `runs-on: ubuntu-latest`; eliminada la matriz `ubuntu-latest/windows-latest`.
+- Nombre del job: `Tests (Ubuntu)`.
+- Se mantienen Python 3.12, instalación editable con dependencias de desarrollo, Ruff lint, Ruff format, descarga del fixture de referencia, pytest, generación del smoke XMind y publicación del artefacto `xmind-desktop-smoke-test`.
+- Se elimina la duplicación de artefactos por sistema operativo.
+
+### Evidencia y siguiente verificación
+
+El cambio del workflow está publicado en `main`, pero todavía no se ha inspeccionado la ejecución de Actions disparada por este commit. Por tanto, no se afirma que Ruff, formato, pytest, generación ni publicación del artefacto hayan pasado.
+
+Los fallos previos en Windows y Ubuntu siguen siendo parte del historial de diagnóstico Ruff. La decisión actual reduce el ámbito de CI a Ubuntu; no equivale a demostrar compatibilidad de ejecución nativa en Windows. La prueba manual ya registrada sí acredita que el archivo XMind de fixture se abre y conserva los elementos comprobados en XMind Desktop para Windows.
+
+La tarea 12 permanece **en curso** hasta verificar en el nuevo run Ubuntu todos los pasos: Install, Ruff lint, Ruff format, descarga del fixture, Tests, Build XMind Desktop smoke test y Upload XMind smoke test.
+
+### Decisión técnica vigente
+
+Para este proyecto se utilizará exclusivamente `ubuntu-latest` en GitHub Actions. No se instalará ni ejecutará Python localmente durante esta fase. La compatibilidad del artefacto se comprobará con XMind Desktop en Windows, sin mantener un segundo runner Windows en CI.

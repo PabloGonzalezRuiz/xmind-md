@@ -189,7 +189,7 @@ Se utiliza la sintaxis Markdown estándar:
 
 ~~~md
 [Boletín Oficial del Estado](https://www.boe.es/)
-![Escudo](assets/escudo.png)
+![Escudo ilustrativo](assets/escudo.svg)
 ~~~
 
 - Los enlaces dentro de texto se conservan como enlaces de fragmento.

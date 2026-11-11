@@ -296,3 +296,14 @@ La CI del commit de preparación [43012712346](https://github.com/PabloGonzalezR
 El smoke del run anterior no se utiliza como confirmación manual. El artefacto del commit final de publicación debe inspeccionarse en XMind Desktop. El run anterior acredita la validación automatizada del contenido de preparación; el SHA final que se publique tendrá su propia CI obligatoria.
 
 **No se ha creado tag ni GitHub Release.** El workflow no debe ejecutarse hasta que el usuario confirme la inspección del smoke generado desde el commit final y la CI de ese mismo SHA haya terminado con success.
+
+
+## 14. Cierre de puerta manual — candidato final 0.1.0 (2026-11-11)
+
+**Validación manual confirmada por el usuario.** El fixture corregido `tests/fixtures/releases/xmind-md-0.1.0-alpha-final-smoke.xmind` se abrió, guardó, cerró y reabrió en XMind Desktop. El usuario confirma que todos los elementos son correctos y que la relación aparece como «Relación de prueba». El defecto ortográfico anterior («Relawión de prueba») está corregido.
+
+- Commit candidato: `5cb5dc1ea23373294b221f3f99b52ec47e09dabb`.
+- SHA-256 del fixture: `fb732945fd6cbe6613b525c2519adb065c81dba1a3bc69b88687111c965726c5`.
+- CI exacta [43017530370](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43017530370): completed/success. Los tres jobs Python pasaron Ruff y pruebas; el job de distribuciones construyó, verificó, instaló y probó wheel/sdist.
+
+La puerta de validación manual queda satisfecha. El workflow `.github/workflows/release.yml` todavía debe ejecutarse manualmente desde `main` con `desktop_smoke_verified=yes`. La integración GitHub disponible no expone dispatch de workflow ni creación de releases/tags, por lo que el usuario debe pulsar Run workflow en [esta página](https://github.com/PabloGonzalezRuiz/xmind-md/actions/workflows/release.yml). No hay tag ni Release publicados en este momento. El workflow generará `v0.1.0) como prerelease Alpha, wheel, sdist y checksums; verificar todos los assets y el estado final antes de declarar cierre.

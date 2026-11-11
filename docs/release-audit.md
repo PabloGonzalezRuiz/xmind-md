@@ -4,7 +4,7 @@
 - **Rama:** `main`
 - **Commit base de auditoría de código:** `a36f36ddc53bc71ef288c829ec5abc6e1eb16cc6`
 - **Última validación funcional y de distribuciones:** [43006735888](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43006735888)
-- **Última revisión documental:** tras el cierre de la tarea 6 del 2026-11-11; queda pendiente la sincronización integral de tarea 7
+- **Última revisión documental:** sincronización de tarea 7 completada el 2026-11-11; ver sección 12 y `documentation-audit.md`
 - **Alcance:** árbol del repositorio, arquitectura, parser/IR/estilos/adaptadores/CLI, pruebas, workflow, metadatos de distribución, licencia y documentación.
 - **Entorno:** inspección de GitHub y GitHub Actions; no se ejecutó código en el equipo del usuario.
 
@@ -112,7 +112,7 @@ Antes de distribuir:
 | 4 | Actualizar acciones GitHub Actions y eliminar aviso Node 20 | **Completada**: checkout@v5, setup-python@v6 y upload-artifact@v6; node24 verificado y CI verde (#42996452355) |
 | 5 | Resolver versionado y metadatos de publicación | Fuente de versión consistente, verificador no desincronizable, metadatos públicos coherentes |
 | 6 | Auditoría funcional final de parser/IR/estilos/CLI/XMind | Matriz de capacidades basada en código/tests; defectos críticos corregidos o limitaciones explícitas |
-| 7 | Sincronización final de toda la documentación | README y documentos técnicos/operativos sin contradicciones; CI verde |
+| 7 | Sincronización final de toda la documentación | **Revisión completada**; CI final del commit documental pendiente de registrar |
 | 8 | Preparar changelog, tag y GitHub Release estable | Artefactos identificados y comprobados; notas de versión; tag y Release reproducibles |
 
 El usuario ha autorizado la auditoría de procedencia/licencias (tarea 2). El inventario técnico está documentado; la limitación de dependencias transitivas y la referencia rota del recurso se mantienen como hallazgos pendientes para las tareas correspondientes.
@@ -250,7 +250,20 @@ Run [43006735888](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/430
 - El perfil XMind sigue sin exportar recursos/imágenes, tareas, boundaries, summaries ni extensiones. `summary` como tipo de tema tampoco está soportado. El contenido se aplana a notas.
 - El smoke actualizado con estilos pasó CI, pero no ha sido inspeccionado manualmente de nuevo en XMind Desktop. La comprobación manual histórica sigue siendo la del fixture versionado con XMind Desktop 26.05.01107.
 - CI solo valida Ubuntu, no Windows. Python 3.10 se conserva por compatibilidad técnica, pero upstream dejó de soportarlo el 2026-10-01.
-- La auditoría documental integral no está cerrada: README, grammar, IR, style-system, xmind-adapter y development necesitan sincronización final en la tarea 7.
+- La sincronización documental de tarea 7 se ha completado; consultar la sección 12 y `documentation-audit.md`.
 - No se ha creado changelog, tag ni GitHub Release. La versión sigue en 0.1.0.
 
 **Siguiente paso:** tarea 7, sincronización documental final. No comenzar sin autorización expresa. Después quedará tarea 8, preparación de changelog/tag/Release.
+
+
+## 12. Cierre de sincronización documental — tarea 7 (2026-11-11)
+
+**Estado: revisión documental completada; validación CI final pendiente de registrar.**
+
+Se han corregido las discrepancias detectadas en README, gramática, especificación IR, sistema de estilos, adaptador XMind y guía de desarrollo. El detalle de cambios, contraste con código y limitaciones es [documentation-audit.md](documentation-audit.md).
+
+La configuración YAML ejecutable se documenta como `style_sets` + `styles`, sin `extends/elements/applies_to/properties`. La cascada de estilos corresponde a la implementación actual. La gramática diferencia tipos representables en IR de tipos exportables a XMind. La matriz XMind identifica attached/detached/callout como soportados, detached con coordenadas, y summary como no soportado. README y guía usan el ejemplo smoke para exportar XMind y reportan 161 pruebas por versión.
+
+Los límites de publicación siguen vigentes: no hay inspección manual del nuevo smoke con estilos en XMind Desktop; CI solo Ubuntu; Python 3.10 fuera de soporte upstream; adaptador XMind parcial; no existe changelog, tag ni Release. La versión se mantiene en 0.1.0.
+
+**Siguiente paso propuesto:** tarea 8, preparación de changelog, tag y GitHub Release. No iniciar hasta recibir autorización expresa del usuario. La autorización previa para publicar queda condicionada a los criterios de esta auditoría y a la validación del commit candidato.

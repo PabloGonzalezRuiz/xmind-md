@@ -126,17 +126,13 @@ def test_cli_reports_package_version(monkeypatch, capsys):
 
 
 
-def test_cli_exports_repository_smoke_example_with_external_styles(
-    tmp_path, monkeypatch, capsys
-):
+def test_cli_exports_repository_smoke_example_with_external_styles(tmp_path, monkeypatch, capsys):
     root = Path(__file__).resolve().parents[1]
     source = root / "examples" / "xmind-smoke-test.md"
     styles = root / "config" / "styles.yaml"
     output = tmp_path / "smoke.xmind"
 
-    assert _run_cli(
-        monkeypatch, source, "--styles", styles, "--output", output
-    ) == 0
+    assert _run_cli(monkeypatch, source, "--styles", styles, "--output", output) == 0
 
     with zipfile.ZipFile(output) as archive:
         content = json.loads(archive.read("content.json"))

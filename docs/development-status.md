@@ -2,7 +2,7 @@
 
 > **Documento de seguimiento operativo del proyecto.** Debe actualizarse al terminar cada tarea de desarrollo autorizada y cuando cambie una decisión técnica relevante.
 
-- **Última actualización:** 2026-11-11 (tarea 7, sincronización documental; CI final pendiente de registrar)
+- **Última actualización:** 2026-11-11 (tarea 7, sincronización documental, validada en CI #43009183421)
 - **Rama de referencia:** `main`
 - **Última prueba manual XMind Desktop:** superada en Windows, XMind 26.05.01107.
 - **Commit de incorporación del fixture XMind permanente:** `a1cf99861c819d9f148a7c7a3d779df6a95fc394`.
@@ -949,7 +949,7 @@ El adaptador XMind continúa siendo parcial: no exporta imágenes/recursos, tare
 
 ## 28. Tarea 7 — sincronización documental final (2026-11-11)
 
-**Estado de revisión: COMPLETADA. Validación CI: pendiente de registrar.**
+**Estado: COMPLETADA Y VALIDADA.**
 
 Se han auditado y sincronizado README, gramática, IR, sistema de estilos, adaptador XMind, guía de desarrollo y catálogo de archivos. El informe detallado es [documentation-audit.md](documentation-audit.md).
 
@@ -961,6 +961,10 @@ Cambios relevantes:
 - Adaptador: contradicción resuelta; attached/detached/callout exportables, detached requiere coordenadas; summary no exportable; se aclaran enlaces, estilos y pérdidas.
 - Guía de desarrollo: ejemplos CLI corregidos y workflow actualizado a la matriz real; wheel/sdist se prueban en Python 3.12.
 - Se ha creado [documentation-audit.md](documentation-audit.md) como registro reproducible de los cambios y límites que deben mantenerse visibles.
+
+Run [43009183421](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43009183421), commit `6cd1c937ee090bc36483be49e7d1f5c740e0926a`, finalizó `completed / success`. Python 3.10/3.11/3.12: Ruff lint/format correctos y **161 pruebas superadas por versión**. Los tres jobs generaron sus XMind smoke. El job de distribuciones construyó wheel/sdist, verificó contenido/licencia, instaló ambos en entornos limpios separados y ejecutó conversiones CLI JSON/XMind; validación ZIP/MIME/JSON correcta.
+
+Artefactos: `python-distributions` ID `13850260351` (78.103 bytes; SHA-256 del ZIP de Actions `c8109d8d722befe2a5ed1bc953af15711b0caaf9d0f2bf9928bc050796b38a0f`); smoke Python 3.10 ID `13849418602`, Python 3.11 ID `13848884276`, Python 3.12 ID `13849314179`.
 
 Se conservan explícitamente las limitaciones: no CommonMark/GFM completo; no recursos/imágenes, tareas, boundaries, summaries, extensiones ni Topic.kind=summary en XMind; bloques aplanados a notas; smoke nuevo no reabierto manualmente en Desktop; CI Ubuntu sin evidencia Windows; Python 3.10 fuera de soporte upstream.
 

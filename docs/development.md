@@ -2,7 +2,7 @@
 
 ## Requisitos
 
-- Python 3.10 o superior.
+- Python 3.10 o superior (Python 3.10 está fuera de soporte upstream desde 2026-10-01; la compatibilidad de proyecto se comprueba en la matriz CI).
 - Git.
 - Un editor Python; VS Code o PyCharm son opciones válidas.
 - Conexión a Internet para instalar dependencias.
@@ -99,6 +99,6 @@ El workflow `.github/workflows/ci.yml` se ejecuta en Ubuntu con Python 3.12 y co
 1. `Tests (Ubuntu)`: instalación editable con `.[dev]`, Ruff lint/format, descarga del fixture XMind de referencia, pytest, generación del smoke XMind y publicación del artefacto.
 2. `Build and install distributions (Ubuntu)`: depende del job anterior; construye wheel y sdist, ejecuta `scripts/verify_distributions.py`, instala cada distribución en un entorno virtual limpio separado, convierte un Markdown autónomo a JSON y XMind y publica `python-distributions`.
 
-El run [42990025087](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42990025087) validó ambos jobs: 131 pruebas, Ruff, build, verificación de LICENSE/metadatos e instalación/CLI JSON y XMind de wheel y sdist. Los libros XMind generados desde ambas distribuciones pasaron comprobaciones estructurales ZIP/MIME/JSON.
+El run [42996714465](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42996714465) validó la matriz de tres versiones, 131 pruebas por versión, Ruff, build, verificación de LICENSE/metadatos e instalación/CLI JSON y XMind de wheel y sdist. Los libros XMind generados desde ambas distribuciones pasaron comprobaciones estructurales ZIP/MIME/JSON.
 
-La CI solo prueba Python 3.12 en Ubuntu; la compatibilidad con Python 3.10/3.11 y Windows no se deduce de ese resultado. Un cambio no debe considerarse validado hasta que el run correspondiente al commit termine con conclusión `success`. Toda evidencia debe quedar registrada en `docs/development-status.md`.
+La CI ejecuta pruebas y Ruff en Ubuntu con Python 3.10, 3.11 y 3.12. La construcción e instalación de wheel/sdist se valida en Python 3.12. No se deduce compatibilidad con Windows de estos resultados. Python 3.10 está fuera de soporte upstream desde 2026-10-01, aunque el proyecto mantiene compatibilidad técnica declarada. Un cambio no debe considerarse validado hasta que el run correspondiente al commit termine con conclusión `success`. Toda evidencia debe quedar registrada en `docs/development-status.md`.

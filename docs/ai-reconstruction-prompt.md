@@ -476,3 +476,42 @@ El job Tests (Ubuntu) y todos sus pasos finalizaron con success. Esto acredita C
 14. **Auditoría final y publicación estable — PENDIENTE.**
 
 Al retomar, consultar primero docs/development-status.md, verificar que main sigue en el commit esperado o en un descendiente y revisar el último run CI. La siguiente tarea a proponer es la 13; esperar autorización explícita antes de empezarla.
+
+
+## Actualización vigente — 2026-11-11: tarea 13 completada
+
+Esta sección prevalece sobre cualquier estado anterior del prompt que diga que la CLI no exporta XMind, que la interoperabilidad manual está pendiente, que la tarea 12 sigue abierta o que la tarea 13 está pendiente.
+
+La tarea 13 (sincronizar README y documentación técnica) está **COMPLETADA**. Se contrastó la documentación con el código actual y se actualizaron:
+
+- `README.md`: descripción, estado, instalación, CLI JSON/XMind, ejemplo, capacidades, limitaciones, prueba manual y enlaces.
+- `docs/architecture.md`: flujo real Markdown → parser → IR → estilos/adaptadores → CLI.
+- `docs/development.md`: comandos actuales, CLI y pipeline CI.
+- `docs/file-reference.md`: catálogo actualizado de rutas y responsabilidades reales.
+- `docs/grammar.md`: estado de subconjunto implementado; no es CommonMark/GFM completo.
+- `docs/ir-specification.md`: estado implementado del IR y separación entre IR, parser y adaptador.
+- `docs/style-system.md`: resolución implementada, precedencia, herencia y límites de exportación.
+- `docs/xmind-adapter.md`: prueba manual completada en XMind Desktop 26.05.01107 y alcance exacto.
+- `docs/xmind-engine-evaluation.md`: decisión Python nativa y estado real de implementación.
+
+Código de referencia contrastado: `src/xmind_md/cli.py`, `src/xmind_md/ir_parser.py`, `src/xmind_md/styles.py`, `src/xmind_md/ir/` y `src/xmind_md/adapters/xmind_adapter.py`.
+
+### Estado técnico vigente
+
+- La CLI admite salida JSON y XMind; infiere por extensión o recibe `--format`.
+- El IR 1.0.0 es el contrato canónico de los adaptadores.
+- El parser implementa un subconjunto de Markdown enriquecido, no CommonMark/GFM completos.
+- La resolución de estilos IR implementa defaults, style_defaults, conjunto, estilo nombrado y overrides.
+- El adaptador XMind genera ZIP + JSON moderno y rechaza explícitamente capacidades no soportadas; no es un exportador completo de todas las entidades IR.
+- El fixture manual se abrió, inspeccionó, guardó y reabrió en XMind Desktop 26.05.01107 para Windows. Solo están acreditados los elementos enumerados en `docs/xmind-integration-tests.md`.
+- La CI Ubuntu del commit de tarea 12 pasó: run [42985176851](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42985176851), 131 pruebas y artefacto smoke publicado.
+
+El registro de tarea 13 está en `docs/development-status.md`, sección 18. Los cambios documentales posteriores disparan CI; al retomar, verificar el run más reciente del commit vigente.
+
+### Hoja de ruta vigente
+
+12. **CI y Ruff — COMPLETADA.**
+13. **Sincronización documental — COMPLETADA.**
+14. **Auditoría final y publicación estable — PENDIENTE.**
+
+La siguiente tarea a proponer es la 14. Esperar autorización explícita antes de comenzarla. No publicar la Release hasta auditar versionado, paquete instalable, dependencias, licencia, changelog, artefactos de distribución y CI verde sobre el commit candidato. El usuario ya autorizó la publicación cuando esos criterios se cumplan; no es necesario pedir autorización otra vez para la publicación final, pero sí informar de decisiones irreversibles no cubiertas por ese permiso.

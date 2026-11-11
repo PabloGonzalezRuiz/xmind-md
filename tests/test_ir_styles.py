@@ -1,6 +1,7 @@
 """Pruebas de cascada de estilos sobre el modelo IR 1.0.0."""
 
 from copy import deepcopy
+from pathlib import Path
 
 import pytest
 
@@ -15,7 +16,8 @@ from xmind_md.ir import (
     Summary,
     Topic,
 )
-from xmind_md.styles import StyleError, resolve_ir_styles, resolve_styles
+from xmind_md.ir_parser import parse_file_ir
+from xmind_md.styles import StyleError, load_styles, resolve_ir_styles, resolve_styles
 
 
 def make_map(root=None, metadata=None, **sheet_kwargs):
@@ -195,3 +197,18 @@ def test_public_resolve_styles_dispatches_to_ir_model():
     mind_map = make_map(root)
     resolve_styles(mind_map, defaults={"topic": {"text": {"bold": True}}})
     assert root.style.resolved == {"text": {"bold": True}}
+
+
+
+def test_repository_style_configuration_resolves_external_document_references():
+    root = Path(__file__).resolve().parents[1]
+    styles = load_styles(root / "config" / "styles.yaml")
+    mind_map = parse_file_ir(root / "examples" / "constitucion.md")
+
+    resolve_styles(mind_map, styles)
+
+    article_14 = mind_map.sheet.root_topic.children[0].children[1]
+    assert article_14.style.resolved["text"]["color"] == "#9C0006"
+    assert article_14.style.resolved["text"]["bold"] is True
+    relationship = mind_map.sheet.relationships[0]
+    assert relationship.style.resolved["line"]["color"] == "#607D8B"

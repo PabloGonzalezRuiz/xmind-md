@@ -95,8 +95,11 @@ def _walk_topics(
 
     for index, link in enumerate(topic.links):
         link_path = f"{path}.links[{index}]"
+        if not isinstance(link, dict):
+            raise IRValidationError(f"{link_path}: debe ser un objeto")
         _register(link.get("id"), f"{link_path}.id", seen)
-        if link.get("kind") not in {"web", "topic", "file", "internal"}:
+        kind = link.get("kind")
+        if not isinstance(kind, str) or kind not in {"web", "topic", "file", "internal"}:
             raise IRValidationError(f"{link_path}.kind: tipo de enlace no válido")
         if not isinstance(link.get("target"), str) or not link["target"]:
             raise IRValidationError(f"{link_path}.target: destino vacío o no textual")

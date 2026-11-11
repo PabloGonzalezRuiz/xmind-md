@@ -648,3 +648,21 @@ La siguiente tarea es la 14. No iniciarla hasta recibir autorización expresa de
 - Conclusión del run: success.
 
 Esta ejecución valida la documentación sincronizada en ese commit y confirma que los cambios documentales no han roto la CI. La Release sigue pendiente de la tarea 14.
+
+
+## 19. Tarea 14 — Auditoría inicial de empaquetado y licencia (2026-11-11)
+
+**Estado:** primera auditoría completada; no se ha modificado el código ni se ha publicado una licencia.
+
+- Informe detallado: [docs/release-audit.md](release-audit.md).
+- Commit auditado: `dd16f626353b36cf3a9b1f15a4001d3c3ad93601`.
+- `pyproject.toml` declara setuptools, diseño `src`, descubrimiento de paquetes, Python `>=3.10`, PyYAML, extras de desarrollo, README y entry point `xmind-md`.
+- La versión `0.1.0` coincide entre `pyproject.toml` y `src/xmind_md/__init__.py`.
+- No hay archivo LICENSE/COPYING/NOTICE ni metadatos de licencia. La elección queda pendiente de confirmación del titular; no inferir una licencia por la visibilidad pública del repositorio.
+- La configuración de build usa `setuptools>=68`. Si se elige una licencia con metadata SPDX PEP 639, la guía actual de PyPA indica soporte de setuptools desde 77.0.3; revisar y elevar el mínimo.
+- No hay GitHub Releases publicadas.
+- CI #283, run `42985816448`, commit `dd16f626353b36cf3a9b1f15a4001d3c3ad93601`: job Ubuntu success; Install, Ruff lint, Ruff format, descarga de fixture, Tests, generación XMind y Upload artifact success. Artefacto de 1.331 bytes, SHA-256 `6d4a3ee6533744496d6693e1f9b9668478684e97ad67a0aafa9da58b5ecffcb0`.
+- La CI instala en modo editable y no construye wheel/sdist. La construcción, instalación limpia y prueba de la distribución son pendientes.
+- No se ha instalado ni ejecutado Python en el equipo del usuario.
+
+**Siguiente paso bloqueado por decisión:** confirmar la licencia deseada antes de modificar los metadatos o añadir el texto legal. Después se podrá implementar la prueba de construcción e instalación de wheel/sdist en GitHub Actions, con autorización para ese siguiente punto.

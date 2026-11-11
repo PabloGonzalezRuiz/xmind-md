@@ -374,11 +374,31 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
                     raise MarkdownParseError(
                         f"{field_name} debe ser un objeto YAML (línea {line_no})"
                     )
-            if "links" in props and (
-                not isinstance(props["links"], list)
-                or any(not isinstance(link, dict) for link in props["links"])
-            ):
-                raise MarkdownParseError(f"links debe ser una lista de objetos (línea {line_no})")
+            if "links" in props:
+                if not isinstance(props["links"], list) or any(
+                    not isinstance(link, dict) for link in props["links"]
+                ):
+                    raise MarkdownParseError(f"links debe ser una lista de objetos (línea {line_no})")
+                for link_index, link in enumerate(props["links"]):
+                    link_kind = link.get("kind")
+                    if not isinstance(link_kind, str) or link_kind not in {
+                        "web", "topic", "file", "internal"
+                    }:
+                        raise MarkdownParseError(
+                            f"links[{link_index}].kind no es válido (línea {line_no})"
+                        )
+                    if not isinstance(link.get("target"), str) or not link["target"]:
+                        raise MarkdownParseError(
+                            f"links[{link_index}].target debe ser texto no vacío (línea {line_no})"
+                        )
+                    if "title" in link and link["title"] is not None and not isinstance(
+                        link["title"], str
+                    ):
+                        raise MarkdownParseError(
+                            f"links[{link_index}].title debe ser texto (línea {line_no})"
+                        )
+                    if "id" in link:
+                        _validate_id(link["id"], f"links[{link_index}].id", line_no)
             if "style" in props and not isinstance(props["style"], str):
                 raise MarkdownParseError(f"style debe ser texto (línea {line_no})")
             if "style_set" in props and not isinstance(props["style_set"], str):

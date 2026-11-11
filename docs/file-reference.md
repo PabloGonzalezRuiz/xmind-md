@@ -7,6 +7,8 @@ Este documento identifica los principales archivos versionados y la responsabili
 | Archivo | Responsabilidad |
 |---|---|
 | `README.md` | Presentación, capacidades, instalación y uso de la CLI. |
+| `LICENSE` | Licencia MIT del código propio del proyecto. |
+| `THIRD_PARTY_NOTICES.md` | Inventario de dependencias, acciones CI, fixtures y procedencia de materiales de terceros. |
 | `pyproject.toml` | Metadatos/versión del paquete, dependencias, entry point y configuración de pytest/Ruff. |
 | `.gitignore` | Exclusión de entornos, cachés y salidas generadas. |
 

@@ -10,9 +10,9 @@
 
 ## 1. Dictamen ejecutivo
 
-El proyecto ya dispone de una cadena funcional Markdown → IR 1.0.0 → JSON/XMind, CLI instalada, CI Ubuntu con Ruff y pytest, fixture validado manualmente en XMind Desktop y construcción de wheel/sdist. **La publicación estable todavía no está autorizada por la evidencia técnica disponible**: quedan auditorías de terceros, compatibilidad de Python, cobertura del paquete instalado para salida XMind, calidad de release y revisión final de documentación/versionado.
+El proyecto dispone de una cadena funcional Markdown → IR 1.0.0 → JSON/XMind, CLI instalada, CI Ubuntu con Ruff y pytest, fixture histórico validado manualmente en XMind Desktop y construcción de wheel/sdist desde entornos limpios. Las tareas 1–7 de la hoja de ruta están cerradas, incluida la sincronización documental final (sección 12). **La publicación todavía no se ha ejecutado**: queda preparar changelog, decidir versión/tag, realizar la comprobación final del artefacto candidato y publicar una Release reproducible (tarea 8). La existencia de pruebas estructurales no sustituye la inspección manual del nuevo smoke con estilos en XMind Desktop.
 
-La ejecución #42988289597 finalizó con conclusión `success`; las ejecuciones #42990025087 y #42990429514 añadieron y revalidaron generación XMind desde wheel y sdist instalados en entornos limpios. La última validación #42990429514 terminó con ambos jobs en success, Ruff correcto y 131 pruebas superadas.
+La evidencia funcional más reciente previa a la auditoría documental es el run #43006735888 (161 pruebas por versión, Python 3.10/3.11/3.12); la validación de los cambios documentales se registra en la sección 12 una vez concluya la CI correspondiente al commit final.
 
 ## 2. Estado del repositorio auditado
 

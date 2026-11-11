@@ -407,3 +407,25 @@ Motivo: el archivo `.xmind` generado no depende del sistema operativo que lo cre
 La tarea 12 sigue abierta hasta inspeccionar el run disparado por el commit `41983b75ce45626327d2484e5ddc9b55b9d90929` y comprobar todos los pasos del job Ubuntu. El usuario no desea instalar Python ni ejecutar comandos localmente.
 
 La siguiente acción es consultar el run nuevo cuando esté disponible; no iniciar la tarea 13 hasta que la tarea 12 esté cerrada y el usuario autorice el siguiente punto.
+
+
+## 15. Consulta automática de ejecuciones GitHub Actions — regla obligatoria
+
+No pedir al usuario que proporcione la URL del run como paso habitual. El endpoint de listado de GitHub REST está disponible a través de la acción genérica de lectura:
+
+`GET https://api.github.com/repos/PabloGonzalezRuiz/xmind-md/actions/runs?branch=main&per_page=10`
+
+Al retomar el proyecto, consultar el listado, seleccionar la ejecución más reciente de `.github/workflows/ci.yml` en `main`, y extraer su `id` y `html_url`. Después consultar jobs, pasos, logs y artefactos con las acciones específicas del conector. Solicitar URL manual únicamente si el endpoint de listado falla o no devuelve la ejecución que se necesita.
+
+### Última ejecución comprobada: 42983466610
+
+- URL: https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42983466610
+- Commit: `88a62c94d01bbb6d2b90228d6f175ac8bf444cfc`.
+- Ubuntu 26.04, Python 3.12.16.
+- Install y Ruff lint: success.
+- Ruff format: failure; 17 archivos requieren formato, 7 ya estaban formateados.
+- Fixture, pytest, generación y artefacto: skipped.
+- No hay artefactos.
+- Próximo paso dentro de la tarea 12: aplicar formato Ruff a los 17 archivos identificados y repetir CI.
+
+Esta ejecución demuestra que el lint I001 ya pasa en la CI Ubuntu-only. No demuestra todavía que las pruebas ni la generación XMind pasen.

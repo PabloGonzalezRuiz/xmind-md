@@ -293,7 +293,9 @@ La hoja de ruta operativa está en `docs/development-status.md`. Las tareas 1–
 - Commit de workflow: `509fd41869429526c6a903e3a3bdc2f2507a2be9`.
 - Commit de registro de implementación: `a6bd54423f5d79d18207e65be809d4be5f5900fe`.
 - Workflow: matriz Ubuntu/Windows, Python 3.12, `ruff check src tests`, `ruff format --check src tests`, pytest, generación del smoke XMind y publicación de artefactos diferenciados por sistema.
-- No se ha podido recuperar desde el conector el identificador ni los resultados de los runs push recientes. El resultado de esta configuración está **pendiente de verificación**. No inventar un run ID ni declarar pasos superados.
+- Run inicial aportado por el usuario: `42977948292`; ambos jobs fallaron en Ruff y no llegaron a pytest ni a la generación de artefactos.
+- Se corrigieron las nueve incidencias detectadas: imports desordenados, SIM102, F821 (Any), UP037, FURB188 y F401. Commits: `a7225b5`, `ab05615`, `c2aff0d`, `2b005f9`, `ec18113`, `c66d92a`, `40e875a`, `98c360b`, `2e16371`.
+- Las correcciones ya están publicadas y han disparado nuevas ejecuciones por push. No se ha podido recuperar desde el conector el ID ni los resultados de esos runs recientes. El resultado de la nueva configuración está **pendiente de verificación**; no declarar pasos superados.
 - El usuario ha indicado que no quiere instalar Python ni ejecutar comandos localmente por ahora. La validación se hará en GitHub Actions.
 
 ### Hoja de ruta pendiente

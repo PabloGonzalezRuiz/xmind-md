@@ -414,7 +414,8 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
                     not isinstance(marker, dict)
                     or not isinstance(marker.get("group"), str)
                     or not marker.get("group")
-                    or "value" not in marker
+                    or not isinstance(marker.get("value"), (str, int, float, bool))
+                    or marker.get("value") is None
                     for marker in props["markers"]
                 )
             ):

@@ -260,7 +260,7 @@ Run [43006735888](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/430
 
 **Estado: COMPLETADA Y VALIDADA.**
 
-Se han corregido las discrepancias detectadas en README, gramática, especificación IR, sistema de estilos, adaptador XMind y guía de desarrollo. El detalle de cambios, contraste con código y limitaciones es [documentation-audit.md](documentation-audit.md).
+Se han corregido las discrepancias detectadas en README, gramática, especificación IR, sistema de estilos, adaptador XMind, guía de desarrollo, arquitectura, plan histórico de migración IR, evaluación del motor XMind, guía de integración y documentación de licencia. El detalle de cambios, contraste con código y limitaciones es [documentation-audit.md](documentation-audit.md).
 
 La configuración YAML ejecutable se documenta como `style_sets` + `styles`, sin `extends/elements/applies_to/properties`. La cascada de estilos corresponde a la implementación actual. La gramática diferencia tipos representables en IR de tipos exportables a XMind. La matriz XMind identifica attached/detached/callout como soportados, detached con coordenadas, y summary como no soportado. README y guía usan el ejemplo smoke para exportar XMind y reportan 161 pruebas por versión.
 

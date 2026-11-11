@@ -1,5 +1,9 @@
 """Pruebas del parser hacia el contrato canónico IR 1.0.0."""
+
+import pytest
+
 from xmind_md.ir import validate_mind_map
+from xmind_md.ir.validation import IRValidationError
 from xmind_md.ir_parser import parse_file_ir, parse_markdown_ir
 
 
@@ -137,9 +141,6 @@ def test_parser_preserves_content_block_source_ranges():
 
 
 def test_internal_topic_link_to_missing_target_is_rejected():
-    import pytest
-    from xmind_md.ir.validation import IRValidationError
-
     with pytest.raises(IRValidationError, match="tema enlazado inexistente"):
         parse_markdown_ir("# Raíz\n[no existe](topic:ausente)\n")
 

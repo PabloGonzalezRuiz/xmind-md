@@ -630,3 +630,27 @@ La tarea 2 está documentada en THIRD_PARTY_NOTICES.md, docs/license-adoption.md
 ### Evidencia CI posterior a la auditoría de terceros
 
 La documentación consolidada quedó validada en run [42993499900](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42993499900), commit `d31a389a3066ec17d581629b7aa3078c32fcb80e`: ambos jobs success; Ruff lint/format success; 131 pruebas superadas; wheel/sdist construidos, verificados e instalados; generación JSON/XMind desde ambos paquetes correcta. Artefactos: `python-distributions` ID 13842766711 y `xmind-desktop-smoke-test` ID 13843490530.
+
+
+## Continuidad vigente — matriz de Python autorizada e incorporada (2026-11-11)
+
+El usuario autorizó la siguiente tarea de la auditoría de Release: probar Python 3.10, 3.11 y 3.12. Se modificó `.github/workflows/ci.yml` en commit `db241f04b489de23c429d4189c589859aaffc8fb`.
+
+Configuración:
+- El job `tests` ejecuta una matriz `3.10`, `3.11`, `3.12`.
+- `fail-fast: false`.
+- Nombre del job identifica versión.
+- Cada versión publica su propio artefacto smoke con sufijo de versión, evitando colisiones de `upload-artifact@v4`.
+- El job de construcción/instalación de wheel y sdist permanece en Python 3.12 y depende del éxito de todos los jobs de test.
+
+**Importante:** Python 3.10 alcanzó EOL el 1 de octubre de 2026. Se prueba porque `pyproject.toml` sigue declarando `requires-python = ">=3.10"`; no significa que reciba ya actualizaciones de seguridad. No cambiar el mínimo de Python en esta tarea. La decisión se tomará durante versionado/metadatos, con evidencia.
+
+Estado al retomar:
+- Workflow modificado y commit creado.
+- Documentación de estado y prompt de reconstrucción actualizadas con el alcance y criterios.
+- La ejecución de GitHub Actions correspondiente al commit de la matriz todavía debe localizarse y validarse.
+- Consultar Actions automáticamente por `head_sha = db241f04b489de23c429d4189c589859aaffc8fb`; no pedir URL al usuario.
+- Inspeccionar jobs, pasos, logs y artefactos. Si alguna versión falla, diagnosticar y corregir dentro de esta tarea; volver a esperar y comprobar el nuevo run.
+- Cerrar la tarea solo cuando pasen las tres versiones y el job de wheel/sdist, documentar evidencia real en `docs/development-status.md` y en este prompt, y validar la actualización documental en CI.
+- La siguiente tarea después de esta es la revisión de las acciones de GitHub para eliminar el aviso Node.js 20. No empezarla sin autorización expresa.
+- El usuario no quiere instalar Python localmente ni ejecutar comandos en su equipo.

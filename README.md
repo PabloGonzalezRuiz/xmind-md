@@ -146,7 +146,7 @@ python -m pytest
 python scripts/create_xmind_smoke.py
 ```
 
-La CI actual ejecuta Ruff y 131 pruebas en Python 3.10, 3.11 y 3.12, y genera un XMind de comprobación. Un segundo job construye wheel y sdist, verifica sus metadatos/licencia, instala cada paquete en un entorno limpio y ejecuta conversiones CLI a JSON y XMind; los libros generados pasan verificaciones estructurales ZIP/MIME/JSON. La evidencia y los límites de las pruebas están en el [estado de desarrollo](docs/development-status.md) y la [auditoría de Release](docs/release-audit.md).
+La CI ejecuta Ruff y **161 pruebas por versión** en Python 3.10, 3.11 y 3.12, y genera un XMind de comprobación en cada job. Un segundo job construye wheel y sdist, verifica sus metadatos/licencia, instala cada paquete en un entorno limpio y ejecuta conversiones CLI a JSON y XMind; los libros generados pasan verificaciones estructurales ZIP/MIME/JSON. La evidencia y los límites de las pruebas están en el [estado de desarrollo](docs/development-status.md) y la [auditoría de Release](docs/release-audit.md).
 
 ## Licencia
 

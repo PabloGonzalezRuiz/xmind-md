@@ -1,0 +1,20 @@
+# Tema minimalista: pocas propiedades y sin fondos ni bordes añadidos.
+style_sets:
+  MINIMALISTA:
+    topic:
+      text:
+        font_family: Arial
+        font_size: 13
+        color: "#333333"
+    styles:
+      raiz:
+        topic:
+          text:
+            font_size: 18
+            bold: true
+            color: "#111111"
+      enfasis:
+        topic:
+          text:
+            bold: true
+            color: "#555555"

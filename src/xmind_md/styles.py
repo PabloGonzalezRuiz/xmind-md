@@ -11,7 +11,7 @@ from typing import Any
 
 import yaml
 
-from .model import MindMap, Topic
+from .model import Topic
 
 
 class _UniqueKeyLoader(yaml.SafeLoader):

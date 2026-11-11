@@ -1,5 +1,6 @@
 name: Prepare and publish XMind MD release
 
+# Manual release workflow; GitHub should expose it in Actions.
 on:
   workflow_dispatch:
     inputs:

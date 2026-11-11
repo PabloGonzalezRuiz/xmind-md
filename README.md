@@ -2,7 +2,7 @@
 
 **XMind MD** convierte documentos Markdown enriquecidos en mapas mentales XMind modernos (`.xmind`). El proyecto está implementado en Python y utiliza un modelo intermedio neutral (IR 1.0.0) para separar el lenguaje de entrada del formato de salida.
 
-> Estado: versión de desarrollo 0.1.0. La CLI genera JSON IR y libros XMind; la CI de Ubuntu está operativa. Se ha comprobado manualmente en XMind Desktop 26.05.01107 un fixture con jerarquía, nota, etiqueta, marcador y relación. El exportador sigue siendo un perfil parcial: consulta la matriz de capacidades antes de usar construcciones avanzadas.
+> Estado: versión pre-1.0 en desarrollo. La CLI genera JSON IR y libros XMind; la CI de Ubuntu está operativa. Se ha comprobado manualmente en XMind Desktop 26.05.01107 un fixture con jerarquía, nota, etiqueta, marcador y relación. El exportador sigue siendo un perfil parcial: consulta la matriz de capacidades antes de usar construcciones avanzadas.
 
 ## Qué hace
 
@@ -146,7 +146,7 @@ python -m pytest
 python scripts/create_xmind_smoke.py
 ```
 
-La CI actual ejecuta Ruff, 131 pruebas y genera un XMind de comprobación. Un segundo job construye wheel y sdist, verifica sus metadatos/licencia, instala cada paquete en un entorno limpio y ejecuta conversiones CLI a JSON y XMind; los libros generados pasan verificaciones estructurales ZIP/MIME/JSON. La evidencia y los límites de las pruebas están en el [estado de desarrollo](docs/development-status.md) y la [auditoría de Release](docs/release-audit.md).
+La CI actual ejecuta Ruff y 131 pruebas en Python 3.10, 3.11 y 3.12, y genera un XMind de comprobación. Un segundo job construye wheel y sdist, verifica sus metadatos/licencia, instala cada paquete en un entorno limpio y ejecuta conversiones CLI a JSON y XMind; los libros generados pasan verificaciones estructurales ZIP/MIME/JSON. La evidencia y los límites de las pruebas están en el [estado de desarrollo](docs/development-status.md) y la [auditoría de Release](docs/release-audit.md).
 
 ## Licencia
 
@@ -181,4 +181,4 @@ XMind MD se distribuye bajo la licencia [MIT](LICENSE), con el aviso de copyrigh
 
 ## Versión y estado
 
-La versión del paquete es `0.1.0`, declarada en `pyproject.toml` y `src/xmind_md/__init__.py`; el verificador de distribuciones también comprueba esa versión. Wheel y sdist se construyen, instalan y prueban en CI en entornos limpios separados. Desde ambos paquetes se ha comprobado la generación de JSON y XMind; el XMind resultante pasa verificaciones estructurales ZIP/MIME/JSON. Todavía no se ha publicado una Release estable. La publicación se realizará después de la auditoría final de capacidades, packaging, licencia y documentación.
+La versión del paquete tiene una única fuente de verdad: `src/xmind_md/__init__.py`. Setuptools la lee para construir los metadatos PEP 621 de `pyproject.toml`; el verificador extrae esa misma constante y la contrasta con `METADATA` del wheel y `PKG-INFO` del sdist. La CLI la muestra mediante `xmind-md --version`. Wheel y sdist se construyen, instalan y prueban en CI en entornos limpios separados. Desde ambos paquetes se ha comprobado la generación de JSON y XMind; el XMind resultante pasa verificaciones estructurales ZIP/MIME/JSON. Todavía no se ha publicado una Release estable. La publicación se realizará después de la auditoría final de capacidades, packaging, licencia y documentación.

@@ -580,7 +580,7 @@ Esta sección prevalece sobre las referencias históricas de este prompt que ind
 1. El smoke de distribuciones instaladas solo genera JSON; falta probar `.xmind` desde wheel y sdist limpios.
 2. El proyecto declara Python >=3.10, pero la CI solo prueba 3.12 en Ubuntu.
 3. La versión `0.1.0` está repetida en TOML, paquete y verificador.
-4. Actions muestra aviso de deprecación Node.js 20 en checkout@v4, setup-python@v5 y upload-artifact@v4.
+4. **Resuelto:** acciones migradas a checkout@v5, setup-python@v6 y upload-artifact@v6; las tres declaran node24.
 5. Revisar procedencia/licencias del fixture XMind externo, fixture binario propio, ejemplos y dependencias antes de distribuir.
 6. El parser es un subconjunto Markdown propio; el adaptador XMind exporta un perfil parcial y rechaza capacidades no soportadas. La matriz de gramática y adaptador es normativa para las afirmaciones públicas.
 
@@ -589,7 +589,7 @@ Esta sección prevalece sobre las referencias históricas de este prompt que ind
 1. **Completada:** smoke XMind desde wheel y sdist instalados; ZIP, MIME, content.json e integridad verificados en CI #42990025087.
 2. **Siguiente:** inventariar licencias/procedencia de dependencias, fixtures y ejemplos.
 3. **Completada:** matriz CI Python 3.10/3.11/3.12; run #42995180722.
-4. Actualizar las acciones CI para eliminar aviso Node.js 20.
+4. **Completada:** migración de acciones CI a Node.js 24; run #42996452355.
 5. Unificar/verificar versión y completar metadatos de distribución.
 6. Auditar funcionalidad y cobertura; corregir defectos prioritarios.
 7. Reconciliar documentación final.
@@ -624,7 +624,7 @@ Hallazgos registrados:
 - No se encontró código fuente vendorizado, imágenes, fuentes tipográficas ni bibliotecas externas en el árbol.
 - No hay lockfile ni SBOM; la auditoría no cubre todas las dependencias transitivas y no es asesoramiento jurídico.
 
-La tarea 2 está documentada en THIRD_PARTY_NOTICES.md, docs/license-adoption.md, docs/release-audit.md y docs/development-status.md. La tarea 3 (matriz CI Python 3.10/3.11/3.12) también está completada; la siguiente tarea es actualizar las acciones de GitHub para retirar Node.js 20, pendiente de autorización.
+La tarea 2 está documentada en THIRD_PARTY_NOTICES.md, docs/license-adoption.md, docs/release-audit.md y docs/development-status.md. La tarea 3 (matriz CI Python 3.10/3.11/3.12) y la tarea 4 (migración de acciones a Node.js 24) están completadas. La siguiente tarea es revisar versionado y metadatos de publicación; pendiente de autorización.
 
 
 ### Evidencia CI posterior a la auditoría de terceros
@@ -640,7 +640,7 @@ Configuración:
 - El job `tests` ejecuta una matriz `3.10`, `3.11`, `3.12`.
 - `fail-fast: false`.
 - Nombre del job identifica versión.
-- Cada versión publica su propio artefacto smoke con sufijo de versión, evitando colisiones de `upload-artifact@v4`.
+- Cada versión publica su propio artefacto smoke con sufijo de versión, evitando colisiones de `upload-artifact@v6`.
 - El job de construcción/instalación de wheel y sdist permanece en Python 3.12 y depende del éxito de todos los jobs de test.
 
 **Importante:** Python 3.10 alcanzó EOL el 1 de octubre de 2026. Se prueba porque `pyproject.toml` sigue declarando `requires-python = ">=3.10"`; no significa que reciba ya actualizaciones de seguridad. No cambiar el mínimo de Python en esta tarea. La decisión se tomará durante versionado/metadatos, con evidencia.
@@ -652,7 +652,7 @@ Estado al retomar:
 - Consultar Actions automáticamente por `head_sha = db241f04b489de23c429d4189c589859aaffc8fb`; no pedir URL al usuario.
 - Inspeccionar jobs, pasos, logs y artefactos. Si alguna versión falla, diagnosticar y corregir dentro de esta tarea; volver a esperar y comprobar el nuevo run.
 - Cerrar la tarea solo cuando pasen las tres versiones y el job de wheel/sdist, documentar evidencia real en `docs/development-status.md` y en este prompt, y validar la actualización documental en CI.
-- La siguiente tarea después de esta es la revisión de las acciones de GitHub para eliminar el aviso Node.js 20. No empezarla sin autorización expresa.
+- La migración de acciones de GitHub a Node.js 24 ya está completada y validada; la siguiente tarea propuesta es revisar versionado y metadatos de publicación. No empezarla sin autorización expresa.
 - El usuario no quiere instalar Python localmente ni ejecutar comandos en su equipo.
 
 ## Cierre de tarea 3 — matriz de compatibilidad Python (2026-11-11)
@@ -678,4 +678,24 @@ Los digest corresponden a contenedores ZIP de artefactos Actions, no a los archi
 
 La documentación de cierre se ha actualizado en `docs/development-status.md` y `docs/release-audit.md`; este prompt queda sincronizado con la evidencia. Las actualizaciones documentales quedaron validadas en run [42995377488](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42995377488), commit `1e2e6c20fd35bb070c298b80674ef98200f8abf8`: los tres jobs de Python y el job de distribuciones finalizaron success.
 
-**Siguiente tarea propuesta:** actualizar acciones GitHub para eliminar el aviso Node.js 20. No empezarla hasta recibir autorización expresa.
+**Siguiente tarea propuesta:** revisar versionado y metadatos de publicación. No empezarla hasta recibir autorización expresa.
+## Cierre de tarea 4 — migración de acciones a Node.js 24 (2026-11-11)
+
+El usuario autorizó actualizar las acciones de GitHub para eliminar el runtime Node.js 20. En .github/workflows/ci.yml se actualizaron:
+- actions/checkout@v4 → @v5.
+- actions/setup-python@v5 → @v6.
+- actions/upload-artifact@v4 → @v6.
+
+Se inspeccionó el action.yml de cada tag oficial y los tres declaran runs.using: node24.
+
+Run [42996452355](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42996452355), commit e42f0db5fdc943ce060a358293335573eeb28902, completed/success:
+- Python 3.10: 131 passed; Ruff correcto.
+- Python 3.11: 131 passed; Ruff correcto.
+- Python 3.12: 131 passed; Ruff correcto.
+- Wheel/sdist construidos, verificados, instalados en entornos limpios y probados generando JSON/XMind.
+- Artefactos smoke y distribuciones publicados.
+- Los cuatro logs fueron revisados: no aparece el aviso Node.js 20 ni runtime node20.
+
+No se fijaron SHA inmutables; se mantienen tags mayores, y la fijación por SHA queda como mejora separada. El cambio actualiza el runtime interno de las acciones, no la versión de Python instalada para probar el proyecto.
+
+La siguiente tarea de la hoja de ruta es revisar coherencia de versión y metadatos de publicación. Requiere autorización expresa.

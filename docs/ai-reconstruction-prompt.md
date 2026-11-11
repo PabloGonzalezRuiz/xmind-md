@@ -699,3 +699,18 @@ Run [42996452355](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/429
 No se fijaron SHA inmutables; se mantienen tags mayores, y la fijación por SHA queda como mejora separada. El cambio actualiza el runtime interno de las acciones, no la versión de Python instalada para probar el proyecto.
 
 La siguiente tarea de la hoja de ruta es revisar coherencia de versión y metadatos de publicación. Requiere autorización expresa.
+
+## Estado de continuidad actualizado — 2026-11-11, cierre de tarea 5
+
+La tarea 5 de versionado/metadatos está **completada y validada**. No se debe repetir ni volver a proponer como siguiente tarea.
+
+- Versión actual: `0.1.0`; no se ha creado tag ni GitHub Release.
+- Fuente única: `src/xmind_md/__init__.py`, constante literal `__version__`.
+- `pyproject.toml`: versión dinámica con `[tool.setuptools.dynamic]`, metadatos PEP 621 completos (nombre, descripción, autor, README, Python mínimo, MIT PEP 639, classifiers, URLs, dependencia runtime, extras dev y entry point).
+- CLI: `xmind-md --version`.
+- Verificador de distribución: obtiene la versión por AST y compara `METADATA` del wheel y `PKG-INFO` canónico del sdist; no debe introducirse otra versión literal en ese script.
+- Python mínimo: se conserva `>=3.10`. La matriz de compatibilidad técnica en 3.10/3.11/3.12 está comprobada, pero Python 3.10 está fuera de soporte upstream desde 2026-10-01. No describirlo como versión con mantenimiento de seguridad upstream.
+- CI [43002869927](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43002869927), commit `635d8d5bfa42d5b84401f661b7bce3858140dd16`: completed/success; 132 pruebas en cada versión Python; Ruff lint/format; wheel/sdist construidos, verificados, instalados por separado y probados generando JSON/XMind.
+- No publicar todavía. Faltan auditoría funcional (tarea 6), sincronización final documental (tarea 7) y changelog/tag/Release (tarea 8).
+
+**Siguiente tarea autorizable:** tarea 6 — auditoría funcional final de parser, IR, estilos, CLI y adaptador XMind. Esperar autorización expresa antes de iniciarla.

@@ -2,12 +2,12 @@
 
 > **Documento de seguimiento operativo del proyecto.** Debe actualizarse al terminar cada tarea de desarrollo autorizada y cuando cambie una decisión técnica relevante.
 
-- **Última actualización:** 2026-11-11 (tarea 6, auditoría funcional, completada y validada en CI #43006735888)
+- **Última actualización:** 2026-11-11 (tarea 7, sincronización documental; CI final pendiente de registrar)
 - **Rama de referencia:** `main`
 - **Última prueba manual XMind Desktop:** superada en Windows, XMind 26.05.01107.
 - **Commit de incorporación del fixture XMind permanente:** `a1cf99861c819d9f148a7c7a3d779df6a95fc394`.
 - **Contrato objetivo:** IR 1.0.0
-- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; exportación JSON/XMind disponible; fixture anterior comprobado manualmente en XMind Desktop 26.05.01107; wheel y sdist construidos, verificados e instalados en CI. Versionado centralizado en `src/xmind_md/__init__.py`, metadatos PEP 621 dinámicos y CLI `--version`; acciones CI usan Node.js 24. La auditoría funcional corrigió validación/preservación de datos, referencias de estilos externos, configuración de estilos, conversión XMind de imágenes inline, serialización JSON estricta y el asset faltante del ejemplo. CI #43006735888 validó 161 pruebas por versión (Python 3.10/3.11/3.12), Ruff, smoke XMind y wheel/sdist instalados y probados. Pendientes: sincronización documental final (tarea 7) y changelog/tag/Release (tarea 8).
+- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; exportación JSON/XMind disponible; fixture anterior comprobado manualmente en XMind Desktop 26.05.01107; wheel y sdist construidos, verificados e instalados en CI. Versionado centralizado en `src/xmind_md/__init__.py`, metadatos PEP 621 dinámicos y CLI `--version`; acciones CI usan Node.js 24. La auditoría funcional corrigió validación/preservación de datos, referencias de estilos externos, configuración de estilos, conversión XMind de imágenes inline, serialización JSON estricta y el asset faltante del ejemplo. CI #43006735888 validó 161 pruebas por versión (Python 3.10/3.11/3.12), Ruff, smoke XMind y wheel/sdist instalados y probados. Pendiente: changelog/tag/Release (tarea 8). La sincronización documental de tarea 7 está completada; consultar `docs/documentation-audit.md`.
 
 ## 1. Para qué sirve este documento
 
@@ -945,3 +945,23 @@ Run [43006735888](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/430
 El adaptador XMind continúa siendo parcial: no exporta imágenes/recursos, tareas, boundaries, summaries ni extensiones; el contenido se aplana a notas y `summary` como tipo de tema no se exporta. El nuevo smoke con estilos pasó CI, pero no se ha vuelto a inspeccionar manualmente en XMind Desktop. La matriz CI es Ubuntu, no Windows.
 
 **Siguiente tarea autorizable: tarea 7 — sincronización documental final.** Revisar README, gramática, IR, estilos, matriz XMind, guía de desarrollo y catálogo frente a la implementación real. No comenzar sin autorización expresa del usuario.
+
+
+## 28. Tarea 7 — sincronización documental final (2026-11-11)
+
+**Estado de revisión: COMPLETADA. Validación CI: pendiente de registrar.**
+
+Se han auditado y sincronizado README, gramática, IR, sistema de estilos, adaptador XMind, guía de desarrollo y catálogo de archivos. El informe detallado es [documentation-audit.md](documentation-audit.md).
+
+Cambios relevantes:
+- README actualizado a 161 pruebas por versión y matriz Python 3.10/3.11/3.12; comando XMind corregido para usar `examples/xmind-smoke-test.md`.
+- Gramática: cuatro kinds IR, raíz attached, detached con posición para exportar; YAML JSON-compatible y limitaciones de Markdown documentadas.
+- IR: se distingue representación neutral, subconjunto parser y perfil de salida; referencias de estilos se resuelven tras cargar catálogos embebidos/externos.
+- Estilos: ejemplos y esquema YAML actualizados a `style_sets` y `styles`; se retira como formato ejecutable el esquema obsoleto `extends/elements/applies_to/properties`; cascada real documentada.
+- Adaptador: contradicción resuelta; attached/detached/callout exportables, detached requiere coordenadas; summary no exportable; se aclaran enlaces, estilos y pérdidas.
+- Guía de desarrollo: ejemplos CLI corregidos y workflow actualizado a la matriz real; wheel/sdist se prueban en Python 3.12.
+- Se ha creado [documentation-audit.md](documentation-audit.md) como registro reproducible de los cambios y límites que deben mantenerse visibles.
+
+Se conservan explícitamente las limitaciones: no CommonMark/GFM completo; no recursos/imágenes, tareas, boundaries, summaries, extensiones ni Topic.kind=summary en XMind; bloques aplanados a notas; smoke nuevo no reabierto manualmente en Desktop; CI Ubuntu sin evidencia Windows; Python 3.10 fuera de soporte upstream.
+
+**Siguiente tarea:** tarea 8 — changelog, decisión final de versión, tag y GitHub Release. No iniciarla sin autorización expresa del usuario.

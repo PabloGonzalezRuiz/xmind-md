@@ -2,12 +2,12 @@
 
 > **Documento de seguimiento operativo del proyecto.** Debe actualizarse al terminar cada tarea de desarrollo autorizada y cuando cambie una decisión técnica relevante.
 
-- **Última actualización:** 2026-11-10
+- **Última actualización:** 2026-11-11
 - **Rama de referencia:** `main`
 - **Última prueba manual XMind Desktop:** superada en Windows, XMind 26.05.01107.
 - **Commit de incorporación del fixture XMind permanente:** `a1cf99861c819d9f148a7c7a3d779df6a95fc394`.
 - **Contrato objetivo:** IR 1.0.0
-- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; fixture de exportación comprobado manualmente en XMind Desktop 26.05.01107; CI GitHub Actions verificada en Ubuntu/Python 3.12 con 131 pruebas superadas. La ejecución local Windows queda aplazada por decisión del usuario; pendientes refuerzo de CI/Ruff, sincronización documental global y auditoría final.
+- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; fixture comprobado manualmente en XMind Desktop 26.05.01107; CI histórica Linux/Python 3.12 con 131 pruebas superadas. El workflow actual ya incorpora matriz Ubuntu/Windows y Ruff, pero las ejecuciones de esa nueva configuración aún no están verificadas. El usuario ha decidido no instalar ni ejecutar herramientas localmente por ahora.
 
 ## 1. Para qué sirve este documento
 
@@ -83,7 +83,7 @@ El puente del parser y el resolutor disponen de rutas canónicas IR. Los adaptad
 - La CLI JSON y el script de smoke test construyen IR mediante `parse_file_ir()`.
 - La apertura, inspección visual, guardado y reapertura manual del fixture se confirmaron en XMind Desktop para Windows 26.05.01107. La comprobación cubre los elementos incluidos en el fixture, no todas las capacidades del formato.
 
-No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar esa comprobación.
+La prueba manual acredita el fixture y los elementos comprobados, no compatibilidad universal ni cobertura de todas las capacidades XMind.
 
 ### 3.5 CLI, pruebas y automatización
 
@@ -98,10 +98,12 @@ No anunciar compatibilidad completa con XMind Desktop hasta realizar y registrar
 - CI #203, run `42842555229`, commit `1995076eee2e5108c37320c7a9df9be21745f5de`: **131 pruebas superadas en 0,45 s**; Tests, generación del smoke XMind y publicación del artefacto correctos. Entorno: GitHub Actions, Ubuntu, Python 3.12.16. https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42842555229
 - CI #205, run `42842726726`, commit `f99273d3f93a95648457aa183bb4ec55bb99fda8`: workflow completo correcto tras la actualización del documento de estado. Los cinco pasos Install, Download XMind reference fixture, Tests, Build XMind Desktop smoke test y Upload XMind smoke test finalizaron correctamente. El log registra **131 pruebas superadas en 0,52 s**. https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42842726726
 - CI #209, run `42843815047`, commit `1fd131cc16786093dba00e09fd551f299a439761`: job tests completado con success; Install, descarga del fixture de referencia, Tests, generación y publicación del smoke test finalizaron correctamente. Log: **131 passed in 0.37s**, GitHub-hosted Linux, Python 3.12.16. https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42843815047
-- Auditoría detallada del run #209: job `tests` y sus pasos completados con `success`; artefacto `xmind-desktop-smoke-test` publicado (ID `13776583547`, 1.333 bytes, SHA-256 `a0706df6bc41f5cd1ba04c85bffb04faeb8d93e0422cc454c75895d83d2ae69a`), con expiración `2026-11-24T15:23:39Z`. El workflow sigue siendo Linux-only y no ejecuta Ruff.
+- Auditoría detallada del run #209 (workflow anterior): job `tests` y sus pasos completados con `success`; artefacto `xmind-desktop-smoke-test` publicado (ID `13776583547`, 1.333 bytes, SHA-256 `a0706df6bc41f5cd1ba04c85bffb04faeb8d93e0422cc454c75895d83d2ae69a`), con expiración `2026-11-24T15:23:39Z`. Esta evidencia no valida la matriz nueva ni Ruff.
 - Validador: `jsonschema 4.26.0` con extra `format`; se comprueban los formatos de fecha/fecha-hora.
-- Ruff no forma parte todavía de los pasos del workflow y debe verificarse expresamente.
-- La ejecución local en Windows queda aplazada por decisión del usuario; se comprobará primero la compatibilidad multiplataforma mediante runners de GitHub Actions en la tarea 12.
+- Commit `509fd41869429526c6a903e3a3bdc2f2507a2be9`: `.github/workflows/ci.yml` incorpora matriz `ubuntu-latest`/`windows-latest`, Python 3.12, `ruff check src tests`, `ruff format --check src tests`, pytest, generación del smoke XMind y artefactos separados por sistema operativo.
+- Commit `a6bd54423f5d79d18207e65be809d4be5f5900fe`: registra la implementación en curso.
+- A fecha de esta auditoría no se ha obtenido evidencia verificable de los runs disparados por esos commits. No afirmar que Ruff, Windows, pytest en ambos runners ni los dos artefactos han pasado.
+- El usuario no quiere instalar ni ejecutar Python localmente; la validación debe realizarse en GitHub Actions.
 
 ## 4. Decisiones técnicas vigentes
 
@@ -402,3 +404,45 @@ Antes de modificar el repositorio:
 5. Respetar el alcance de la tarea autorizada y solicitar autorización antes de pasar a la siguiente.
 
 Este documento es una fotografía mantenida del estado de desarrollo, no una garantía automática de que el repositorio no haya cambiado desde su última actualización.
+
+
+## 7. Auditoría de continuidad — 2026-11-11
+
+### 7.1 Revisión del repositorio
+
+- Rama de referencia: `main`.
+- Último commit observado durante la auditoría: `a6bd54423f5d79d18207e65be809d4be5f5900fe` (`docs: record CI matrix implementation in progress`).
+- Cambio de workflow: `509fd41869429526c6a903e3a3bdc2f2507a2be9` (`ci: add Ruff and Windows/Linux test matrix`).
+- El workflow actual define runners Ubuntu y Windows con Python 3.12; instala `.[dev]`; ejecuta Ruff lint, Ruff format, descarga el fixture XMind, pytest, generación del smoke y subida de artefactos con nombres por sistema operativo.
+- Los commits de workflow y estado se han localizado en GitHub. El conector disponible no permite listar ejecuciones push recientes; `fetch_commit_workflow_runs` solo devuelve ejecuciones asociadas a pull requests y devolvió listas vacías para los commits examinados. Por tanto, el resultado de la nueva matriz queda **sin verificar**, no fallido ni superado.
+
+### 7.2 Diferencia entre evidencia histórica y actual
+
+- Evidencia histórica: CI #209, run `42843815047`, commit `1fd131cc16786093dba00e09fd551f299a439761`, 131 pruebas superadas en Linux/Python 3.12.16 y artefacto generado.
+- Esa ejecución es anterior a la matriz Windows/Ruff. No sirve como prueba de los nuevos pasos.
+- Prueba manual de XMind Desktop: superada por el usuario en Windows con XMind 26.05.01107; el fixture se abrió, inspeccionó, guardó y reabrió.
+
+### 7.3 Documentación pendiente de sincronización
+
+Se mantienen para la tarea 13, sin confundirlos con defectos de ejecución:
+
+1. `README.md`: califica el estado como «prototipo inicial» y presenta advertencias anteriores a la prueba manual ya superada; debe distinguir la validación manual del fixture de la cobertura parcial del adaptador.
+2. `docs/architecture.md`: revisar afirmaciones antiguas sobre la CLI y la exportación.
+3. `docs/ir-migration-plan.md`: actualizar fases ya terminadas, especialmente integración CLI.
+4. `docs/style-system.md`: corregir el encabezado obsoleto que declara pendiente la resolución de estilos.
+5. `docs/xmind-engine-evaluation.md`: actualizar estado, capacidades y criterios de verificación a la implementación actual.
+6. `docs/xmind-adapter.md`: reconciliar la sección de limitaciones con la matriz (detached/callout y demás capacidades).
+7. `docs/file-reference.md`: reflejar IR, puente, CLI y pruebas actuales en lugar de describir `model.py` como modelo principal.
+8. `docs/development.md`: documentar la CI actual multiplataforma y dejar claro que la ejecución local es opcional en este flujo.
+
+### 7.4 Hoja de ruta después de esta auditoría
+
+| Orden | Punto | Estado |
+|---:|---|---|
+| 1 | Verificar la nueva matriz CI/Ruff en GitHub Actions; corregir fallos hasta obtener evidencia verde en Ubuntu y Windows | **En curso** |
+| 2 | Sincronizar README y documentación técnica con código, pruebas y estado real | Pendiente |
+| 3 | Auditoría final de requisitos, seguridad, dependencias, licencia, reproducibilidad y publicación | Pendiente |
+
+### 7.5 Regla de continuidad inmediata
+
+El siguiente trabajo sigue siendo la tarea 12. Antes de cerrarla hay que obtener el resultado real de ambos jobs, revisar cada paso (Ruff lint, Ruff format, pytest, generación y artefacto) y corregir los fallos encontrados. Si no se puede acceder a los runs desde el conector, solicitar al usuario el enlace o una captura del resultado de GitHub Actions; no pedir ejecución local. Tras cerrar la tarea 12, presentar la evidencia y pedir autorización para la tarea 13.

@@ -407,7 +407,6 @@ def test_boolean_text_style_properties_reject_non_boolean_values(property_name, 
         build_xmind_content(mind_map)
 
 
-
 def test_inline_images_are_rejected_instead_of_being_dropped():
     mind_map = parse_markdown_ir("# Raíz\nTexto ![Escudo](assets/escudo.png)\n")
 

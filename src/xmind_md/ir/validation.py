@@ -125,7 +125,7 @@ def validate_mind_map(mind_map: MindMap) -> MindMap:
     seen: dict[str, str] = {}
     _register(mind_map.id, "id", seen)
     _register(mind_map.sheet.id, "sheet.id", seen)
-    if not mind_map.sheet.title.strip():
+    if not isinstance(mind_map.sheet.title, str) or not mind_map.sheet.title.strip():
         raise IRValidationError("sheet.title: debe ser texto no vacío")
 
     asset_ids = set(mind_map.assets)

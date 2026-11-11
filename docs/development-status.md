@@ -988,7 +988,7 @@ Se conservan explícitamente las limitaciones: no CommonMark/GFM completo; no re
 - `.github/workflows/release.yml`: workflow manual que solo publica desde `main`, exige confirmación de inspección del smoke en XMind Desktop, requiere una CI exitosa para el mismo commit, comprueba versión/tag no existente, construye y verifica wheel/sdist y crea tag/Release marcada como prerelease con wheel, sdist y `SHA256SUMS.txt`.
 - README, catálogo y `THIRD_PARTY_NOTICES.md` sincronizados; la referencia histórica rota a `escudo.png` queda resuelta. Se conserva el límite de SBOM transitivo no exhaustivo.
 
-La validación automatizada del candidato de preparación [43012418165](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43012418165), commit `d7e14c682ae024738ed4d11da0acb36da66db0cd`, terminó `completed / success`: 161 pruebas por versión en Python 3.10/3.11/3.12, Ruff lint/format y los cuatro jobs correctos. Wheel/sdist construidos, verificados, instalados en entornos limpios y probados generando JSON/XMind. Artefacto de distribuciones ID `13851331839`; smoke Python 3.12 ID `13850408574`.
+La CI del commit de preparación [43012712346](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43012712346), SHA `fc9afa0137aeaf757b38db4ad245a5027b3ede15`, finalizó `completed / success`: 161 pruebas por versión en Python 3.10/3.11/3.12, Ruff lint/format y los cuatro jobs correctos. Wheel/sdist construidos, verificados, instalados en entornos limpios y probados generando JSON/XMind. Artefacto de distribuciones ID `13850294514`; smoke Python 3.12 ID `13851536339`.
 
 ### Puerta pendiente
 

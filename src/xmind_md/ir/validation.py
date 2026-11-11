@@ -164,19 +164,10 @@ def validate_mind_map(mind_map: MindMap) -> MindMap:
             for index, item in enumerate(value):
                 validate_inline_targets(item, f"{path}[{index}]")
 
-    def validate_topic_references(
-        topic: Topic, path: str, inherited_set: str | None = None
-    ) -> None:
-        selected_set = topic.style.style_set or inherited_set or mind_map.metadata.get("style_set")
-        if selected_set is not None and selected_set not in mind_map.style_sets:
-            raise IRValidationError(
-                f"{path}.style.style_set: conjunto inexistente {selected_set!r}"
-            )
-        available_styles = set(mind_map.styles)
-        if selected_set:
-            available_styles.update(mind_map.style_sets[selected_set].get("styles", {}))
-        if topic.style.ref and topic.style.ref not in available_styles:
-            raise IRValidationError(f"{path}.style.ref: estilo inexistente {topic.style.ref!r}")
+    def validate_topic_references(topic: Topic, path: str) -> None:
+        # Las referencias de estilo se resuelven en resolve_styles(), que puede
+        # combinar catálogos embebidos y YAML externo. El parser no conoce aún
+        # la configuración externa y no debe rechazar referencias válidas a ella.
         for index, link in enumerate(topic.links):
             if link.get("kind") == "topic" and link.get("target") not in topic_ids:
                 raise IRValidationError(f"{path}.links[{index}].target: tema enlazado inexistente")
@@ -189,7 +180,7 @@ def validate_mind_map(mind_map: MindMap) -> MindMap:
                     f"{path}.annotations.notes[{note_index}].content[{block_index}]",
                 )
         for index, child in enumerate(topic.children):
-            validate_topic_references(child, f"{path}.children[{index}]", selected_set)
+            validate_topic_references(child, f"{path}.children[{index}]")
 
     validate_topic_references(mind_map.sheet.root_topic, "sheet.root_topic")
 

@@ -2,7 +2,7 @@
 
 **Versión de diseño:** 1.0-draft  
 **Contrato IR objetivo:** 1.0.0  
-**Estado:** diseño propuesto; resolución completa pendiente de implementación.
+**Estado:** resolución implementada para IR 1.0.0 y ruta legacy; el catálogo de propiedades del exportador XMind sigue siendo parcial.
 
 ## 1. Objetivo
 
@@ -439,3 +439,27 @@ El sistema de estilos estará listo cuando disponga de pruebas que demuestren:
 - SDK JavaScript y temas de ejemplo: https://github.com/xmindltd/xmind-sdk-js
 
 Estas fuentes permiten inventariar capacidades y vocabulario, pero no sustituyen las pruebas de exportación y apertura en la versión de XMind que se elija como objetivo.
+
+
+## 15. Estado real de implementación
+
+La resolución de estilos ya está implementada en `src/xmind_md/styles.py`. Para IR 1.0.0, `resolve_ir_styles()` aplica por propiedad esta precedencia:
+
+1. Defaults del sistema proporcionados a la función.
+2. `MindMap.metadata.style_defaults`.
+3. Conjunto efectivo de estilos.
+4. Estilo nombrado.
+5. Overrides locales del elemento.
+
+El conjunto se hereda por la jerarquía de temas; un descendiente puede seleccionar otro conjunto. Las definiciones declaradas en el documento prevalecen sobre las definiciones externas con el mismo nombre. La fusión de mappings es recursiva, no muta los catálogos originales y almacena el resultado en `StyleState.resolved`.
+
+Se resuelven estilos de temas, notas, relaciones, boundaries y summaries. La ruta legacy se mantiene por compatibilidad.
+
+**Alcance y límites:**
+
+- La resolución neutral no valida que cada propiedad pueda representarse en todos los adaptadores.
+- El adaptador XMind aplica una lista blanca propia de propiedades y rechaza propiedades desconocidas, valores `null` no materializables y estilos no resueltos.
+- La cobertura de exportación XMind es deliberadamente menor que la capacidad de representación del IR.
+- No debe interpretarse la lista de capacidades de XMind como un catálogo universal de estilos disponible para cualquier destino.
+
+La matriz de traducción vigente se mantiene en [xmind-adapter.md](xmind-adapter.md). Las pruebas de precedencia, herencia, fusión y errores están en `tests/test_styles.py` y en las pruebas IR correspondientes.

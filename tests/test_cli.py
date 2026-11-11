@@ -125,7 +125,6 @@ def test_cli_reports_package_version(monkeypatch, capsys):
     assert capsys.readouterr().out.strip() == f"xmind-md {__version__}"
 
 
-
 def test_cli_exports_repository_smoke_example_with_external_styles(tmp_path, monkeypatch, capsys):
     root = Path(__file__).resolve().parents[1]
     source = root / "examples" / "xmind-smoke-test.md"

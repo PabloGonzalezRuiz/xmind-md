@@ -1,7 +1,7 @@
 # Metadatos de construcción, dependencias y herramientas del proyecto.
 [build-system]
-# Usar setuptools para construir el paquete instalable.
-requires = ["setuptools>=68", "wheel"]
+# PEP 639 (metadatos SPDX) requiere setuptools 77.0.3 o posterior.
+requires = ["setuptools>=77.0.3", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -11,6 +11,8 @@ version = "0.1.0"
 description = "Convierte Markdown enriquecido en mapas mentales mediante un modelo intermedio."
 readme = "README.md"
 requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
 # PyYAML es la única dependencia de ejecución de la primera versión.
 dependencies = ["PyYAML>=6.0"]
 

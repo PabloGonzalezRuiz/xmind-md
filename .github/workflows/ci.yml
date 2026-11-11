@@ -74,7 +74,8 @@ jobs:
           python -m venv .venv-wheel
           .venv-wheel/bin/python -m pip install dist/*.whl
           mkdir -p /tmp/xmind-md-wheel-test
-          (cd /tmp/xmind-md-wheel-test && "$GITHUB_WORKSPACE/.venv-wheel/bin/xmind-md" "$GITHUB_WORKSPACE/examples/constitucion.md" --styles "$GITHUB_WORKSPACE/config/styles.yaml" --output result.json)
+          printf "# Package smoke test\\n\\n## Installed wheel\\n" > /tmp/xmind-md-wheel-test/input.md
+          (cd /tmp/xmind-md-wheel-test && "$GITHUB_WORKSPACE/.venv-wheel/bin/xmind-md" input.md --output result.json)
           test -s /tmp/xmind-md-wheel-test/result.json
           .venv-wheel/bin/python -c "import json; from pathlib import Path; data=json.loads(Path('/tmp/xmind-md-wheel-test/result.json').read_text()); assert data"
 

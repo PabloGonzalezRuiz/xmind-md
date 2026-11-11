@@ -45,7 +45,7 @@ Este documento identifica los principales archivos versionados y la responsabili
 
 | Archivo | Función |
 |---|---|
-| `ai-reconstruction-prompt.md` | Prompt autónomo para reconstruir y continuar el proyecto. |
+| `ai-reconstruction-prompt.md` | Prompt autónomo para reconstruir y continuar el proyecto. |\n| `functional-audit.md` | Hallazgos, correcciones, evidencia y limitaciones de la auditoría funcional. |
 | `development-status.md` | Registro operativo, auditoría, hoja de ruta y evidencias. |
 | `architecture.md` | Capas, flujo de datos e invariantes vigentes. |
 | `development.md` | Instalación, CLI, pruebas y ciclo de contribución. |
@@ -64,7 +64,7 @@ Este documento identifica los principales archivos versionados y la responsabili
 | Ruta | Función |
 |---|---|
 | `examples/constitucion.md` | Ejemplo de entrada Markdown enriquecida. |
-| `examples/xmind-smoke-test.md` | Fuente del libro mínimo para prueba manual XMind Desktop. |
+| `examples/xmind-smoke-test.md` | Fuente del libro mínimo para prueba manual XMind Desktop. |\n| `examples/assets/escudo.svg` | Recurso SVG ilustrativo original utilizado por el ejemplo de Constitución. |
 | `examples/ir/constitucion.json` | Ejemplo de documento IR serializado. |
 
 ## Pruebas y scripts

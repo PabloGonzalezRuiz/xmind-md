@@ -360,6 +360,8 @@ No debe darse por implementada la validación genérica de todas las propiedades
 
 ## 13. Pruebas de aceptación
 
+La lista siguiente es una hoja de criterios de diseño para la evolución del sistema; no implica que todas estas capacidades formen parte del resolutor actual. En particular, herencia `extends`, perfiles de rol, alias localizados y modos strict/compatible no deben anunciarse como funciones implementadas salvo que se incorporen y prueben expresamente.
+
 El sistema de estilos estará listo cuando disponga de pruebas que demuestren:
 
 1. Fusión recursiva de mappings.

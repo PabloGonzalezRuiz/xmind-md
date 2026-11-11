@@ -2,9 +2,9 @@
 
 - **Fecha de auditoría:** 2026-11-11
 - **Rama:** `main`
-- **Commit base de auditoría de código:** `81b514195f1ea9a7bb0225c3353717f29251c615`
-- **Última validación de distribuciones:** [42990429514](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42990429514)
-- **Última revisión documental:** tras la auditoría de terceros del 2026-11-11
+- **Commit base de auditoría de código:** `a36f36ddc53bc71ef288c829ec5abc6e1eb16cc6`
+- **Última validación funcional y de distribuciones:** [43006735888](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43006735888)
+- **Última revisión documental:** tras el cierre de la tarea 6 del 2026-11-11; queda pendiente la sincronización integral de tarea 7
 - **Alcance:** árbol del repositorio, arquitectura, parser/IR/estilos/adaptadores/CLI, pruebas, workflow, metadatos de distribución, licencia y documentación.
 - **Entorno:** inspección de GitHub y GitHub Actions; no se ejecutó código en el equipo del usuario.
 
@@ -220,3 +220,37 @@ Artefacto de distribución: `python-distributions`, ID `13846567777`, 74.823 byt
 ### Siguiente tarea
 
 La tarea 6 es la auditoría funcional final de parser, IR, estilos, CLI y adaptador XMind. La tarea 5 está cerrada; no iniciar la tarea 6 sin autorización expresa. La Release sigue pendiente de completar también las tareas 6, 7 y 8.
+
+
+## 11. Actualización tras auditoría funcional — tarea 6 (2026-11-11)
+
+Esta sección prevalece sobre el dictamen y los hallazgos históricos anteriores que se redactaron antes de las tareas 4, 5 y 6. Consultar también [functional-audit.md](functional-audit.md).
+
+**Tarea 6: COMPLETADA Y VALIDADA.**
+
+Se corrigieron defectos de parser/IR, resolución de estilos externos, configuración YAML de estilos, serialización XMind/JSON y referencias de ejemplo. Entre las correcciones más relevantes:
+- Preservación de extensiones de mapa y entidades globales; rechazo de campos desconocidos.
+- Soporte Markdown para temas `detached`; validación de kinds/links/markers y YAML JSON-compatible.
+- Resolución de referencias de estilos tras cargar fuentes embebidas y externas.
+- Migración de `config/styles.yaml` al formato real del resolutor y mapeo de propiedades de línea.
+- Rechazo explícito de imágenes inline no soportadas, en vez de aplanarlas silenciosamente.
+- Asset de ejemplo ausente sustituido por un SVG ilustrativo original y actualización de los dos ejemplos Constitución.
+
+### Evidencia final
+
+Run [43006735888](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43006735888), commit `a36f36ddc53bc71ef288c829ec5abc6e1eb16cc6`: completed/success.
+
+- Python 3.10/3.11/3.12: **161 pruebas superadas por versión**, Ruff lint y format correctos.
+- XMind smoke generado en cada job.
+- Wheel y sdist construidos, verificados, instalados en entornos limpios separados y probados con conversiones JSON/XMind; validación ZIP/MIME/JSON correcta.
+- Artefacto `python-distributions`: ID `13849240803`, 77.807 bytes, digest SHA-256 del ZIP de Actions `0d638d960a62909f2c21a1c60687baf4f99e6529f7926eaf7d8e2a4348a048bf`.
+
+### Riesgos/condiciones que permanecen
+
+- El perfil XMind sigue sin exportar recursos/imágenes, tareas, boundaries, summaries ni extensiones. `summary` como tipo de tema tampoco está soportado. El contenido se aplana a notas.
+- El smoke actualizado con estilos pasó CI, pero no ha sido inspeccionado manualmente de nuevo en XMind Desktop. La comprobación manual histórica sigue siendo la del fixture versionado con XMind Desktop 26.05.01107.
+- CI solo valida Ubuntu, no Windows. Python 3.10 se conserva por compatibilidad técnica, pero upstream dejó de soportarlo el 2026-10-01.
+- La auditoría documental integral no está cerrada: README, grammar, IR, style-system, xmind-adapter y development necesitan sincronización final en la tarea 7.
+- No se ha creado changelog, tag ni GitHub Release. La versión sigue en 0.1.0.
+
+**Siguiente paso:** tarea 7, sincronización documental final. No comenzar sin autorización expresa. Después quedará tarea 8, preparación de changelog/tag/Release.

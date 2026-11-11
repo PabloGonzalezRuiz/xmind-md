@@ -5,7 +5,6 @@ resuelve estilos y rechaza explícitamente las capacidades que aún no exporta.
 """
 
 from __future__ import annotations
-
 import json
 import math
 import zipfile

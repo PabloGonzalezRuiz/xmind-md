@@ -264,11 +264,11 @@ ruff check src tests
 ruff format --check src tests
 ~~~
 
-CI en `.github/workflows/ci.yml` utiliza GitHub Actions, Ubuntu, Python 3.12, descarga un fixture XMind externo fijado a un commit y ejecuta pytest, genera el archivo smoke y lo publica durante 14 días. Comprueba la ejecución actual antes de informar de su resultado.
+CI en `.github/workflows/ci.yml` configura actualmente una matriz `ubuntu-latest` y `windows-latest`, Python 3.12, Ruff lint y formato, pytest, descarga del fixture XMind, generación del smoke y artefactos separados por sistema. Esta configuración está publicada en el commit `509fd41869429526c6a903e3a3bdc2f2507a2be9`; no afirmes que ha pasado hasta consultar los runs reales.
 
-## 10. Estado comprobado a 2026-11-10
+## 10. Estado comprobado a 2026-11-11
 
-La hoja de ruta operativa está en `docs/development-status.md`. Las tareas 1–9 están registradas como completadas:
+La hoja de ruta operativa está en `docs/development-status.md`. Las tareas 1–11 están registradas como completadas:
 
 1. Contrato IR 1.0.0 y plan de migración.
 2. Entidades Python y validación semántica IR.
@@ -279,41 +279,44 @@ La hoja de ruta operativa está en `docs/development-status.md`. Las tareas 1–
 7. Auditoría/ampliación/pruebas de la gramática implementada.
 8. Ampliación de capacidades del adaptador XMind.
 9. Integración XMind en CLI.
+10. Prueba manual XMind Desktop: el usuario abrió, inspeccionó, guardó y reabrió el fixture con XMind Desktop Windows 26.05.01107.
+11. Auditoría y verificación del workflow histórico de GitHub Actions.
 
-Evidencia reciente:
-- CI #203, run `42842555229`, commit `1995076eee2e5108c37320c7a9df9be21745f5de`: 131 pruebas superadas; generación y publicación del smoke XMind correctas.
-- CI #205, run `42842726726`, commit `f99273d3f93a95648457aa183bb4ec55bb99fda8`: workflow completo correcto después de actualizar el registro de estado; los pasos Install, Download XMind reference fixture, Tests, Build XMind Desktop smoke test y Upload XMind smoke test finalizaron correctamente. Consultar los logs para el recuento de tests de esa ejecución.
-- Entorno de CI: GitHub Actions, Ubuntu, Python 3.12.16.
-- No se ha ejecutado ni acreditado localmente Windows.
-- No se ha ejecutado ni acreditado Ruff.
-- No se ha abierto y guardado manualmente un archivo generado desde XMind Desktop.
+### Evidencia histórica
+
+- CI #209, run `42843815047`, commit `1fd131cc16786093dba00e09fd551f299a439761`: 131 pruebas superadas en 0,37 s; workflow Linux/Python 3.12.16 y artefacto smoke publicado.
+- Prueba manual: fixture XMind abierto y guardado en XMind Desktop 26.05.01107; el usuario confirmó que se visualizaban tema central, ramas, subtema, nota, etiqueta, marcador y relación, y que el archivo reabrió correctamente.
+- Esta evidencia histórica no acredita la matriz CI nueva.
+
+### Estado de la tarea 12 — CI y Ruff (en curso)
+
+- Commit de workflow: `509fd41869429526c6a903e3a3bdc2f2507a2be9`.
+- Commit de registro de implementación: `a6bd54423f5d79d18207e65be809d4be5f5900fe`.
+- Workflow: matriz Ubuntu/Windows, Python 3.12, `ruff check src tests`, `ruff format --check src tests`, pytest, generación del smoke XMind y publicación de artefactos diferenciados por sistema.
+- No se ha podido recuperar desde el conector el identificador ni los resultados de los runs push recientes. El resultado de esta configuración está **pendiente de verificación**. No inventar un run ID ni declarar pasos superados.
+- El usuario ha indicado que no quiere instalar Python ni ejecutar comandos localmente por ahora. La validación se hará en GitHub Actions.
 
 ### Hoja de ruta pendiente
 
-10. **Prueba manual XMind Desktop (en curso):** el artefacto de CI #205 (run `42842726726`, artifact ID `13775958163`) está descargado y su ZIP ha pasado `unzip -t`. Archivo `xmind-md-smoke-test.xmind`, SHA-256 `9caa73f02ecd6e082202663ada77bd4079ef8bde7da835509d00c314c045acd3`. Falta que el usuario lo abra en XMind Desktop, inspeccione elementos, guarde desde XMind Desktop y reabra. Registrar versión de XMind, sistema operativo, resultados y defectos.
-11. **Windows:** instalación limpia, ejecución de CLI JSON/XMind y suite de pruebas en Windows.
-12. **Calidad automatizada:** incorporar/ejecutar Ruff en CI (lint y formato), revisar workflow y advertencias relevantes.
-13. **Sincronización documental:** corregir inconsistencias de `architecture.md`, `file-reference.md`, `ir-migration-plan.md`, `style-system.md`, `xmind-engine-evaluation.md`, README y otros documentos con respecto al código actual; conservar historial y explicar diferencias intencionadas.
-14. **Auditoría final y publicación estable:** revisar requisitos, seguridad de entradas, errores, dependencias, versionado, licencia, ejemplos, reproducibilidad, documentación y compatibilidad. No publicar como estable hasta satisfacer los criterios definidos.
-
-La tarea 10 es la primera pendiente y requiere intervención del usuario en su escritorio. La auditoría integral y la reescritura de este prompt se registraron en `docs/development-status.md` (commit `e0ba5b328152d6f5ec7649b4a22829a55f207089`). No marques la tarea 10 completada basándote únicamente en ZIP, JSON o CI.
+12. **CI y Ruff (en curso):** obtener y revisar la ejecución real de ambos runners; corregir fallos hasta que lint, formato, pytest y artefactos pasen en Linux y Windows.
+13. **Sincronización documental:** README, arquitectura, migración IR, estilos, evaluación del motor, adaptador XMind, catálogo de archivos y guía de desarrollo.
+14. **Auditoría final y publicación estable:** revisar requisitos, seguridad de entradas, errores, dependencias, licencia, ejemplos, reproducibilidad, documentación y compatibilidad. No publicar como estable hasta satisfacer criterios definidos.
 
 ## 11. Auditoría documental conocida
 
-La auditoría del 2026-11-10 detectó estas discrepancias que deben resolverse en la tarea 13:
+La auditoría del 2026-11-11 confirma estas discrepancias que deben resolverse en la tarea 13:
 
-- Este prompt anterior decía que la CLI no exportaba XMind; ya lo hace.
-- `docs/architecture.md` todavía afirma que la CLI no ofrece exportación XMind y su secuencia de tareas está desfasada.
-- `docs/ir-migration-plan.md` indica que la integración CLI está pendiente y conserva criterios/fases antiguos.
-- `docs/style-system.md` declara pendiente el resolutor, pese a que está implementado y probado.
-- `docs/xmind-engine-evaluation.md` mantiene el estado inicial del adaptador: afirma que faltan controlPoints, detached/callout e integración CLI, aunque el código actual ya incluye varios de ellos.
-- `docs/xmind-adapter.md` contiene contradicción entre la sección de limitaciones y su matriz posterior: esta última documenta detached/callout como soportados; la primera aún los enumera como no exportados. La matriz y el código actual deben reconciliarse.
-- `docs/file-reference.md` atribuye a `model.py` el contrato canónico y no enumera con suficiente precisión los módulos IR, el puente, CLI y pruebas nuevas.
-- `docs/development-status.md` contiene una secuencia histórica de tareas y un registro amplio, pero su cabecera/último commit y algunos detalles de CI necesitan mantenerse sincronizados. Una línea contiene el literal `\\n` en vez de un salto de línea.
-- La documentación técnica tiene que distinguir siempre: implementado, probado estructuralmente, generado en CI, inspeccionado manualmente en aplicación y pendiente.
+- `docs/architecture.md`: revisar afirmaciones antiguas sobre la CLI y la exportación XMind.
+- `docs/ir-migration-plan.md`: presenta integración CLI y fases de migración como pendientes.
+- `docs/style-system.md`: el encabezado declara pendiente la resolución completa, aunque el resolutor IR está implementado y probado.
+- `docs/xmind-engine-evaluation.md`: conserva el estado inicial y afirma que faltan capacidades que el adaptador actual ya implementa, además de indicar que CLI y compatibilidad manual están pendientes.
+- `docs/xmind-adapter.md`: la sección de limitaciones contradice la matriz sobre temas detached/callout y otras capacidades.
+- `docs/file-reference.md`: describe `model.py` como modelo principal y no refleja suficientemente IR, puente, CLI y pruebas actuales.
+- `README.md`: estado «prototipo inicial» y advertencias que no distinguen la prueba manual superada de la cobertura parcial del adaptador.
+- `docs/development.md`: no refleja todavía la matriz de CI Ubuntu/Windows ni el flujo de validación sin instalación local.
+- `docs/development-status.md`: actualizado en esta auditoría; conserva el historial y diferencia CI histórica de la nueva matriz aún no verificada.
 
-No borres el registro histórico de tareas para corregir estas discrepancias. Añade una auditoría con fecha, evidencia y acciones de sincronización.
-
+La tarea 13 debe corregir estas discrepancias sin borrar el historial. Toda documentación debe diferenciar: implementado, probado estructuralmente, generado en CI, inspeccionado manualmente en aplicación y pendiente.
 ## 12. Criterios para nuevas capacidades
 
 Antes de implementar una nueva capacidad:

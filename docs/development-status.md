@@ -2,7 +2,7 @@
 
 > **Documento de seguimiento operativo del proyecto.** Debe actualizarse al terminar cada tarea de desarrollo autorizada y cuando cambie una decisión técnica relevante.
 
-- **Última actualización:** 2026-11-11 (auditoría de terceros completada; wheel/sdist con salida XMind validada)
+- **Última actualización:** 2026-11-11 (auditoría de terceros completada; CI documental y de distribuciones validada en #42993499900)
 - **Rama de referencia:** `main`
 - **Última prueba manual XMind Desktop:** superada en Windows, XMind 26.05.01107.
 - **Commit de incorporación del fixture XMind permanente:** `a1cf99861c819d9f148a7c7a3d779df6a95fc394`.
@@ -777,3 +777,20 @@ La hoja de ruta sigue con: (3) matriz de Python, (4) actualización de actions, 
 
 
 **Nota de actualización:** el encabezado y el estado de las secciones históricas 21.x se interpretan a la luz de las secciones 22 y 23, que registran el cierre de las tareas 1 y 2 y prevalecen sobre los estados anteriores.
+
+
+### 23.1 Validación CI de la documentación de auditoría
+
+La versión documental consolidada quedó validada en run [42993499900](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42993499900), commit `d31a389a3066ec17d581629b7aa3078c32fcb80e`.
+
+- Estado: completed / success.
+- Jobs Tests (Ubuntu) y Build and install distributions (Ubuntu): success.
+- Ruff lint/format: success.
+- Pytest: **131 passed in 0.39s**.
+- Build de wheel y sdist: success.
+- Verificación de metadatos MIT y contenido: success.
+- Instalación limpia de wheel/sdist y conversión CLI JSON/XMind desde ambos: success.
+- Artefacto `python-distributions`: ID `13842766711`, 73.605 bytes, SHA-256 ZIP `e6490d4d8e80a94f7fbd97afe56e534a4f98d256107e503cc9d27bf97726b41b`.
+- Artefacto `xmind-desktop-smoke-test`: ID `13843490530`, 1.333 bytes, SHA-256 ZIP `d1fc50796fd95e350b2d2869a0a5281c0f8c3c5eb416c84490ca36522966f9ba`.
+
+Esta ejecución valida el commit de documentación del catálogo de archivos, que incluye los documentos de auditoría y el inventario THIRD_PARTY_NOTICES.md.

@@ -293,9 +293,10 @@ La hoja de ruta operativa está en `docs/development-status.md`. Las tareas 1–
 - Commit de workflow: `509fd41869429526c6a903e3a3bdc2f2507a2be9`.
 - Commit de registro de implementación: `a6bd54423f5d79d18207e65be809d4be5f5900fe`.
 - Workflow: matriz Ubuntu/Windows, Python 3.12, `ruff check src tests`, `ruff format --check src tests`, pytest, generación del smoke XMind y publicación de artefactos diferenciados por sistema.
-- Run inicial aportado por el usuario: `42977948292`; ambos jobs fallaron en Ruff y no llegaron a pytest ni a la generación de artefactos.
-- Se corrigieron las nueve incidencias detectadas: imports desordenados, SIM102, F821 (Any), UP037, FURB188 y F401. Commits: `a7225b5`, `ab05615`, `c2aff0d`, `2b005f9`, `ec18113`, `c66d92a`, `40e875a`, `98c360b`, `2e16371`.
-- Las correcciones ya están publicadas y han disparado nuevas ejecuciones por push. No se ha podido recuperar desde el conector el ID ni los resultados de esos runs recientes. El resultado de la nueva configuración está **pendiente de verificación**; no declarar pasos superados.
+- Run inicial `42977948292`: ambos jobs fallaron en Ruff con nueve incidencias. Se corrigieron y publicaron.
+- Run siguiente `42981097378`: ambos jobs volvieron a fallar en Ruff lint con tres incidencias I001 en `src/xmind_md/adapters/xmind_adapter.py`, `src/xmind_md/ir/validation.py` y `tests/test_xmind_integration.py`. Los pasos posteriores (Ruff format, fixture, pytest, generación XMind y artefactos) quedaron omitidos.
+- Se corrigieron esos tres bloques de imports en commits `c03293b31f18fda69a274259a86b1225265fce48`, `80b781ed8a1fcde254d1cfac0d1d80b757c5496b` y `d3f545fcecc0f98d1031f37b1aadcfad6b3f7dda`.
+- La ejecución CI posterior a estas correcciones está pendiente de localizar y revisar. No afirmar que lint, formato, pytest ni artefactos han pasado.
 - El usuario ha indicado que no quiere instalar Python ni ejecutar comandos localmente por ahora. La validación se hará en GitHub Actions.
 
 ### Hoja de ruta pendiente

@@ -276,8 +276,10 @@ def _style_properties(style: dict[str, Any], label: str) -> dict[str, Any]:
             if path in {"text.bold", "text.italic"}:
                 if not isinstance(item, bool):
                     raise XMindAdapterError(f"{path} debe ser booleano.")
-                item = ("bold" if item else "normal") if path == "text.bold" else (
-                    "italic" if item else "normal"
+                item = (
+                    ("bold" if item else "normal")
+                    if path == "text.bold"
+                    else ("italic" if item else "normal")
                 )
             elif path == "shape" and not isinstance(item, str):
                 raise XMindAdapterError("shape debe ser texto.")

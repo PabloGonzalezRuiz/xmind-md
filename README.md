@@ -79,7 +79,7 @@ El comando instalado es `xmind-md`. También puede ejecutarse como módulo con `
 ### Generar un archivo XMind
 
 ```bash
-xmind-md examples/constitucion.md --styles config/styles.yaml --output output/constitucion.xmind
+xmind-md examples/xmind-smoke-test.md --styles config/styles.yaml --output output/prueba.xmind
 ```
 
 ### Generar el IR en JSON

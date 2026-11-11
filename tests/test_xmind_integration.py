@@ -17,7 +17,6 @@ import pytest
 from xmind_md.adapters.xmind_adapter import build_xmind_content, write_xmind
 from xmind_md.ir import MindMap, Relationship, Sheet, Topic
 
-
 REFERENCE_FILE = Path(__file__).parent / "fixtures" / "reference.xmind"
 
 

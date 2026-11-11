@@ -98,7 +98,7 @@ El comando instalado es `xmind-md`; también está disponible `python -m xmind_m
 - `scripts/verify_distributions.py`: comprueba que wheel/sdist contienen metadatos, LICENSE y módulos esenciales.
 - `pyproject.toml`: metadatos de paquete, dependencias, entry point y configuración de herramientas.
 
-La CI [42988289597](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42988289597) completó ambos jobs: Ruff, 131 pruebas, generación XMind, build wheel/sdist, verificación de contenido/licencia e instalación limpia de ambas distribuciones con prueba CLI JSON. La CLI XMind desde los paquetes instalados sigue siendo una comprobación pendiente. La evidencia vigente se mantiene en [development-status.md](development-status.md) y [release-audit.md](release-audit.md).
+La CI [42988289597](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42988289597) completó ambos jobs: Ruff, 131 pruebas, generación XMind, build wheel/sdist, verificación de contenido/licencia e instalación limpia de ambas distribuciones con prueba CLI JSON. La CLI instalada desde wheel y sdist también genera XMind; el smoke comprueba MIME, entrada inicial sin compresión, contenido raíz e integridad del ZIP. La evidencia vigente se mantiene en [development-status.md](development-status.md) y [release-audit.md](release-audit.md).
 
 ## 4. Contratos e invariantes
 

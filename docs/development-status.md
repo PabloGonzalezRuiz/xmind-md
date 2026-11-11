@@ -2,12 +2,12 @@
 
 > **Documento de seguimiento operativo del proyecto.** Debe actualizarse al terminar cada tarea de desarrollo autorizada y cuando cambie una decisión técnica relevante.
 
-- **Última actualización:** 2026-11-11 (tarea 5 de versionado/metadatos implementada y validada en CI #43002869927)
+- **Última actualización:** 2026-11-11 (tarea 6, auditoría funcional, completada y validada en CI #43006735888)
 - **Rama de referencia:** `main`
 - **Última prueba manual XMind Desktop:** superada en Windows, XMind 26.05.01107.
 - **Commit de incorporación del fixture XMind permanente:** `a1cf99861c819d9f148a7c7a3d779df6a95fc394`.
 - **Contrato objetivo:** IR 1.0.0
-- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; exportación JSON/XMind disponible; fixture comprobado manualmente en XMind Desktop 26.05.01107; wheel y sdist construidos, verificados e instalados en CI. La matriz Python 3.10/3.11/3.12 está validada; la versión del paquete tiene una única fuente de verdad en `src/xmind_md/__init__.py`, metadatos PEP 621 dinámicos, CLI `--version` y verificación de `METADATA`/`PKG-INFO`. CI #43002869927 validó 132 pruebas por versión y la construcción, verificación e instalación de wheel/sdist. Las acciones CI usan Node.js 24, validadas en #42996452355. Pendientes: auditoría funcional final, resolver la referencia a imagen inexistente, sincronización final y Release.
+- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; exportación JSON/XMind disponible; fixture anterior comprobado manualmente en XMind Desktop 26.05.01107; wheel y sdist construidos, verificados e instalados en CI. Versionado centralizado en `src/xmind_md/__init__.py`, metadatos PEP 621 dinámicos y CLI `--version`; acciones CI usan Node.js 24. La auditoría funcional corrigió validación/preservación de datos, referencias de estilos externos, configuración de estilos, conversión XMind de imágenes inline, serialización JSON estricta y el asset faltante del ejemplo. CI #43006735888 validó 161 pruebas por versión (Python 3.10/3.11/3.12), Ruff, smoke XMind y wheel/sdist instalados y probados. Pendientes: sincronización documental final (tarea 7) y changelog/tag/Release (tarea 8).
 
 ## 1. Para qué sirve este documento
 
@@ -33,6 +33,7 @@ No sustituye a las especificaciones. Cuando haya discrepancias, consultar los do
 | Ejemplo del IR | [Constitución en IR](../examples/ir/constitucion.json) |
 | Migración del modelo | [Plan de migración](ir-migration-plan.md) |
 | Arquitectura | [architecture.md](architecture.md) |
+| Auditoría funcional | [functional-audit.md](functional-audit.md) |
 | Gramática Markdown | [grammar.md](grammar.md) |
 | Adaptador XMind | [xmind-adapter.md](xmind-adapter.md) |
 | Pruebas de integración XMind | [xmind-integration-tests.md](xmind-integration-tests.md) |
@@ -913,4 +914,34 @@ El hash anterior identifica el ZIP de GitHub Actions que contiene las distribuci
 
 Las primeras ejecuciones detectaron, sucesivamente, una sección TOML mal ubicada, un clasificador de licencia obsoleto bajo PEP 639, un orden de imports no conforme con Ruff y la presencia de dos archivos `PKG-INFO` en el sdist (el canónico y el de egg-info). Se corrigieron dentro de esta tarea. El verificador selecciona ahora el `PKG-INFO` canónico; la ejecución final indicada arriba quedó completamente verde.
 
-**Siguiente tarea propuesta:** tarea 6, auditoría funcional final de parser, IR, estilos, CLI y adaptador XMind. No iniciarla sin autorización expresa del usuario.
+**Siguiente tarea propuesta en ese momento:** tarea 6, auditoría funcional final. Se completó posteriormente; consultar la sección 27.
+
+
+## 27. Tarea 6 — auditoría funcional de parser, IR, estilos, CLI y adaptador XMind (2026-11-11)
+
+**Estado: COMPLETADA Y VALIDADA.**
+
+La auditoría funcional detallada, con hallazgos, correcciones, limitaciones y criterios pendientes, se registra en [functional-audit.md](functional-audit.md). Principales correcciones:
+
+- Parser: soporte `detached`, validación segura de kinds/links/markers, rechazo de campos globales desconocidos, preservación de extensiones, reconstrucción del texto legacy de listas, conservación de barras invertidas en tablas y normalización YAML a tipos JSON seguros.
+- Puente IR: preservación de extensiones de mapa, relaciones, boundaries y summaries.
+- Validación IR: las referencias a estilos externos se resuelven en `resolve_styles()`, después de cargar catálogos; se reforzaron comprobaciones de tipos para títulos, bloques, enlaces y assets.
+- Estilos: migrado `config/styles.yaml` al formato realmente soportado; mapeados `line.color/width/pattern` de relaciones; `text.bold/italic` requieren booleanos reales.
+- XMind: imágenes inline se rechazan explícitamente en vez de perderse como texto alternativo; serialización JSON estricta con `allow_nan=False`.
+- Ejemplos: añadido `examples/assets/escudo.svg`; Markdown e IR JSON actualizados; el comando XMind de README usa el ejemplo de humo compatible; el script de smoke resuelve el catálogo externo.
+- Pruebas de regresión añadidas para estos casos y para entradas IR malformadas.
+
+### Evidencia CI
+
+Run [43006735888](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43006735888), commit `a36f36ddc53bc71ef288c829ec5abc6e1eb16cc6`, finalizó **completed / success**.
+
+- Python 3.10, 3.11 y 3.12: Ruff lint/format correcto y **161 pruebas superadas por versión**.
+- Los tres jobs generaron el artefacto XMind smoke.
+- Wheel y sdist construidos, verificados, instalados en entornos limpios separados y probados con CLI Markdown → JSON/XMind; los XMind pasaron las comprobaciones ZIP/MIME/JSON.
+- Artefacto `python-distributions`: ID `13849240803`, tamaño 77.807 bytes, digest SHA-256 del ZIP de Actions `0d638d960a62909f2c21a1c60687baf4f99e6529f7926eaf7d8e2a4348a048bf`.
+
+### Limitaciones y siguiente paso
+
+El adaptador XMind continúa siendo parcial: no exporta imágenes/recursos, tareas, boundaries, summaries ni extensiones; el contenido se aplana a notas y `summary` como tipo de tema no se exporta. El nuevo smoke con estilos pasó CI, pero no se ha vuelto a inspeccionar manualmente en XMind Desktop. La matriz CI es Ubuntu, no Windows.
+
+**Siguiente tarea autorizable: tarea 7 — sincronización documental final.** Revisar README, gramática, IR, estilos, matriz XMind, guía de desarrollo y catálogo frente a la implementación real. No comenzar sin autorización expresa del usuario.

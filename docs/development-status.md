@@ -2,12 +2,12 @@
 
 > **Documento de seguimiento operativo del proyecto.** Debe actualizarse al terminar cada tarea de desarrollo autorizada y cuando cambie una decisión técnica relevante.
 
-- **Última actualización:** 2026-11-11 (tarea 7, sincronización documental, validada en CI #43009183421)
+- **Última actualización:** 2026-11-11 (tarea 8, preparación de Release Alpha 0.1.0; publicación bloqueada por inspección manual del smoke candidato)
 - **Rama de referencia:** `main`
 - **Última prueba manual XMind Desktop:** superada en Windows, XMind 26.05.01107.
 - **Commit de incorporación del fixture XMind permanente:** `a1cf99861c819d9f148a7c7a3d779df6a95fc394`.
 - **Contrato objetivo:** IR 1.0.0
-- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; exportación JSON/XMind disponible; fixture anterior comprobado manualmente en XMind Desktop 26.05.01107; wheel y sdist construidos, verificados e instalados en CI. Versionado centralizado en `src/xmind_md/__init__.py`, metadatos PEP 621 dinámicos y CLI `--version`; acciones CI usan Node.js 24. La auditoría funcional corrigió validación/preservación de datos, referencias de estilos externos, configuración de estilos, conversión XMind de imágenes inline, serialización JSON estricta y el asset faltante del ejemplo. CI #43006735888 validó 161 pruebas por versión (Python 3.10/3.11/3.12), Ruff, smoke XMind y wheel/sdist instalados y probados. Pendiente: changelog/tag/Release (tarea 8). La sincronización documental de tarea 7 está completada; consultar `docs/documentation-audit.md`.
+- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; exportación JSON/XMind disponible; fixture anterior comprobado manualmente en XMind Desktop 26.05.01107; wheel y sdist construidos, verificados e instalados en CI. Versionado centralizado en `src/xmind_md/__init__.py`, metadatos PEP 621 dinámicos y CLI `--version`; acciones CI usan Node.js 24. La auditoría funcional corrigió validación/preservación de datos, referencias de estilos externos, configuración de estilos, conversión XMind de imágenes inline, serialización JSON estricta y el asset faltante del ejemplo. CI #43006735888 validó 161 pruebas por versión (Python 3.10/3.11/3.12), Ruff, smoke XMind y wheel/sdist instalados y probados. La tarea 7 está completada; consultar `docs/documentation-audit.md`. Tarea 8 en curso: changelog, notas y workflow de publicación preparados para `0.1.0` Alpha. Tag/Release aún no creados; falta inspección manual del smoke candidato en XMind Desktop y CI verde del commit definitivo.
 
 ## 1. Para qué sirve este documento
 
@@ -969,3 +969,27 @@ Artefactos: `python-distributions` ID `13850260351` (78.103 bytes; SHA-256 del Z
 Se conservan explícitamente las limitaciones: no CommonMark/GFM completo; no recursos/imágenes, tareas, boundaries, summaries, extensiones ni Topic.kind=summary en XMind; bloques aplanados a notas; smoke nuevo no reabierto manualmente en Desktop; CI Ubuntu sin evidencia Windows; Python 3.10 fuera de soporte upstream.
 
 **Siguiente tarea:** tarea 8 — changelog, decisión final de versión, tag y GitHub Release. No iniciarla sin autorización expresa del usuario.
+
+
+## 29. Tarea 8 — preparación de primera publicación (2026-11-11)
+
+**Estado: PREPARACIÓN COMPLETADA; PUBLICACIÓN BLOQUEADA POR VERIFICACIÓN MANUAL.**
+
+### Decisión de versión
+
+- Se conserva `0.1.0`, ya definida como fuente única en `src/xmind_md/__init__.py` y leída dinámicamente por setuptools.
+- Se publica como **Alpha / pre-1.0**, no como estable: el clasificador del paquete es Alpha y el adaptador XMind mantiene limitaciones funcionales documentadas.
+- Tag previsto: `v0.1.0`.
+
+### Artefactos documentales y automatización
+
+- `CHANGELOG.md`: entrada 0.1.0 Alpha, capacidades, correcciones, validación y limitaciones.
+- `docs/releases/v0.1.0.md`: notas destinadas a GitHub Release.
+- `.github/workflows/release.yml`: workflow manual que solo publica desde `main`, exige confirmación de inspección del smoke en XMind Desktop, requiere una CI exitosa para el mismo commit, comprueba versión/tag no existente, construye y verifica wheel/sdist y crea tag/Release con los dos artefactos.
+- README, catálogo y `THIRD_PARTY_NOTICES.md` sincronizados; la referencia histórica rota a `escudo.png` queda resuelta. Se conserva el límite de SBOM transitivo no exhaustivo.
+
+### Puerta pendiente
+
+No ejecutar el workflow de publicación hasta que el usuario abra, guarde y vuelva a abrir en XMind Desktop el smoke generado desde el commit candidato final y confirme que se visualiza correctamente. Después, CI debe estar verde en ese mismo SHA. El workflow exige explícitamente esa confirmación y no permite publicar desde otra rama.
+
+El tag y la Release todavía no existen. No describir `0.1.0` como publicada ni como estable hasta que GitHub confirme la creación de ambos.

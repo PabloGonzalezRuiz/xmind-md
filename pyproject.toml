@@ -7,12 +7,30 @@ build-backend = "setuptools.build_meta"
 [project]
 # Mantener la versión sincronizada con xmind_md.__version__.
 name = "xmind-md"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Convierte Markdown enriquecido en mapas mentales mediante un modelo intermedio."
+authors = [{ name = "Pablo González Ruiz" }]
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 license-files = ["LICENSE"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Utilities",
+]
+
+[project.urls]
+Homepage = "https://github.com/PabloGonzalezRuiz/xmind-md"
+Repository = "https://github.com/PabloGonzalezRuiz/xmind-md"
+Documentation = "https://github.com/PabloGonzalezRuiz/xmind-md/tree/main/docs"
+Issues = "https://github.com/PabloGonzalezRuiz/xmind-md/issues"
 # PyYAML es la única dependencia de ejecución de la primera versión.
 dependencies = ["PyYAML>=6.0"]
 
@@ -23,6 +41,10 @@ dev = ["pytest>=8.0", "ruff>=0.5", "jsonschema[format]>=4.22,<5"]
 [project.scripts]
 # Instala el comando xmind-md que apunta a la función principal de la CLI.
 xmind-md = "xmind_md.cli:main"
+
+[tool.setuptools.dynamic]
+# La versión se define una sola vez en el paquete; setuptools la lee sin importar el proyecto.
+version = { attr = "xmind_md.__version__" }
 
 [tool.setuptools.packages.find]
 # Adoptar el diseño src para separar código importable y archivos del proyecto.

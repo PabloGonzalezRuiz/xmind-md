@@ -258,11 +258,15 @@ Run [43006735888](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/430
 
 ## 12. Cierre de sincronización documental — tarea 7 (2026-11-11)
 
-**Estado: revisión documental completada; validación CI final pendiente de registrar.**
+**Estado: COMPLETADA Y VALIDADA.**
 
 Se han corregido las discrepancias detectadas en README, gramática, especificación IR, sistema de estilos, adaptador XMind y guía de desarrollo. El detalle de cambios, contraste con código y limitaciones es [documentation-audit.md](documentation-audit.md).
 
 La configuración YAML ejecutable se documenta como `style_sets` + `styles`, sin `extends/elements/applies_to/properties`. La cascada de estilos corresponde a la implementación actual. La gramática diferencia tipos representables en IR de tipos exportables a XMind. La matriz XMind identifica attached/detached/callout como soportados, detached con coordenadas, y summary como no soportado. README y guía usan el ejemplo smoke para exportar XMind y reportan 161 pruebas por versión.
+
+Run [43009183421](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43009183421), commit `6cd1c937ee090bc36483be49e7d1f5c740e0926a`, finalizó `completed / success`. Python 3.10/3.11/3.12: Ruff lint/format correctos y **161 pruebas superadas por versión**. Los tres jobs generaron sus XMind smoke. El job de distribuciones construyó wheel/sdist, verificó contenido/licencia, instaló ambos en entornos limpios separados y ejecutó conversiones CLI JSON/XMind; validación ZIP/MIME/JSON correcta.
+
+Artefactos: `python-distributions` ID `13850260351` (78.103 bytes; SHA-256 del ZIP de Actions `c8109d8d722befe2a5ed1bc953af15711b0caaf9d0f2bf9928bc050796b38a0f`); smoke Python 3.10 ID `13849418602`, Python 3.11 ID `13848884276`, Python 3.12 ID `13849314179`.
 
 Los límites de publicación siguen vigentes: no hay inspección manual del nuevo smoke con estilos en XMind Desktop; CI solo Ubuntu; Python 3.10 fuera de soporte upstream; adaptador XMind parcial; no existe changelog, tag ni Release. La versión se mantiene en 0.1.0.
 

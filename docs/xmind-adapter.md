@@ -132,7 +132,7 @@ La clasificación distingue entre representación exportada, conversión con pé
 | `Sheet.metadata` | No soportado | Error explícito |
 | `Sheet.layout` | Parcial | Solo `mind_map` con dirección `balanced` y sin propiedades adicionales |
 | `Topic.kind=attached` | Soportado | `children.attached`; obligatorio para la raíz |
-| `Topic.kind=detached` | Soportado con requisito | `children.detached`; requiere coordenadas numéricas `layout.position.x/y` |
+| `Topic.kind=detached` | Soportado con requisito | `children.detached`; requiere `layout.position` con coordenadas numéricas `x/y` |
 | `Topic.kind=callout` | Soportado | `children.callout` |
 | `Topic.kind=summary` y otros tipos | No soportado | Error explícito |
 | `Topic.layout` | Parcial | `position`, `structure_class`, `branch=folded`, `width`; resto rechazado |

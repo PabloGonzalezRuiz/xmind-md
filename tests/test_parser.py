@@ -212,3 +212,15 @@ def test_table_cells_preserve_backslashes_unless_escaping_a_pipe():
     )
     table = result.topics[0].content_blocks[0]
     assert table["rows"][0][0][0]["text"] == "C:\\Users\\estudio"
+
+@pytest.mark.parametrize("yaml_value", [".nan", ".inf", "!!binary SGVsbG8=", "!!set {item: null}"])
+def test_non_json_yaml_values_are_rejected(yaml_value):
+    source = f"---\ncustom: {yaml_value}\n---\n# Raíz\n"
+    with pytest.raises(MarkdownParseError, match="JSON"):
+        parse_markdown(source)
+
+
+def test_yaml_keys_that_collide_after_string_normalization_are_rejected():
+    source = '---\ncustom:\n  1: primero\n  "1": segundo\n---\n# Raíz\n'
+    with pytest.raises(MarkdownParseError, match="colisionan"):
+        parse_markdown(source)

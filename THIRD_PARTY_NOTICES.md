@@ -60,13 +60,13 @@ No se han encontrado directorios de dependencias vendorizadas, fuentes de iconos
 
 ## Acciones de GitHub
 
-El workflow usa actions/checkout@v4, actions/setup-python@v5 y actions/upload-artifact@v4. Los repositorios oficiales de las tres acciones publican licencia MIT:
+El workflow usa actions/checkout@v5, actions/setup-python@v6 y actions/upload-artifact@v6. Se verificó el campo runs.using de los tres action.yml en esas referencias: todos declaran node24. Los repositorios oficiales de las tres acciones publican licencia MIT:
 
 - https://github.com/actions/checkout/blob/main/LICENSE
 - https://github.com/actions/setup-python/blob/main/LICENSE
 - https://github.com/actions/upload-artifact/blob/main/LICENSE
 
-Se ejecutan en GitHub Actions y no se incorporan como código al paquete Python. Las versiones están referenciadas mediante tags mayores, no SHA inmutable; fijar SHA es una mejora de reproducibilidad y cadena de suministro, no una condición de copyright detectada.
+Se ejecutan en GitHub Actions y no se incorporan como código al paquete Python. Las versiones están referenciadas mediante tags mayores, no SHA inmutable; fijar SHA es una mejora de reproducibilidad y cadena de suministro, no una condición de copyright detectada. La migración de Node.js 20 a Node.js 24 se validó en GitHub Actions run [42996452355](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42996452355).
 
 ## Conclusión de auditoría
 

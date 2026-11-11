@@ -2,7 +2,7 @@
 
 **Módulo:** \`src/xmind_md/adapters/xmind_adapter.py\`  
 **Formato objetivo:** XMind moderno, contenedor ZIP con JSON  
-**Estado:** migrado a IR 1.0.0; compatibilidad con XMind Desktop pendiente de prueba manual
+**Estado:** adaptador IR 1.0.0 integrado en CLI; fixture manual comprobado en XMind Desktop 26.05.01107; perfil de exportación parcial
 
 ## 1. Responsabilidad y contrato
 
@@ -155,3 +155,12 @@ La clasificación distingue entre representación exportada, conversión con pé
 | Propiedades de estilo desconocidas, valores `null` o estilos sin resolver | No soportado | Error explícito |
 
 Las pérdidas intencionadas (aplanamiento de bloques, IDs auxiliares, catálogos de estilos) se describen en esta tabla y no deben confundirse con soporte de ida y vuelta. Los casos no soportados deben continuar fallando de forma explícita.
+
+
+## 9. Evidencia de interoperabilidad manual
+
+La validación manual ya no está pendiente para el fixture de smoke test. El archivo `tests/fixtures/xmind/xmind-md-smoke-test.xmind` se descargó, abrió, inspeccionó, guardó, cerró y volvió a abrir en XMind Desktop 26.05.01107 para Windows.
+
+Se comprobaron: tema central, dos ramas, un subtema, una nota desplegable, una etiqueta, un marcador de prioridad y una relación. El usuario confirmó que el archivo funcionaba correctamente después de guardarlo y reabrirlo.
+
+Esta evidencia confirma exclusivamente el fixture y las características inspeccionadas en esa versión. No certifica todas las capacidades del adaptador ni compatibilidad universal con versiones futuras de XMind. La matriz de la sección 8 continúa siendo la referencia para saber qué se exporta, qué se aplana y qué se rechaza.

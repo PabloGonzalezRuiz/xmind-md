@@ -383,8 +383,6 @@ def test_remaining_unsupported_features_are_rejected_explicitly(change, message)
     with pytest.raises(XMindAdapterError, match=message):
         build_xmind_content(mind_map)
 
-
-
 def test_relationship_line_styles_map_to_xmind_line_properties():
     mind_map = make_map()
     mind_map.sheet.relationships[0].style.resolved = {

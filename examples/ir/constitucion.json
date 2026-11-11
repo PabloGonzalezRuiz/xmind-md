@@ -56,9 +56,9 @@
   "assets": {
     "asset_escudo": {
       "kind": "image",
-      "path": "assets/escudo.png",
-      "name": "Escudo",
-      "mime_type": "image/png",
+      "path": "assets/escudo.svg",
+      "name": "Escudo ilustrativo",
+      "mime_type": "image/svg+xml",
       "size": null,
       "sha256": null,
       "metadata": {}

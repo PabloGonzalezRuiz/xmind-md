@@ -2,12 +2,12 @@
 
 > **Documento de seguimiento operativo del proyecto.** Debe actualizarse al terminar cada tarea de desarrollo autorizada y cuando cambie una decisión técnica relevante.
 
-- **Última actualización:** 2026-11-11 (matriz Python 3.10/3.11/3.12 y documentación de cierre validadas en CI #42995377488)
+- **Última actualización:** 2026-11-11 (acciones CI migradas a Node.js 24 y validadas en CI #42996452355)
 - **Rama de referencia:** `main`
 - **Última prueba manual XMind Desktop:** superada en Windows, XMind 26.05.01107.
 - **Commit de incorporación del fixture XMind permanente:** `a1cf99861c819d9f148a7c7a3d779df6a95fc394`.
 - **Contrato objetivo:** IR 1.0.0
-- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; exportación JSON/XMind disponible; fixture comprobado manualmente en XMind Desktop 26.05.01107; wheel y sdist construidos, verificados e instalados en CI. La matriz Python 3.10/3.11/3.12 está validada en el run #42995180722 (131 pruebas por versión; build/install de distribuciones también correcto). Pendientes: revisar acciones CI, versionado, auditoría funcional final, resolver la referencia a imagen inexistente y preparar Release.
+- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; exportación JSON/XMind disponible; fixture comprobado manualmente en XMind Desktop 26.05.01107; wheel y sdist construidos, verificados e instalados en CI. La matriz Python 3.10/3.11/3.12 está validada en el run #42995180722 (131 pruebas por versión; build/install de distribuciones también correcto). Las acciones CI usan ahora runtimes Node.js 24, validados en el run #42996452355. Pendientes: versionado, auditoría funcional final, resolver la referencia a imagen inexistente y preparar Release.
 
 ## 1. Para qué sirve este documento
 
@@ -716,7 +716,7 @@ Los hashes son de los ZIP de artefactos de Actions, no de los paquetes individua
 4. El fixture manual se comprobó en XMind Desktop 26.05.01107, pero esa prueba no valida todas las capacidades ni el artefacto generado por cada commit.
 5. `requires-python >=3.10`, pero CI solo ejecuta Python 3.12 sobre Ubuntu.
 6. `0.1.0` está duplicada en `pyproject.toml`, `src/xmind_md/__init__.py` y `scripts/verify_distributions.py`.
-7. El workflow informa de deprecación Node.js 20 en `actions/checkout@v4`, `setup-python@v5` y `upload-artifact@v4`; no ha causado fallo, pero debe revisarse.
+7. **Resuelto:** el aviso de Node.js 20 se eliminó migrando a `actions/checkout@v5`, `actions/setup-python@v6` y `actions/upload-artifact@v6`, todos con `runs.using: node24`; run #42996452355.
 8. El inventario de procedencia y licencias está documentado en THIRD_PARTY_NOTICES.md; no es un SBOM exhaustivo de dependencias transitivas.
 9. La MIT está presente en el repositorio y en las distribuciones; no se extiende automáticamente a componentes de terceros.
 
@@ -725,7 +725,7 @@ Los hashes son de los ZIP de artefactos de Actions, no de los paquetes individua
 1. **Smoke XMind desde wheel y sdist instalados — COMPLETADA.** Run #42990025087 y revalidación #42990429514; ambos paquetes generaron JSON y XMind desde entornos limpios.
 2. **Auditoría de terceros — COMPLETADA como inventario técnico.** THIRD_PARTY_NOTICES.md registra licencias/origen; siguen abiertas la referencia de imagen inexistente y el inventario exhaustivo de transitivas.
 3. **Completada:** matriz CI Python 3.10, 3.11 y 3.12; run #42995180722.
-4. Actualizar acciones GitHub para evitar el aviso de Node.js 20 deprecado.
+4. **Completada:** migrar acciones GitHub a Node.js 24; run #42996452355.
 5. Resolver fuente única/coherencia de versión y metadatos públicos de distribución.
 6. Completar auditoría funcional de parser, IR, estilos, CLI y adaptador; corregir defectos de prioridad de publicación.
 7. Revisar de nuevo todos los documentos y ejemplos contra código y evidencias.
@@ -735,7 +735,7 @@ Los hashes son de los ZIP de artefactos de Actions, no de los paquetes individua
 
 El usuario no desea instalaciones ni ejecuciones Python locales. Toda validación se realizará en GitHub Actions. Se mantiene la regla de no pedir autorización para correcciones o repeticiones dentro de una tarea ya autorizada; detenerse y pedir permiso antes de iniciar la tarea siguiente.
 
-La documentación de continuidad se ha reconciliado con el resultado de empaquetado y la auditoría de terceros. La matriz de Python está completada; la siguiente tarea pendiente es actualizar las acciones de GitHub para eliminar el aviso Node.js 20.
+La documentación de continuidad se ha reconciliado con el resultado de empaquetado, la auditoría de terceros, la matriz Python y la migración de acciones a Node.js 24. La siguiente tarea pendiente es revisar versionado y metadatos de publicación.
 
 
 ## 22. Cierre de tarea 1 de la auditoría integral — 2026-11-11
@@ -842,4 +842,39 @@ Los hashes son de los ZIP de artefactos de GitHub Actions, no de los archivos wh
 
 **Conclusión:** la promesa técnica actual `requires-python >=3.10` ha pasado la suite en las tres versiones declaradas por la tarea. Python 3.10 está fuera de soporte de seguridad desde el 1 de octubre de 2026; esta matriz confirma compatibilidad observada, no soporte de seguridad. La decisión sobre elevar el mínimo debe abordarse en la tarea de versionado/metadatos.
 
-La siguiente tarea de la auditoría es actualizar las acciones de GitHub para eliminar el aviso de runtime Node.js 20. No iniciarla sin autorización expresa del usuario.
+La migración de acciones de GitHub a Node.js 24 está completada y validada; la siguiente tarea de la auditoría es revisar versionado y metadatos de publicación. No iniciar esa tarea sin autorización expresa del usuario.
+## 25. Migración de acciones GitHub Actions a Node.js 24 — 2026-11-11
+
+**Estado: COMPLETADA Y VALIDADA.**
+
+GitHub retiró Node.js 20 de los runners el 23 de septiembre de 2026. La recomendación oficial para quienes usan acciones JavaScript es actualizar a versiones que declaren node24. Se consultaron las referencias oficiales y se verificó el action.yml de cada versión seleccionada.
+
+Cambios en .github/workflows/ci.yml:
+- actions/checkout@v4 → actions/checkout@v5.
+- actions/setup-python@v5 → actions/setup-python@v6.
+- actions/upload-artifact@v4 → actions/upload-artifact@v6.
+
+Verificación previa: las tres versiones seleccionadas declaran runs.using: node24.
+
+Las versiones elegidas mantienen las interfaces usadas por el workflow. No se modificó el Python instalado por setup-python; el cambio afecta al runtime interno de las acciones JavaScript.
+
+### Evidencia de CI
+
+Run [42996452355](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42996452355), commit e42f0db5fdc943ce060a358293335573eeb28902: **completed / success**.
+
+- Python 3.10: Ruff correcto; 131 pruebas superadas.
+- Python 3.11: Ruff correcto; 131 pruebas superadas.
+- Python 3.12: Ruff correcto; 131 pruebas superadas.
+- Build/install de wheel y sdist: correcto; ambas distribuciones generaron JSON y XMind.
+- Se publicaron los tres artefactos XMind smoke y python-distributions.
+- Inspección de los cuatro logs: no se encontró aviso Node.js 20, node20 ni advertencia de runtime de acciones. Los avisos genéricos de Git/configuración no corresponden al runtime JavaScript.
+
+Artefactos del run:
+- xmind-desktop-smoke-test-py3.10: ID 13843574011.
+- xmind-desktop-smoke-test-py3.11: ID 13843124343.
+- xmind-desktop-smoke-test-py3.12: ID 13843997547.
+- python-distributions: ID 13843737659.
+
+No se han fijado SHA inmutables en este cambio; el workflow sigue usando tags mayores. La mejora de reproducibilidad/cadena de suministro queda separada de esta tarea.
+
+**Siguiente tarea propuesta:** resolver la coherencia de versión y metadatos de publicación. Requiere autorización expresa del usuario.

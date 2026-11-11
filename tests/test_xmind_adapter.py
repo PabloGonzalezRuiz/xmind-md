@@ -12,6 +12,7 @@ from xmind_md.adapters.xmind_adapter import (
     build_xmind_content,
     write_xmind,
 )
+from xmind_md.ir_parser import parse_markdown_ir
 from xmind_md.ir import (
     Annotation,
     Asset,
@@ -403,4 +404,12 @@ def test_boolean_text_style_properties_reject_non_boolean_values(property_name, 
     mind_map = make_map()
     mind_map.sheet.root_topic.style.resolved = {"text": {property_name: invalid_value}}
     with pytest.raises(XMindAdapterError, match="debe ser booleano"):
+        build_xmind_content(mind_map)
+
+
+
+def test_inline_images_are_rejected_instead_of_being_dropped():
+    mind_map = parse_markdown_ir("# Raíz\nTexto ![Escudo](assets/escudo.png)\n")
+
+    with pytest.raises(XMindAdapterError, match="imágenes en línea"):
         build_xmind_content(mind_map)

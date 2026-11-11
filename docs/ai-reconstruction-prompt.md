@@ -780,7 +780,7 @@ No CommonMark/GFM completo. El adaptador XMind rechaza recursos/imágenes, tarea
 La tarea 8 está en curso. Se decidió conservar `0.1.0` y publicarla como Alpha/pre-1.0, nunca como estable: el classifier de pyproject es Alpha y el exportador XMind es parcial.
 
 - `CHANGELOG.md` y `docs/releases/v0.1.0.md` preparados.
-- `.github/workflows/release.yml` creado. Es manual, exige ejecución desde `main`, confirmación del smoke manual en XMind Desktop, CI success para el mismo SHA, ausencia del tag y build/verificación de wheel/sdist antes de crear `v0.1.0` y GitHub Release.
+- `.github/workflows/release.yml` creado. Es manual, exige ejecución desde `main`, confirmación del smoke manual en XMind Desktop, CI success para el mismo SHA, ausencia del tag y build/verificación de wheel/sdist; genera `SHA256SUMS.txt` y publica `v0.1.0` como prerelease con ambos paquetes y checksum.
 - README, catálogo, estado operativo y avisos de terceros sincronizados; referencia rota a `escudo.png` corregida en avisos.
 - No hay tag ni Release. No afirmar publicación ni estabilidad.
 

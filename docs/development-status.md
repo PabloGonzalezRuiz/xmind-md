@@ -2,7 +2,7 @@
 
 > **Documento de seguimiento operativo del proyecto.** Debe actualizarse al terminar cada tarea de desarrollo autorizada y cuando cambie una decisión técnica relevante.
 
-- **Última actualización:** 2026-11-11
+- **Última actualización:** 2026-11-11 (remediación Ruff)
 - **Rama de referencia:** `main`
 - **Última prueba manual XMind Desktop:** superada en Windows, XMind 26.05.01107.
 - **Commit de incorporación del fixture XMind permanente:** `a1cf99861c819d9f148a7c7a3d779df6a95fc394`.
@@ -412,7 +412,7 @@ Este documento es una fotografía mantenida del estado de desarrollo, no una gar
 ### 7.1 Revisión del repositorio
 
 - Rama de referencia: `main`.
-- Último commit observado al cerrar la auditoría inicial: `a6bd54423f5d79d18207e65be809d4be5f5900fe` (`docs: record CI matrix implementation in progress`). Los commits posteriores de corrección Ruff se detallan en §7.2.
+- Último commit observado tras la remediación documental: `a9f6ee85da395b6176d43cd8578c9cc74441d6c2` (`docs: update reconstruction prompt with Ruff remediation`).
 - Cambio de workflow: `509fd41869429526c6a903e3a3bdc2f2507a2be9` (`ci: add Ruff and Windows/Linux test matrix`).
 - El workflow actual define runners Ubuntu y Windows con Python 3.12; instala `.[dev]`; ejecuta Ruff lint, Ruff format, descarga el fixture XMind, pytest, generación del smoke y subida de artefactos con nombres por sistema operativo.
 - Los commits de workflow y estado se han localizado en GitHub. El conector disponible no permite listar ejecuciones push recientes; `fetch_commit_workflow_runs` solo devuelve ejecuciones asociadas a pull requests y devolvió listas vacías para los commits examinados. Por tanto, el resultado de la nueva matriz queda **sin verificar**, no fallido ni superado.
@@ -450,9 +450,9 @@ Se mantienen para la tarea 13, sin confundirlos con defectos de ejecución:
 
 ### 7.5 Registro de esta actualización documental
 
-- Estado de desarrollo y auditoría: commit `4911815f7f6251ee5524833d980b9bb66016b262`.
-- Prompt maestro: commit `5b500eb3fb7e5bd647184ef43017a5671cca544f`.
-- El registro se actualiza después de esos commits para dejar constancia de ambos. La documentación técnica restante se mantiene como tarea 13 y no se considera sincronizada todavía.
+- Estado de desarrollo y auditoría inicial: commit `4911815f7f6251ee5524833d980b9bb66016b262`; remediación y diagnóstico Ruff añadidos en `5f40a1440563d6bae1a6c7054b4f29238c576031`.
+- Prompt maestro sincronizado inicialmente: `5b500eb3fb7e5bd647184ef43017a5671cca544f`; actualizado con remediación Ruff en `a9f6ee85da395b6176d43cd8578c9cc74441d6c2`.
+- La documentación técnica restante se mantiene como tarea 13 y no se considera sincronizada todavía.
 
 ### 7.6 Regla de continuidad inmediata
 

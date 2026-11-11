@@ -180,4 +180,4 @@ XMind MD se distribuye bajo la licencia [MIT](LICENSE), con el aviso de copyrigh
 
 ## Versión y estado
 
-La versión del paquete es `0.1.0`, declarada en `pyproject.toml` y `src/xmind_md/__init__.py`; el verificador de distribuciones también comprueba esa versión. Wheel y sdist se construyen y prueban en CI, aunque la prueba instalada todavía cubre salida JSON y no salida XMind. Todavía no se ha publicado una Release estable. La publicación se realizará después de la auditoría final de capacidades, packaging, licencia y documentación.
+La versión del paquete es `0.1.0`, declarada en `pyproject.toml` y `src/xmind_md/__init__.py`; el verificador de distribuciones también comprueba esa versión. Wheel y sdist se construyen, instalan y prueban en CI en entornos limpios separados. Desde ambos paquetes se ha comprobado la generación de JSON y XMind; el XMind resultante pasa verificaciones estructurales ZIP/MIME/JSON. Todavía no se ha publicado una Release estable. La publicación se realizará después de la auditoría final de capacidades, packaging, licencia y documentación.

@@ -461,15 +461,20 @@ Se mantienen para la tarea 13, sin confundirlos con defectos de ejecución:
 El siguiente trabajo sigue siendo la tarea 12. Antes de cerrarla hay que obtener el resultado real de ambos jobs, revisar cada paso (Ruff lint, Ruff format, pytest, generación y artefacto) y corregir los fallos encontrados. Si no se puede acceder a los runs desde el conector, solicitar al usuario el enlace o una captura del resultado de GitHub Actions; no pedir ejecución local. Tras cerrar la tarea 12, presentar la evidencia y pedir autorización para la tarea 13.
 
 
-### 7.7 Diagnóstico y corrección del run 42981647696
 
-- URL: https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42981647696
-- Jobs: Windows 130393211673 y Ubuntu 130393211896; ambos concluyeron failure.
-- En ambos logs, Ruff 0.17.4 identifica los mismos tres errores I001: src/xmind_md/adapters/xmind_adapter.py:7:1; src/xmind_md/ir/validation.py:3:1; tests/test_xmind_integration.py:9:1.
-- La sugerencia exacta de Ruff era insertar una línea en blanco después de from __future__ import annotations. La corrección anterior había eliminado esa separación, por lo que no resolvió el error.
-- No hubo artefactos. Ruff format, descarga de fixture, pytest y generación XMind no se ejecutaron.
-- Corrección publicada: se restauró el contenido íntegro de los tres archivos desde el commit previo y se añadió únicamente la línea en blanco requerida:
-  - Adaptador: 6a3313c353e0a180fbe1950ce1c324e2eff3da22
-  - Validación IR: aa67bf2567599d50caf720399c60c495bea05367
-  - Pruebas de integración: 0f3c8fedb5e9cce3b133c53dcc75fe8ef6439a39
-- Estado: tarea 12 sigue abierta. La nueva ejecución desencadenada por estos commits debe confirmar Ruff lint y, después, todos los pasos restantes en ambos runners.
+### 7.7 Diagnóstico y correcciones de los runs 42981647696 y 42982298488
+
+- Run 42981647696: https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42981647696
+- Run 42982298488: https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42982298488
+- En ambos runs, los jobs Ubuntu y Windows fallaron en `Ruff lint` con los mismos tres errores I001:
+  - `src/xmind_md/adapters/xmind_adapter.py`
+  - `src/xmind_md/ir/validation.py`
+  - `tests/test_xmind_integration.py`
+- La inspección de los archivos reales de `main` permitió corregir el diagnóstico previo: **no faltaba una línea vacía después de `from __future__ import annotations`**; esa separación ya era correcta. El problema era que había dos líneas vacías entre el último import y la primera asignación de nivel superior en cada archivo. Ruff/isort espera una sola línea vacía antes de esas asignaciones.
+- Run 42982298488: instalación correcta en ambos runners; Ruff lint falló; Ruff format, descarga del fixture, pytest, generación XMind y subida de artefactos fueron omitidos. No se generaron artefactos.
+- Corrección publicada tras el run 42982298488: se eliminó únicamente una línea vacía sobrante en cada archivo, manteniendo intacto el resto del contenido:
+  - Adaptador: `41aa8b573490b055b2bab96153023dea6aa79940`
+  - Validación IR: `2e05cf5aa5478b9e1bd87e87e5ffa54ba6d53cea`
+  - Pruebas de integración: `ae81408334b7b17678e25b43f5d2cf4fae3625a2`
+- **Corrección del diagnóstico anterior:** los commits `6a3313c`, `aa67bf2` y `0f3c8fe` añadieron/restauraron la separación tras el future import, pero no resolvieron el I001 porque la causa real estaba al final del bloque de imports. No presentar esa intervención como solución.
+- Estado: tarea 12 sigue abierta. Hay que inspeccionar el run disparado por los tres commits correctivos más recientes y comprobar todos los pasos en Ubuntu y Windows. No afirmar que lint, formato, pruebas o artefactos hayan pasado hasta disponer de logs y artefactos verificables.

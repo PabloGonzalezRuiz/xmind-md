@@ -2,12 +2,12 @@
 
 > **Documento de seguimiento operativo del proyecto.** Debe actualizarse al terminar cada tarea de desarrollo autorizada y cuando cambie una decisión técnica relevante.
 
-- **Última actualización:** 2026-11-11 (auditoría de terceros completada; CI documental y de distribuciones validada en #42993499900)
+- **Última actualización:** 2026-11-11 (matriz CI Python 3.10/3.11/3.12 incorporada; validación del nuevo workflow pendiente)
 - **Rama de referencia:** `main`
 - **Última prueba manual XMind Desktop:** superada en Windows, XMind 26.05.01107.
 - **Commit de incorporación del fixture XMind permanente:** `a1cf99861c819d9f148a7c7a3d779df6a95fc394`.
 - **Contrato objetivo:** IR 1.0.0
-- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; exportación JSON/XMind disponible; fixture comprobado manualmente en XMind Desktop 26.05.01107; wheel y sdist construidos, verificados e instalados en CI; 131 pruebas y Ruff superados en run 42988289597. Pendiente matriz Python, revisión de acciones CI, versionado, auditoría funcional final, cierre de la referencia a imagen inexistente y Release.
+- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; exportación JSON/XMind disponible; fixture comprobado manualmente en XMind Desktop 26.05.01107; wheel y sdist construidos, verificados e instalados en CI. La matriz de pruebas Python 3.10/3.11/3.12 ya está incorporada en el workflow; falta validar sus tres jobs en GitHub Actions. Pendientes: revisar acciones CI, versionado, auditoría funcional final, resolver la referencia a imagen inexistente y preparar Release.
 
 ## 1. Para qué sirve este documento
 
@@ -794,3 +794,30 @@ La versión documental consolidada quedó validada en run [42993499900](https://
 - Artefacto `xmind-desktop-smoke-test`: ID `13843490530`, 1.333 bytes, SHA-256 ZIP `d1fc50796fd95e350b2d2869a0a5281c0f8c3c5eb416c84490ca36522966f9ba`.
 
 Esta ejecución valida el commit de documentación del catálogo de archivos, que incluye los documentos de auditoría y el inventario THIRD_PARTY_NOTICES.md.
+
+
+## 24. Matriz de compatibilidad Python — 2026-11-11
+
+**Estado: configuración incorporada; validación de GitHub Actions pendiente.**
+
+Tras autorización del usuario, se modificó `.github/workflows/ci.yml` para que el job `tests` utilice una matriz de versiones:
+
+- Python 3.10
+- Python 3.11
+- Python 3.12
+
+La matriz usa `fail-fast: false` para que un fallo en una versión no cancele las otras. El nombre de cada job identifica la versión de Python. El artefacto smoke de cada ejecución se publica con un nombre único (`xmind-desktop-smoke-test-py3.10`, `...py3.11`, `...py3.12`) para evitar colisiones entre ejecuciones paralelas. El job `build-distributions` conserva Python 3.12 y depende de que terminen correctamente todos los jobs de pruebas de la matriz.
+
+### Consideración de ciclo de vida
+
+Python 3.10 alcanzó el fin de soporte el 1 de octubre de 2026. Se conserva en esta matriz porque el proyecto declara actualmente `requires-python = ">=3.10"` y la tarea autorizada consiste en comprobar esa promesa existente. La matriz verifica compatibilidad técnica, pero no implica que 3.10 siga recibiendo actualizaciones de seguridad. La decisión de elevar el mínimo de Python se revisará en la tarea de versionado/metadatos; no modificar `requires-python` dentro de esta tarea sin evidencia y decisión documentada.
+
+### Criterios de cierre
+
+1. Los tres jobs de pruebas (3.10, 3.11 y 3.12) finalizan correctamente.
+2. En cada versión pasan instalación, Ruff lint/format, descarga del fixture, pytest y generación del XMind smoke.
+3. Se generan tres artefactos con nombres distintos.
+4. El job de wheel/sdist sigue construyendo, verificando e instalando ambas distribuciones y probando CLI JSON/XMind.
+5. Actualizar esta sección con el ID, commit, resultado, número de pruebas y artefactos reales del run validado.
+
+No iniciar la siguiente tarea de la hoja de ruta hasta cerrar esta validación y obtener autorización del usuario.

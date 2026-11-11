@@ -173,6 +173,7 @@ def test_topic_style_set_reference_is_resolved_after_external_catalogs_are_loade
     with pytest.raises(StyleError, match="Conjunto"):
         resolve_styles(mind_map)
 
+
 def test_sheet_title_type_errors_are_reported_as_ir_validation_errors():
     mind_map = make_map()
     mind_map.sheet.title = 42

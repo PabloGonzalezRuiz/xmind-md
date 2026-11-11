@@ -2,7 +2,7 @@
 
 **Versión de gramática:** 1.0-draft (subconjunto implementado documentado)  
 **Contrato IR objetivo:** 1.0.0  
-**Estado:** especificación 1.0-draft; implementación parcial en `parser.py`. Consultar las limitaciones de implementación al final.
+**Estado:** subconjunto 1.0-draft implementado y probado; no equivale a CommonMark/GFM completos. La matriz de cobertura y las restricciones vigentes están en la sección 15.
 
 ## 1. Objetivo y principios
 

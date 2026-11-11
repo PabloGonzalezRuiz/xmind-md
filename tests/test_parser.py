@@ -205,3 +205,10 @@ def test_global_extensions_are_allowed_but_unknown_fields_are_rejected():
 def test_legacy_list_text_is_not_empty():
     result = parse_markdown("# Raíz\n- Uno\n  - Uno A\n- Dos\n")
     assert result.topics[0].content == ["Uno\nUno A\nDos"]
+
+def test_table_cells_preserve_backslashes_unless_escaping_a_pipe():
+    result = parse_markdown(
+        "# Raíz\n| Ruta | Valor |\n|---|---|\n| C:\\Users\\estudio | válido |\n"
+    )
+    table = result.topics[0].content_blocks[0]
+    assert table["rows"][0][0][0]["text"] == "C:\\Users\\estudio"

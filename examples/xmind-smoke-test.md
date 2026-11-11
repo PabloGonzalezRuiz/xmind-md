@@ -2,6 +2,7 @@
 title: XMind MD · Prueba de apertura
 id: xmind_md_smoke_test
 author: XMind MD
+style_set: BASE_ACADEMICO
 ---
 
 # XMind MD · Prueba de apertura

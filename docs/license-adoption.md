@@ -35,3 +35,13 @@ Esto acredita el procesamiento de metadatos y la inclusión del texto MIT en las
 
 
 La ampliación de prueba se validó en el run [42990025087](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42990025087), commit `9831ae89da6e331219e1edbce71f6415752e2f22`, con ambos jobs success. Esto valida el uso de MIT en wheel/sdist y el empaquetado funcional; no determina la titularidad de materiales de terceros.
+
+## Inventario de terceros
+
+La inspección de dependencias directas y herramientas, fixture externo, fixture propio y ejemplos se registra en [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md). El inventario identifica PyYAML, pytest, Ruff, jsonschema, setuptools, wheel y build con licencia MIT declarada en sus proyectos de origen; documenta también el fixture externo MIT de sc0tfree/xmind-mcp y las acciones de GitHub usadas por CI.
+
+El inventario no es un SBOM completo: no fija las versiones resueltas ni enumera todas las dependencias transitivas. El fixture externo se descarga temporalmente durante CI y no forma parte del repositorio ni de wheel/sdist. La licencia MIT declarada por el proyecto de origen no permite afirmar que el contenido binario carezca de otros derechos de terceros.
+
+Se detectó además que examples/constitucion.md referencia assets/escudo.png, pero ese archivo no existe en el árbol versionado. El recurso descrito en el JSON de ejemplo tampoco está disponible como archivo. Debe corregirse antes de presentar el ejemplo como autónomo; no se ha identificado ni añadido una imagen de terceros.
+
+El texto normativo del ejemplo constitucional está sujeto a la exclusión de disposiciones legales del artículo 13 del texto refundido de la Ley de Propiedad Intelectual, según la fuente oficial del BOE. Esta observación no se extiende a imágenes, comentarios o materiales editoriales.

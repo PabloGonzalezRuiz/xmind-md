@@ -750,7 +750,11 @@ No hay tag ni Release; versión actual 0.1.0.
 
 ## Estado de continuidad actualizado — cierre de tarea 7 (2026-11-11)
 
-La tarea 7 de sincronización documental está completada en contenido; queda registrada su validación CI en cuanto termine el workflow del HEAD final. El informe de auditoría es `docs/documentation-audit.md`; el estado operativo es la sección 28 de `docs/development-status.md`.
+La tarea 7 de sincronización documental está **completada y validada**. El informe de auditoría es `docs/documentation-audit.md`; el estado operativo es la sección 28 de `docs/development-status.md`.
+
+Run [43009183421](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43009183421), commit `6cd1c937ee090bc36483be49e7d1f5c740e0926a`, finalizó `completed / success`. Python 3.10/3.11/3.12: Ruff lint/format correctos y **161 pruebas superadas por versión**. Los tres jobs generaron sus XMind smoke. El job de distribuciones construyó wheel/sdist, verificó contenido/licencia, instaló ambos en entornos limpios separados y ejecutó conversiones CLI JSON/XMind; validación ZIP/MIME/JSON correcta.
+
+Artefactos: `python-distributions` ID `13850260351` (78.103 bytes; SHA-256 del ZIP de Actions `c8109d8d722befe2a5ed1bc953af15711b0caaf9d0f2bf9928bc050796b38a0f`); smoke Python 3.10 ID `13849418602`, Python 3.11 ID `13848884276`, Python 3.12 ID `13849314179`.
 
 ### Documentación sincronizada
 

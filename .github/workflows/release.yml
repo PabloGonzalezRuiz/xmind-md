@@ -2,6 +2,15 @@ name: Prepare and publish XMind MD release
 
 on:
   workflow_dispatch:
+    inputs:
+      desktop_smoke_verified:
+        description: 'Confirmación: smoke del commit candidato abierto, guardado y reabierto en XMind Desktop'
+        required: true
+        type: choice
+        options:
+          - 'no'
+          - 'yes'
+        default: 'no'
 
 permissions:
   contents: write
@@ -26,13 +35,28 @@ jobs:
       - name: Install build frontend
         run: python -m pip install --upgrade build
 
-      - name: Verify candidate version and changelog
+      - name: Verify release authorization and candidate version
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          VERSION="$(python -c 'from xmind_md import __version__; print(__version__)')"
+          if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
+            echo "Release workflow must run from main." >&2
+            exit 1
+          fi
+          if [[ "${{ inputs.desktop_smoke_verified }}" != "yes" ]]; then
+            echo "Manual XMind Desktop smoke verification is required." >&2
+            exit 1
+          fi
+          CI_SUCCESS="$(gh run list --commit "$GITHUB_SHA" --workflow ci.yml --json status,conclusion --jq '[.[] | select(.status == "completed" and .conclusion == "success")] | length')"
+          if [[ "$CI_SUCCESS" -lt 1 ]]; then
+            echo "No successful CI run found for this exact commit." >&2
+            exit 1
+          fi
+          VERSION="$(PYTHONPATH=src python -c 'from xmind_md import __version__; print(__version__)')"
           test "$VERSION" = "0.1.0"
-          grep -q "^## \\[0.1.0\\]" CHANGELOG.md
+          grep -Fq "## [0.1.0]" CHANGELOG.md
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
           echo "TAG=v$VERSION" >> "$GITHUB_ENV"
 
@@ -59,4 +83,4 @@ jobs:
           gh release create "$TAG" dist/*.whl dist/*.tar.gz \
             --target "$GITHUB_SHA" \
             --title "XMind MD $TAG (Alpha)" \
-            --notes-file CHANGELOG.md
+            --notes-file docs/releases/v0.1.0.md

@@ -291,7 +291,7 @@ Se conserva `0.1.0`, ya centralizada en `src/xmind_md/__init__.py` y leída din�
 
 ### Condición previa obligatoria
 
-La CI de preparación [43011780314](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43011780314), commit `12e876f02a87ffa954292310f089fd9a81345496`, finalizó `completed / success`: 161 pruebas por versión en Python 3.10/3.11/3.12, Ruff lint/format, tres smoke XMind y build/verificación/instalación limpia de wheel y sdist con conversiones CLI JSON/XMind. Artefacto `python-distributions` ID `13851276208`; smoke Python 3.12 ID `13850228137`.
+La validación automatizada del candidato de preparación [43012418165](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43012418165), commit `d7e14c682ae024738ed4d11da0acb36da66db0cd`, terminó `completed / success`: 161 pruebas por versión en Python 3.10/3.11/3.12, Ruff lint/format y los cuatro jobs correctos. Wheel/sdist construidos, verificados, instalados en entornos limpios y probados generando JSON/XMind. Artefacto de distribuciones ID `13851331839`; smoke Python 3.12 ID `13850408574`.
 
 El smoke del run anterior no se utiliza como confirmación manual. El artefacto del commit final de publicación debe inspeccionarse en XMind Desktop. El run anterior acredita la validación automatizada del contenido de preparación; el SHA final que se publique tendrá su propia CI obligatoria.
 

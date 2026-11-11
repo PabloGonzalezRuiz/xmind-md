@@ -62,7 +62,7 @@ La instalación de wheel y sdist ejecutó conversiones CLI a JSON y XMind en ent
 
 La CI solo ejecuta Python 3.12 en Ubuntu aunque el paquete declara Python `>=3.10`. La compatibilidad de ejecución en Python 3.10/3.11 y Windows no queda acreditada por este pipeline.
 
-El log muestra además un aviso de deprecación: las acciones `checkout@v4`, `setup-python@v5` y `upload-artifact@v4` están usando Node.js 20 y GitHub indica migración forzada a Node.js 24. No ha fallado el run, pero conviene actualizar/verificar versiones de acciones antes de publicar.
+En ejecuciones históricas aparecía un aviso de deprecación para `checkout@v4`, `setup-python@v5` y `upload-artifact@v4`. **Resuelto el 2026-11-11:** el workflow usa ahora checkout@v5, setup-python@v6 y upload-artifact@v6, cuyas definiciones action.yml declaran node24. La ejecución posterior #42996452355 terminó success y sus cuatro logs no contienen el aviso Node.js 20.
 
 ## 4. Auditoría técnica por capas
 
@@ -75,7 +75,7 @@ El log muestra además un aviso de deprecación: las acciones `checkout@v4`, `se
 | Adaptador JSON | Serialización IR | Revisar contrato de estabilidad y errores |
 | Adaptador XMind | Perfil parcial; rechaza capacidades no soportadas | Salida de wheel/sdist aún no probada en formato XMind; compatibilidad visual limitada a fixture manual |
 | CLI | JSON/XMind, formato por extensión o explícito, errores con código 2 | Añadir prueba instalada de XMind; revisar diagnósticos y opciones públicas |
-| CI | Ubuntu/Python 3.12, Ruff, pytest, smoke y build | Matriz Python ausente; avisos Node 20 deprecado |
+| CI | Ubuntu/Python 3.10, 3.11 y 3.12; Ruff, pytest, smoke y build | Matriz y runtime Node.js 24 validados; run #42996452355 |
 | Packaging | Wheel/sdist construidos, inspeccionados, instalados y CLI JSON probada | Fijar versión única o comprobación; ampliar smoke XMind y metadatos |
 | Licencia | MIT declarada y empaquetada | Revisar procedencia/licencia de materiales de terceros |
 | Release | No hay Release estable documentada en esta auditoría | Changelog, versión, tag, assets y notas pendientes |
@@ -95,7 +95,7 @@ Antes de distribuir:
 
 1. **Compatibilidad Python:** `requires-python >=3.10` sin matriz automatizada en 3.10/3.11.
 2. **Salida XMind desde distribuciones:** el smoke instalado actualmente prueba JSON, no `.xmind`.
-3. **Acciones CI:** aviso de deprecación Node.js 20 en acciones actuales.
+3. **Acciones CI:** completado; runtime Node.js 24 validado en run #42996452355.
 4. **Versionado:** `0.1.0` duplicada en TOML, paquete y verificador.
 5. **Terceros:** fixture externo y fixture binario propio requieren inventario de procedencia/licencia.
 6. **Parser y especificación:** la especificación general incluye capacidades previstas; la sección de estado real debe seguir prevaleciendo. Auditar cada afirmación contra código y tests antes de Release.
@@ -109,7 +109,7 @@ Antes de distribuir:
 | 1 | Smoke XMind desde wheel y sdist instalados | **Completada** en CI #42990025087 y revalidada en #42990429514 |
 | 2 | Auditoría de procedencia/licencias de terceros | **Inventario técnico completado** en THIRD_PARTY_NOTICES.md; queda pendiente el cierre de la inconsistencia del recurso de ejemplo y un SBOM de transitivas si se decide redistribuirlas agrupadas |
 | 3 | Reforzar matriz de compatibilidad Python | **Completada**: CI verde en Python 3.10/3.11/3.12, run #42995180722; 131 pruebas por versión |
-| 4 | Actualizar acciones GitHub Actions y eliminar aviso Node 20 | Workflow vigente sin advertencia de runtime obsoleto y CI verde |
+| 4 | Actualizar acciones GitHub Actions y eliminar aviso Node 20 | **Completada**: checkout@v5, setup-python@v6 y upload-artifact@v6; node24 verificado y CI verde (#42996452355) |
 | 5 | Resolver versionado y metadatos de publicación | Fuente de versión consistente, verificador no desincronizable, metadatos públicos coherentes |
 | 6 | Auditoría funcional final de parser/IR/estilos/CLI/XMind | Matriz de capacidades basada en código/tests; defectos críticos corregidos o limitaciones explícitas |
 | 7 | Sincronización final de toda la documentación | README y documentos técnicos/operativos sin contradicciones; CI verde |
@@ -186,4 +186,15 @@ La matriz se incorporó a `.github/workflows/ci.yml` en commit `db241f04b489de23
 
 La matriz prueba compatibilidad de la suite con las versiones declaradas. Python 3.10 está fuera de soporte de seguridad desde 2026-10-01; la decisión de elevar `requires-python` se reserva para la tarea de versionado/metadatos. No afirmar que wheel/sdist se probaron en cada versión de matriz: su instalación funcional se ejecutó en Python 3.12.
 
-La siguiente tarea pendiente es actualizar las acciones CI para retirar el runtime Node.js 20 obsoleto. Requiere autorización del usuario.
+La migración de acciones a Node.js 24 está completada y validada. La siguiente tarea pendiente es revisar versionado y metadatos de publicación; requiere autorización del usuario.
+### Cierre de tarea 4 — actualización de runtimes de GitHub Actions
+
+**Completada.** GitHub retiró Node.js 20 de sus runners el 23-09-2026; las acciones JavaScript deben migrarse a releases que declaren Node.js 24.
+
+En .github/workflows/ci.yml: checkout v4 → v5; setup-python v5 → v6; upload-artifact v4 → v6.
+
+Se comprobó directamente en los ficheros action.yml oficiales que las tres versiones seleccionadas declaran runs.using: node24.
+
+Run [42996452355](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42996452355), commit e42f0db5fdc943ce060a358293335573eeb28902, completed/success. Los tres jobs de matriz pasaron Ruff y 131 pruebas cada uno; wheel/sdist se construyeron, verificaron e instalaron correctamente y produjeron JSON/XMind. Los cuatro logs fueron revisados y no contienen avisos Node.js 20/node20. Artefactos: smoke 3.10 ID 13843574011; smoke 3.11 ID 13843124343; smoke 3.12 ID 13843997547; distribuciones ID 13843737659.
+
+La mejora de fijar acciones por SHA inmutable no se incluyó en esta tarea y permanece como mejora independiente de cadena de suministro.

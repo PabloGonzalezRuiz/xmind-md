@@ -108,7 +108,7 @@ Antes de distribuir:
 |---:|---|---|
 | 1 | Smoke XMind desde wheel y sdist instalados | **Completada** en CI #42990025087 y revalidada en #42990429514 |
 | 2 | Auditoría de procedencia/licencias de terceros | **Inventario técnico completado** en THIRD_PARTY_NOTICES.md; queda pendiente el cierre de la inconsistencia del recurso de ejemplo y un SBOM de transitivas si se decide redistribuirlas agrupadas |
-| 3 | Reforzar matriz de compatibilidad Python | CI en versiones soportadas seleccionadas (mínimo 3.10, 3.11, 3.12) o reducir/documentar alcance |
+| 3 | Reforzar matriz de compatibilidad Python | **Completada**: CI verde en Python 3.10/3.11/3.12, run #42995180722; 131 pruebas por versión |
 | 4 | Actualizar acciones GitHub Actions y eliminar aviso Node 20 | Workflow vigente sin advertencia de runtime obsoleto y CI verde |
 | 5 | Resolver versionado y metadatos de publicación | Fuente de versión consistente, verificador no desincronizable, metadatos públicos coherentes |
 | 6 | Auditoría funcional final de parser/IR/estilos/CLI/XMind | Matriz de capacidades basada en código/tests; defectos críticos corregidos o limitaciones explícitas |

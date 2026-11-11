@@ -1,132 +1,139 @@
-# Auditoría de empaquetado y licencia
+# Auditoría integral y preparación de Release
 
-- **Fecha:** 2026-11-11
-- **Rama auditada:** `main`
-- **Commit auditado:** `dd16f626353b36cf3a9b1f15a4001d3c3ad93601`
-- **Alcance:** metadatos de distribución Python, configuración de build, descubrimiento de paquetes, entry point, licencia y estado de publicaciones.
-- **Entorno:** revisión del repositorio y GitHub Actions; no se ha instalado ni ejecutado Python localmente.
+- **Fecha de auditoría:** 2026-11-11
+- **Rama:** `main`
+- **Commit de código auditado:** `81b514195f1ea9a7bb0225c3353717f29251c615`
+- **Ejecución CI:** [42988289597](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42988289597)
+- **Alcance:** árbol del repositorio, arquitectura, parser/IR/estilos/adaptadores/CLI, pruebas, workflow, metadatos de distribución, licencia y documentación.
+- **Entorno:** inspección de GitHub y GitHub Actions; no se ejecutó código en el equipo del usuario.
 
-## 1. Resultado ejecutivo
+## 1. Dictamen ejecutivo
 
-La configuración actual permite preparar un paquete Python mediante `setuptools`, pero **todavía no hay evidencia de que se haya construido, instalado y probado una distribución wheel y sdist**. La CI actual instala el proyecto en modo editable (`pip install -e ".[dev]"`), ejecuta pruebas y genera un libro XMind; no construye los archivos de distribución.
+El proyecto ya dispone de una cadena funcional Markdown → IR 1.0.0 → JSON/XMind, CLI instalada, CI Ubuntu con Ruff y pytest, fixture validado manualmente en XMind Desktop y construcción de wheel/sdist. **La publicación estable todavía no está autorizada por la evidencia técnica disponible**: quedan auditorías de terceros, compatibilidad de Python, cobertura del paquete instalado para salida XMind, calidad de release y revisión final de documentación/versionado.
 
-**Bloqueo principal para una publicación abierta:** no existe un archivo de licencia en la raíz ni metadatos `project.license` en `pyproject.toml`. La elección de licencia queda pendiente de confirmación expresa del titular del proyecto. No se ha añadido una licencia ni se ha inferido una a partir de la visibilidad pública del repositorio.
+La ejecución #42988289597 finalizó con conclusión `success`. No es solo una prueba de instalación editable: construyó las dos distribuciones, verificó sus contenidos y licencia, instaló cada una en un entorno virtual limpio separado y ejecutó una conversión CLI a JSON.
 
-La API de GitHub devuelve una lista vacía de Releases. No hay, por tanto, una Release publicada en el momento de esta auditoría.
+## 2. Estado del repositorio auditado
 
-## 2. Configuración comprobada
+La estructura real contiene:
+- `.github/workflows/ci.yml`: dos jobs, pruebas/calidad y construcción/instalación de distribuciones.
+- `src/xmind_md/`: parser legacy, puente IR, entidades/validación IR, estilos, CLI y adaptadores JSON/XMind.
+- `tests/`: pruebas de parser, IR, esquema, estilos, adaptadores, CLI e integración.
+- `scripts/create_xmind_smoke.py`: generación del fixture de comprobación XMind.
+- `scripts/verify_distributions.py`: inspección de wheel/sdist.
+- `docs/`: especificaciones, matrices, continuidad, auditoría y guía.
+- `examples/`, `config/` y `tests/fixtures/xmind/`: ejemplos/configuración y fixture manual.
 
-| Elemento | Estado observado | Evaluación |
+La versión declarada es `0.1.0` tanto en `pyproject.toml` como en `src/xmind_md/__init__.py`. La coincidencia está comprobada en el commit auditado, pero la duplicidad sigue siendo un riesgo de divergencia. El verificador de distribución también contiene literalmente la versión `0.1.0`; habrá que parametrizarlo o comprobar expresamente los tres puntos al preparar el siguiente versionado.
+
+## 3. Evidencia CI y distribución
+
+### 3.1 Run #42988289597
+
+- Commit: `81b514195f1ea9a7bb0225c3353717f29251c615`.
+- Estado: `completed / success`.
+- Job `Tests (Ubuntu)`: success.
+- Job `Build and install distributions (Ubuntu)`: success.
+- Entorno: Ubuntu, Python 3.12.
+
+Job de pruebas:
+- Instalación editable con dependencias de desarrollo: success.
+- Ruff lint: success (`All checks passed!`).
+- Ruff format: success.
+- Descarga del fixture XMind externo: success.
+- Pytest: **131 passed in 0.36s**.
+- Generación del smoke XMind y subida: success.
+
+Job de distribución:
+- Build: `xmind_md-0.1.0.tar.gz` y `xmind_md-0.1.0-py3-none-any.whl`.
+- Verificador: ambos formatos aceptados; comprueba nombre/versión, expresión MIT, LICENSE y módulos/archivos esenciales.
+- Wheel: instalación en virtualenv limpio y conversión Markdown → JSON: success.
+- Sdist: instalación en virtualenv limpio y conversión Markdown → JSON: success.
+- Artefacto `python-distributions`: ID `13839594760`, 72.878 bytes, SHA-256 del ZIP del artefacto `9b4a1960284e323fb00e4edaae19e12e00ec69377022a48730b8dd8ffe43ec59`, retención hasta 2026-12-11.
+- Artefacto `xmind-desktop-smoke-test`: ID `13840690878`, 1.331 bytes, SHA-256 del ZIP del artefacto `e4596bf69bac18c669d709089f4b8eabb0f9daec63e171856cc1e447510b618c`, retención hasta 2026-11-25.
+
+Los hashes anteriores identifican los ZIP de artefactos de GitHub Actions, no los hashes individuales de los ficheros wheel/sdist contenidos en ellos.
+
+### 3.2 Alcance y límites de la evidencia
+
+La instalación de wheel y sdist ejecutó una conversión CLI a JSON. La salida XMind se prueba en el job de tests desde el checkout, y el fixture histórico se abrió/guardó/reabrió manualmente en XMind Desktop 26.05.01107. **Todavía no se ha probado una salida `.xmind` generada desde cada distribución instalada en entorno limpio**, ni se ha probado manualmente en XMind Desktop el artefacto producido por el workflow actual de cada commit.
+
+La CI solo ejecuta Python 3.12 en Ubuntu aunque el paquete declara Python `>=3.10`. La compatibilidad de ejecución en Python 3.10/3.11 y Windows no queda acreditada por este pipeline.
+
+El log muestra además un aviso de deprecación: las acciones `checkout@v4`, `setup-python@v5` y `upload-artifact@v4` están usando Node.js 20 y GitHub indica migración forzada a Node.js 24. No ha fallado el run, pero conviene actualizar/verificar versiones de acciones antes de publicar.
+
+## 4. Auditoría técnica por capas
+
+| Área | Estado observado | Pendiente / riesgo |
 |---|---|---|
-| Backend | `setuptools.build_meta` | Adecuado para el proyecto |
-| Requisitos de build | `setuptools>=68`, `wheel` | Funciona como configuración base; actualizar el mínimo si se adopta metadata SPDX PEP 639 |
-| Diseño de paquetes | `src/` | Correcto |
-| Descubrimiento | `[tool.setuptools.packages.find]`, `where = ["src"]` | Configurado |
-| Nombre | `xmind-md` | Declarado |
-| Versión | `0.1.0` | Declarada en TOML y duplicada en `src/xmind_md/__init__.py` |
-| Python | `>=3.10` | Declarado; la CI de referencia usa Python 3.12 |
-| README | `README.md` | Incluido como descripción larga |
-| Dependencia de ejecución | `PyYAML>=6.0` | Declarada |
-| Dependencias de desarrollo | pytest, Ruff y jsonschema | Separadas en el extra `dev` |
-| Comando instalado | `xmind-md = xmind_md.cli:main` | Entry point declarado |
-| Licencia | Ausente | Bloqueo de publicación abierta hasta decisión |
-| Autor/mantenedor | No declarado | Metadatos opcionales que conviene decidir antes de publicar |
-| URLs de proyecto | No declaradas | Recomendable añadir repositorio y documentación |
-| Clasificadores | No declarados | Recomendable añadir Python y estado de desarrollo, con cuidado de no anunciar compatibilidad no probada |
-| Prueba de wheel/sdist | No existe en CI | Pendiente |
-| Release | No hay Releases publicadas | Pendiente |
+| Parser | Subconjunto Markdown enriquecido implementado; API legacy | No es CommonMark/GFM completo; revisar discrepancias entre gramática normativa y parser |
+| Puente IR | `parse_markdown_ir()` / `parse_file_ir()` construyen IR 1.0.0 | Modelo legacy `model.py` sigue presente; evaluar retirada sin romper API |
+| IR | Entidades, serialización, validación y JSON Schema | Verificar exhaustividad de invariantes entre schema y validación semántica |
+| Estilos | Cascada IR con herencia y overrides | Cobertura de propiedades y coherencia de precedencia frente a ejemplos |
+| Adaptador JSON | Serialización IR | Revisar contrato de estabilidad y errores |
+| Adaptador XMind | Perfil parcial; rechaza capacidades no soportadas | Salida de wheel/sdist aún no probada en formato XMind; compatibilidad visual limitada a fixture manual |
+| CLI | JSON/XMind, formato por extensión o explícito, errores con código 2 | Añadir prueba instalada de XMind; revisar diagnósticos y opciones públicas |
+| CI | Ubuntu/Python 3.12, Ruff, pytest, smoke y build | Matriz Python ausente; avisos Node 20 deprecado |
+| Packaging | Wheel/sdist construidos, inspeccionados, instalados y CLI JSON probada | Fijar versión única o comprobación; ampliar smoke XMind y metadatos |
+| Licencia | MIT declarada y empaquetada | Revisar procedencia/licencia de materiales de terceros |
+| Release | No hay Release estable documentada en esta auditoría | Changelog, versión, tag, assets y notas pendientes |
 
-## 3. Hallazgos de licencia
+## 5. Licencia y procedencia de materiales
 
-Se comprobó que no existen en la raíz `LICENSE`, `LICENSE.md`, `LICENSE.txt`, `COPYING`, `NOTICE` ni `AUTHORS.md`. Tampoco se declara `license` ni `license-files` en `pyproject.toml`.
+El proyecto declara MIT con `Copyright (c) 2026 Pablo González Ruiz`; el wheel contiene `License-Expression: MIT` y un fichero bajo `.dist-info/licenses/`; el sdist contiene `LICENSE`. Esto valida el empaquetado del aviso, no la titularidad jurídica de cada fichero.
 
-La ausencia de una licencia explícita significa que no debe presentarse el proyecto como software de código abierto con permisos de reutilización definidos. La decisión no se puede deducir del hecho de que el repositorio sea público.
+Antes de distribuir:
+- Identificar procedencia y licencia del fixture de referencia descargado desde `sc0tfree/xmind-mcp` en un commit fijado.
+- Revisar el fixture XMind propio y los elementos incluidos; el hecho de que el usuario lo haya guardado en XMind Desktop no demuestra titularidad de todo contenido embebido.
+- Revisar dependencias runtime y de desarrollo, incluyendo PyYAML, pytest, Ruff, jsonschema y dependencias transitivas relevantes.
+- Separar claramente código propio, fixtures de terceros, ejemplos y archivos generados; conservar avisos/atribuciones cuando proceda.
+- No asumir que la licencia MIT del repositorio se aplica a obras de terceros.
 
-Opciones habituales que el titular puede valorar:
+## 6. Riesgos y mejoras detectadas
 
-- **MIT:** licencia permisiva, breve y sencilla; exige conservar avisos de copyright y licencia.
-- **Apache-2.0:** permisiva, con términos explícitos sobre patentes y condiciones más extensas.
-- **GPL-3.0-or-later:** copyleft; impone condiciones de distribución de obras derivadas.
-- **Sin licencia abierta / licencia propietaria:** no añadir una licencia de código abierto.
+1. **Compatibilidad Python:** `requires-python >=3.10` sin matriz automatizada en 3.10/3.11.
+2. **Salida XMind desde distribuciones:** el smoke instalado actualmente prueba JSON, no `.xmind`.
+3. **Acciones CI:** aviso de deprecación Node.js 20 en acciones actuales.
+4. **Versionado:** `0.1.0` duplicada en TOML, paquete y verificador.
+5. **Terceros:** fixture externo y fixture binario propio requieren inventario de procedencia/licencia.
+6. **Parser y especificación:** la especificación general incluye capacidades previstas; la sección de estado real debe seguir prevaleciendo. Auditar cada afirmación contra código y tests antes de Release.
+7. **Cobertura funcional XMind:** el perfil rechaza recursos/imágenes, tareas, boundaries, summaries, extensiones y otras propiedades; no anunciar soporte general.
+8. **Distribución de recursos:** no hay declaración de package-data; confirmar que no se necesitan recursos externos para la CLI instalada.
 
-La selección debe hacerla el titular del proyecto. Esta auditoría no constituye asesoramiento jurídico.
+## 7. Hoja de ruta pendiente
 
-Si se elige una licencia SPDX estándar, la guía actual de empaquetado Python recomienda declarar `[project].license` como expresión SPDX y `license-files` con los archivos que se distribuirán. La guía indica que setuptools incorporó soporte PEP 639 desde la versión 77.0.3; en ese caso conviene elevar el mínimo de build de `setuptools>=68` a `setuptools>=77.0.3`.
+| Orden | Tarea | Criterio de cierre |
+|---:|---|---|
+| 1 | Completar smoke de distribuciones: probar salida XMind desde wheel y sdist instalados | Ambos paquetes producen ZIP XMind válido; validar contenido.json, mimetype y estructura; CI verde |
+| 2 | Auditoría de procedencia/licencias de terceros | Inventario de dependencias/fixtures/ejemplos con licencia, origen y acción necesaria; avisos conservados |
+| 3 | Reforzar matriz de compatibilidad Python | CI en versiones soportadas seleccionadas (mínimo 3.10, 3.11, 3.12) o reducir/documentar alcance |
+| 4 | Actualizar acciones GitHub Actions y eliminar aviso Node 20 | Workflow vigente sin advertencia de runtime obsoleto y CI verde |
+| 5 | Resolver versionado y metadatos de publicación | Fuente de versión consistente, verificador no desincronizable, metadatos públicos coherentes |
+| 6 | Auditoría funcional final de parser/IR/estilos/CLI/XMind | Matriz de capacidades basada en código/tests; defectos críticos corregidos o limitaciones explícitas |
+| 7 | Sincronización final de toda la documentación | README y documentos técnicos/operativos sin contradicciones; CI verde |
+| 8 | Preparar changelog, tag y GitHub Release estable | Artefactos identificados y comprobados; notas de versión; tag y Release reproducibles |
 
-Referencias oficiales:
-- https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#license-and-license-files
-- https://packaging.python.org/en/latest/specifications/pyproject-toml/
+El usuario ha solicitado enumerar tareas y ejecutar la primera; la tarea 1 queda como siguiente trabajo autorizado. No iniciar la tarea 2 hasta presentar resultados y solicitar autorización.
 
-## 4. Hallazgos de empaquetado
+## 8. Criterios de publicación
 
-Aspectos ya resueltos:
-- `pyproject.toml` contiene `[build-system]` y `[project]`.
-- `setuptools.build_meta` y el diseño `src` están declarados.
-- El paquete se descubre desde `src`.
-- El README está configurado como descripción larga.
-- La versión del paquete y `xmind_md.__version__` coinciden actualmente en `0.1.0`.
-- El entry point de consola coincide con la función `main` de la CLI.
-- Las dependencias de runtime están separadas de las de desarrollo.
+No publicar hasta que:
+- CI verde en el commit candidato con pruebas, lint, formato, matriz de Python acordada y build/install de wheel/sdist.
+- La CLI instalada desde wheel y sdist genere JSON y XMind correctamente.
+- El perfil XMind, las pérdidas y los rechazos estén descritos con precisión.
+- Se haya comprobado manualmente en XMind Desktop el artefacto candidato o una muestra generada desde el mismo commit.
+- Se haya completado la auditoría de terceros y avisos de licencia.
+- Versionado, metadatos, changelog y documentación estén sincronizados.
+- Se construyan artefactos de Release y se publiquen con tag y notas verificables.
 
-Aspectos que todavía no están demostrados:
-- Construcción de `.whl` y `.tar.gz` (sdist).
-- Inclusión de metadatos y archivos legales dentro de ambas distribuciones.
-- Instalación desde wheel en un entorno limpio no editable.
-- Instalación desde sdist.
-- Ejecución del comando `xmind-md` instalado y de `python -m xmind_md` desde una instalación no editable.
-- Conversión de un ejemplo real usando únicamente la distribución instalada.
-- Compatibilidad declarada con versiones Python distintas de la usada en CI.
+La instrucción previa del usuario autoriza crear la Release cuando se cumplan estos criterios. No inventar la versión ni declarar estabilidad antes de cerrar la auditoría. La decisión final de versión debe basarse en el alcance real, no en el número de pruebas.
 
-La configuración actual no declara archivos de datos del paquete. La aplicación obtiene sus ejemplos y configuración del repositorio/argumentos del usuario; antes de publicar debe confirmarse si esa separación es intencionada y si algún recurso del paquete necesita incluirse en la distribución.
+## 9. Referencias internas
 
-La versión está duplicada en dos archivos. No es un error actual porque ambas declaran `0.1.0`, pero es un riesgo de divergencia en futuras versiones. Se debe decidir si se mantiene una comprobación automatizada de igualdad o si se adopta una única fuente de versión.
-
-## 5. Evidencia CI consultada
-
-Ejecución más reciente al auditar:
-- Run #283: https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42985816448
-- Commit: `dd16f626353b36cf3a9b1f15a4001d3c3ad93601`
-- Job `Tests (Ubuntu)`: completed / success.
-- Pasos Install, Ruff lint, Ruff format, descarga del fixture, Tests, generación XMind y Upload XMind smoke test: todos success.
-- Artefacto `xmind-desktop-smoke-test`: 1.331 bytes; SHA-256 `6d4a3ee6533744496d6693e1f9b9668478684e97ad67a0aafa9da58b5ecffcb0`.
-
-**Límite de esta evidencia:** la CI instala en editable y no ejecuta `python -m build`; por tanto, no valida wheel ni sdist.
-
-## 6. Decisiones pendientes y siguiente trabajo
-
-1. Confirmar la licencia que desea aplicar el titular. No añadir un archivo LICENSE ni declarar una expresión SPDX hasta recibir esa decisión.
-2. Incorporar la licencia elegida y los metadatos correspondientes, incluyendo la versión mínima de setuptools que soporte el formato elegido.
-3. Ampliar GitHub Actions para construir wheel y sdist, comprobar su contenido e instalarlos en entornos limpios.
-4. Ejecutar una prueba funcional con la CLI instalada desde wheel y desde sdist, no desde una instalación editable.
-5. Revisar metadatos públicos (autoría, URLs, clasificadores) y coherencia de versión.
-6. Solo después de cerrar estas comprobaciones, continuar con la auditoría funcional, dependencias, seguridad, documentación y preparación de la Release.
-
-**Estado:** auditoría inicial de empaquetado y licencia completada; cambios de licencia y construcción de distribuciones pendientes de decisión y autorización específica.
-
-
-## 7. Decisión posterior: licencia MIT adoptada — 2026-11-11
-
-La incertidumbre sobre la selección de licencia quedó resuelta por instrucción expresa del titular. Se adopta **MIT**, con el aviso `Copyright (c) 2026 Pablo González Ruiz`.
-
-Cambios realizados:
-- `LICENSE`: texto íntegro de MIT.
-- `pyproject.toml`: `license = "MIT"` y `license-files = ["LICENSE"]`.
-- Requisito de build elevado a `setuptools>=77.0.3` para soporte de metadatos SPDX PEP 639.
-- `README.md` actualizado y decisión documentada en `docs/license-adoption.md`.
-
-La licencia está incorporada en el repositorio, pero su inclusión en wheel/sdist aún no está verificada. Tampoco se han construido ni instalado distribuciones. La CI debe validar la compatibilidad de setuptools, metadatos, inclusión del fichero legal e instalación funcional desde ambos formatos.
-
-La selección MIT facilita la reutilización del código propio, pero no cambia las licencias de dependencias, fixtures ni otros materiales de terceros. Se debe comprobar su procedencia y condiciones antes de publicar paquetes.
-
-No se ha cambiado la versión 0.1.0 ni se ha creado una Release.
-
-## 8. Siguiente fase de empaquetado
-
-1. Añadir a GitHub Actions un job que construya wheel y sdist desde el árbol limpio.
-2. Inspeccionar los archivos para confirmar metadatos y presencia de LICENSE.
-3. Crear entornos virtuales separados e instalar cada distribución, sin instalación editable.
-4. Ejecutar `xmind-md --help` y una conversión de ejemplo con el paquete instalado.
-5. Repetir CI con Ruff y la suite completa.
-6. Solo con evidencia verde, continuar la auditoría de dependencias, licencias de terceros, metadatos y publicación.
-
-El usuario ha autorizado adoptar MIT y usar su nombre como titular. La siguiente fase de empaquetado debe esperar autorización expresa antes de iniciarse.
+- [Estado de desarrollo](development-status.md)
+- [Prompt maestro de reconstrucción](ai-reconstruction-prompt.md)
+- [Adopción MIT](license-adoption.md)
+- [Arquitectura](architecture.md)
+- [Gramática](grammar.md)
+- [Matriz del adaptador XMind](xmind-adapter.md)
+- [Guía de desarrollo](development.md)

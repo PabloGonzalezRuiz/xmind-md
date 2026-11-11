@@ -2,8 +2,9 @@
 
 - **Fecha de auditoría:** 2026-11-11
 - **Rama:** `main`
-- **Commit de código auditado:** `81b514195f1ea9a7bb0225c3353717f29251c615`
-- **Ejecución CI:** [42988289597](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42988289597)
+- **Commit base de auditoría de código:** `81b514195f1ea9a7bb0225c3353717f29251c615`
+- **Última validación de distribuciones:** [42990429514](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42990429514)
+- **Última revisión documental:** tras la auditoría de terceros del 2026-11-11
 - **Alcance:** árbol del repositorio, arquitectura, parser/IR/estilos/adaptadores/CLI, pruebas, workflow, metadatos de distribución, licencia y documentación.
 - **Entorno:** inspección de GitHub y GitHub Actions; no se ejecutó código en el equipo del usuario.
 
@@ -11,7 +12,7 @@
 
 El proyecto ya dispone de una cadena funcional Markdown → IR 1.0.0 → JSON/XMind, CLI instalada, CI Ubuntu con Ruff y pytest, fixture validado manualmente en XMind Desktop y construcción de wheel/sdist. **La publicación estable todavía no está autorizada por la evidencia técnica disponible**: quedan auditorías de terceros, compatibilidad de Python, cobertura del paquete instalado para salida XMind, calidad de release y revisión final de documentación/versionado.
 
-La ejecución #42988289597 finalizó con conclusión `success`. No es solo una prueba de instalación editable: construyó las dos distribuciones, verificó sus contenidos y licencia, instaló cada una en un entorno virtual limpio separado y ejecutó una conversión CLI a JSON.
+La ejecución #42988289597 finalizó con conclusión `success`; las ejecuciones #42990025087 y #42990429514 añadieron y revalidaron generación XMind desde wheel y sdist instalados en entornos limpios. La última validación #42990429514 terminó con ambos jobs en success, Ruff correcto y 131 pruebas superadas.
 
 ## 2. Estado del repositorio auditado
 
@@ -47,8 +48,9 @@ Job de pruebas:
 Job de distribución:
 - Build: `xmind_md-0.1.0.tar.gz` y `xmind_md-0.1.0-py3-none-any.whl`.
 - Verificador: ambos formatos aceptados; comprueba nombre/versión, expresión MIT, LICENSE y módulos/archivos esenciales.
-- Wheel: instalación en virtualenv limpio y conversión Markdown → JSON: success.
-- Sdist: instalación en virtualenv limpio y conversión Markdown → JSON: success.
+- Wheel: instalación en virtualenv limpio y conversión Markdown → JSON y XMind: success.
+- Sdist: instalación en virtualenv limpio y conversión Markdown → JSON y XMind: success.
+- Run de revalidación [42990429514](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42990429514), commit `a270b1b911d8ccbc36e0e9d8613c409f1e22d074`: ambos jobs success, Ruff success, 131 passed in 0.54s; wheel/sdist generaron XMind y pasaron verificación ZIP/MIME/JSON.
 - Artefacto `python-distributions`: ID `13839594760`, 72.878 bytes, SHA-256 del ZIP del artefacto `9b4a1960284e323fb00e4edaae19e12e00ec69377022a48730b8dd8ffe43ec59`, retención hasta 2026-12-11.
 - Artefacto `xmind-desktop-smoke-test`: ID `13840690878`, 1.331 bytes, SHA-256 del ZIP del artefacto `e4596bf69bac18c669d709089f4b8eabb0f9daec63e171856cc1e447510b618c`, retención hasta 2026-11-25.
 
@@ -133,6 +135,7 @@ La instrucción previa del usuario autoriza crear la Release cuando se cumplan e
 - [Estado de desarrollo](development-status.md)
 - [Prompt maestro de reconstrucción](ai-reconstruction-prompt.md)
 - [Adopción MIT](license-adoption.md)
+- [Avisos de terceros](../THIRD_PARTY_NOTICES.md)
 - [Arquitectura](architecture.md)
 - [Gramática](grammar.md)
 - [Matriz del adaptador XMind](xmind-adapter.md)

@@ -2,12 +2,12 @@
 
 > **Documento de seguimiento operativo del proyecto.** Debe actualizarse al terminar cada tarea de desarrollo autorizada y cuando cambie una decisión técnica relevante.
 
-- **Última actualización:** 2026-11-11 (tarea 13 completada: README y documentación sincronizados)
+- **Última actualización:** 2026-11-11 (auditoría integral; CI de wheel/sdist completada; primera tarea pendiente: probar salida XMind desde ambos paquetes instalados)
 - **Rama de referencia:** `main`
 - **Última prueba manual XMind Desktop:** superada en Windows, XMind 26.05.01107.
 - **Commit de incorporación del fixture XMind permanente:** `a1cf99861c819d9f148a7c7a3d779df6a95fc394`.
 - **Contrato objetivo:** IR 1.0.0
-- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; exportación JSON/XMind disponible; fixture comprobado manualmente en XMind Desktop 26.05.01107; documentación sincronizada; CI Ubuntu verde en commit fd2002cac38348162860f8dfc706721febfcf217 con Ruff, 131 pruebas y artefacto publicado. Pendiente auditoría final y Release.
+- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; exportación JSON/XMind disponible; fixture comprobado manualmente en XMind Desktop 26.05.01107; wheel y sdist construidos, verificados e instalados en CI; 131 pruebas y Ruff superados en run 42988289597. Pendiente auditoría de terceros, ampliar smoke de distribuciones a XMind, matriz Python, revisión de acciones CI, auditoría funcional final y Release.
 
 ## 1. Para qué sirve este documento
 
@@ -136,7 +136,7 @@ La prueba manual acredita el fixture y los elementos comprobados, no compatibili
 | 11 | Auditar y verificar la ejecución en GitHub Actions | **Completada** | Workflow y último run inspeccionados; 131 pruebas y artefacto generados correctamente |
 | 12 | Completar CI, Ruff y comprobaciones automáticas | **Completada** | Workflow Ubuntu verde con Ruff, 131 pruebas y generación/publicación del artefacto XMind |
 | 13 | Sincronizar README y documentación técnica | **Completada** | README, arquitectura, gramática, IR, estilos, adaptador, evaluación del motor, guía de desarrollo y catálogo alineados con código y evidencias |
-| 14 | Auditoría final y publicación estable | Pendiente | Criterios de aceptación globales cumplidos |
+| 14 | Auditoría final y publicación estable | **En curso** | Auditoría de terceros, compatibilidad, empaquetado, documentación, versión y CI candidato cerrados; Release reproducible |
 
 Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tareas descritas en documentos futuros.
 
@@ -692,3 +692,51 @@ La licencia del repositorio no relicencia automáticamente dependencias, fixture
 Run [42986904524](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42986904524), commit `a64921cfdcc49016b5fd8eeb90cb7703ebb5355a`: job Ubuntu y todos los pasos success. La instalación con los nuevos metadatos MIT/setuptools, Ruff lint, Ruff format, descarga del fixture, pytest (**131 passed in 0.52s**), generación XMind y subida del artefacto terminaron correctamente. Artefacto `xmind-desktop-smoke-test`, ID `13840285930`, 1.331 bytes, SHA-256 `24e880172a25dcc52046db2f4978ff8d5dfdc8ebd2548d6890d5ebd551cf6a84`.
 
 Esta CI confirma que los metadatos de licencia no rompen la instalación editable ni el pipeline actual. **No** construye ni inspecciona wheel/sdist; esa validación sigue pendiente.
+
+
+## 21. Auditoría integral y validación de distribuciones — 2026-11-11
+
+Esta sección prevalece sobre los estados anteriores de las secciones históricas que indicaban que wheel/sdist no se construían o que su validación estaba pendiente.
+
+### 21.1 Evidencia CI confirmada
+
+Run [42988289597](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42988289597), commit `81b514195f1ea9a7bb0225c3353717f29251c615`, finalizó `completed / success`.
+
+- `Tests (Ubuntu)`: success; Ruff lint y format success; fixture de referencia descargado; **131 passed in 0.36s**; smoke XMind generado y artefacto subido.
+- `Build and install distributions (Ubuntu)`: success.
+- Build: `xmind_md-0.1.0-py3-none-any.whl` y `xmind_md-0.1.0.tar.gz`.
+- Verificador: comprobó nombre, versión, `License-Expression: MIT`, LICENSE y módulos/archivos esenciales en ambos formatos.
+- Wheel y sdist: instalados en entornos virtuales limpios independientes; ambos ejecutaron la CLI y generaron JSON válido.
+- Artefacto `python-distributions`: ID `13839594760`, 72.878 bytes, SHA-256 del ZIP `9b4a1960284e323fb00e4edaae19e12e00ec69377022a48730b8dd8ffe43ec59`.
+- Artefacto `xmind-desktop-smoke-test`: ID `13840690878`, 1.331 bytes, SHA-256 del ZIP `e4596bf69bac18c669d709089f4b8eabb0f9daec63e171856cc1e447510b618c`.
+
+Los hashes son de los ZIP de artefactos de Actions, no de los paquetes individuales. La prueba CLI de wheel/sdist solo cubre salida JSON; no se ha probado todavía la salida XMind desde esas instalaciones limpias.
+
+### 21.2 Auditoría transversal: hallazgos
+
+1. El parser implementa un subconjunto propio, no CommonMark/GFM completo; la matriz de `docs/grammar.md` debe prevalecer sobre la especificación aspiracional.
+2. El modelo legacy `src/xmind_md/model.py` y la API legacy siguen existiendo junto al IR canónico; no retirarlos sin auditoría de compatibilidad.
+3. El adaptador XMind es parcial y rechaza recursos/imágenes, tareas, boundaries, summaries y extensiones, entre otros casos.
+4. El fixture manual se comprobó en XMind Desktop 26.05.01107, pero esa prueba no valida todas las capacidades ni el artefacto generado por cada commit.
+5. `requires-python >=3.10`, pero CI solo ejecuta Python 3.12 sobre Ubuntu.
+6. `0.1.0` está duplicada en `pyproject.toml`, `src/xmind_md/__init__.py` y `scripts/verify_distributions.py`.
+7. El workflow informa de deprecación Node.js 20 en `actions/checkout@v4`, `setup-python@v5` y `upload-artifact@v4`; no ha causado fallo, pero debe revisarse.
+8. El fixture externo de XMind y los materiales binarios/ejemplos necesitan inventario de procedencia y licencia antes de distribuir.
+9. La MIT está presente en el repositorio y en las distribuciones; no se extiende automáticamente a componentes de terceros.
+
+### 21.3 Hoja de ruta pendiente
+
+1. **Primera tarea — probar salida XMind desde wheel y sdist instalados.** Añadir un smoke test autónomo que genere `.xmind` desde cada entorno limpio y compruebe ZIP, `mimetype` y `content.json`. Ejecutar CI y registrar evidencia.
+2. Auditar procedencia/licencias de dependencias, fixture externo, fixture propio y ejemplos.
+3. Ampliar CI a Python 3.10, 3.11 y 3.12 o ajustar la promesa de compatibilidad.
+4. Actualizar acciones GitHub para evitar el aviso de Node.js 20 deprecado.
+5. Resolver fuente única/coherencia de versión y metadatos públicos de distribución.
+6. Completar auditoría funcional de parser, IR, estilos, CLI y adaptador; corregir defectos de prioridad de publicación.
+7. Revisar de nuevo todos los documentos y ejemplos contra código y evidencias.
+8. Preparar changelog, tag, artefactos finales y GitHub Release estable.
+
+### 21.4 Procedimiento y límites
+
+El usuario no desea instalaciones ni ejecuciones Python locales. Toda validación se realizará en GitHub Actions. Se mantiene la regla de no pedir autorización para correcciones o repeticiones dentro de una tarea ya autorizada; detenerse y pedir permiso antes de iniciar la tarea siguiente.
+
+La documentación de continuidad se ha reconciliado con el resultado de empaquetado. La primera tarea pendiente es la prueba de salida XMind desde las dos distribuciones instaladas.

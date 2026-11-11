@@ -412,12 +412,14 @@ Este documento es una fotografía mantenida del estado de desarrollo, no una gar
 ### 7.1 Revisión del repositorio
 
 - Rama de referencia: `main`.
-- Último commit observado tras la remediación documental: `a9f6ee85da395b6176d43cd8578c9cc74441d6c2` (`docs: update reconstruction prompt with Ruff remediation`).
+- Últimos commits de código observados: `c03293b31f18fda69a274259a86b1225265fce48`, `80b781ed8a1fcde254d1cfac0d1d80b757c5496b` y `d3f545fcecc0f98d1031f37b1aadcfad6b3f7dda` (corrección de imports I001).
 - Cambio de workflow: `509fd41869429526c6a903e3a3bdc2f2507a2be9` (`ci: add Ruff and Windows/Linux test matrix`).
 - El workflow actual define runners Ubuntu y Windows con Python 3.12; instala `.[dev]`; ejecuta Ruff lint, Ruff format, descarga el fixture XMind, pytest, generación del smoke y subida de artefactos con nombres por sistema operativo.
 - Los commits de workflow y estado se han localizado en GitHub. El conector disponible no permite listar ejecuciones push recientes; `fetch_commit_workflow_runs` solo devuelve ejecuciones asociadas a pull requests y devolvió listas vacías para los commits examinados. Por tanto, el resultado de la nueva matriz queda **sin verificar**, no fallido ni superado.
 - Run inicial aportado por el usuario: `42977948292` (https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42977948292). Los dos jobs fallaron en Ruff antes de pytest.
-- Diagnóstico exacto de Ruff: 9 incidencias en total, repartidas en importaciones sin ordenar, `SIM102`, `F821` (`Any` no definido), `UP037`, `FURB188` y `F401`.
+- Run `42981097378` (https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42981097378): ambos runners fallaron en Ruff lint; quedaron exactamente tres `I001` en `src/xmind_md/adapters/xmind_adapter.py`, `src/xmind_md/ir/validation.py` y `tests/test_xmind_integration.py`. Ruff format, fixture, pytest, generación y artefactos fueron omitidos.
+- Se comprobó que las otras incidencias del run anterior habían desaparecido. Se corrigió la agrupación de imports en esos tres archivos mediante los commits `c03293b31f18fda69a274259a86b1225265fce48`, `80b781ed8a1fcde254d1cfac0d1d80b757c5496b` y `d3f545fcecc0f98d1031f37b1aadcfad6b3f7dda`.
+- La ejecución posterior a estos tres commits aún no está identificada/verificada. No declarar lint, formato, pytest ni artefactos superados hasta revisar ambos jobs.
 - Correcciones publicadas: `a7225b5` (import Any), `ab05615` (anotación recursiva), `c2aff0d` (removeprefix), `2b005f9` (import no usado), `ec18113` (imports test parser), `c66d92a` (condición de layout), `40e875a`, `98c360b` y `2e16371` (separación docstring/imports para reglas I001).
 - Los commits de corrección disparan CI por push. Aún no se ha inspeccionado el resultado de la nueva ejecución; lint, formato, pytest y artefactos siguen pendientes de evidencia.
 

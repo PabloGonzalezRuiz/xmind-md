@@ -682,8 +682,10 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
         if field_name in metadata and not isinstance(metadata[field_name], dict):
             raise MarkdownParseError(f"{field_name} del front matter debe ser un objeto")
     for field_name in ("author", "description"):
-        if field_name in metadata and metadata[field_name] is not None and not isinstance(
-            metadata[field_name], str
+        if (
+            field_name in metadata
+            and metadata[field_name] is not None
+            and not isinstance(metadata[field_name], str)
         ):
             raise MarkdownParseError(f"{field_name} del front matter debe ser texto")
     if "style_set" in metadata and (

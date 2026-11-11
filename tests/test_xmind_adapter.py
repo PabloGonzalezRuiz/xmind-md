@@ -400,12 +400,8 @@ def test_relationship_line_styles_map_to_xmind_line_properties():
 
 @pytest.mark.parametrize("property_name", ["bold", "italic"])
 @pytest.mark.parametrize("invalid_value", ["false", 0, 1])
-def test_boolean_text_style_properties_reject_non_boolean_values(
-    property_name, invalid_value
-):
+def test_boolean_text_style_properties_reject_non_boolean_values(property_name, invalid_value):
     mind_map = make_map()
-    mind_map.sheet.root_topic.style.resolved = {
-        "text": {property_name: invalid_value}
-    }
+    mind_map.sheet.root_topic.style.resolved = {"text": {property_name: invalid_value}}
     with pytest.raises(XMindAdapterError, match="debe ser booleano"):
         build_xmind_content(mind_map)

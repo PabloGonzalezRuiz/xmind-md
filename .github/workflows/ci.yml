@@ -78,6 +78,9 @@ jobs:
           (cd /tmp/xmind-md-wheel-test && "$GITHUB_WORKSPACE/.venv-wheel/bin/xmind-md" input.md --output result.json)
           test -s /tmp/xmind-md-wheel-test/result.json
           .venv-wheel/bin/python -c "import json; from pathlib import Path; data=json.loads(Path('/tmp/xmind-md-wheel-test/result.json').read_text()); assert data"
+          (cd /tmp/xmind-md-wheel-test && "$GITHUB_WORKSPACE/.venv-wheel/bin/xmind-md" input.md --output result.xmind)
+          test -s /tmp/xmind-md-wheel-test/result.xmind
+          .venv-wheel/bin/python -c 'import json, zipfile; z=zipfile.ZipFile("/tmp/xmind-md-wheel-test/result.xmind"); names=z.namelist(); assert names[0] == "mimetype"; assert z.read("mimetype") == b"application/vnd.xmind.workbook"; assert z.getinfo("mimetype").compress_type == zipfile.ZIP_STORED; data=json.loads(z.read("content.json")); assert data[0]["rootTopic"]["title"] == "Package smoke test"; assert z.testzip() is None'
 
       - name: Install and test sdist in a separate clean virtual environment
         shell: bash
@@ -89,6 +92,9 @@ jobs:
           (cd /tmp/xmind-md-sdist-test && "$GITHUB_WORKSPACE/.venv-sdist/bin/xmind-md" input.md --output result.json)
           test -s /tmp/xmind-md-sdist-test/result.json
           .venv-sdist/bin/python -c "import json; from pathlib import Path; data=json.loads(Path('/tmp/xmind-md-sdist-test/result.json').read_text()); assert data"
+          (cd /tmp/xmind-md-sdist-test && "$GITHUB_WORKSPACE/.venv-sdist/bin/xmind-md" input.md --output result.xmind)
+          test -s /tmp/xmind-md-sdist-test/result.xmind
+          .venv-sdist/bin/python -c 'import json, zipfile; z=zipfile.ZipFile("/tmp/xmind-md-sdist-test/result.xmind"); names=z.namelist(); assert names[0] == "mimetype"; assert z.read("mimetype") == b"application/vnd.xmind.workbook"; assert z.getinfo("mimetype").compress_type == zipfile.ZIP_STORED; data=json.loads(z.read("content.json")); assert data[0]["rootTopic"]["title"] == "Package smoke test"; assert z.testzip() is None'
 
       - name: Upload Python distributions
         uses: actions/upload-artifact@v4

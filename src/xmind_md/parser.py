@@ -193,20 +193,19 @@ def _parse_table(lines: list[str], start: int) -> tuple[dict[str, Any], int]:
             value = value[:-1]
         result: list[str] = []
         current: list[str] = []
-        escaped = False
-        for char in value:
-            if escaped:
-                current.append(char)
-                escaped = False
-            elif char == "\\":
-                escaped = True
-            elif char == "|":
+        index = 0
+        while index < len(value):
+            char = value[index]
+            if char == "\\" and index + 1 < len(value) and value[index + 1] == "|":
+                current.append("|")
+                index += 2
+                continue
+            if char == "|":
                 result.append("".join(current).strip())
                 current = []
             else:
                 current.append(char)
-        if escaped:
-            current.append("\\")
+            index += 1
         result.append("".join(current).strip())
         return result
 

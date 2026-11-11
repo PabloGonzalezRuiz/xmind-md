@@ -2,6 +2,8 @@
 
 import pytest
 
+from xmind_md.styles import StyleError, resolve_styles
+
 from xmind_md.ir import (
     Annotation,
     Asset,
@@ -155,17 +157,19 @@ def test_topic_link_must_reference_existing_topic():
         validate_mind_map(mind_map)
 
 
-def test_style_reference_must_exist():
+def test_style_reference_is_resolved_after_external_catalogs_are_loaded():
     mind_map = make_map()
     mind_map.sheet.root_topic.style.ref = "missing"
 
-    with pytest.raises(IRValidationError, match="estilo inexistente"):
-        validate_mind_map(mind_map)
+    assert validate_mind_map(mind_map) is mind_map
+    with pytest.raises(StyleError, match="Estilo"):
+        resolve_styles(mind_map)
 
 
-def test_topic_style_set_reference_must_exist():
+def test_topic_style_set_reference_is_resolved_after_external_catalogs_are_loaded():
     mind_map = make_map()
     mind_map.sheet.root_topic.style.style_set = "missing"
 
-    with pytest.raises(IRValidationError, match="conjunto inexistente"):
-        validate_mind_map(mind_map)
+    assert validate_mind_map(mind_map) is mind_map
+    with pytest.raises(StyleError, match="Conjunto"):
+        resolve_styles(mind_map)

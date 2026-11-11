@@ -94,4 +94,4 @@ Evita comentarios redundantes del tipo "# incrementar i" justo antes de "i += 1"
 
 ## GitHub Actions
 
-El workflow .github/workflows/ci.yml instala el proyecto con las dependencias de desarrollo y ejecuta pytest en cada push o pull request. Un cambio no debe considerarse validado hasta que el workflow termine correctamente o se hayan ejecutado localmente los mismos pasos.
+El workflow `.github/workflows/ci.yml` se ejecuta en Ubuntu con Python 3.12 en los eventos configurados en el propio YAML. Instala el paquete con `.[dev]`, ejecuta `ruff check src tests`, `ruff format --check src tests`, descarga el fixture XMind de referencia, ejecuta pytest, genera el archivo smoke y publica el artefacto.\n\nUn cambio no debe considerarse validado hasta que el run correspondiente al commit termine con conclusión `success`. El usuario puede delegar esta verificación en GitHub Actions sin instalar Python localmente; la evidencia debe quedar registrada en `docs/development-status.md`.

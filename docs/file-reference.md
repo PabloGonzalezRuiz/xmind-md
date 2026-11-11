@@ -47,6 +47,7 @@ Este documento identifica los principales archivos versionados y la responsabili
 |---|---|
 | `ai-reconstruction-prompt.md` | Prompt autónomo para reconstruir y continuar el proyecto. |
 | `functional-audit.md` | Hallazgos, correcciones, evidencia y limitaciones de la auditoría funcional. |
+| `documentation-audit.md` | Discrepancias contrastadas y cierre de la sincronización documental de tarea 7. |
 | `development-status.md` | Registro operativo, auditoría, hoja de ruta y evidencias. |
 | `architecture.md` | Capas, flujo de datos e invariantes vigentes. |
 | `development.md` | Instalación, CLI, pruebas y ciclo de contribución. |

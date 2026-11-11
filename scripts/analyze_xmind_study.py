@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Read-only XMind ZIP analyzer. Produces JSON and Markdown for PMD research."""
+"""Read-only XMind ZIP analyzer. Produces JSON and focused tree-table reports."""
 import json, re, zipfile
 from pathlib import Path
 
 SRC = Path("examples/xmind-study")
 OUT = Path("pmd-xmind-study-report")
 WORDS = re.compile(r"\b(tabla|cuadro|art[ií]culo|apartado|p[aá]rrafo|letra|n[uú]mero)\b", re.I)
+TREE_TABLE = "org.xmind.ui.treetable.toptitle"
+SPREADSHEET = "org.xmind.ui.spreadsheet"
 
 def text_of(t):
     for k in ("title", "text", "label", "name"):
@@ -76,29 +78,68 @@ def candidates(rows):
               "titles": titles, "confidence": "heuristic candidate; visual confirmation required"})
     return sorted(found, key=lambda x: -x["siblings"])
 
+def style_props(t):
+    return (t.get("style") or {}).get("properties", {})
+
+def table_outline(t, depth=0):
+    props = style_props(t)
+    line = "  " * depth + "- " + (text_of(t).replace("\n", " / ") or "[sin título]")
+    details = []
+    for key in ("shape-class", "svg:fill", "fo:color", "fo:font-size", "fo:font-weight",
+                "border-line-color", "border-line-width", "line-color", "line-pattern"):
+        if key in props: details.append(f"{key}={props[key]}")
+    if details: line += " {" + "; ".join(details) + "}"
+    lines = [line]
+    for ch in kids(t): lines.extend(table_outline(ch, depth + 1))
+    return lines
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     files = sorted(SRC.glob("*.xmind"))
     if not files: raise SystemExit(f"No .xmind files found in {SRC}")
-    report = ["# XMind study maps analysis", "", "Read-only analysis; original XMind files are never modified.", ""]
+    report = ["# Informe de análisis de mapas XMind", "",
+      "Análisis de solo lectura. Los originales no se modifican.", ""]
+    tables_report = ["# Inventario de tablas de árbol XMind", "",
+      "Identificación basada en structureClass=org.xmind.ui.treetable.toptitle.",
+      "Cada nodo conserva su árbol de descendientes y las propiedades de estilo locales.", ""]
     for f in files:
         try:
-            d = analyze(f); cs = candidates(d["topics"]); d["tree_table_candidates"] = cs
+            d = analyze(f); cs = candidates(d["topics"])
+            table_rows = [r for r in d["topics"] if r["raw_topic"].get("structureClass") == TREE_TABLE]
+            spreadsheet_rows = [r for r in d["topics"] if r["raw_topic"].get("structureClass") == SPREADSHEET]
+            inline_styles = sum(bool(r["raw_topic"].get("style")) for r in d["topics"])
+            d["tree_table_candidates"] = cs
+            d["tree_tables"] = [{"path": r["path"], "topic": r["raw_topic"]} for r in table_rows]
+            d["spreadsheet_topics"] = [{"path": r["path"], "topic": r["raw_topic"]} for r in spreadsheet_rows]
             safe = re.sub(r"[^A-Za-z0-9_.-]+", "_", f.stem)
             (OUT / (safe + ".json")).write_text(json.dumps(d, ensure_ascii=False, indent=2), encoding="utf-8")
-            report += [f"## {f.name}", "", f"- Format: {d['format']}", f"- Sheets: {len(d['sheets'])}",
-              f"- Topics: {len(d['topics'])}", f"- Tree-table candidates: {len(cs)}",
-              f"- Styles extracted: {d['styles'] is not None}", ""]
-            for c in cs[:20]:
-                report.append("- " + " / ".join(c["parent_path"]) + f": {c['siblings']} sibling rows; children={c['child_counts']}")
-            report += ["", "### Topic outline", "", "| Depth | Path | Children |", "|---:|---|---:|"]
-            for r in d["topics"][:120]:
-                p = " → ".join(r["path"]).replace("|", "\\|")
-                report.append(f"| {r['depth']} | {p} | {r['children_count']} |")
-            report.append("")
+            report += [f"## {f.name}", "", f"- Formato: {d['format']}",
+              f"- Hojas: {len(d['sheets'])}", f"- Temas: {len(d['topics'])}",
+              f"- Tablas de árbol explícitas: {len(table_rows)}",
+              f"- Estructuras spreadsheet: {len(spreadsheet_rows)}",
+              f"- Temas con estilo local: {inline_styles}",
+              f"- Candidatos heurísticos adicionales: {len(cs)}", ""]
+            tables_report += [f"## {f.name}", "",
+              f"Tablas de árbol: {len(table_rows)} · Spreadsheet: {len(spreadsheet_rows)}", ""]
+            for i, r in enumerate(table_rows, 1):
+                tables_report += [f"### {i}. {' / '.join(r['path'])}", ""]
+                tables_report += table_outline(r["raw_topic"])
+                tables_report.append("")
+            if spreadsheet_rows:
+                tables_report += ["### Estructuras spreadsheet", ""]
+                for r in spreadsheet_rows:
+                    tables_report.append("- " + " / ".join(r["path"]))
+                tables_report.append("")
+            if cs:
+                report += ["### Candidatos heurísticos (no equivalen a tablas confirmadas)", ""]
+                for c in cs[:10]:
+                    report.append("- " + " / ".join(c["parent_path"]) + f": {c['siblings']} nodos hermanos")
+                report.append("")
         except Exception as e:
             report += [f"## {f.name}", "", f"ERROR: {type(e).__name__}: {e}", ""]
+            tables_report += [f"## {f.name}", "", f"ERROR: {type(e).__name__}: {e}", ""]
     (OUT / "INFORME.md").write_text("\n".join(report), encoding="utf-8")
-    print(f"Processed {len(files)} XMind files.")
+    (OUT / "TABLAS_ARBOL.md").write_text("\n".join(tables_report), encoding="utf-8")
+    print(f"Processed {len(files)} XMind files; reports include explicit tree-table structures.")
 
 if __name__ == "__main__": main()

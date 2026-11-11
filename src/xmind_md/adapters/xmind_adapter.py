@@ -3,6 +3,7 @@
 El adaptador solo consume entidades canónicas. No interpreta Markdown, no
 resuelve estilos y rechaza explícitamente las capacidades que aún no exporta.
 """
+
 from __future__ import annotations
 
 import json

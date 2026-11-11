@@ -608,3 +608,20 @@ Esta sección prevalece sobre las referencias históricas de este prompt que ind
 ### Cierre de la primera tarea
 
 Run [42990025087](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42990025087), commit `9831ae89da6e331219e1edbce71f6415752e2f22`: ambos jobs success; Ruff lint/format success; 131 pruebas superadas; wheel y sdist construidos, verificados e instalados en entornos limpios. Ambos paquetes generaron JSON y XMind; el XMind pasó comprobaciones de ZIP, MIME, orden/compresión, content.json e integridad. Artefactos: `python-distributions` ID 13840773838 y `xmind-desktop-smoke-test` ID 13841725579. No afirmar que se ha repetido la validación visual manual en XMind Desktop.
+
+
+## 16. Auditoría de licencias/procedencia completada — 2026-11-11
+
+La tarea de inventario de terceros se ejecutó tras autorización del usuario. Leer siempre THIRD_PARTY_NOTICES.md antes de modificar licencias o preparar Release.
+
+Hallazgos registrados:
+- PyYAML runtime; pytest/Ruff/jsonschema dev; setuptools/wheel build; build frontend CI: todos con licencia MIT declarada en sus proyectos.
+- Acciones actions/checkout, actions/setup-python y actions/upload-artifact: MIT.
+- Fixture externo temporal sc0tfree/xmind-mcp/tests/fixture.xmind, commit fijo 6225cbcd3e8fc565bc18e80346699a6e118dd0f7. LICENSE de ese commit declara MIT, Copyright (c) 2026 Henry Prince. No se empaqueta en wheel/sdist.
+- Fixture de interoperabilidad propio documentado como generado por CI del proyecto.
+- El ejemplo constitucional enlaza BOE y contiene texto normativo. Artículo 13 LPI excluye disposiciones legales y reglamentarias; no inferir que esto cubra otros recursos.
+- Hallazgo abierto: examples/constitucion.md referencia assets/escudo.png que no existe en el árbol; el IR JSON de ejemplo también lo describe sin binario.
+- No se encontró código fuente vendorizado, imágenes, fuentes tipográficas ni bibliotecas externas en el árbol.
+- No hay lockfile ni SBOM; la auditoría no cubre todas las dependencias transitivas y no es asesoramiento jurídico.
+
+La tarea 2 está documentada en THIRD_PARTY_NOTICES.md, docs/license-adoption.md, docs/release-audit.md y docs/development-status.md. La siguiente fase de la hoja de ruta es ampliar la matriz de CI a Python 3.10/3.11/3.12; no empezarla hasta autorización expresa.

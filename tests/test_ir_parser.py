@@ -171,6 +171,7 @@ def test_all_primary_content_blocks_keep_inclusive_source_ranges():
     ] == expected
     assert all(block.data["source"]["file"] == "ejemplo.md" for block in blocks)
 
+
 def test_ir_parser_preserves_map_and_global_entity_extensions():
     source = (
         "---\nextensions: {vendor: {map_flag: true}}\n---\n"

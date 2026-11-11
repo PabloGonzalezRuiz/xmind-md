@@ -30,3 +30,7 @@ La elección de MIT no constituye asesoramiento jurídico.
 ## Validación pendiente
 
 La CI debe confirmar que setuptools procesa los metadatos PEP 639, que la licencia se incluye en wheel y sdist y que ambas distribuciones pueden instalarse y ejecutar la CLI. Hasta entonces, la licencia está incorporada en el repositorio, pero no se afirma que los paquetes distribuibles estén validados.
+
+## Evidencia de CI
+
+La adopción quedó validada por GitHub Actions run [42986904524](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42986904524), commit `a64921cfdcc49016b5fd8eeb90cb7703ebb5355a`: instalación, Ruff, 131 pruebas, generación XMind y publicación del artefacto smoke, todo success. Esto comprueba que los metadatos MIT no rompen el pipeline actual. No acredita aún la construcción ni el contenido de wheel/sdist.

@@ -102,3 +102,31 @@ Ejecución más reciente al auditar:
 6. Solo después de cerrar estas comprobaciones, continuar con la auditoría funcional, dependencias, seguridad, documentación y preparación de la Release.
 
 **Estado:** auditoría inicial de empaquetado y licencia completada; cambios de licencia y construcción de distribuciones pendientes de decisión y autorización específica.
+
+
+## 7. Decisión posterior: licencia MIT adoptada — 2026-11-11
+
+La incertidumbre sobre la selección de licencia quedó resuelta por instrucción expresa del titular. Se adopta **MIT**, con el aviso `Copyright (c) 2026 Pablo González Ruiz`.
+
+Cambios realizados:
+- `LICENSE`: texto íntegro de MIT.
+- `pyproject.toml`: `license = "MIT"` y `license-files = ["LICENSE"]`.
+- Requisito de build elevado a `setuptools>=77.0.3` para soporte de metadatos SPDX PEP 639.
+- `README.md` actualizado y decisión documentada en `docs/license-adoption.md`.
+
+La licencia está incorporada en el repositorio, pero su inclusión en wheel/sdist aún no está verificada. Tampoco se han construido ni instalado distribuciones. La CI debe validar la compatibilidad de setuptools, metadatos, inclusión del fichero legal e instalación funcional desde ambos formatos.
+
+La selección MIT facilita la reutilización del código propio, pero no cambia las licencias de dependencias, fixtures ni otros materiales de terceros. Se debe comprobar su procedencia y condiciones antes de publicar paquetes.
+
+No se ha cambiado la versión 0.1.0 ni se ha creado una Release.
+
+## 8. Siguiente fase de empaquetado
+
+1. Añadir a GitHub Actions un job que construya wheel y sdist desde el árbol limpio.
+2. Inspeccionar los archivos para confirmar metadatos y presencia de LICENSE.
+3. Crear entornos virtuales separados e instalar cada distribución, sin instalación editable.
+4. Ejecutar `xmind-md --help` y una conversión de ejemplo con el paquete instalado.
+5. Repetir CI con Ruff y la suite completa.
+6. Solo con evidencia verde, continuar la auditoría de dependencias, licencias de terceros, metadatos y publicación.
+
+El usuario ha autorizado adoptar MIT y usar su nombre como titular. La siguiente fase de empaquetado debe esperar autorización expresa antes de iniciarse.

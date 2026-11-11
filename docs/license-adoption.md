@@ -4,7 +4,7 @@
 - **Titular indicado por el usuario:** Pablo González Ruiz
 - **Licencia elegida:** MIT
 - **Archivos:** `LICENSE` y metadatos de `pyproject.toml`
-- **Estado:** incorporada en `main`; inclusión en wheel/sdist verificada en GitHub Actions run 42988289597.
+- **Estado:** incorporada en `main`; inclusión en wheel/sdist verificada en CI, incluida la ejecución #43009510391.
 
 ## Decisión
 
@@ -42,9 +42,14 @@ La inspección de dependencias directas y herramientas, fixture externo, fixture
 
 El inventario no es un SBOM completo: no fija las versiones resueltas ni enumera todas las dependencias transitivas. El fixture externo se descarga temporalmente durante CI y no forma parte del repositorio ni de wheel/sdist. La licencia MIT declarada por el proyecto de origen no permite afirmar que el contenido binario carezca de otros derechos de terceros.
 
-Se detectó además que examples/constitucion.md referencia assets/escudo.png, pero ese archivo no existe en el árbol versionado. El recurso descrito en el JSON de ejemplo tampoco está disponible como archivo. Debe corregirse antes de presentar el ejemplo como autónomo; no se ha identificado ni añadido una imagen de terceros.
+La referencia rota del ejemplo se corrigió en la tarea 6: `examples/constitucion.md` y `examples/ir/constitucion.json` apuntan ahora a `examples/assets/escudo.svg`, un recurso ilustrativo original versionado. El asset existe y su presencia se comprueba en la suite. La advertencia histórica sobre `assets/escudo.png` queda resuelta.
 
 El texto normativo del ejemplo constitucional está sujeto a la exclusión de disposiciones legales del artículo 13 del texto refundido de la Ley de Propiedad Intelectual, según la fuente oficial del BOE. Esta observación no se extiende a imágenes, comentarios o materiales editoriales.
 
 
 La documentación de procedencia de terceros y avisos MIT se validó además en run [42993499900](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42993499900), commit `d31a389a3066ec17d581629b7aa3078c32fcb80e`: ambos jobs success, 131 pruebas, wheel/sdist verificados e instalación/CLI JSON-XMind desde ambos paquetes. El inventario técnico y sus limitaciones se detallan en [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md).
+
+
+## Validación vigente tras las tareas 6 y 7
+
+La CI #43009510391 volvió a construir wheel/sdist y ejecutó el verificador de contenido/licencia; ambos paquetes se instalaron en entornos limpios y generaron JSON/XMind. Esta evidencia valida el empaquetado y la inclusión de LICENSE en el commit `69a583350a794ec0a567ff8e5e3770acd81f0110`; no sustituye el análisis de titularidad/procedencia de terceros ni un SBOM transitivo.

@@ -174,7 +174,7 @@ El resolutor admite carga YAML segura, conjuntos, herencia por rama, sustitució
 
 La selección global se realiza mediante `metadata.style_set`; el tema puede seleccionar/sustituir con `Topic.style.style_set`. El resultado se escribe en `style.resolved`, sin mutar las definiciones originales. La ruta legacy sigue existiendo por compatibilidad.
 
-**Atención:** `docs/style-system.md` contiene un encabezado de estado antiguo («resolución completa pendiente»). El código y las pruebas actuales demuestran que el resolutor IR ya está implementado. No tomar ese encabezado como estado actual; sincronizarlo en la tarea de documentación.
+El estado vigente de la resolución de estilos se describe en `docs/style-system.md`: la ruta IR 1.0.0 está implementada y probada; la ruta legacy se conserva por compatibilidad y el catálogo de propiedades exportables XMind es parcial.
 
 ## 7. Adaptadores y CLI actuales
 
@@ -586,8 +586,8 @@ Esta sección prevalece sobre las referencias históricas de este prompt que ind
 
 ### Hoja de ruta de tarea 14
 
-1. **En curso/siguiente:** añadir smoke XMind a las instalaciones limpias wheel y sdist; comprobar ZIP, mimetype y content.json; ejecutar CI.
-2. Inventariar licencias/procedencia de dependencias, fixtures y ejemplos.
+1. **Completada:** smoke XMind desde wheel y sdist instalados; ZIP, MIME, content.json e integridad verificados en CI #42990025087.
+2. **Siguiente:** inventariar licencias/procedencia de dependencias, fixtures y ejemplos.
 3. Ampliar CI a Python 3.10/3.11/3.12 o ajustar compatibilidad declarada.
 4. Actualizar las acciones CI para eliminar aviso Node.js 20.
 5. Unificar/verificar versión y completar metadatos de distribución.
@@ -600,6 +600,11 @@ Esta sección prevalece sobre las referencias históricas de este prompt que ind
 1. Leer este prompt, `docs/development-status.md` y `docs/release-audit.md`.
 2. Consultar el último run de `main` mediante GitHub REST API, sin pedir URL al usuario salvo que el endpoint falle.
 3. Inspeccionar jobs, pasos, logs y artefactos; no inferir resultados.
-4. La tarea 1 de la lista anterior es la primera autorizada por el usuario. Ejecutarla ahora; no iniciar la tarea 2 sin presentar resultados y pedir autorización.
+4. La tarea 1 de la lista anterior está completada y documentada. Presentar resultados y pedir autorización antes de iniciar la tarea 2.
 5. Toda comprobación se realiza en GitHub Actions; el usuario no quiere instalar Python localmente.
 6. Actualizar status, prompt y documentos afectados al finalizar cada tarea.
+
+
+### Cierre de la primera tarea
+
+Run [42990025087](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42990025087), commit `9831ae89da6e331219e1edbce71f6415752e2f22`: ambos jobs success; Ruff lint/format success; 131 pruebas superadas; wheel y sdist construidos, verificados e instalados en entornos limpios. Ambos paquetes generaron JSON y XMind; el XMind pasó comprobaciones de ZIP, MIME, orden/compresión, content.json e integridad. Artefactos: `python-distributions` ID 13840773838 y `xmind-desktop-smoke-test` ID 13841725579. No afirmar que se ha repetido la validación visual manual en XMind Desktop.

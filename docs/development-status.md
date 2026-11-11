@@ -995,3 +995,20 @@ La CI del commit de preparación [43012712346](https://github.com/PabloGonzalezR
 No ejecutar el workflow de publicación hasta que el usuario abra, guarde y vuelva a abrir en XMind Desktop el smoke generado desde el commit candidato final y confirme que se visualiza correctamente. Después, CI debe estar verde en ese mismo SHA. El workflow exige explícitamente esa confirmación y no permite publicar desde otra rama.
 
 El tag y la Release todavía no existen. No describir `0.1.0` como publicada ni como estable hasta que GitHub confirme la creación de ambos.
+
+
+## 30. Cierre de validación manual y candidato final Alpha 0.1.0 (2026-11-11)
+
+**Estado: VALIDACIÓN MANUAL COMPLETADA; publicación pendiente de ejecutar el workflow manual.**
+
+El usuario confirmó que abrió, guardó, cerró y volvió a abrir en XMind Desktop el archivo corregido, y que todos los elementos se visualizan correctamente. La relación muestra exactamente «Relación de prueba» (se corrigió el error anterior «Relawión»).
+
+- Fixture versionado: `tests/fixtures/releases/xmind-md-0.1.0-alpha-final-smoke.xmind`.
+- Commit del fixture corregido: `5cb5dc1ea23373294b221f3f99b52ec47e09dabb`.
+- SHA-256: `fb732945fd6cbe6613b525c2519adb065c81dba1a3bc69b88687111c965726c5`.
+- CI [43017530370](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43017530370), mismo SHA, completed/success: Python 3.10/3.11/3.12, Ruff lint/format, suite de pruebas, generación smoke XMind y build/verificación/instalación/prueba de wheel y sdist.
+- El usuario confirmó manualmente el resultado en XMind Desktop después de la corrección.
+
+El workflow de publicación sigue siendo `.github/workflows/release.yml`, manual (`workflow_dispatch`), solo desde `main`, con input `desktop_smoke_verified=yes`. No se ha creado tag ni GitHub Release. La versión se mantiene en 0.1.0 Alpha/pre-1.0.
+
+La conexión GitHub disponible permite consultar y modificar contenidos, pero no ofrece una acción para despachar workflows ni crear releases/tags. Por tanto, el único paso externo pendiente es que el usuario inicie el workflow desde [GitHub Actions / release.yml](https://github.com/PabloGonzalezRuiz/xmind-md/actions/workflows/release.yml), seleccione la rama `main` y confirme `yes`. El workflow debe validar el SHA exacto y crear el tag `v0.1.0), los paquetes y la prerelease. Tras el lanzamiento, verificar la Release y sus assets antes de cerrar la tarea.

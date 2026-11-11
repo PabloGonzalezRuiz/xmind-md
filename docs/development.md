@@ -98,7 +98,7 @@ Evita comentarios redundantes del tipo "# incrementar i" justo antes de "i += 1"
 
 ## GitHub Actions
 
-El workflow `.github/workflows/ci.yml` se ejecuta en Ubuntu con Python 3.12 y contiene dos jobs:
+El workflow `.github/workflows/ci.yml` se ejecuta en Ubuntu y contiene una matriz de pruebas en Python 3.10, 3.11 y 3.12, más un job de construcción e instalación de distribuciones con Python 3.12:
 
 1. `Tests (Ubuntu / Python 3.10, 3.11 y 3.12)`: instalación editable con `.[dev]`, Ruff lint/format, descarga del fixture XMind de referencia, pytest, generación del smoke XMind y publicación de un artefacto por versión.
 2. `Build and install distributions (Ubuntu)`: depende de toda la matriz; construye wheel y sdist, ejecuta `scripts/verify_distributions.py`, instala cada distribución en un entorno virtual limpio separado usando Python 3.12, convierte un Markdown autónomo a JSON y XMind y publica `python-distributions`.

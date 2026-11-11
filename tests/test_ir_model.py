@@ -136,7 +136,7 @@ def test_asset_metadata_is_checked():
     mind_map = make_map()
     mind_map.assets["asset_image"].size = -1
 
-    with pytest.raises(IRValidationError, match="no puede ser negativo"):
+    with pytest.raises(IRValidationError, match="entero no negativo"):
         validate_mind_map(mind_map)
 
 
@@ -192,7 +192,7 @@ def test_malformed_link_entries_are_reported_as_ir_validation_errors():
 
 def test_content_block_payload_must_be_a_mapping():
     mind_map = make_map()
-    mind_map.sheet.root_topic.content[0].data = []
+    mind_map.sheet.root_topic.children[0].content[0].data = []
 
     with pytest.raises(IRValidationError, match="data"):
         validate_mind_map(mind_map)

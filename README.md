@@ -55,21 +55,21 @@ python -m venv .venv
 Windows (PowerShell):
 
 ```powershell
-.\.venv\Scripts\Activate.ps1
-python -m pip install -e .
+.\\.venv\\Scripts\\Activate.ps1
+python -m pip install .
 ```
 
 Linux/macOS:
 
 ```bash
 source .venv/bin/activate
-python -m pip install -e .
+python -m pip install .
 ```
 
 Para ejecutar pruebas y herramientas de calidad, instala las dependencias de desarrollo:
 
 ```bash
-python -m pip install -e ".[dev]"
+python -m pip install ".[dev]"
 ```
 
 ## Uso de la CLI
@@ -148,10 +148,16 @@ python scripts/create_xmind_smoke.py
 
 La ejecución de referencia más reciente de la tarea CI/Ruff completó lint, formato, descarga del fixture, 131 pruebas, generación XMind y publicación del artefacto. Consulta el [estado de desarrollo](docs/development-status.md) para la evidencia más reciente.
 
+## Licencia
+
+XMind MD se distribuye bajo la licencia [MIT](LICENSE), con el aviso de copyright de Pablo González Ruiz. Consulta [la decisión y el alcance de la licencia](docs/license-adoption.md). Los recursos y fixtures de terceros pueden estar sujetos a licencias independientes.
+
 ## Documentación
 
 - [Estado de desarrollo y hoja de ruta](docs/development-status.md)
 - [Prompt maestro de reconstrucción](docs/ai-reconstruction-prompt.md)
+- [Auditoría de empaquetado y publicación](docs/release-audit.md)
+- [Decisión y adopción de licencia MIT](docs/license-adoption.md)
 - [Arquitectura](docs/architecture.md)
 - [Especificación IR 1.0.0](docs/ir-specification.md)
 - [Gramática Markdown y matriz de implementación](docs/grammar.md)

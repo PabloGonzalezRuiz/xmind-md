@@ -166,3 +166,10 @@ Hallazgos principales:
 **Límite importante:** el inventario cubre dependencias directas y herramientas explícitas, no todas las dependencias transitivas. No hay lockfile ni SBOM con la resolución concreta. No se afirma que sea un análisis jurídico ni certificación completa de titularidad.
 
 La documentación de terceros es descriptiva; no se ha cambiado el código de ejecución en esta tarea.
+
+
+### Validación de la auditoría de terceros y documentación
+
+El inventario THIRD_PARTY_NOTICES.md y los documentos actualizados quedaron validados en run [42993499900](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42993499900), commit `d31a389a3066ec17d581629b7aa3078c32fcb80e`. Ambos jobs success; Ruff lint/format success; 131 pruebas superadas; wheel/sdist construidos y verificados; instalación y generación CLI JSON/XMind desde ambas distribuciones success.
+
+Artefactos: `python-distributions` ID 13842766711 (73.605 bytes; SHA-256 ZIP `e6490d4d8e80a94f7fbd97afe56e534a4f98d256107e503cc9d27bf97726b41b`) y `xmind-desktop-smoke-test` ID 13843490530 (1.333 bytes; SHA-256 ZIP `d1fc50796fd95e350b2d2869a0a5281c0f8c3c5eb416c84490ca36522966f9ba`).

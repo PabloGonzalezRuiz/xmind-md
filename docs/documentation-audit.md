@@ -3,7 +3,7 @@
 - **Fecha:** 2026-11-11
 - **Rama:** `main`
 - **Alcance:** README, gramática Markdown, contrato IR, sistema de estilos, adaptador XMind, guía de desarrollo, catálogo de archivos, ejemplos y documentos de continuidad/release.
-- **Estado:** revisión editorial y técnica completada; validación CI final pendiente de registrar.
+- **Estado:** COMPLETADA Y VALIDADA.
 
 ## 1. Dictamen
 
@@ -72,4 +72,6 @@ Se han contrastado las afirmaciones documentales con el parser, el modelo IR, el
 
 ## 5. Evidencia y cierre
 
-La tarea se considera documentalmente completa cuando el workflow CI del commit que contiene estas modificaciones finaliza con `completed / success`. El identificador del run y su commit validado se añadirán aquí y en los documentos de continuidad tras la ejecución.
+Run [43009183421](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43009183421), commit `6cd1c937ee090bc36483be49e7d1f5c740e0926a`, finalizó `completed / success`. Python 3.10/3.11/3.12: Ruff lint/format correctos y **161 pruebas superadas por versión**. Los tres jobs generaron sus XMind smoke. El job de distribuciones construyó wheel/sdist, verificó contenido/licencia, instaló ambos en entornos limpios separados y ejecutó conversiones CLI JSON/XMind; validación ZIP/MIME/JSON correcta.
+
+Artefactos: `python-distributions` ID `13850260351` (78.103 bytes; SHA-256 del ZIP de Actions `c8109d8d722befe2a5ed1bc953af15711b0caaf9d0f2bf9928bc050796b38a0f`); smoke Python 3.10 ID `13849418602`, Python 3.11 ID `13848884276`, Python 3.12 ID `13849314179`.

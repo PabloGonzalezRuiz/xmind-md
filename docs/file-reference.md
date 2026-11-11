@@ -75,12 +75,13 @@ Este documento identifica los principales archivos versionados y la responsabili
 | `tests/test_xmind_integration.py` | Contraste estructural con fixture XMind externo. |
 | `tests/fixtures/xmind/xmind-md-smoke-test.xmind` | Fixture propio abierto y guardado manualmente en XMind Desktop. |
 | `scripts/create_xmind_smoke.py` | Genera el artefacto XMind de smoke test usado en CI. |
+| `scripts/verify_distributions.py` | Comprueba nombre/versión, licencia y archivos esenciales de wheel y sdist. |
 
 ## Automatización y salida
 
 | Ruta | Función |
 |---|---|
-| `.github/workflows/ci.yml` | CI Ubuntu: instalación, Ruff, pytest, generación y publicación del artefacto. |
+| `.github/workflows/ci.yml` | CI Ubuntu: tests/Ruff/XMind y job dependiente de build, verificación e instalación de wheel/sdist. |
 | `output/` | Salidas locales; el contenido generado no se versiona salvo fixtures expresamente ubicados en tests. |
 
 El catálogo no sustituye a las pruebas: antes de modificar un módulo, inspecciona su implementación y sus tests actuales.

@@ -6,6 +6,7 @@ from pathlib import Path
 
 from xmind_md.adapters.xmind_adapter import write_xmind
 from xmind_md.ir_parser import parse_file_ir
+from xmind_md.styles import load_styles, resolve_styles
 
 
 def main() -> None:
@@ -22,6 +23,8 @@ def main() -> None:
 
     source = project_root / "examples" / "xmind-smoke-test.md"
     mind_map = parse_file_ir(source)
+    style_config = load_styles(project_root / "config" / "styles.yaml")
+    resolve_styles(mind_map, style_config)
     result = write_xmind(mind_map, args.output)
     print(f"Archivo XMind generado: {result}")
 

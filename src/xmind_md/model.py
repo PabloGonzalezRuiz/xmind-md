@@ -17,7 +17,7 @@ class Topic:
     level: int
     id: str = ""
     kind: str = "attached"
-    children: list["Topic"] = field(default_factory=list)
+    children: list[Topic] = field(default_factory=list)
     # Compatibilidad temporal con consumidores de la primera versión.
     content: list[str] = field(default_factory=list)
     content_blocks: list[dict[str, Any]] = field(default_factory=list)

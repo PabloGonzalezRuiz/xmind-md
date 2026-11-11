@@ -1,7 +1,6 @@
 """Validación semántica del modelo intermedio IR 1.0.0."""
 
 from __future__ import annotations
-
 import re
 from typing import Any
 

@@ -429,3 +429,20 @@ Al retomar el proyecto, consultar el listado, seleccionar la ejecución más rec
 - Próximo paso dentro de la tarea 12: aplicar formato Ruff a los 17 archivos identificados y repetir CI.
 
 Esta ejecución demuestra que el lint I001 ya pasa en la CI Ubuntu-only. No demuestra todavía que las pruebas ni la generación XMind pasen.
+
+
+## 16. Requisito obligatorio de Release estable
+
+El usuario ha solicitado expresamente que publiques una Release completa y estable tan pronto como el proyecto esté preparado. Esta publicación forma parte de la tarea final de auditoría y publicación; no debe adelantarse por presión de calendario.
+
+No crear la Release hasta que se cumplan todos estos criterios:
+- CI verde en el commit candidato: instalación, Ruff lint, Ruff format, pytest, descarga del fixture, generación del XMind smoke test y subida del artefacto.
+- Interoperabilidad comprobada en XMind Desktop mediante apertura, inspección, guardado y reapertura; documentar exactamente qué capacidades se han comprobado.
+- Auditoría de funcionalidades y limitaciones reales de parser, IR, estilos, CLI y adaptador; no prometer compatibilidad completa no demostrada.
+- README y documentación técnica sincronizados con instalación, uso, sintaxis de entrada, capacidades, limitaciones, dependencias y licencia.
+- Revisar el versionado y el empaquetado actuales antes de decidir número de versión. Preparar notas de versión/changelog, etiqueta Git y pasos de instalación reproducibles.
+- Publicar GitHub Release con código fuente y solo los paquetes/artefactos de distribución que hayan sido construidos y verificados. No presentar el artefacto de smoke test como paquete de distribución.
+
+La instrucción del usuario autoriza crear la Release cuando estos criterios se cumplan. No hace falta volver a pedir autorización para la publicación final, pero sí hay que informar antes de cualquier decisión técnica irreversible no cubierta por esa autorización. No inventar número de versión ni declarar estabilidad antes de la auditoría.
+
+Estado de partida 2026-11-11: no apto para Release. Run 42983767866, commit `34c0274f5a5f6e80bf65d6c4b55ff895471b5437`: Install y Ruff lint success; Ruff format failure (17 archivos); fixture, pytest, generación y artefacto skipped. La tarea CI permanece abierta.

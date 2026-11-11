@@ -789,3 +789,16 @@ La CI del commit de preparación [43012712346](https://github.com/PabloGonzalezR
 **Bloqueo:** el smoke generado desde el commit candidato final debe abrirse, guardarse y reabrirse manualmente en XMind Desktop; el usuario debe confirmar el resultado. Luego comprobar CI verde del mismo SHA y solo entonces ejecutar el workflow `Prepare and publish XMind MD release` desde `main`, con `desktop_smoke_verified=yes`. No eludir esta condición.
 
 Consultar `docs/release-audit.md`, sección 13, y `docs/development-status.md`, sección 29, para estado y evidencia actualizados.
+
+
+## Continuidad — validación manual completada, lanzamiento pendiente (2026-11-11)
+
+El usuario ha confirmado que el fixture corregido se abre, guarda, cierra y reabre correctamente en XMind Desktop; todos los elementos están bien y la relación muestra «Relación de prueba». La validación manual del candidato queda superada.
+
+- Archivo: `tests/fixtures/releases/xmind-md-0.1.0-alpha-final-smoke.xmind`.
+- Commit con fixture corregido: `5cb5dc1ea23373294b221f3f99b52ec47e09dabb`.
+- SHA-256 fixture: `fb732945fd6cbe6613b525c2519adb065c81dba1a3bc69b88687111c965726c5`.
+- CI [43017530370](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43017530370) completada con success para ese commit: Python 3.10/3.11/3.12, Ruff, pruebas, smoke XMind, build/verificación/instalación/prueba de wheel y sdist.
+- Versión: 0.1.0 Alpha/pre-1.0. No tag ni GitHub Release existen todavía.
+
+**Paso pendiente:** el usuario debe abrir [el workflow de publicación](https://github.com/PabloGonzalezRuiz/xmind-md/actions/workflows/release.yml), pulsar Run workflow, seleccionar rama `main` y elegir `desktop_smoke_verified=yes). El workflow verifica CI exitosa para el SHA exacto y crea tag `v0.1.0), GitHub prerelease, wheel, sdist y `SHA256SUMS.txt`. La conexión GitHub de esta sesión no dispone de una acción de workflow_dispatch ni de creación de releases/tags, así que no afirmar que se ha lanzado hasta que GitHub confirme. Después, comprobar ejecución, tag, Release y assets. Mantener la tarea abierta si el workflow falla; consultar logs, corregir y repetir con una CI verde para el SHA final.

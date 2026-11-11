@@ -172,3 +172,34 @@ def test_topic_style_set_reference_is_resolved_after_external_catalogs_are_loade
     assert validate_mind_map(mind_map) is mind_map
     with pytest.raises(StyleError, match="Conjunto"):
         resolve_styles(mind_map)
+
+def test_sheet_title_type_errors_are_reported_as_ir_validation_errors():
+    mind_map = make_map()
+    mind_map.sheet.title = 42
+
+    with pytest.raises(IRValidationError, match="sheet.title"):
+        validate_mind_map(mind_map)
+
+
+def test_malformed_link_entries_are_reported_as_ir_validation_errors():
+    mind_map = make_map()
+    mind_map.sheet.root_topic.links.append([])
+
+    with pytest.raises(IRValidationError, match="debe ser un objeto"):
+        validate_mind_map(mind_map)
+
+
+def test_content_block_payload_must_be_a_mapping():
+    mind_map = make_map()
+    mind_map.sheet.root_topic.content[0].data = []
+
+    with pytest.raises(IRValidationError, match="data"):
+        validate_mind_map(mind_map)
+
+
+def test_asset_size_must_be_an_integer_not_boolean():
+    mind_map = make_map()
+    mind_map.assets["asset_image"].size = True
+
+    with pytest.raises(IRValidationError, match="entero no negativo"):
+        validate_mind_map(mind_map)

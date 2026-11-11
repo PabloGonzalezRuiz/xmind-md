@@ -764,6 +764,7 @@ Artefactos: `python-distributions` ID `13850260351` (78.103 bytes; SHA-256 del Z
 - Estilos: esquema ejecutable real `style_sets` + `styles`; no utilizar `extends`, `elements`, `applies_to` ni `properties` en la configuración actual; precedencia real documentada.
 - XMind: attached/detached/callout soportados; detached exige posición; summary no exportable; enlaces, estilos, pérdidas y rechazos explicitados.
 - Desarrollo: CLI de XMind usa el smoke fixture; CI matriz Ubuntu Python 3.10/3.11/3.12; build/install wheel/sdist en Python 3.12.
+- Documentación complementaria: arquitectura, plan de migración IR (histórico/completado), evaluación de motor XMind, integración, licencia MIT y catálogo sincronizados con el estado actual.
 
 ### Límites que no deben ocultarse
 

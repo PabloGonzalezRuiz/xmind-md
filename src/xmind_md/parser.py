@@ -23,14 +23,30 @@ _DIRECTIVES = {"xmind", "xmind-note", "xmind-relationship", "xmind-boundary", "x
 
 
 def _normalize_yaml(value: Any) -> Any:
-    """Convierte escalares YAML no JSON, como fechas, a valores serializables."""
+    """Convierte YAML a tipos JSON y rechaza escalares no representables."""
     if isinstance(value, (datetime, date)):
         return value.isoformat()
     if isinstance(value, dict):
-        return {str(key): _normalize_yaml(item) for key, item in value.items()}
+        result = {}
+        for key, item in value.items():
+            normalized_key = str(key)
+            if normalized_key in result:
+                raise MarkdownParseError(
+                    f"Claves YAML que colisionan tras normalizar a texto: {normalized_key!r}"
+                )
+            result[normalized_key] = _normalize_yaml(item)
+        return result
     if isinstance(value, list):
         return [_normalize_yaml(item) for item in value]
-    return value
+    if isinstance(value, float):
+        if not math.isfinite(value):
+            raise MarkdownParseError("Los valores numéricos YAML deben ser finitos para JSON")
+        return value
+    if value is None or isinstance(value, (str, int, bool)):
+        return value
+    raise MarkdownParseError(
+        f"El valor YAML de tipo {type(value).__name__} no se puede representar en JSON"
+    )
 
 
 class _UniqueKeyLoader(yaml.SafeLoader):

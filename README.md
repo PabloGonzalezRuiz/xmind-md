@@ -171,6 +171,7 @@ XMind MD se distribuye bajo la licencia [MIT](LICENSE), con el aviso de copyrigh
 - [Especificación IR 1.0.0](docs/ir-specification.md)
 - [Gramática Markdown y matriz de implementación](docs/grammar.md)
 - [Sistema de estilos](docs/style-system.md)
+- [Guía de usuario: estilos y temas personalizados](docs/user-guide/styles-and-themes.md)
 - [Adaptador XMind y matriz de capacidades](docs/xmind-adapter.md)
 - [Evaluación del motor XMind](docs/xmind-engine-evaluation.md)
 - [Pruebas de interoperabilidad](docs/xmind-integration-tests.md)

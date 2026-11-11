@@ -2,12 +2,12 @@
 
 > **Documento de seguimiento operativo del proyecto.** Debe actualizarse al terminar cada tarea de desarrollo autorizada y cuando cambie una decisión técnica relevante.
 
-- **Última actualización:** 2026-11-11 (tarea 12 completada: Ruff, CI Ubuntu y pruebas)
+- **Última actualización:** 2026-11-11 (tarea 13 completada: README y documentación sincronizados)
 - **Rama de referencia:** `main`
 - **Última prueba manual XMind Desktop:** superada en Windows, XMind 26.05.01107.
 - **Commit de incorporación del fixture XMind permanente:** `a1cf99861c819d9f148a7c7a3d779df6a95fc394`.
 - **Contrato objetivo:** IR 1.0.0
-- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; fixture comprobado manualmente en XMind Desktop 26.05.01107; CI histórica Linux/Python 3.12 con 131 pruebas superadas. El workflow actual ejecuta Ruff, pytest y generación del artefacto exclusivamente en Ubuntu; verificado en GitHub Actions run 42985048305 con 131 pruebas superadas y artefacto publicado. El usuario ha decidido no instalar ni ejecutar herramientas localmente por ahora.
+- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; exportación JSON/XMind disponible; fixture comprobado manualmente en XMind Desktop 26.05.01107; CI Ubuntu con Ruff, 131 pruebas y generación/publicación del artefacto superadas. La tarea 13 de sincronización documental se ha completado; pendiente auditoría final y Release.
 
 ## 1. Para qué sirve este documento
 
@@ -135,7 +135,7 @@ La prueba manual acredita el fixture y los elementos comprobados, no compatibili
 | 10 | Completar las pruebas con XMind Desktop | **Completada** | Apertura, inspección, guardado y reapertura confirmados; versión y resultados registrados |
 | 11 | Auditar y verificar la ejecución en GitHub Actions | **Completada** | Workflow y último run inspeccionados; 131 pruebas y artefacto generados correctamente |
 | 12 | Completar CI, Ruff y comprobaciones automáticas | **Completada** | Workflow Ubuntu verde con Ruff, 131 pruebas y generación/publicación del artefacto XMind |
-| 13 | Sincronizar README y documentación técnica | Pendiente | Documentación coherente con el comportamiento real |
+| 13 | Sincronizar README y documentación técnica | **Completada** | README, arquitectura, gramática, IR, estilos, adaptador, evaluación del motor, guía de desarrollo y catálogo alineados con código y evidencias |
 | 14 | Auditoría final y publicación estable | Pendiente | Criterios de aceptación globales cumplidos |
 
 Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tareas descritas en documentos futuros.
@@ -597,3 +597,41 @@ Todos los pasos del job Tests (Ubuntu) finalizaron con success. No quedan fallos
 14. **Auditoría final y publicación estable — PENDIENTE.**
 
 La siguiente tarea autorizable es la 13. No comenzar la tarea 13 hasta recibir autorización explícita del usuario.
+
+
+## 18. Cierre de la tarea 13 — sincronización documental (2026-11-11)
+
+**Estado: COMPLETADA.** Esta sección prevalece sobre las discrepancias y listas históricas anteriores que describan la tarea 13 como pendiente o indiquen que la CLI no exporta XMind.
+
+### Auditoría y correcciones realizadas
+
+Se contrastaron los documentos con el código actual, especialmente `cli.py`, `ir_parser.py`, `styles.py`, `ir/` y `adapters/xmind_adapter.py`.
+
+Cambios publicados:
+
+- `README.md`: se reescribió el resumen funcional, instalación, CLI JSON/XMind, ejemplo, limitaciones, validación manual y enlaces a documentación.
+- `docs/architecture.md`: se actualizó el flujo real Markdown → parser → IR → estilos/adaptadores → CLI, responsabilidades y decisiones vigentes.
+- `docs/development.md`: se documentó la CLI real y el pipeline CI Ubuntu con Ruff, fixture, pytest, smoke test y artefacto.
+- `docs/file-reference.md`: se reconstruyó el catálogo para reflejar módulos y rutas reales, incluido el puente IR, el modelo legacy, los adaptadores y fixtures.
+- `docs/grammar.md`: se corrigió el estado inicial para dejar claro que existe un subconjunto implementado y probado, no compatibilidad completa CommonMark/GFM.
+- `docs/ir-specification.md`: se actualizó el estado de implementación y la distinción entre capacidad del IR, gramática y exportación.
+- `docs/style-system.md`: se documentó la resolución ya implementada, su precedencia y la diferencia frente al subconjunto de estilos exportable.
+- `docs/xmind-adapter.md`: se registró la prueba manual superada en XMind Desktop 26.05.01107 y su alcance limitado.
+- `docs/xmind-engine-evaluation.md`: se sincronizó la decisión de serialización Python nativa con la implementación, CI e interoperabilidad manual.
+
+### Evidencias y límites
+
+- CLI real: `src/xmind_md/cli.py` admite JSON y XMind, con formato inferido por extensión o indicado por `--format`.
+- Resolución IR: `resolve_ir_styles()` implementa precedencia por propiedad, herencia y overrides.
+- Adaptador: genera ZIP + JSON moderno y rechaza características fuera del perfil implementado.
+- Fixture manual: apertura, inspección, guardado y reapertura en XMind Desktop 26.05.01107; solo se acreditan los elementos enumerados en `docs/xmind-integration-tests.md`.
+- CI funcional de referencia antes de la sincronización documental: run [42985176851](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42985176851), commit `3b98dab084509167526f485280a22d40559dd815`, conclusión success, 131 pruebas y artefacto smoke publicado.
+- Cada cambio documental ha disparado la CI configurada. Debe comprobarse el run correspondiente al último commit de documentación antes de cerrar definitivamente la tarea.
+
+### Hoja de ruta vigente
+
+12. **CI y Ruff — COMPLETADA.**
+13. **Sincronización del README y documentación técnica — COMPLETADA.**
+14. **Auditoría final y publicación estable — PENDIENTE.**
+
+La siguiente tarea es la 14. No iniciarla hasta recibir autorización expresa del usuario. La Release solo se publicará cuando se cumplan los criterios de la sección 9: CI verde en el commit candidato, auditoría de alcance, packaging y licencia, versión/etiqueta reproducibles y artefactos de distribución reales.

@@ -685,3 +685,10 @@ La licencia del repositorio no relicencia automáticamente dependencias, fixture
 **Validación pendiente:** CI debe procesar los metadatos PEP 639, construir wheel y sdist, verificar que ambos contienen el archivo de licencia e instalar/probar las distribuciones en entornos limpios. No se ha publicado Release ni cambiado la versión 0.1.0.
 
 **Siguiente punto propuesto:** ampliar GitHub Actions para construir y validar wheel/sdist, sin ejecutar instalaciones locales. Esperar autorización antes de iniciar ese trabajo.
+
+
+### CI posterior a la adopción MIT
+
+Run [42986904524](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42986904524), commit `a64921cfdcc49016b5fd8eeb90cb7703ebb5355a`: job Ubuntu y todos los pasos success. La instalación con los nuevos metadatos MIT/setuptools, Ruff lint, Ruff format, descarga del fixture, pytest (**131 passed in 0.52s**), generación XMind y subida del artefacto terminaron correctamente. Artefacto `xmind-desktop-smoke-test`, ID `13840285930`, 1.331 bytes, SHA-256 `24e880172a25dcc52046db2f4978ff8d5dfdc8ebd2548d6890d5ebd551cf6a84`.
+
+Esta CI confirma que los metadatos de licencia no rompen la instalación editable ni el pipeline actual. **No** construye ni inspecciona wheel/sdist; esa validación sigue pendiente.

@@ -1,5 +1,7 @@
 """Pruebas del parser hacia el contrato canónico IR 1.0.0."""
 
+from pathlib import Path
+
 import pytest
 
 from xmind_md.ir import validate_mind_map
@@ -190,3 +192,13 @@ def test_ir_parser_preserves_map_and_global_entity_extensions():
     assert result.sheet.relationships[0].extensions == {"vendor": {"relation_flag": True}}
     assert result.sheet.boundaries[0].extensions == {"vendor": {"boundary_flag": True}}
     assert result.sheet.summaries[0].extensions == {"vendor": {"summary_flag": True}}
+
+def test_constitution_example_references_a_bundled_asset():
+    root = Path(__file__).resolve().parents[1]
+    source = root / "examples" / "constitucion.md"
+    mind_map = parse_file_ir(source)
+
+    assert len(mind_map.assets) == 1
+    asset = next(iter(mind_map.assets.values()))
+    assert (source.parent / asset.path).is_file()
+    assert asset.mime_type == "image/svg+xml"

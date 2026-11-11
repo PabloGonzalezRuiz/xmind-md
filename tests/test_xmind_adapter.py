@@ -12,7 +12,6 @@ from xmind_md.adapters.xmind_adapter import (
     build_xmind_content,
     write_xmind,
 )
-from xmind_md.ir_parser import parse_markdown_ir
 from xmind_md.ir import (
     Annotation,
     Asset,
@@ -29,6 +28,7 @@ from xmind_md.ir import (
     Summary,
     Topic,
 )
+from xmind_md.ir_parser import parse_markdown_ir
 
 
 def make_map() -> MindMap:

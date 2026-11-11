@@ -94,7 +94,8 @@ La prueba manual acredita el fixture y los elementos comprobados, no compatibili
 - Los errores de entrada, configuración, formato y capacidades XMind no exportables se muestran en stderr y devuelven código 2.
 - Hay pruebas unitarias, de integración y de CLI en `tests/`.
 - GitHub Actions contiene un flujo de CI y una generación de artefacto XMind de prueba.
-- CI #165, commit `2250dbf06d86680cbfcf9c5c4c4d208e62a4f53b`: **90 pruebas superadas**, incluyendo validación formal Draft 2020-12, ejemplos y casos negativos; generación y publicación del artefacto XMind correctas.\n- CI #178, commit `f2f491cd52e668a53d31c1dddbf321c30f262882`: **97 pruebas superadas**; generación y publicación del artefacto XMind correctas tras los cambios de gramática.
+- CI #165, commit `2250dbf06d86680cbfcf9c5c4c4d208e62a4f53b`: **90 pruebas superadas**, incluyendo validación formal Draft 2020-12, ejemplos y casos negativos; generación y publicación del artefacto XMind correctas.
+- CI #178, commit `f2f491cd52e668a53d31c1dddbf321c30f262882`: **97 pruebas superadas**; generación y publicación del artefacto XMind correctas tras los cambios de gramática.
 - CI #203, run `42842555229`, commit `1995076eee2e5108c37320c7a9df9be21745f5de`: **131 pruebas superadas en 0,45 s**; Tests, generación del smoke XMind y publicación del artefacto correctos. Entorno: GitHub Actions, Ubuntu, Python 3.12.16. https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42842555229
 - CI #205, run `42842726726`, commit `f99273d3f93a95648457aa183bb4ec55bb99fda8`: workflow completo correcto tras la actualización del documento de estado. Los cinco pasos Install, Download XMind reference fixture, Tests, Build XMind Desktop smoke test y Upload XMind smoke test finalizaron correctamente. El log registra **131 pruebas superadas en 0,52 s**. https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42842726726
 - CI #209, run `42843815047`, commit `1fd131cc16786093dba00e09fd551f299a439761`: job tests completado con success; Install, descarga del fixture de referencia, Tests, generación y publicación del smoke test finalizaron correctamente. Log: **131 passed in 0.37s**, GitHub-hosted Linux, Python 3.12.16. https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42843815047
@@ -443,6 +444,12 @@ Se mantienen para la tarea 13, sin confundirlos con defectos de ejecución:
 | 2 | Sincronizar README y documentación técnica con código, pruebas y estado real | Pendiente |
 | 3 | Auditoría final de requisitos, seguridad, dependencias, licencia, reproducibilidad y publicación | Pendiente |
 
-### 7.5 Regla de continuidad inmediata
+### 7.5 Registro de esta actualización documental
+
+- Estado de desarrollo y auditoría: commit `4911815f7f6251ee5524833d980b9bb66016b262`.
+- Prompt maestro: commit `5b500eb3fb7e5bd647184ef43017a5671cca544f`.
+- El registro se actualiza después de esos commits para dejar constancia de ambos. La documentación técnica restante se mantiene como tarea 13 y no se considera sincronizada todavía.
+
+### 7.6 Regla de continuidad inmediata
 
 El siguiente trabajo sigue siendo la tarea 12. Antes de cerrarla hay que obtener el resultado real de ambos jobs, revisar cada paso (Ruff lint, Ruff format, pytest, generación y artefacto) y corregir los fallos encontrados. Si no se puede acceder a los runs desde el conector, solicitar al usuario el enlace o una captura del resultado de GitHub Actions; no pedir ejecución local. Tras cerrar la tarea 12, presentar la evidencia y pedir autorización para la tarea 13.

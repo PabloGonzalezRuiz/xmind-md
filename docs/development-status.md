@@ -2,7 +2,7 @@
 
 > **Documento de seguimiento operativo del proyecto.** Debe actualizarse al terminar cada tarea de desarrollo autorizada y cuando cambie una decisión técnica relevante.
 
-- **Última actualización:** 2026-11-11 (matriz Python 3.10/3.11/3.12 validada en CI #42995180722; documentación de cierre pendiente de revalidación)
+- **Última actualización:** 2026-11-11 (matriz Python 3.10/3.11/3.12 y documentación de cierre validadas en CI #42995377488)
 - **Rama de referencia:** `main`
 - **Última prueba manual XMind Desktop:** superada en Windows, XMind 26.05.01107.
 - **Commit de incorporación del fixture XMind permanente:** `a1cf99861c819d9f148a7c7a3d779df6a95fc394`.
@@ -724,7 +724,7 @@ Los hashes son de los ZIP de artefactos de Actions, no de los paquetes individua
 
 1. **Smoke XMind desde wheel y sdist instalados — COMPLETADA.** Run #42990025087 y revalidación #42990429514; ambos paquetes generaron JSON y XMind desde entornos limpios.
 2. **Auditoría de terceros — COMPLETADA como inventario técnico.** THIRD_PARTY_NOTICES.md registra licencias/origen; siguen abiertas la referencia de imagen inexistente y el inventario exhaustivo de transitivas.
-3. Ampliar CI a Python 3.10, 3.11 y 3.12 o ajustar la promesa de compatibilidad.
+3. **Completada:** matriz CI Python 3.10, 3.11 y 3.12; run #42995180722.
 4. Actualizar acciones GitHub para evitar el aviso de Node.js 20 deprecado.
 5. Resolver fuente única/coherencia de versión y metadatos públicos de distribución.
 6. Completar auditoría funcional de parser, IR, estilos, CLI y adaptador; corregir defectos de prioridad de publicación.
@@ -735,7 +735,7 @@ Los hashes son de los ZIP de artefactos de Actions, no de los paquetes individua
 
 El usuario no desea instalaciones ni ejecuciones Python locales. Toda validación se realizará en GitHub Actions. Se mantiene la regla de no pedir autorización para correcciones o repeticiones dentro de una tarea ya autorizada; detenerse y pedir permiso antes de iniciar la tarea siguiente.
 
-La documentación de continuidad se ha reconciliado con el resultado de empaquetado y la auditoría de terceros. La siguiente tarea pendiente es ampliar la matriz de CI a Python 3.10, 3.11 y 3.12.
+La documentación de continuidad se ha reconciliado con el resultado de empaquetado y la auditoría de terceros. La matriz de Python está completada; la siguiente tarea pendiente es actualizar las acciones de GitHub para eliminar el aviso Node.js 20.
 
 
 ## 22. Cierre de tarea 1 de la auditoría integral — 2026-11-11
@@ -773,7 +773,7 @@ Siguiente tarea propuesta: auditoría de procedencia/licencias de dependencias, 
 
 No se ha detectado una incompatibilidad evidente entre MIT y las dependencias directas/herramientas inventariadas. No se emite certificación jurídica ni garantía de titularidad completa.
 
-La hoja de ruta sigue con: (3) matriz de Python, (4) actualización de actions, (5) versionado, (6) auditoría funcional, (7) sincronización final, (8) release. El recurso assets/escudo.png deberá corregirse en la auditoría funcional o de ejemplos antes de Release.
+La hoja de ruta sigue con: (3) matriz de Python **completada**; (4) actualización de actions, (5) versionado, (6) auditoría funcional, (7) sincronización final y (8) release. El recurso assets/escudo.png deberá corregirse en la auditoría funcional o de ejemplos antes de Release.
 
 
 **Nota de actualización:** el encabezado y el estado de las secciones históricas 21.x se interpretan a la luz de las secciones 22 y 23, que registran el cierre de las tareas 1 y 2 y prevalecen sobre los estados anteriores.

@@ -538,3 +538,18 @@ Puntos comprobados:
 - No instalar ni ejecutar Python localmente: validar empaquetado mediante GitHub Actions.
 
 Siguiente paso: obtener la decisión del titular sobre la licencia antes de tocar archivos legales/metadatos. Después, con autorización, añadir build de wheel/sdist y pruebas de instalación limpia en CI. No publicar Release hasta superar esos criterios y cerrar el resto de la auditoría.
+
+
+## Continuidad — decisión MIT confirmada (2026-11-11)
+
+Esta actualización prevalece sobre las notas históricas que indiquen que la licencia estaba pendiente o no existía.
+
+El titular del proyecto ha elegido MIT y ha indicado el aviso de copyright **Pablo González Ruiz**. Se incorporaron:
+- `LICENSE` con MIT y copyright 2026.
+- `pyproject.toml`: `license = "MIT"`, `license-files = ["LICENSE"]`, `setuptools>=77.0.3` para soporte PEP 639.
+- `docs/license-adoption.md`: decisión y alcance.
+- `README.md`: sección de licencia y enlaces.
+
+No cambiar la licencia ni el titular sin instrucción expresa. La licencia MIT no se extiende automáticamente a dependencias, fixtures ni materiales de terceros; auditar sus condiciones antes de distribuir. La versión sigue en 0.1.0 y no hay Release.
+
+Pendiente inmediato: extender GitHub Actions para construir wheel y sdist, inspeccionar que incluyen los metadatos y LICENSE, instalar cada distribución en un entorno limpio y ejecutar una prueba funcional de la CLI. El usuario no desea ejecutar Python localmente. Esperar autorización expresa para iniciar esa siguiente tarea.

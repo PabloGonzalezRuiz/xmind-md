@@ -1,0 +1,33 @@
+# Tema jurídico: distinguir norma, artículo y concepto clave.
+style_sets:
+  LEGISLACION:
+    topic:
+      text:
+        font_family: Arial
+        font_size: 14
+        color: "#333333"
+    styles:
+      norma:
+        topic:
+          text:
+            font_size: 20
+            bold: true
+            color: "#1F1F1F"
+          background:
+            color: "#E2F0D9"
+          border:
+            color: "#548235"
+            width: 2
+      articulo:
+        topic:
+          text:
+            bold: true
+            color: "#385D8A"
+          border:
+            color: "#8EAADB"
+            width: 1
+      clave:
+        topic:
+          text:
+            bold: true
+            color: "#C00000"

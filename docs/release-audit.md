@@ -112,7 +112,7 @@ Antes de distribuir:
 | 4 | Actualizar acciones GitHub Actions y eliminar aviso Node 20 | **Completada**: checkout@v5, setup-python@v6 y upload-artifact@v6; node24 verificado y CI verde (#42996452355) |
 | 5 | Resolver versionado y metadatos de publicación | Fuente de versión consistente, verificador no desincronizable, metadatos públicos coherentes |
 | 6 | Auditoría funcional final de parser/IR/estilos/CLI/XMind | Matriz de capacidades basada en código/tests; defectos críticos corregidos o limitaciones explícitas |
-| 7 | Sincronización final de toda la documentación | **Revisión completada**; CI final del commit documental pendiente de registrar |
+| 7 | Sincronización final de toda la documentación | **Completada y validada** en CI #43009183421 (161 pruebas por versión; wheel/sdist y CLI correctos) |
 | 8 | Preparar changelog, tag y GitHub Release estable | Artefactos identificados y comprobados; notas de versión; tag y Release reproducibles |
 
 El usuario ha autorizado la auditoría de procedencia/licencias (tarea 2). El inventario técnico está documentado; la limitación de dependencias transitivas y la referencia rota del recurso se mantienen como hallazgos pendientes para las tareas correspondientes.

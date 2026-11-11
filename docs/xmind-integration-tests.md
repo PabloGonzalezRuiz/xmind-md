@@ -44,6 +44,10 @@ pruebas unitarias y la prueba estructural de relaciones siguen ejecutándose.
 
 ## Ejecución en GitHub Actions
 
+El workflow ejecuta la suite en Ubuntu con Python 3.10, 3.11 y 3.12 (161 pruebas por versión en la última validación), publica un smoke por versión y, en un job dependiente con Python 3.12, construye e instala wheel/sdist para probar la CLI JSON/XMind.
+
+Run [43009510391](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43009510391), commit `69a583350a794ec0a567ff8e5e3770acd81f0110`, terminó `completed / success` en los cuatro jobs. Esto incluye Ruff lint/format, smoke, build, verificación de LICENSE/metadatos, instalación de ambas distribuciones y conversiones CLI con validación ZIP/MIME/JSON.
+
 El workflow `.github/workflows/ci.yml` descarga el fixture desde una URL
 inmutable de GitHub antes de ejecutar `pytest`. La prueba no necesita instalar
 el SDK externo ni añade dependencias de ejecución al proyecto.

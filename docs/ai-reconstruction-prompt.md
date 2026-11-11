@@ -515,3 +515,10 @@ El registro de tarea 13 está en `docs/development-status.md`, sección 18. Los 
 14. **Auditoría final y publicación estable — PENDIENTE.**
 
 La siguiente tarea a proponer es la 14. Esperar autorización explícita antes de comenzarla. No publicar la Release hasta auditar versionado, paquete instalable, dependencias, licencia, changelog, artefactos de distribución y CI verde sobre el commit candidato. El usuario ya autorizó la publicación cuando esos criterios se cumplan; no es necesario pedir autorización otra vez para la publicación final, pero sí informar de decisiones irreversibles no cubiertas por ese permiso.
+
+
+### CI posterior a la sincronización documental
+
+La sincronización documental se validó con GitHub Actions run [42985726802](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42985726802), commit `fd2002cac38348162860f8dfc706721febfcf217`: Ubuntu/Python 3.12.16, instalación, Ruff lint, Ruff format, descarga de fixture, pytest (**131 passed in 0.50s**), generación XMind y subida del artefacto, todo success. Artefacto `xmind-desktop-smoke-test`, ID `13838948884`, SHA-256 `7a723811f728e517e0f683a14e5ba514c71caa9c12a75f0d2c842282b59c99a9`.
+
+El resultado confirma que los cambios documentales no han roto la CI. La tarea 13 está cerrada; la siguiente es la tarea 14, pendiente de autorización expresa.

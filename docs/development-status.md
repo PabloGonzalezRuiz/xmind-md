@@ -726,8 +726,8 @@ Los hashes son de los ZIP de artefactos de Actions, no de los paquetes individua
 
 ### 21.3 Hoja de ruta pendiente
 
-1. **Primera tarea — probar salida XMind desde wheel y sdist instalados.** Añadir un smoke test autónomo que genere `.xmind` desde cada entorno limpio y compruebe ZIP, `mimetype` y `content.json`. Ejecutar CI y registrar evidencia.
-2. Auditar procedencia/licencias de dependencias, fixture externo, fixture propio y ejemplos.
+1. **Smoke XMind desde wheel y sdist instalados — COMPLETADA.** Run #42990025087; ambos paquetes generaron JSON y XMind desde entornos limpios y el archivo XMind pasó comprobaciones ZIP/MIME/JSON.
+2. **Siguiente:** auditar procedencia/licencias de dependencias, fixture externo, fixture propio y ejemplos.
 3. Ampliar CI a Python 3.10, 3.11 y 3.12 o ajustar la promesa de compatibilidad.
 4. Actualizar acciones GitHub para evitar el aviso de Node.js 20 deprecado.
 5. Resolver fuente única/coherencia de versión y metadatos públicos de distribución.
@@ -740,3 +740,20 @@ Los hashes son de los ZIP de artefactos de Actions, no de los paquetes individua
 El usuario no desea instalaciones ni ejecuciones Python locales. Toda validación se realizará en GitHub Actions. Se mantiene la regla de no pedir autorización para correcciones o repeticiones dentro de una tarea ya autorizada; detenerse y pedir permiso antes de iniciar la tarea siguiente.
 
 La documentación de continuidad se ha reconciliado con el resultado de empaquetado. La primera tarea pendiente es la prueba de salida XMind desde las dos distribuciones instaladas.
+
+
+## 22. Cierre de tarea 1 de la auditoría integral — 2026-11-11
+
+**Tarea completada:** añadir y validar generación XMind desde las distribuciones wheel y sdist instaladas en entornos limpios.
+
+- Workflow modificado: `.github/workflows/ci.yml`; commit `9831ae89da6e331219e1edbce71f6415752e2f22`.
+- Run [42990025087](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42990025087): completed/success.
+- `Tests (Ubuntu)`: success; Ruff lint/format success; **131 passed in 0.48s**; fixture y smoke XMind publicados.
+- `Build and install distributions (Ubuntu)`: success; wheel y sdist construidos y verificados; instalación limpia de ambos; conversión CLI JSON y XMind desde ambos paquetes.
+- Comprobaciones XMind: ZIP íntegro, `mimetype` primero y sin compresión, MIME `application/vnd.xmind.workbook`, `content.json` con tema raíz `Package smoke test`, `testzip() is None`.
+- Artefacto `python-distributions`: ID `13840773838`, 73.210 bytes, SHA-256 del ZIP `eb6a4f8235544b66106615734791605eed540ad0eb98f39d6af0ebf3fb5d6c3a`.
+- Artefacto `xmind-desktop-smoke-test`: ID `13841725579`, 1.331 bytes, SHA-256 del ZIP `ee794ec21589f37d59d85c4f25f519d2f45c547ba7f8dcb5eee1aa5f733f7c65`.
+
+**Límite:** el smoke comprueba la estructura del libro generado desde las distribuciones, no su apertura visual en XMind Desktop. La prueba manual anterior sigue acreditando el fixture y las funciones inspeccionadas en XMind Desktop 26.05.01107.
+
+Siguiente tarea propuesta: auditoría de procedencia/licencias de dependencias, fixtures y ejemplos. No iniciarla sin autorización expresa del usuario.

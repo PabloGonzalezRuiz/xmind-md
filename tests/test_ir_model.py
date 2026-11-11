@@ -2,8 +2,6 @@
 
 import pytest
 
-from xmind_md.styles import StyleError, resolve_styles
-
 from xmind_md.ir import (
     Annotation,
     Asset,
@@ -20,6 +18,7 @@ from xmind_md.ir import (
     Topic,
     validate_mind_map,
 )
+from xmind_md.styles import StyleError, resolve_styles
 
 
 def make_map() -> MindMap:

@@ -170,3 +170,30 @@ def test_all_primary_content_blocks_keep_inclusive_source_ranges():
         (block.data["source"]["line_start"], block.data["source"]["line_end"]) for block in blocks
     ] == expected
     assert all(block.data["source"]["file"] == "ejemplo.md" for block in blocks)
+
+
+
+def test_ir_parser_preserves_map_and_global_entity_extensions():
+    source = (
+        "---\nextensions: {vendor: {map_flag: true}}\n---\n"
+        "# Raíz\n"
+        ":::xmind\nid: a\n:::\n## A\n"
+        ":::xmind\nid: b\n:::\n## B\n"
+        ":::xmind-relationship\nid: rel\nsource: a\ntarget: b\n"
+        "extensions: {vendor: {relation_flag: true}}\n:::\n"
+        ":::xmind-boundary\nid: boundary\ntopics: [a, b]\n"
+        "extensions: {vendor: {boundary_flag: true}}\n:::\n"
+        ":::xmind-summary\nid: summary\ntopics: [a, b]\n"
+        "extensions: {vendor: {summary_flag: true}}\n:::\n"
+    )
+    result = parse_markdown_ir(source)
+    assert result.metadata["extensions"] == {"vendor": {"map_flag": True}}
+    assert result.sheet.relationships[0].extensions == {
+        "vendor": {"relation_flag": True}
+    }
+    assert result.sheet.boundaries[0].extensions == {
+        "vendor": {"boundary_flag": True}
+    }
+    assert result.sheet.summaries[0].extensions == {
+        "vendor": {"summary_flag": True}
+    }

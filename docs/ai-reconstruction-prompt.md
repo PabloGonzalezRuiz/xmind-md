@@ -301,7 +301,7 @@ La hoja de ruta operativa está en `docs/development-status.md`. Las tareas 1–
 
 ### Hoja de ruta pendiente
 
-12. **CI y Ruff (en curso):** obtener y revisar la ejecución real de ambos runners; corregir fallos hasta que lint, formato, pytest y artefactos pasen en Linux y Windows.
+12. **CI y Ruff (en curso):** run 42981647696 volvió a fallar con tres errores Ruff I001 en ambos runners. Se ha corregido la separación requerida después de from __future__ import annotations en los tres archivos; commits 6a3313c, aa67bf2, 0f3c8fe. Revisar la siguiente ejecución hasta que lint, formato, pytest, generación XMind y artefactos pasen en Linux y Windows.
 13. **Sincronización documental:** README, arquitectura, migración IR, estilos, evaluación del motor, adaptador XMind, catálogo de archivos y guía de desarrollo.
 14. **Auditoría final y publicación estable:** revisar requisitos, seguridad de entradas, errores, dependencias, licencia, ejemplos, reproducibilidad, documentación y compatibilidad. No publicar como estable hasta satisfacer criterios definidos.
 
@@ -364,3 +364,12 @@ Al finalizar una tarea:
 - Deja una siguiente tarea inequívoca y espera autorización.
 
 ## FIN DEL PROMPT
+
+
+## 11.1 Incidencia CI del 2026-11-11: run 42981647696
+
+El run https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42981647696 falló en Ubuntu y Windows. Ruff 0.17.4 reportó los mismos tres I001 en src/xmind_md/adapters/xmind_adapter.py, src/xmind_md/ir/validation.py y tests/test_xmind_integration.py.
+
+La sugerencia de Ruff exige una línea vacía entre from __future__ import annotations y el siguiente grupo de imports. La modificación anterior había eliminado esa línea. Se restauraron los tres archivos completos desde el commit previo y se aplicó solo esa separación: 6a3313c353e0a180fbe1950ce1c324e2eff3da22, aa67bf2567599d50caf720399c60c495bea05367 y 0f3c8fedb5e9cce3b133c53dcc75fe8ef6439a39.
+
+No se ejecutaron Ruff format, pytest, descarga del fixture ni generación XMind en el run fallido; tampoco se generaron artefactos. La tarea 12 continúa abierta hasta verificar la nueva ejecución completa en ambos sistemas.

@@ -1,71 +1,36 @@
-# Configuración de estilos de ejemplo para XMind MD.
-# Las claves son neutrales; no usar aquí atributos internos de XMind.
-# La especificación completa está en docs/style-system.md.
-
-version: 1
-
-defaults:
-  elements:
-    map:
-      background:
-        color: "#FFFFFF"
-
-styles: {}
+# Configuración de estilos compatible con el resolutor IR 1.0.0.
+# Las propiedades se agrupan por tipo de elemento y usan el vocabulario neutral.
+# La matriz de propiedades materializables en XMind está en docs/xmind-adapter.md.
 
 style_sets:
   BASE_ACADEMICO:
-    description: "Base visual reutilizable para mapas de estudio."
-    elements:
-      topic:
-        roles:
-          root:
-            typography:
-              font_size: 20
-              font_weight: bold
-          main:
-            typography:
-              font_size: 16
-              font_weight: bold
-          subtopic:
-            typography:
-              font_size: 13
-              font_weight: normal
-      branch:
-        line:
-          color: "#78909C"
-          width: 1.5
+    topic:
+      text:
+        font_family: Arial
+        font_size: 14
+        color: "#263B5A"
 
   TAI_LEGISLACION:
-    description: "Estilos para mapas de legislación del temario TAI."
-    extends: BASE_ACADEMICO
-    elements:
-      topic:
-        roles:
-          root:
-            shape:
-              type: rounded_rectangle
-              fill:
-                color: "#263B5A"
-            text:
-              color: "#FFFFFF"
-          main:
-            shape:
-              type: rounded_rectangle
-              fill:
-                color: "#DCE6F1"
-            text:
-              color: "#172B4D"
+    topic:
+      text:
+        font_family: Arial
+        font_size: 14
+      background:
+        color: "#FFFFFF"
     styles:
       concepto_importante:
-        applies_to: topic
-        properties:
-          shape:
-            fill:
-              color: "#FCE4D6"
+        topic:
+          text:
+            color: "#9C0006"
+            bold: true
           border:
             color: "#C00000"
             width: 1.5
-          text:
-            color: "#9C0006"
-          typography:
-            font_weight: bold
+
+styles:
+  relacion_default:
+    relationship:
+      line:
+        color: "#607D8B"
+        width: 1.5
+        pattern: solid

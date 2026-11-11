@@ -38,7 +38,7 @@ La ampliación de prueba se validó en el run [42990025087](https://github.com/P
 
 ## Inventario de terceros
 
-La inspección de dependencias directas y herramientas, fixture externo, fixture propio y ejemplos se registra en [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md). El inventario identifica PyYAML, pytest, Ruff, jsonschema, setuptools, wheel y build con licencia MIT declarada en sus proyectos de origen; documenta también el fixture externo MIT de sc0tfree/xmind-mcp y las acciones de GitHub usadas por CI.
+La inspección de dependencias directas y herramientas, fixture externo, fixture propio y ejemplos se registra en [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md). El inventario identifica PyYAML, pytest, Ruff, jsonschema, setuptools, wheel y build con licencia MIT declarada en sus proyectos de origen; documenta también el fixture externo MIT de sc0tfree/xmind-mcp y las acciones de GitHub usadas por CI. La migración de Node.js 20 a Node.js 24 se documenta en el registro de estado y en la auditoría de Release.
 
 El inventario no es un SBOM completo: no fija las versiones resueltas ni enumera todas las dependencias transitivas. El fixture externo se descarga temporalmente durante CI y no forma parte del repositorio ni de wheel/sdist. La licencia MIT declarada por el proyecto de origen no permite afirmar que el contenido binario carezca de otros derechos de terceros.
 

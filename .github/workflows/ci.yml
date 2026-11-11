@@ -85,7 +85,8 @@ jobs:
           python -m venv .venv-sdist
           .venv-sdist/bin/python -m pip install dist/*.tar.gz
           mkdir -p /tmp/xmind-md-sdist-test
-          (cd /tmp/xmind-md-sdist-test && "$GITHUB_WORKSPACE/.venv-sdist/bin/xmind-md" "$GITHUB_WORKSPACE/examples/constitucion.md" --output result.json)
+          printf "# Package smoke test\\n\\n## Installed sdist\\n" > /tmp/xmind-md-sdist-test/input.md
+          (cd /tmp/xmind-md-sdist-test && "$GITHUB_WORKSPACE/.venv-sdist/bin/xmind-md" input.md --output result.json)
           test -s /tmp/xmind-md-sdist-test/result.json
           .venv-sdist/bin/python -c "import json; from pathlib import Path; data=json.loads(Path('/tmp/xmind-md-sdist-test/result.json').read_text()); assert data"
 

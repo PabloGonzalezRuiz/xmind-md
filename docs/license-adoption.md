@@ -4,7 +4,7 @@
 - **Titular indicado por el usuario:** Pablo González Ruiz
 - **Licencia elegida:** MIT
 - **Archivos:** `LICENSE` y metadatos de `pyproject.toml`
-- **Estado:** incorporada en `main`; pendiente de validación en GitHub Actions.
+- **Estado:** incorporada en `main`; inclusión en wheel/sdist verificada en GitHub Actions run 42988289597.
 
 ## Decisión
 
@@ -27,10 +27,8 @@ La incorporación refleja la decisión del usuario sobre la titularidad que dese
 
 La elección de MIT no constituye asesoramiento jurídico.
 
-## Validación pendiente
+## Validación de distribuciones
 
-La CI debe confirmar que setuptools procesa los metadatos PEP 639, que la licencia se incluye en wheel y sdist y que ambas distribuciones pueden instalarse y ejecutar la CLI. Hasta entonces, la licencia está incorporada en el repositorio, pero no se afirma que los paquetes distribuibles estén validados.
+GitHub Actions run [42988289597](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42988289597), commit `81b514195f1ea9a7bb0225c3353717f29251c615`, construyó wheel y sdist. El verificador confirmó `License-Expression: MIT` y la presencia de `LICENSE` dentro del wheel y del sdist. Ambos paquetes se instalaron en entornos virtuales limpios separados y ejecutaron la CLI para convertir Markdown a JSON. Los dos jobs finalizaron success; pytest registró 131 pruebas superadas.
 
-## Evidencia de CI
-
-La adopción quedó validada por GitHub Actions run [42986904524](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42986904524), commit `a64921cfdcc49016b5fd8eeb90cb7703ebb5355a`: instalación, Ruff, 131 pruebas, generación XMind y publicación del artefacto smoke, todo success. Esto comprueba que los metadatos MIT no rompen el pipeline actual. No acredita aún la construcción ni el contenido de wheel/sdist.
+Esto acredita el procesamiento de metadatos y la inclusión del texto MIT en las distribuciones generadas. No sustituye la auditoría de titularidad/procedencia de fixtures y dependencias de terceros descrita en `release-audit.md`.

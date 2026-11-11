@@ -362,8 +362,13 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
                 raise MarkdownParseError(
                     f"Propiedades desconocidas en :::xmind: {sorted(unknown)} (línea {line_no})"
                 )
-            if props.get("kind", "attached") not in {"attached", "callout", "summary"}:
-                raise MarkdownParseError(f"kind no válido en :::xmind (línea {line_no})")
+            kind = props.get("kind", "attached")
+            if not isinstance(kind, str) or kind not in {"attached", "detached", "callout", "summary"}:
+                raise MarkdownParseError(
+                    f"kind debe ser attached, detached, callout o summary (línea {line_no})"
+                )
+            if not stack and kind != "attached":
+                raise MarkdownParseError(f"El tema raíz debe ser attached (línea {line_no})")
             for field_name in ("style_overrides", "layout", "extensions"):
                 if field_name in props and not isinstance(props[field_name], dict):
                     raise MarkdownParseError(

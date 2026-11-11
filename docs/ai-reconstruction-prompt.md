@@ -713,4 +713,36 @@ La tarea 5 de versionado/metadatos está **completada y validada**. No se debe r
 - CI [43002869927](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43002869927), commit `635d8d5bfa42d5b84401f661b7bce3858140dd16`: completed/success; 132 pruebas en cada versión Python; Ruff lint/format; wheel/sdist construidos, verificados, instalados por separado y probados generando JSON/XMind.
 - No publicar todavía. Faltan auditoría funcional (tarea 6), sincronización final documental (tarea 7) y changelog/tag/Release (tarea 8).
 
-**Siguiente tarea autorizable:** tarea 6 — auditoría funcional final de parser, IR, estilos, CLI y adaptador XMind. Esperar autorización expresa antes de iniciarla.
+**Siguiente tarea autorizable en ese momento:** tarea 6 — auditoría funcional final. Se completó posteriormente; consultar el cierre de tarea 6 al final de este documento.
+
+
+## Estado de continuidad actualizado — cierre de tarea 6 (2026-11-11)
+
+La tarea 6 de auditoría funcional está **completada y validada**. Su informe de hallazgos y limitaciones es `docs/functional-audit.md`; el estado operativo se encuentra en `docs/development-status.md`, sección 27.
+
+### Cambios funcionales realizados
+
+- Parser: `detached` accesible desde Markdown; raíz limitada a `attached`; tipos de `kind` y links validados; markers limitados a escalares; campos globales desconocidos rechazados; extensiones conservadas; texto legacy de listas reparado; barras invertidas en tablas preservadas salvo `\|`; YAML normalizado a tipos JSON y valores no JSON rechazados; author/description validados.
+- Puente IR: preserva extensiones de mapa y de relaciones, boundaries y summaries.
+- Validación IR: referencias de estilos se resuelven después de cargar los catálogos embebidos/externos en `resolve_styles()`; comprobaciones robustas para títulos, bloques, enlaces y assets.
+- Estilos: `config/styles.yaml` migrado al esquema consumido por el resolutor; propiedades de línea de relaciones mapeadas; bold/italic exigen bool.
+- XMind/JSON: imágenes inline generan rechazo explícito en vez de pérdida silenciosa; serialización estricta con `allow_nan=False`.
+- Ejemplos: añadido asset original `examples/assets/escudo.svg`; Markdown e IR JSON sincronizados; README usa el ejemplo mínimo soportado para exportación XMind; smoke script resuelve el catálogo externo.
+
+### Evidencia
+
+Run [43006735888](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43006735888), commit `a36f36ddc53bc71ef288c829ec5abc6e1eb16cc6`, completed/success:
+- Python 3.10, 3.11, 3.12: Ruff lint/format y 161 pruebas por versión.
+- XMind smoke generado en los tres jobs.
+- Wheel y sdist construidos, verificados e instalados en entornos limpios; CLI genera JSON/XMind desde ambos y la estructura ZIP/MIME/JSON es correcta.
+- Artefacto de distribuciones ID `13849240803`, 77.807 bytes, SHA-256 del ZIP de Actions `0d638d960a62909f2c21a1c60687baf4f99e6529f7926eaf7d8e2a4348a048bf`.
+
+### Limitaciones conocidas
+
+El adaptador XMind sigue siendo parcial: no exporta recursos/imágenes, tareas, boundaries, summaries ni extensiones; el tipo de tema `summary` no se exporta; el contenido de bloques se aplana a notas y se pierde parte del formato. El smoke nuevo con estilos pasó CI, pero no se ha inspeccionado manualmente en XMind Desktop. CI solo es Ubuntu. Python 3.10 está fuera de soporte upstream desde 2026-10-01.
+
+No hay tag ni Release; versión actual 0.1.0.
+
+### Siguiente tarea
+
+**Tarea 7 — sincronización documental final.** Revisar y corregir README, grammar.md, ir-specification.md, style-system.md, xmind-adapter.md, development.md, file-reference.md y ejemplos para que reflejen el comportamiento actual. En particular, actualizar esquema de estilos, resolución externa, soporte detached, restricciones YAML/inline images y límites XMind. Esperar autorización expresa antes de iniciarla.

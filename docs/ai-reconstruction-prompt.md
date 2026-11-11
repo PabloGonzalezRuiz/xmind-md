@@ -522,3 +522,19 @@ La siguiente tarea a proponer es la 14. Esperar autorización explícita antes d
 La sincronización documental se validó con GitHub Actions run [42985726802](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42985726802), commit `fd2002cac38348162860f8dfc706721febfcf217`: Ubuntu/Python 3.12.16, instalación, Ruff lint, Ruff format, descarga de fixture, pytest (**131 passed in 0.50s**), generación XMind y subida del artefacto, todo success. Artefacto `xmind-desktop-smoke-test`, ID `13838948884`, SHA-256 `7a723811f728e517e0f683a14e5ba514c71caa9c12a75f0d2c842282b59c99a9`.
 
 El resultado confirma que los cambios documentales no han roto la CI. La tarea 13 está cerrada; la siguiente es la tarea 14, pendiente de autorización expresa.
+
+
+## 14. Continuidad: auditoría de empaquetado/licencia — 2026-11-11
+
+La auditoría inicial de la tarea 14 está registrada en `docs/release-audit.md` y en la sección 19 de `docs/development-status.md`.
+
+Puntos comprobados:
+- Paquete Python configurado con setuptools, diseño `src`, metadatos PEP 621, dependencias runtime/dev y entry point CLI.
+- Versión `0.1.0` duplicada en `pyproject.toml` y `src/xmind_md/__init__.py`, coincidente en el commit auditado.
+- No existe LICENSE/COPYING/NOTICE ni declaración de licencia en metadatos. No elegir ni añadir una licencia sin confirmación expresa del titular.
+- Build backend declara `setuptools>=68`; para metadata SPDX PEP 639, PyPA documenta soporte de setuptools desde 77.0.3.
+- No hay Releases publicadas.
+- La CI #283 está verde, pero instala en editable; no construye wheel/sdist ni prueba instalación desde distribuciones.
+- No instalar ni ejecutar Python localmente: validar empaquetado mediante GitHub Actions.
+
+Siguiente paso: obtener la decisión del titular sobre la licencia antes de tocar archivos legales/metadatos. Después, con autorización, añadir build de wheel/sdist y pruebas de instalación limpia en CI. No publicar Release hasta superar esos criterios y cerrar el resto de la auditoría.

@@ -90,7 +90,7 @@ xmind-md examples/constitucion.md --styles config/styles.yaml --output output/co
 
 El formato se deduce de la extensión `.xmind` o `.json`. También puede indicarse con `--format xmind` o `--format json`. Si la extensión es conocida, debe coincidir con el formato indicado. Para otras extensiones es obligatorio especificar `--format`.
 
-La exportación XMind resuelve los estilos antes de invocar el adaptador. Si el IR contiene una propiedad no soportada por el perfil de salida, la CLI muestra un error y termina con código 2.
+La exportación XMind resuelve los estilos antes de invocar el adaptador. Si el IR contiene una propiedad no soportada por el perfil de salida, la CLI muestra un error y termina con código 2. `examples/constitucion.md` está destinado a demostrar el parser/IR/JSON; no es un ejemplo exportable a XMind por contener recursos, tareas, boundaries y summaries.
 
 ## Ejemplo de entrada
 
@@ -123,7 +123,7 @@ Los encabezados crean la jerarquía. Los párrafos, listas y demás bloques de c
 
 El exportador XMind actual incluye, entre otras capacidades:
 
-- Temas `attached`, `detached` (con posición) y `callout`.
+- Temas `attached`, `detached` (con `layout.position.x/y`) y `callout`; el tema raíz debe ser `attached`.
 - Notas de texto, etiquetas y marcadores.
 - Enlaces web, enlaces internos entre temas y enlaces `file://`.
 - Relaciones entre temas.
@@ -137,7 +137,7 @@ El fixture `tests/fixtures/xmind/xmind-md-smoke-test.xmind` se descargó, abrió
 
 ## Calidad y pruebas
 
-En GitHub Actions se ejecutan en Ubuntu con Python 3.12:
+En GitHub Actions se ejecutan en Ubuntu con Python 3.10, 3.11 y 3.12:
 
 ```bash
 python -m ruff check src tests

@@ -2,12 +2,12 @@
 
 > **Documento de seguimiento operativo del proyecto.** Debe actualizarse al terminar cada tarea de desarrollo autorizada y cuando cambie una decisión técnica relevante.
 
-- **Última actualización:** 2026-11-11 (acciones CI migradas a Node.js 24 y validadas en CI #42996452355)
+- **Última actualización:** 2026-11-11 (tarea 5 de versionado/metadatos implementada y validada en CI #43002869927)
 - **Rama de referencia:** `main`
 - **Última prueba manual XMind Desktop:** superada en Windows, XMind 26.05.01107.
 - **Commit de incorporación del fixture XMind permanente:** `a1cf99861c819d9f148a7c7a3d779df6a95fc394`.
 - **Contrato objetivo:** IR 1.0.0
-- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; exportación JSON/XMind disponible; fixture comprobado manualmente en XMind Desktop 26.05.01107; wheel y sdist construidos, verificados e instalados en CI. La matriz Python 3.10/3.11/3.12 está validada en el run #42995180722 (131 pruebas por versión; build/install de distribuciones también correcto). Las acciones CI usan ahora runtimes Node.js 24, validados en el run #42996452355. Pendientes: versionado, auditoría funcional final, resolver la referencia a imagen inexistente y preparar Release.
+- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; exportación JSON/XMind disponible; fixture comprobado manualmente en XMind Desktop 26.05.01107; wheel y sdist construidos, verificados e instalados en CI. La matriz Python 3.10/3.11/3.12 está validada; la versión del paquete tiene una única fuente de verdad en `src/xmind_md/__init__.py`, metadatos PEP 621 dinámicos, CLI `--version` y verificación de `METADATA`/`PKG-INFO`. CI #43002869927 validó 132 pruebas por versión y la construcción, verificación e instalación de wheel/sdist. Las acciones CI usan Node.js 24, validadas en #42996452355. Pendientes: auditoría funcional final, resolver la referencia a imagen inexistente, sincronización final y Release.
 
 ## 1. Para qué sirve este documento
 
@@ -878,3 +878,39 @@ Artefactos del run:
 No se han fijado SHA inmutables en este cambio; el workflow sigue usando tags mayores. La mejora de reproducibilidad/cadena de suministro queda separada de esta tarea.
 
 **Siguiente tarea propuesta:** resolver la coherencia de versión y metadatos de publicación. Requiere autorización expresa del usuario.
+
+## 26. Tarea 5 — coherencia de versión y metadatos de publicación (2026-11-11)
+
+**Estado: COMPLETADA Y VALIDADA.**
+
+### Decisiones
+
+- Se mantiene la versión actual **0.1.0**. Esta tarea revisó la coherencia del versionado; no era la tarea de preparar el changelog, crear un tag ni publicar la Release. No se ha creado tag ni Release.
+- La única fuente de versión es la asignación literal `__version__` en `src/xmind_md/__init__.py`.
+- `pyproject.toml` declara `dynamic = ["version"]` y `[tool.setuptools.dynamic].version = { attr = "xmind_md.__version__" }`; setuptools deriva de ahí la versión PEP 621 del wheel y sdist.
+- Se mantiene `requires-python = ">=3.10"` porque la suite ha comprobado compatibilidad técnica en Python 3.10, 3.11 y 3.12. Python 3.10 está fuera de soporte upstream desde 2026-10-01; esto se documenta como límite del runtime, no como recomendación de seguridad ni garantía de actualizaciones upstream. No se ha elevado el mínimo en esta tarea.
+- Se añadieron metadatos públicos: autor, descripción, README, licencia SPDX MIT, ficheros de licencia, clasificadores de estado Alpha/plataformas/versiones Python y URLs de proyecto/documentación/issues.
+- Se añadió `xmind-md --version`, que consulta la misma constante `__version__`.
+- `scripts/verify_distributions.py` extrae la versión de la constante mediante AST y la compara con `METADATA` del wheel y el `PKG-INFO` canónico del sdist. Ya no contiene una versión esperada codificada a mano.
+- Se añadió una prueba de CLI para `--version`.
+
+### Evidencia CI
+
+Run [43002869927](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43002869927), commit `635d8d5bfa42d5b84401f661b7bce3858140dd16`, finalizó **completed / success**.
+
+- Python 3.10: Ruff lint/format y **132 pruebas superadas**.
+- Python 3.11: Ruff lint/format y **132 pruebas superadas**.
+- Python 3.12: Ruff lint/format y **132 pruebas superadas**.
+- Build de wheel y sdist: success.
+- Verificador: comprobó nombre, versión derivada, licencia y contenido en ambos artefactos.
+- Wheel y sdist: instalados en entornos limpios separados; cada uno ejecutó CLI Markdown → JSON y Markdown → XMind; los XMind generados pasaron la validación ZIP/MIME/JSON.
+- Artefacto `python-distributions`: ID `13846567777`, tamaño 74.823 bytes, SHA-256 del ZIP del artefacto `d3a4997bb167c40f5e63811d52bb990f31cd9d10f9467385a5c8b27df22c6c40`.
+- Artefactos XMind smoke: Python 3.10 ID `13846996841`; Python 3.11 ID `13846927390`; Python 3.12 ID `13845764996`.
+
+El hash anterior identifica el ZIP de GitHub Actions que contiene las distribuciones, no el hash de cada wheel/sdist.
+
+### Incidencias durante la validación
+
+Las primeras ejecuciones detectaron, sucesivamente, una sección TOML mal ubicada, un clasificador de licencia obsoleto bajo PEP 639, un orden de imports no conforme con Ruff y la presencia de dos archivos `PKG-INFO` en el sdist (el canónico y el de egg-info). Se corrigieron dentro de esta tarea. El verificador selecciona ahora el `PKG-INFO` canónico; la ejecución final indicada arriba quedó completamente verde.
+
+**Siguiente tarea propuesta:** tarea 6, auditoría funcional final de parser, IR, estilos, CLI y adaptador XMind. No iniciarla sin autorización expresa del usuario.

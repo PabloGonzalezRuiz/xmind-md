@@ -2,12 +2,12 @@
 
 > **Documento de seguimiento operativo del proyecto.** Debe actualizarse al terminar cada tarea de desarrollo autorizada y cuando cambie una decisión técnica relevante.
 
-- **Última actualización:** 2026-11-11 (auditoría integral; CI de wheel/sdist completada; primera tarea pendiente: probar salida XMind desde ambos paquetes instalados)
+- **Última actualización:** 2026-11-11 (auditoría de terceros completada; wheel/sdist con salida XMind validada)
 - **Rama de referencia:** `main`
 - **Última prueba manual XMind Desktop:** superada en Windows, XMind 26.05.01107.
 - **Commit de incorporación del fixture XMind permanente:** `a1cf99861c819d9f148a7c7a3d779df6a95fc394`.
 - **Contrato objetivo:** IR 1.0.0
-- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; exportación JSON/XMind disponible; fixture comprobado manualmente en XMind Desktop 26.05.01107; wheel y sdist construidos, verificados e instalados en CI; 131 pruebas y Ruff superados en run 42988289597. Pendiente auditoría de terceros, ampliar smoke de distribuciones a XMind, matriz Python, revisión de acciones CI, auditoría funcional final y Release.
+- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; exportación JSON/XMind disponible; fixture comprobado manualmente en XMind Desktop 26.05.01107; wheel y sdist construidos, verificados e instalados en CI; 131 pruebas y Ruff superados en run 42988289597. Pendiente matriz Python, revisión de acciones CI, versionado, auditoría funcional final, cierre de la referencia a imagen inexistente y Release.
 
 ## 1. Para qué sirve este documento
 
@@ -717,13 +717,13 @@ Los hashes son de los ZIP de artefactos de Actions, no de los paquetes individua
 5. `requires-python >=3.10`, pero CI solo ejecuta Python 3.12 sobre Ubuntu.
 6. `0.1.0` está duplicada en `pyproject.toml`, `src/xmind_md/__init__.py` y `scripts/verify_distributions.py`.
 7. El workflow informa de deprecación Node.js 20 en `actions/checkout@v4`, `setup-python@v5` y `upload-artifact@v4`; no ha causado fallo, pero debe revisarse.
-8. El fixture externo de XMind y los materiales binarios/ejemplos necesitan inventario de procedencia y licencia antes de distribuir.
+8. El inventario de procedencia y licencias está documentado en THIRD_PARTY_NOTICES.md; no es un SBOM exhaustivo de dependencias transitivas.
 9. La MIT está presente en el repositorio y en las distribuciones; no se extiende automáticamente a componentes de terceros.
 
 ### 21.3 Hoja de ruta pendiente
 
-1. **Smoke XMind desde wheel y sdist instalados — COMPLETADA.** Run #42990025087; ambos paquetes generaron JSON y XMind desde entornos limpios y el archivo XMind pasó comprobaciones ZIP/MIME/JSON.
-2. **Siguiente:** auditar procedencia/licencias de dependencias, fixture externo, fixture propio y ejemplos.
+1. **Smoke XMind desde wheel y sdist instalados — COMPLETADA.** Run #42990025087 y revalidación #42990429514; ambos paquetes generaron JSON y XMind desde entornos limpios.
+2. **Auditoría de terceros — COMPLETADA como inventario técnico.** THIRD_PARTY_NOTICES.md registra licencias/origen; siguen abiertas la referencia de imagen inexistente y el inventario exhaustivo de transitivas.
 3. Ampliar CI a Python 3.10, 3.11 y 3.12 o ajustar la promesa de compatibilidad.
 4. Actualizar acciones GitHub para evitar el aviso de Node.js 20 deprecado.
 5. Resolver fuente única/coherencia de versión y metadatos públicos de distribución.
@@ -735,7 +735,7 @@ Los hashes son de los ZIP de artefactos de Actions, no de los paquetes individua
 
 El usuario no desea instalaciones ni ejecuciones Python locales. Toda validación se realizará en GitHub Actions. Se mantiene la regla de no pedir autorización para correcciones o repeticiones dentro de una tarea ya autorizada; detenerse y pedir permiso antes de iniciar la tarea siguiente.
 
-La documentación de continuidad se ha reconciliado con el resultado de empaquetado. La primera tarea pendiente es la prueba de salida XMind desde las dos distribuciones instaladas.
+La documentación de continuidad se ha reconciliado con el resultado de empaquetado y la auditoría de terceros. La siguiente tarea pendiente es ampliar la matriz de CI a Python 3.10, 3.11 y 3.12.
 
 
 ## 22. Cierre de tarea 1 de la auditoría integral — 2026-11-11
@@ -774,3 +774,6 @@ Siguiente tarea propuesta: auditoría de procedencia/licencias de dependencias, 
 No se ha detectado una incompatibilidad evidente entre MIT y las dependencias directas/herramientas inventariadas. No se emite certificación jurídica ni garantía de titularidad completa.
 
 La hoja de ruta sigue con: (3) matriz de Python, (4) actualización de actions, (5) versionado, (6) auditoría funcional, (7) sincronización final, (8) release. El recurso assets/escudo.png deberá corregirse en la auditoría funcional o de ejemplos antes de Release.
+
+
+**Nota de actualización:** el encabezado y el estado de las secciones históricas 21.x se interpretan a la luz de las secciones 22 y 23, que registran el cierre de las tareas 1 y 2 y prevalecen sobre los estados anteriores.

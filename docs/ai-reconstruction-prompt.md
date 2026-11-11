@@ -366,10 +366,14 @@ Al finalizar una tarea:
 ## FIN DEL PROMPT
 
 
-## 11.1 Incidencia CI del 2026-11-11: run 42981647696
 
-El run https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42981647696 falló en Ubuntu y Windows. Ruff 0.17.4 reportó los mismos tres I001 en src/xmind_md/adapters/xmind_adapter.py, src/xmind_md/ir/validation.py y tests/test_xmind_integration.py.
+## 11.1 Incidencia CI del 2026-11-11: runs 42981647696 y 42982298488
 
-La sugerencia de Ruff exige una línea vacía entre from __future__ import annotations y el siguiente grupo de imports. La modificación anterior había eliminado esa línea. Se restauraron los tres archivos completos desde el commit previo y se aplicó solo esa separación: 6a3313c353e0a180fbe1950ce1c324e2eff3da22, aa67bf2567599d50caf720399c60c495bea05367 y 0f3c8fedb5e9cce3b133c53dcc75fe8ef6439a39.
+Los runs https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42981647696 y https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42982298488 fallaron en Ubuntu y Windows durante Ruff lint, con tres errores I001 persistentes en `src/xmind_md/adapters/xmind_adapter.py`, `src/xmind_md/ir/validation.py` y `tests/test_xmind_integration.py`.
 
-No se ejecutaron Ruff format, pytest, descarga del fixture ni generación XMind en el run fallido; tampoco se generaron artefactos. La tarea 12 continúa abierta hasta verificar la nueva ejecución completa en ambos sistemas.
+La inspección de los archivos completos de `main` corrige la interpretación anterior: la línea en blanco después de `from __future__ import annotations` ya era correcta. La causa era una línea vacía adicional entre el último import y la primera asignación de nivel superior (había dos en lugar de una). La corrección mínima publicada elimina solo esa línea sobrante en cada archivo:
+- Adaptador: `41aa8b573490b055b2bab96153023dea6aa79940`
+- Validación: `2e05cf5aa5478b9e1bd87e87e5ffa54ba6d53cea`
+- Test de integración: `ae81408334b7b17678e25b43f5d2cf4fae3625a2`
+
+El run 42982298488 instaló correctamente las dependencias en ambos runners, pero Ruff lint volvió a fallar. Ruff format, pytest, fixture, generación XMind y artefactos no se ejecutaron. La tarea 12 sigue abierta hasta revisar el nuevo run generado por los tres commits más recientes y comprobar todos los pasos en ambos sistemas.

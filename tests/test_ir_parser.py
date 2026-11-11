@@ -193,6 +193,7 @@ def test_ir_parser_preserves_map_and_global_entity_extensions():
     assert result.sheet.boundaries[0].extensions == {"vendor": {"boundary_flag": True}}
     assert result.sheet.summaries[0].extensions == {"vendor": {"summary_flag": True}}
 
+
 def test_constitution_example_references_a_bundled_asset():
     root = Path(__file__).resolve().parents[1]
     source = root / "examples" / "constitucion.md"

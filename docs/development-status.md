@@ -2,12 +2,12 @@
 
 > **Documento de seguimiento operativo del proyecto.** Debe actualizarse al terminar cada tarea de desarrollo autorizada y cuando cambie una decisión técnica relevante.
 
-- **Última actualización:** 2026-11-11 (simplificación CI: solo Ubuntu)
+- **Última actualización:** 2026-11-11 (tarea 12 completada: Ruff, CI Ubuntu y pruebas)
 - **Rama de referencia:** `main`
 - **Última prueba manual XMind Desktop:** superada en Windows, XMind 26.05.01107.
 - **Commit de incorporación del fixture XMind permanente:** `a1cf99861c819d9f148a7c7a3d779df6a95fc394`.
 - **Contrato objetivo:** IR 1.0.0
-- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; fixture comprobado manualmente en XMind Desktop 26.05.01107; CI histórica Linux/Python 3.12 con 131 pruebas superadas. El workflow actual ejecuta Ruff, pytest y generación del artefacto exclusivamente en Ubuntu; la nueva configuración está publicada y pendiente de verificar en Actions. El usuario ha decidido no instalar ni ejecutar herramientas localmente por ahora.
+- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; fixture comprobado manualmente en XMind Desktop 26.05.01107; CI histórica Linux/Python 3.12 con 131 pruebas superadas. El workflow actual ejecuta Ruff, pytest y generación del artefacto exclusivamente en Ubuntu; verificado en GitHub Actions run 42985048305 con 131 pruebas superadas y artefacto publicado. El usuario ha decidido no instalar ni ejecutar herramientas localmente por ahora.
 
 ## 1. Para qué sirve este documento
 
@@ -134,7 +134,7 @@ La prueba manual acredita el fixture y los elementos comprobados, no compatibili
 | 9 | Integrar la exportación XMind en la CLI | **Completada** | CLI XMind y JSON probadas, errores controlados y documentación actualizada |
 | 10 | Completar las pruebas con XMind Desktop | **Completada** | Apertura, inspección, guardado y reapertura confirmados; versión y resultados registrados |
 | 11 | Auditar y verificar la ejecución en GitHub Actions | **Completada** | Workflow y último run inspeccionados; 131 pruebas y artefacto generados correctamente |
-| 12 | Completar CI, Ruff y comprobaciones automáticas | **En curso** | Workflow Ubuntu verde con Ruff, pruebas y generación/publicación del artefacto XMind |
+| 12 | Completar CI, Ruff y comprobaciones automáticas | **Completada** | Workflow Ubuntu verde con Ruff, 131 pruebas y generación/publicación del artefacto XMind |
 | 13 | Sincronizar README y documentación técnica | Pendiente | Documentación coherente con el comportamiento real |
 | 14 | Auditoría final y publicación estable | Pendiente | Criterios de aceptación globales cumplidos |
 
@@ -559,3 +559,41 @@ Criterios mínimos de salida:
 La versión se elegirá después de auditar el versionado existente y el estado de empaquetado; no fijar número ni declarar estabilidad por adelantado. La publicación queda autorizada por la instrucción expresa del usuario, pero solo cuando se cumplan los criterios anteriores.
 
 Estado a 2026-11-11: **no apto todavía para Release**. El run CI más reciente inspeccionado es 42983767866 (commit `34c0274f5a5f6e80bf65d6c4b55ff895471b5437`): instalación y Ruff lint pasan, Ruff format falla porque 17 archivos requieren formato; pytest, generación y artefacto quedan omitidos. La tarea 12 sigue abierta.
+
+
+## 17. Cierre de la tarea 12 — Ruff y CI Ubuntu (2026-11-11)
+
+**Estado: COMPLETADA.** Esta sección prevalece sobre las notas anteriores que describían la tarea 12 como pendiente o en curso.
+
+### Corrección aplicada
+
+- Ruff había identificado 17 archivos que no cumplían el formato configurado.
+- Se ejecutó el formateador oficial, python -m ruff format src tests, dentro de GitHub Actions (runner Ubuntu), sin requerir instalación ni ejecución local del usuario.
+- Los cambios se integraron en main mediante el pull request [#1](https://github.com/PabloGonzalezRuiz/xmind-md/pull/1).
+- Commit integrado: 23c3a9b4bcae7159f7c46d217cd489265516588c.
+- La ejecución de Ruff informó: **24 files already formatted** después de aplicar el formato.
+- El workflow temporal de autoformateo se eliminó del repositorio; no queda como parte de la CI permanente.
+
+### Evidencia de aceptación
+
+- GitHub Actions run [42985048305](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42985048305).
+- Commit probado: 23c3a9b4bcae7159f7c46d217cd489265516588c.
+- Runner: Ubuntu, Python 3.12.16.
+- Install: success.
+- Ruff lint: success.
+- Ruff format: success.
+- Descarga del fixture XMind de referencia: success.
+- Pytest: **131 passed in 0.53s**.
+- Generación del smoke test XMind: success.
+- Publicación del artefacto xmind-desktop-smoke-test: success.
+- Artefacto ID: 13839211520; tamaño: 1.332 bytes; SHA-256: 7c338dfa36bd345e539eaf9d1dde3e17c31f16db7105ffefce5b6b133271383d; expiración prevista: 2026-11-25.
+
+Todos los pasos del job Tests (Ubuntu) finalizaron con success. No quedan fallos Ruff pendientes en la ejecución de referencia.
+
+### Hoja de ruta actualizada
+
+12. **CI, Ruff y comprobaciones automáticas — COMPLETADA.**
+13. **Sincronizar README y documentación técnica — PENDIENTE.**
+14. **Auditoría final y publicación estable — PENDIENTE.**
+
+La siguiente tarea autorizable es la 13. No comenzar la tarea 13 hasta recibir autorización explícita del usuario.

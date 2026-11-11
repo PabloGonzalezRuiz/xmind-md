@@ -198,3 +198,25 @@ Se comprobó directamente en los ficheros action.yml oficiales que las tres vers
 Run [42996452355](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42996452355), commit e42f0db5fdc943ce060a358293335573eeb28902, completed/success. Los tres jobs de matriz pasaron Ruff y 131 pruebas cada uno; wheel/sdist se construyeron, verificaron e instalaron correctamente y produjeron JSON/XMind. Los cuatro logs fueron revisados y no contienen avisos Node.js 20/node20. Artefactos: smoke 3.10 ID 13843574011; smoke 3.11 ID 13843124343; smoke 3.12 ID 13843997547; distribuciones ID 13843737659.
 
 La mejora de fijar acciones por SHA inmutable no se incluyó en esta tarea y permanece como mejora independiente de cadena de suministro.
+
+## 10. Actualización de versionado y metadatos — tarea 5 (2026-11-11)
+
+**Estado: COMPLETADA.** Esta sección prevalece sobre los hallazgos históricos de duplicidad de versión y falta de metadatos que aparecen en las secciones anteriores, redactadas antes de la tarea 5.
+
+- Fuente única de versión: `src/xmind_md/__init__.py::__version__`.
+- `pyproject.toml` usa versión dinámica de setuptools; no mantiene una copia estática de la versión.
+- Metadatos PEP 621 completados: autor, descripción, README, `requires-python >=3.10`, licencia MIT PEP 639, licencia empaquetada, classifiers de estado Alpha/plataforma/versiones y enlaces de proyecto.
+- Se conserva 0.1.0; no se ha preparado changelog ni creado tag/Release en esta tarea.
+- `xmind-md --version` expone la versión importada de la fuente única.
+- `scripts/verify_distributions.py` compara esa versión con METADATA del wheel y PKG-INFO canónico del sdist.
+- Python 3.10 se mantiene por compatibilidad técnica demostrada; está fuera de soporte upstream desde 2026-10-01. La matriz no equivale a mantenimiento de seguridad de Python upstream.
+
+### Validación
+
+Run [43002869927](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43002869927), commit `635d8d5bfa42d5b84401f661b7bce3858140dd16`: completed/success. Los tres jobs de pruebas terminaron success con 132 pruebas por versión y Ruff lint/format correcto. El job de distribución construyó wheel/sdist, verificó metadatos y licencia, instaló ambos en entornos limpios y generó JSON/XMind desde ambos paquetes; validación estructural XMind correcta.
+
+Artefacto de distribución: `python-distributions`, ID `13846567777`, 74.823 bytes, digest SHA-256 del ZIP `d3a4997bb167c40f5e63811d52bb990f31cd9d10f9467385a5c8b27df22c6c40`.
+
+### Siguiente tarea
+
+La tarea 6 es la auditoría funcional final de parser, IR, estilos, CLI y adaptador XMind. La tarea 5 está cerrada; no iniciar la tarea 6 sin autorización expresa. La Release sigue pendiente de completar también las tareas 6, 7 y 8.

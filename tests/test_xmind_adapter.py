@@ -382,3 +382,30 @@ def test_remaining_unsupported_features_are_rejected_explicitly(change, message)
     change(mind_map)
     with pytest.raises(XMindAdapterError, match=message):
         build_xmind_content(mind_map)
+
+
+
+def test_relationship_line_styles_map_to_xmind_line_properties():
+    mind_map = make_map()
+    mind_map.sheet.relationships[0].style.resolved = {
+        "line": {"color": "#123456", "width": 2, "pattern": "solid"}
+    }
+    relationship = build_xmind_content(mind_map)[0]["relationships"][0]
+    assert relationship["style"]["properties"] == {
+        "line-color": "#123456",
+        "line-width": "2",
+        "line-pattern": "solid",
+    }
+
+
+@pytest.mark.parametrize("property_name", ["bold", "italic"])
+@pytest.mark.parametrize("invalid_value", ["false", 0, 1, None])
+def test_boolean_text_style_properties_reject_non_boolean_values(
+    property_name, invalid_value
+):
+    mind_map = make_map()
+    mind_map.sheet.root_topic.style.resolved = {
+        "text": {property_name: invalid_value}
+    }
+    with pytest.raises(XMindAdapterError, match="debe ser booleano"):
+        build_xmind_content(mind_map)

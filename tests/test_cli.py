@@ -1,9 +1,9 @@
 """Pruebas de la interfaz de línea de comandos."""
 
 import json
-from pathlib import Path
 import sys
 import zipfile
+from pathlib import Path
 
 from xmind_md import __version__
 from xmind_md.cli import build_parser, main

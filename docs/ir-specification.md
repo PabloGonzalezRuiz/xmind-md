@@ -66,7 +66,7 @@ Es el nodo jerárquico principal. Sus campos son:
 
 - `id`: identificador único dentro del mapa, independiente del título.
 - `title`: texto principal visible.
-- `kind`: clase semántica, por ejemplo `attached`, `callout` o `summary`. Los tipos especiales también deben respetar la pertenencia a una rama.
+- `kind`: clase semántica `attached`, `detached`, `callout` o `summary`. La raíz debe ser `attached`; un tema `detached` exportable a XMind necesita `layout.position` con coordenadas numéricas `x` e `y`. El IR puede representar `summary`, aunque el perfil XMind actual lo rechaza.
 - `content`: lista ordenada de bloques estructurados.
 - `annotations`: notas, etiquetas, marcadores y tarea.
 - `resources`: referencias a imágenes, adjuntos y audio.
@@ -150,7 +150,7 @@ Los estilos pueden proceder de dos fuentes:
 - YAML externo: estilos y conjuntos reutilizables.
 - Markdown: selección de conjunto, selección de estilo y modificaciones locales.
 
-El parser extrae las referencias y modificaciones declaradas en Markdown. El módulo de estilos carga YAML y resuelve la cascada. El adaptador recibe las propiedades ya resueltas, pero puede consultar las referencias originales para diagnóstico.
+El parser extrae las referencias y modificaciones declaradas en Markdown. El módulo de estilos carga YAML y resuelve la cascada. El adaptador recibe las propiedades ya resueltas, pero puede consultar las referencias originales para diagnóstico. La CLI combina el catálogo embebido en el IR con el YAML externo antes de resolver las referencias; por ello, una referencia a un estilo definido solo en `--styles` no debe rechazarse durante la validación estructural inicial.
 
 ### 5.2 Niveles de precedencia
 
@@ -304,9 +304,9 @@ El modelo no importa bibliotecas XMind ni conoce la gramática Markdown. El adap
 
 ## 13. Estado de implementación
 
-Esta especificación define el objetivo del contrato 1.0.0. No significa que todas las entidades estén implementadas en Python ni que el exportador XMind exista.
+El contrato IR 1.0.0, sus entidades, serialización y validación están implementados en Python. El parser Markdown solo produce el subconjunto descrito en `docs/grammar.md`; el adaptador XMind exporta un perfil parcial descrito en `docs/xmind-adapter.md`. La existencia de una entidad o propiedad en el IR no implica que el parser la genere ni que XMind pueda exportarla.
 
-La implementación se realizará por fases, con pruebas para cada capacidad. Las diferencias entre especificación, código y capacidades del adaptador deberán quedar documentadas.
+Las referencias a estilos se resuelven después de cargar las definiciones embebidas y externas. La validación estructural/semántica del IR y la validación del catálogo de estilos son fases diferenciadas.
 
 ## 14. Criterios de aceptación del contrato
 

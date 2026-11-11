@@ -1,0 +1,30 @@
+# Tema académico: jerarquía sobria y legible.
+style_sets:
+  ACADEMICO:
+    topic:
+      text:
+        font_family: Arial
+        font_size: 14
+        color: "#263B5A"
+    styles:
+      asignatura:
+        topic:
+          text:
+            font_size: 20
+            bold: true
+            color: "#17365D"
+          background:
+            color: "#D9EAF7"
+          border:
+            color: "#5B9BD5"
+            width: 2
+      concepto:
+        topic:
+          text:
+            bold: true
+            color: "#1F4E79"
+      definicion:
+        topic:
+          text:
+            italic: true
+            color: "#404040"

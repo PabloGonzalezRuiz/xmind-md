@@ -32,3 +32,6 @@ La elección de MIT no constituye asesoramiento jurídico.
 GitHub Actions run [42988289597](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42988289597), commit `81b514195f1ea9a7bb0225c3353717f29251c615`, construyó wheel y sdist. El verificador confirmó `License-Expression: MIT` y la presencia de `LICENSE` dentro del wheel y del sdist. Ambos paquetes se instalaron en entornos virtuales limpios separados y ejecutaron la CLI para convertir Markdown a JSON. Los dos jobs finalizaron success; pytest registró 131 pruebas superadas.
 
 Esto acredita el procesamiento de metadatos y la inclusión del texto MIT en las distribuciones generadas. No sustituye la auditoría de titularidad/procedencia de fixtures y dependencias de terceros descrita en `release-audit.md`.
+
+
+La ampliación de prueba se validó en el run [42990025087](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42990025087), commit `9831ae89da6e331219e1edbce71f6415752e2f22`, con ambos jobs success. Esto valida el uso de MIT en wheel/sdist y el empaquetado funcional; no determina la titularidad de materiales de terceros.

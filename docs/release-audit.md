@@ -104,8 +104,8 @@ Antes de distribuir:
 
 | Orden | Tarea | Criterio de cierre |
 |---:|---|---|
-| 1 | Completar smoke de distribuciones: probar salida XMind desde wheel y sdist instalados | Ambos paquetes producen ZIP XMind válido; validar contenido.json, mimetype y estructura; CI verde |
-| 2 | Auditoría de procedencia/licencias de terceros | Inventario de dependencias/fixtures/ejemplos con licencia, origen y acción necesaria; avisos conservados |
+| 1 | Smoke XMind desde wheel y sdist instalados | **Completada** en CI #42990025087 y revalidada en #42990429514 |
+| 2 | Auditoría de procedencia/licencias de terceros | **Inventario técnico completado** en THIRD_PARTY_NOTICES.md; queda pendiente el cierre de la inconsistencia del recurso de ejemplo y un SBOM de transitivas si se decide redistribuirlas agrupadas |
 | 3 | Reforzar matriz de compatibilidad Python | CI en versiones soportadas seleccionadas (mínimo 3.10, 3.11, 3.12) o reducir/documentar alcance |
 | 4 | Actualizar acciones GitHub Actions y eliminar aviso Node 20 | Workflow vigente sin advertencia de runtime obsoleto y CI verde |
 | 5 | Resolver versionado y metadatos de publicación | Fuente de versión consistente, verificador no desincronizable, metadatos públicos coherentes |
@@ -113,7 +113,7 @@ Antes de distribuir:
 | 7 | Sincronización final de toda la documentación | README y documentos técnicos/operativos sin contradicciones; CI verde |
 | 8 | Preparar changelog, tag y GitHub Release estable | Artefactos identificados y comprobados; notas de versión; tag y Release reproducibles |
 
-El usuario ha solicitado enumerar tareas y ejecutar la primera; la tarea 1 queda como siguiente trabajo autorizado. No iniciar la tarea 2 hasta presentar resultados y solicitar autorización.
+El usuario ha autorizado la auditoría de procedencia/licencias (tarea 2). El inventario técnico está documentado; la limitación de dependencias transitivas y la referencia rota del recurso se mantienen como hallazgos pendientes para las tareas correspondientes.
 
 ## 8. Criterios de publicación
 
@@ -144,3 +144,22 @@ La instrucción previa del usuario autoriza crear la Release cuando se cumplan e
 La tarea 1 quedó completada en run [42990025087](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42990025087), commit `9831ae89da6e331219e1edbce71f6415752e2f22`. Los dos jobs terminaron success. Pytest: **131 passed in 0.48s**; Ruff lint/format success. Wheel y sdist se instalaron en entornos limpios, generaron JSON y XMind, y cada archivo XMind pasó las comprobaciones ZIP, `mimetype`, `content.json` y `testzip()`. Artefacto de distribución ID `13840773838`, 73.210 bytes, SHA-256 del ZIP `eb6a4f8235544b66106615734791605eed540ad0eb98f39d6af0ebf3fb5d6c3a`. Artefacto smoke ID `13841725579`, 1.331 bytes, SHA-256 del ZIP `ee794ec21589f37d59d85c4f25f519d2f45c547ba7f8dcb5eee1aa5f733f7c65`.
 
 Esta verificación acredita generación estructural desde ambas distribuciones instaladas; no sustituye una nueva apertura manual de ese artefacto en XMind Desktop.
+
+
+### Cierre de tarea 2 — inventario de licencias y procedencia
+
+La tarea 2 se ha ejecutado y documentado en THIRD_PARTY_NOTICES.md. Se inspeccionaron el árbol versionado, pyproject.toml, workflow CI, ejemplos y README del fixture propio; se contrastaron los avisos de licencia en los repositorios originales de dependencias y acciones.
+
+Hallazgos principales:
+- Dependencia de ejecución: PyYAML (MIT).
+- Dependencias/herramientas de desarrollo: pytest, Ruff y jsonschema (MIT).
+- Build: setuptools, wheel y build (MIT).
+- Acciones CI: checkout, setup-python y upload-artifact (MIT).
+- Fixture XMind externo: se descarga desde sc0tfree/xmind-mcp en commit fijo 6225cbcd3e8fc565bc18e80346699a6e118dd0f7; el repositorio declara MIT y su aviso indica Copyright (c) 2026 Henry Prince. No se incluye en wheel/sdist.
+- Fixture de interoperabilidad del proyecto: README registra que fue generado por la CI propia.
+- Ejemplo constitucional: contiene referencia a texto normativo y enlace BOE. El artículo 13 LPI excluye disposiciones legales y reglamentarias; no se extiende esta conclusión a otros materiales.
+- Hallazgo pendiente: examples/constitucion.md referencia assets/escudo.png, archivo que no existe en el árbol. No se ha incorporado una imagen.
+
+**Límite importante:** el inventario cubre dependencias directas y herramientas explícitas, no todas las dependencias transitivas. No hay lockfile ni SBOM con la resolución concreta. No se afirma que sea un análisis jurídico ni certificación completa de titularidad.
+
+La documentación de terceros es descriptiva; no se ha cambiado el código de ejecución en esta tarea.

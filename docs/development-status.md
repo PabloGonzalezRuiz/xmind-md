@@ -2,12 +2,12 @@
 
 > **Documento de seguimiento operativo del proyecto.** Debe actualizarse al terminar cada tarea de desarrollo autorizada y cuando cambie una decisión técnica relevante.
 
-- **Última actualización:** 2026-11-11 (matriz CI Python 3.10/3.11/3.12 incorporada; validación del nuevo workflow pendiente)
+- **Última actualización:** 2026-11-11 (matriz Python 3.10/3.11/3.12 validada en CI #42995180722; documentación de cierre pendiente de revalidación)
 - **Rama de referencia:** `main`
 - **Última prueba manual XMind Desktop:** superada en Windows, XMind 26.05.01107.
 - **Commit de incorporación del fixture XMind permanente:** `a1cf99861c819d9f148a7c7a3d779df6a95fc394`.
 - **Contrato objetivo:** IR 1.0.0
-- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; exportación JSON/XMind disponible; fixture comprobado manualmente en XMind Desktop 26.05.01107; wheel y sdist construidos, verificados e instalados en CI. La matriz de pruebas Python 3.10/3.11/3.12 ya está incorporada en el workflow; falta validar sus tres jobs en GitHub Actions. Pendientes: revisar acciones CI, versionado, auditoría funcional final, resolver la referencia a imagen inexistente y preparar Release.
+- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; exportación JSON/XMind disponible; fixture comprobado manualmente en XMind Desktop 26.05.01107; wheel y sdist construidos, verificados e instalados en CI. La matriz Python 3.10/3.11/3.12 está validada en el run #42995180722 (131 pruebas por versión; build/install de distribuciones también correcto). Pendientes: revisar acciones CI, versionado, auditoría funcional final, resolver la referencia a imagen inexistente y preparar Release.
 
 ## 1. Para qué sirve este documento
 
@@ -821,3 +821,25 @@ Python 3.10 alcanzó el fin de soporte el 1 de octubre de 2026. Se conserva en e
 5. Actualizar esta sección con el ID, commit, resultado, número de pruebas y artefactos reales del run validado.
 
 No iniciar la siguiente tarea de la hoja de ruta hasta cerrar esta validación y obtener autorización del usuario.
+
+### 24.1 Cierre y evidencia CI — tarea completada
+
+**Estado: COMPLETADA.** Run [42995180722](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42995180722), commit `db241f04b489de23c429d4189c589859aaffc8fb`, finalizó `completed / success`.
+
+Jobs:
+- `Tests (Ubuntu / Python 3.10)`: success; instalación, Ruff lint, Ruff format, descarga del fixture, pytest (**131 passed in 0.54s**), generación XMind y subida de artefacto.
+- `Tests (Ubuntu / Python 3.11)`: success; mismas etapas; **131 passed in 0.39s**.
+- `Tests (Ubuntu / Python 3.12)`: success; mismas etapas; **131 passed in 0.37s**.
+- `Build and install distributions (Ubuntu)`: success. Construyó wheel y sdist 0.1.0, verificó contenido/licencia, instaló cada distribución en un entorno virtual limpio independiente y generó JSON y XMind desde ambas. Se comprobaron ZIP, MIME, `content.json` e integridad del XMind generado.
+
+Artefactos publicados:
+- `xmind-desktop-smoke-test-py3.10`: ID `13843133705`, 1.330 bytes, SHA-256 ZIP `210cb7846d26b3c569ce145fbdcd77223fa3198c342ab642accda4038c54567a`.
+- `xmind-desktop-smoke-test-py3.11`: ID `13843223449`, 1.331 bytes, SHA-256 ZIP `4248f5338c3125ae7f2207122ed6469ada1c4600613d2e921373038046edf60c`.
+- `xmind-desktop-smoke-test-py3.12`: ID `13843358216`, 1.331 bytes, SHA-256 ZIP `c93c7fb70d11e581035a0222a3ad794b7401b3cb25de63e2d1dc098f6c000054`.
+- `python-distributions`: ID `13842698603`, 73.554 bytes, SHA-256 ZIP `f351a55f4d90b4f98be796caf5e904698f01219028e3fceca93388e0f8ec0b88`.
+
+Los hashes son de los ZIP de artefactos de GitHub Actions, no de los archivos wheel/sdist individuales. La prueba funcional de wheel/sdist se ejecutó en Python 3.12; la matriz 3.10/3.11/3.12 valida la instalación editable y la suite de pruebas en esas versiones. No se debe afirmar que wheel/sdist se instalaron en las tres versiones.
+
+**Conclusión:** la promesa técnica actual `requires-python >=3.10` ha pasado la suite en las tres versiones declaradas por la tarea. Python 3.10 está fuera de soporte de seguridad desde el 1 de octubre de 2026; esta matriz confirma compatibilidad observada, no soporte de seguridad. La decisión sobre elevar el mínimo debe abordarse en la tarea de versionado/metadatos.
+
+La siguiente tarea de la auditoría es actualizar las acciones de GitHub para eliminar el aviso de runtime Node.js 20. No iniciarla sin autorización expresa del usuario.

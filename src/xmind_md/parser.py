@@ -363,7 +363,12 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
                     f"Propiedades desconocidas en :::xmind: {sorted(unknown)} (línea {line_no})"
                 )
             kind = props.get("kind", "attached")
-            if not isinstance(kind, str) or kind not in {"attached", "detached", "callout", "summary"}:
+            if not isinstance(kind, str) or kind not in {
+                "attached",
+                "detached",
+                "callout",
+                "summary",
+            }:
                 raise MarkdownParseError(
                     f"kind debe ser attached, detached, callout o summary (línea {line_no})"
                 )
@@ -378,11 +383,16 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
                 if not isinstance(props["links"], list) or any(
                     not isinstance(link, dict) for link in props["links"]
                 ):
-                    raise MarkdownParseError(f"links debe ser una lista de objetos (línea {line_no})")
+                    raise MarkdownParseError(
+                        f"links debe ser una lista de objetos (línea {line_no})"
+                    )
                 for link_index, link in enumerate(props["links"]):
                     link_kind = link.get("kind")
                     if not isinstance(link_kind, str) or link_kind not in {
-                        "web", "topic", "file", "internal"
+                        "web",
+                        "topic",
+                        "file",
+                        "internal",
                     }:
                         raise MarkdownParseError(
                             f"links[{link_index}].kind no es válido (línea {line_no})"
@@ -391,8 +401,10 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
                         raise MarkdownParseError(
                             f"links[{link_index}].target debe ser texto no vacío (línea {line_no})"
                         )
-                    if "title" in link and link["title"] is not None and not isinstance(
-                        link["title"], str
+                    if (
+                        "title" in link
+                        and link["title"] is not None
+                        and not isinstance(link["title"], str)
                     ):
                         raise MarkdownParseError(
                             f"links[{link_index}].title debe ser texto (línea {line_no})"

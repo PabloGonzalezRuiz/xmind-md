@@ -157,6 +157,7 @@ XMind MD se distribuye bajo la licencia [MIT](LICENSE), con el aviso de copyrigh
 - [Estado de desarrollo y hoja de ruta](docs/development-status.md)
 - [Prompt maestro de reconstrucción](docs/ai-reconstruction-prompt.md)
 - [Auditoría de empaquetado y publicación](docs/release-audit.md)
+- [Auditoría de sincronización documental](docs/documentation-audit.md)
 - [Decisión y adopción de licencia MIT](docs/license-adoption.md)
 - [Avisos de terceros y procedencia](THIRD_PARTY_NOTICES.md)
 - [Arquitectura](docs/architecture.md)

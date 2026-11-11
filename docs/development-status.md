@@ -87,7 +87,7 @@ La prueba manual acredita el fixture y los elementos comprobados, no compatibili
 
 ### 3.5 CLI, pruebas y automatización
 
-**Estado: suite y generación de artefacto verificadas en CI; prueba manual del fixture en XMind Desktop superada; ejecución local Windows aplazada y lint pendiente.**
+**Estado: suite y generación de artefacto verificadas históricamente; prueba manual del fixture superada; matriz CI actualizada a Ubuntu/Windows y correcciones Ruff publicadas, pendientes de nueva verificación.**
 
 - La CLI genera JSON (`.json`) o libros XMind (`.xmind`) a partir de `parse_file_ir()`; admite `--format` explícito y deducción por extensión.
 - La exportación XMind resuelve estilos antes de invocar el adaptador; la salida JSON conserva el comportamiento anterior y solo resuelve estilos si se proporciona `--styles`.
@@ -412,10 +412,14 @@ Este documento es una fotografía mantenida del estado de desarrollo, no una gar
 ### 7.1 Revisión del repositorio
 
 - Rama de referencia: `main`.
-- Último commit observado durante la auditoría: `a6bd54423f5d79d18207e65be809d4be5f5900fe` (`docs: record CI matrix implementation in progress`).
+- Último commit observado al cerrar la auditoría inicial: `a6bd54423f5d79d18207e65be809d4be5f5900fe` (`docs: record CI matrix implementation in progress`). Los commits posteriores de corrección Ruff se detallan en §7.2.
 - Cambio de workflow: `509fd41869429526c6a903e3a3bdc2f2507a2be9` (`ci: add Ruff and Windows/Linux test matrix`).
 - El workflow actual define runners Ubuntu y Windows con Python 3.12; instala `.[dev]`; ejecuta Ruff lint, Ruff format, descarga el fixture XMind, pytest, generación del smoke y subida de artefactos con nombres por sistema operativo.
 - Los commits de workflow y estado se han localizado en GitHub. El conector disponible no permite listar ejecuciones push recientes; `fetch_commit_workflow_runs` solo devuelve ejecuciones asociadas a pull requests y devolvió listas vacías para los commits examinados. Por tanto, el resultado de la nueva matriz queda **sin verificar**, no fallido ni superado.
+- Run inicial aportado por el usuario: `42977948292` (https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42977948292). Los dos jobs fallaron en Ruff antes de pytest.
+- Diagnóstico exacto de Ruff: 9 incidencias en total, repartidas en importaciones sin ordenar, `SIM102`, `F821` (`Any` no definido), `UP037`, `FURB188` y `F401`.
+- Correcciones publicadas: `a7225b5` (import Any), `ab05615` (anotación recursiva), `c2aff0d` (removeprefix), `2b005f9` (import no usado), `ec18113` (imports test parser), `c66d92a` (condición de layout), `40e875a`, `98c360b` y `2e16371` (separación docstring/imports para reglas I001).
+- Los commits de corrección disparan CI por push. Aún no se ha inspeccionado el resultado de la nueva ejecución; lint, formato, pytest y artefactos siguen pendientes de evidencia.
 
 ### 7.2 Diferencia entre evidencia histórica y actual
 

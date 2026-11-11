@@ -2,7 +2,7 @@
 
 **Versión de diseño:** 1.0-draft  
 **Contrato IR objetivo:** 1.0.0  
-**Estado:** resolución implementada para IR 1.0.0 y ruta legacy; el catálogo de propiedades del exportador XMind sigue siendo parcial.
+**Estado:** resolución implementada para IR 1.0.0 y ruta legacy. Las secciones de diseño general describen vocabulario neutral objetivo; el esquema YAML ejecutable y la cascada efectiva se especifican en las secciones 3.1 y 15.
 
 ## 1. Objetivo
 
@@ -47,38 +47,49 @@ El sistema no debe confundir estilos con estructura. Por ejemplo, el plegado de 
 
 ### 3.1 Estructura de configuración
 
-La configuración externa utiliza estas secciones:
+**Esquema ejecutable actual (IR 1.0.0):** el resolutor consume dos catálogos superiores, `style_sets` y `styles`. No consume las secciones superiores `version`, `defaults`, `elements` ni `extensions` descritas en diseños históricos.
 
-| Sección | Función |
-|---|---|
-| `version` | Versión del contrato de configuración de estilos |
-| `defaults` | Valores generales para el mapa y los elementos |
-| `styles` | Catálogo global de estilos con nombre |
-| `style_sets` | Conjuntos reutilizables, con perfiles y estilos propios |
-| `extensions` | Propiedades específicas de adaptadores |
+- `style_sets`: cada nombre de conjunto contiene propiedades agrupadas directamente por tipo de elemento (`topic`, `relationship`, `boundary`, `summary`, `notes`) y, opcionalmente, un mapping `styles` con estilos nombrados del conjunto.
+- `styles`: catálogo global; cada estilo agrupa sus propiedades por tipo de elemento.
+- Las propiedades se expresan directamente bajo el tipo, por ejemplo `topic.text.color`.
 
-Estructura de referencia:
+Ejemplo tomado de la configuración vigente del repositorio:
 
 ~~~yaml
-version: 1
+style_sets:
+  BASE_ACADEMICO:
+    topic:
+      text:
+        font_family: Arial
+        font_size: 14
+        color: "#263B5A"
+  TAI_LEGISLACION:
+    topic:
+      text:
+        font_family: Arial
+        font_size: 14
+      background:
+        color: "#FFFFFF"
+    styles:
+      concepto_importante:
+        topic:
+          text:
+            color: "#9C0006"
+            bold: true
+          border:
+            color: "#C00000"
+            width: 1.5
 
-defaults:
-  elements:
-    map: {}
-    topic: {}
-    branch: {}
-    relationship: {}
-    boundary: {}
-    summary: {}
-    summary_topic: {}
-    callout: {}
-
-styles: {}
-
-style_sets: {}
-
-extensions: {}
+styles:
+  relacion_default:
+    relationship:
+      line:
+        color: "#607D8B"
+        width: 1.5
+        pattern: solid
 ~~~
+
+No añadas `extends`, `elements`, `applies_to` ni `properties` al archivo ejecutable: pertenecen a un esquema de diseño anterior y no son interpretados por el resolutor.
 
 ### 3.2 Elementos estilizados
 
@@ -209,107 +220,60 @@ No se aceptarán cadenas como `"14px"` para una propiedad que ya tiene unidad de
 
 ## 6. Conjuntos de estilos y perfiles
 
-Un conjunto reúne una apariencia coherente y puede extender un único conjunto base.
+Un conjunto agrupa propiedades neutrales por tipo de elemento. El conjunto efectivo se hereda por la jerarquía de temas; un tema descendiente puede seleccionar otro conjunto para su rama.
 
-Ejemplo conceptual:
+La estructura real no utiliza `elements`, perfiles `roles` ni `extends`. Los estilos nombrados de un conjunto se declaran bajo su clave `styles`:
 
 ~~~yaml
 style_sets:
   BASE_ACADEMICO:
-    description: Estilo base para documentación de estudio.
-    elements:
-      map:
-        background:
-          color: "#FFFFFF"
-      topic:
-        roles:
-          root:
-            typography:
-              font_size: 20
-              font_weight: bold
-          main:
-            typography:
-              font_size: 16
-              font_weight: bold
-          subtopic:
-            typography:
-              font_size: 13
-              font_weight: normal
-      branch:
-        line:
-          width: 1.5
-          color: "#78909C"
-
+    topic:
+      text:
+        font_size: 14
+        color: "#263B5A"
   TAI_LEGISLACION:
-    description: Estilos para el temario TAI.
-    extends: BASE_ACADEMICO
-    elements:
-      topic:
-        roles:
-          root:
-            shape:
-              type: rounded_rectangle
-              fill:
-                color: "#263B5A"
-            text:
-              color: "#FFFFFF"
-          main:
-            shape:
-              type: rounded_rectangle
-              fill:
-                color: "#DCE6F1"
-            text:
-              color: "#172B4D"
+    topic:
+      text:
+        font_size: 14
+    styles:
+      concepto_importante:
+        topic:
+          text:
+            color: "#9C0006"
+            bold: true
 ~~~
 
-Reglas:
-
-- Un conjunto puede extender como máximo un conjunto padre.
-- La herencia de conjuntos se resuelve desde el ancestro hasta el conjunto seleccionado.
-- Los ciclos de herencia son errores.
-- El conjunto seleccionado para un tema se hereda por sus descendientes.
-- Un descendiente puede seleccionar otro conjunto para su propia rama.
-- El cambio de conjunto no modifica a los hermanos.
-- Las propiedades de los perfiles se fusionan por propiedad.
+El conjunto seleccionado en el tema se guarda como estado de estilo y se transmite a los descendientes, salvo que uno seleccione otro. Las propiedades de estilo no se copian automáticamente desde el padre al hijo; se hereda el contexto del conjunto.
 
 ## 7. Estilos con nombre
 
-Un estilo con nombre aplica un grupo de propiedades a un tipo de elemento.
+Un estilo con nombre agrupa propiedades por tipo de elemento. Puede declararse en el catálogo global `styles` o dentro de `style_sets.NOMBRE.styles`.
 
 ~~~yaml
 styles:
-  concepto_importante:
-    applies_to: topic
-    properties:
-      shape:
-        fill:
-          color: "#FCE4D6"
-      border:
-        color: "#C00000"
+  relacion_default:
+    relationship:
+      line:
+        color: "#607D8B"
         width: 1.5
-      text:
-        color: "#9C0006"
-      typography:
-        font_weight: bold
+        pattern: solid
 ~~~
 
-Puede definirse en el catálogo global o dentro de un conjunto. Si un nombre aparece en varios niveles, la definición más específica prevalece mediante fusión recursiva.
-
-`applies_to` es obligatorio y evita aplicar por error un estilo de relación a un tema. Valores iniciales: `map`, `topic`, `branch`, `relationship`, `boundary`, `summary`, `summary_topic` y `callout`.
+El resolutor actual no utiliza `applies_to` ni `properties`. El tipo destinatario se expresa como clave del mapping (`topic`, `relationship`, `boundary`, `summary` o `notes`). Las propiedades admitidas se validan después según el elemento y el adaptador de salida.
 
 ## 8. Cascada y precedencia
 
-La resolución se ejecuta para cada elemento estilizable. De menor a mayor prioridad:
+Para IR 1.0.0, `resolve_ir_styles()` aplica por propiedad esta precedencia, de menor a mayor:
 
-1. Valores predeterminados del sistema.
-2. Valores generales del mapa (`defaults.elements`).
-3. Propiedades base heredadas del conjunto seleccionado.
-4. Perfil del rol dentro del conjunto efectivo (solo cuando corresponda).
-5. Estilo con nombre, fusionando catálogo global y definiciones de conjuntos desde el ancestro hasta el conjunto actual.
-6. Modificaciones locales del elemento (`overrides`).
-7. Formato de fragmento de texto (`runs`), solo para el tramo de texto correspondiente.
+1. Defaults del sistema suministrados al resolutor.
+2. `MindMap.metadata.style_defaults`.
+3. Propiedades del conjunto efectivo.
+4. Estilo nombrado.
+5. Overrides locales del elemento.
 
-El tema padre no transmite sus valores visuales a los hijos. Lo que se hereda por el árbol es el contexto del conjunto de estilos, no el color, la forma o la tipografía del padre.
+Las definiciones de estilos/conjuntos embebidas en el documento prevalecen sobre las externas cuando comparten nombre. El conjunto se hereda por la jerarquía de temas; un descendiente puede seleccionar otro. Los valores visuales del tema padre no se copian automáticamente a sus hijos.
+
+El resolutor fusiona mappings recursivamente y no modifica los catálogos originales. El resultado queda en `StyleState.resolved`.
 
 ### 8.1 Reglas de fusión
 
@@ -390,25 +354,9 @@ La documentación oficial de XMind describe controles visuales para Topic, Relat
 
 ## 12. Validación
 
-La validación del sistema debe comprobar:
+La implementación valida que las fuentes YAML sean mappings, que las definiciones tengan estructura reconocible, que las referencias a estilos puedan resolverse tras combinar los catálogos embebidos y externos, y que los tipos de valores sean válidos para las propiedades implementadas.
 
-- Que el archivo de configuración es un mapping YAML.
-- Que `version` es reconocida.
-- Que los conjuntos y estilos tienen nombres únicos en su ámbito.
-- Que los conjuntos referenciados existen.
-- Que la herencia no contiene ciclos.
-- Que `applies_to` coincide con el elemento destinatario.
-- Que las propiedades pertenecen al catálogo o a `extensions`.
-- Que los colores, números, enums y rangos son válidos.
-- Que `null` solo se usa según la semántica definida.
-- Que los estilos referenciados existen.
-- Que los alias localizados no son ambiguos.
-- Que las propiedades no soportadas por un adaptador generan advertencias o errores según el modo de validación.
-
-Se recomiendan dos modos:
-
-- **strict:** una propiedad desconocida o un tipo incorrecto impide generar la salida.
-- **compatible:** conserva extensiones desconocidas y genera advertencias explícitas.
+No debe darse por implementada la validación genérica de todas las propiedades conceptuales descritas en este documento. El adaptador XMind aplica una lista blanca adicional: rechaza propiedades desconocidas, valores `null` no materializables y estados de estilo no resueltos. Consulta la matriz vigente en [xmind-adapter.md](xmind-adapter.md).
 
 ## 13. Pruebas de aceptación
 

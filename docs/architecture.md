@@ -1,135 +1,150 @@
 # Arquitectura de XMind MD
 
-## 1. Propósito
+## 1. Propósito y estado
 
-XMind MD permite describir mapas mentales en Markdown enriquecido y transformar esa descripción en formatos de mapa mental. El primer formato objetivo es .xmind, pero el núcleo no debe depender de XMind ni de una biblioteca de exportación concreta.
+XMind MD convierte Markdown enriquecido en un modelo intermedio neutral (IR 1.0.0) y exporta ese modelo a JSON o a un libro XMind moderno (`.xmind`). La implementación principal es Python (>=3.10).
 
-La arquitectura separa la sintaxis de entrada, el modelo semántico, la resolución de estilos y la serialización. El IR 1.0.0 es el contrato canónico entre estas capas.
+La arquitectura separa parsing, representación semántica, resolución de estilos y serialización. El adaptador XMind implementa un perfil parcial y validado; las capacidades no soportadas se rechazan explícitamente.
 
-## 2. Flujo de datos
+## 2. Flujo de datos real
 
-~~~text
-Markdown enriquecido
-       |
-       v
-   parser.py
-       |
-       v
- ir_parser.py
-       |
-       v
-    IR 1.0.0
-       |
-       +------> styles.py (resuelve StyleState.resolved)
-       |
-       +------> adapters/json_adapter.py
-       |
-       +------> adapters/xmind_adapter.py
-                    |
-                    v
-                 .xmind
-~~~
+```text
+Markdown + front matter/directivas YAML
+                  |
+                  v
+      parser.py (sintaxis/AST legacy)
+                  |
+                  v
+       ir_parser.py (puente canónico)
+                  |
+                  v
+             IR 1.0.0
+              /      \
+             v        v
+     resolve_styles   json_adapter
+             |        |
+             v        v
+       xmind_adapter  JSON IR
+             |
+             v
+       libro .xmind
+```
 
-El parser actual conserva una API legacy por compatibilidad, pero los adaptadores JSON y XMind reciben ya el modelo canónico. La CLI JSON y el script de smoke test utilizan \`parse_file_ir()\`.
+La CLI usa `parse_file_ir()`. La salida JSON serializa el IR. La salida XMind resuelve estilos y luego llama a `write_xmind()`. La selección del formato se realiza mediante `.json`, `.xmind` o `--format`.
 
 ## 3. Capas y responsabilidades
 
-### 3.1 Documento fuente
+### 3.1 Entrada y parser
 
-Los documentos de entrada viven normalmente en examples/ durante el desarrollo. La sintaxis actual utiliza:
+- `src/xmind_md/parser.py`: analiza el subconjunto documentado de Markdown enriquecido y conserva una API/modelo legacy.
+- `src/xmind_md/ir_parser.py`: convierte el resultado al contrato IR 1.0.0, incluyendo temas, bloques, anotaciones, recursos, estilos, enlaces y entidades de hoja.
+- La gramática implementada no equivale a CommonMark ni GFM completos. Su matriz y restricciones están en [grammar.md](grammar.md).
 
-- Encabezados Markdown de nivel 1 a 6 como jerarquía de temas.
-- @conjunto(NOMBRE) para elegir un conjunto de estilos.
-- @estilo(NOMBRE) para elegir un estilo concreto.
+El parser no genera archivos XMind ni conoce estructuras privadas del formato de salida.
 
-La gramática está descrita en grammar.md; su cobertura completa sigue pendiente.
+### 3.2 Modelo intermedio (IR)
 
-### 3.2 Parser y puente IR
+Directorio: `src/xmind_md/ir/`.
 
-- \`src/xmind_md/parser.py\`: reconoce la sintaxis actual y conserva la API legacy.
-- \`src/xmind_md/ir_parser.py\`: convierte el resultado a \`MindMap.sheet.root_topic\`, bloques estructurados, anotaciones, recursos, estilos, enlaces y entidades de hoja.
+El contrato neutral incluye `MindMap`, `Sheet`, `Topic`, `ContentBlock`, anotaciones, recursos, relaciones, límites, resúmenes y estados de estilo. El esquema JSON Draft 2020-12 y el ejemplo canónico están en `docs/ir-schema.json` y `examples/ir/constitucion.json`.
 
-El parser no conoce el formato interno de XMind ni importa bibliotecas de exportación.
+`src/xmind_md/model.py` mantiene el modelo legacy requerido por el parser y consumidores anteriores. No es el contrato que reciben los adaptadores.
 
-### 3.3 Modelo intermedio
+### 3.3 Resolución de estilos
 
-Directorio: \`src/xmind_md/ir/\`.
+Archivo: `src/xmind_md/styles.py`.
 
-El modelo canónico contiene \`MindMap\`, \`Sheet\`, \`Topic\`, \`ContentBlock\`, anotaciones, recursos, relaciones, límites, resúmenes y estados de estilo. La serialización JSON sigue el contrato IR 1.0.0.
+`resolve_styles()` detecta el tipo de modelo y delega los documentos IR a `resolve_ir_styles()`; conserva también una ruta legacy. Para IR, la precedencia por propiedad es:
 
-El módulo \`src/xmind_md/model.py\` sigue existiendo como modelo legacy para la API anterior. No es el contrato consumido por los adaptadores ya migrados.
+1. Defaults del sistema.
+2. `metadata.style_defaults` del documento.
+3. Conjunto efectivo.
+4. Estilo nombrado.
+5. Overrides locales.
 
-### 3.4 Resolución de estilos
+El conjunto se hereda por descendencia y puede sustituirse en un tema. Las definiciones del documento prevalecen sobre las externas con el mismo nombre. La fusión es recursiva y no muta las definiciones originales; escribe el resultado en `style.resolved`. Se resuelven estilos de temas, notas, relaciones, límites y resúmenes.
 
-Archivo: \`src/xmind_md/styles.py\`.
+La resolución neutral no implica que el adaptador XMind pueda traducir todas las propiedades. El adaptador mantiene su propio catálogo de propiedades admitidas y falla ante propiedades desconocidas.
 
-\`resolve_styles()\` despacha documentos IR 1.0.0 a \`resolve_ir_styles()\` y conserva la ruta legacy. En el IR, el conjunto puede seleccionarse en \`metadata.style_set\` o en \`Topic.style.style_set\`; se hereda por la rama y puede sustituirse en un tema descendiente. La cascada combina recursivamente, por propiedad: valores predeterminados del sistema, \`metadata.style_defaults\`, conjunto aplicable, estilo nombrado y overrides locales. También resuelve estilos de notas, relaciones, límites y resúmenes. No modifica las definiciones originales; escribe el resultado en \`style.resolved\`.
+### 3.4 Adaptadores
 
-### 3.5 Adaptadores
+Directorio: `src/xmind_md/adapters/`.
 
-Directorio: \`src/xmind_md/adapters/\`.
+- `json_adapter.py`: serializa el documento IR mediante su representación neutral.
+- `xmind_adapter.py`: crea `content.json`, metadatos, manifiesto, miniatura y contenedor ZIP del formato XMind moderno.
 
-- \`json_adapter.py\`: serializa exclusivamente el documento IR mediante \`MindMap.to_dict()\`.
-- \`xmind_adapter.py\`: genera ZIP + JSON moderno a partir de \`MindMap.sheet\` y de las entidades canónicas.
+El adaptador XMind recibe únicamente IR 1.0.0. No analiza Markdown, no resuelve estilos y no modifica el IR. Valida el perfil soportado y lanza `XMindAdapterError` ante construcciones no exportables. La matriz detallada está en [xmind-adapter.md](xmind-adapter.md).
 
-Ambos adaptadores importan el IR, no \`src/xmind_md/model.py\`. El adaptador XMind consume estilos ya resueltos y rechaza capacidades que todavía no puede representar. Su perfil y limitaciones están documentados en [xmind-adapter.md](xmind-adapter.md).
+### 3.5 CLI
 
-No se debe introducir lógica de parsing Markdown ni resolución de estilos dentro de un adaptador.
+Archivo: `src/xmind_md/cli.py`.
 
-### 3.6 CLI y herramientas de desarrollo
+La CLI:
+- recibe un Markdown de entrada y una ruta de salida obligatoria;
+- acepta `--styles` para configuración YAML externa;
+- admite `--format json|xmind`, o infiere el formato por extensión;
+- analiza a IR mediante `parse_file_ir()`;
+- resuelve estilos antes de exportar XMind;
+- serializa JSON y, si se proporciona configuración externa, puede resolver estilos antes de serializar;
+- comunica errores de E/S, formato y estilos por stderr y devuelve código 2.
 
-- \`src/xmind_md/cli.py\`: construye IR mediante \`parse_file_ir()\`, resuelve estilos si se proporciona configuración externa y escribe JSON canónico.
-- \`scripts/create_xmind_smoke.py\`: genera un paquete XMind de comprobación a partir de IR.
+El comando instalado es `xmind-md`; también está disponible `python -m xmind_md`.
 
-La CLI todavía no expone la exportación XMind como opción de usuario; esa integración corresponde a una tarea posterior.
+### 3.6 Automatización y pruebas
 
-### 3.7 Automatización y calidad
+- `tests/`: pruebas unitarias y de integración de parser, IR, estilos, adaptadores y CLI.
+- `.github/workflows/ci.yml`: CI sobre Ubuntu, Python 3.12; instalación editable con dependencias de desarrollo, Ruff lint, Ruff format, descarga de fixture externo, pytest, generación del smoke test y publicación del artefacto.
+- `scripts/create_xmind_smoke.py`: genera un libro de comprobación para interoperabilidad manual.
+- `pyproject.toml`: metadatos de paquete, dependencias, entry point y configuración de herramientas.
 
-- \`tests/\`: pruebas unitarias y de integración.
-- \`.github/workflows/ci.yml\`: instala el paquete, ejecuta pytest, genera un archivo XMind smoke y publica el artefacto.
-- \`pyproject.toml\`: metadatos, dependencias y configuración de herramientas.
+La CI de referencia de la tarea 12 completó correctamente 131 pruebas y publicó el artefacto XMind. La evidencia y el último estado se mantienen en [development-status.md](development-status.md).
 
 ## 4. Contratos e invariantes
 
-1. El parser produce un documento neutral, no un archivo XMind.
-2. El IR no importa bibliotecas de exportación.
-3. Los adaptadores reciben el modelo canónico IR 1.0.0.
-4. El orden de temas y subtemas debe conservarse.
-5. Los nombres de estilos son referencias simbólicas; las propiedades resueltas se almacenan aparte.
-6. El adaptador no debe resolver estilos ni modificar el IR.
-7. La salida debe ser determinista para una misma entrada y configuración, salvo metadatos de creación dependientes del momento.
-8. Las capacidades no implementadas deben documentarse y rechazarse explícitamente; no deben presentarse como funcionales.
-9. La generación de un ZIP válido no acredita apertura y guardado manual en XMind Desktop.
+1. El parser produce una representación neutral, no un archivo XMind.
+2. El IR no importa librerías de exportación.
+3. Los adaptadores consumen IR 1.0.0, no el modelo legacy.
+4. El orden de temas, bloques y colecciones significativas se conserva.
+5. Las referencias de estilo son simbólicas; las propiedades resueltas se almacenan separadamente.
+6. El adaptador no interpreta Markdown ni resuelve estilos.
+7. Las capacidades no implementadas se rechazan explícitamente; no se descartan silenciosamente.
+8. La generación de un ZIP válido y las pruebas JSON no equivalen a compatibilidad completa con XMind Desktop.
+9. La compatibilidad se declara por característica y evidencia de versión, no como promesa genérica.
 
-## 5. Decisiones técnicas actuales
+## 5. Decisiones técnicas vigentes
 
-- Python >= 3.10.
-- Diseño de paquete src/.
+- Python >= 3.10; CI actual en Python 3.12 sobre Ubuntu.
+- Paquete con diseño `src/`.
 - PyYAML como dependencia de ejecución.
-- pytest y Ruff como dependencias de desarrollo.
+- pytest, Ruff y jsonschema como dependencias de desarrollo.
 - IR 1.0.0 como contrato canónico.
-- JSON como formato de inspección del IR.
-- XMind moderno basado en content.json; perfil inicial implementado, compatibilidad con XMind Desktop pendiente de verificación.
-- Serialización ZIP + JSON nativa en Python; los SDK externos son referencias, no dependencias obligatorias.
-- GitHub Actions para integración continua.
+- JSON como formato de inspección.
+- XMind moderno ZIP + JSON como formato de salida.
+- Serialización XMind mediante biblioteca estándar de Python; los SDK externos son referencias técnicas, no dependencias obligatorias.
+- Sin generación de temas flotantes en el modelo neutral.
+- CI Linux/Ubuntu; la interoperabilidad Windows se verifica con XMind Desktop, no mediante un runner Windows.
 
-## 6. Extensiones previstas
+## 6. Verificación de interoperabilidad
 
-1. Completar y validar la gramática Markdown.
-2. Validar formalmente el JSON Schema y los ejemplos.
-3. Ampliar el adaptador XMind para recursos, imágenes, boundaries, summaries, estilos y extensiones.
-4. Integrar la exportación XMind en la CLI.
-5. Abrir los archivos generados con XMind Desktop y comprobar su estructura y presentación.
-6. Verificar la ejecución local en Windows.
-7. Completar CI, Ruff y comprobaciones automáticas.
-8. Auditar y publicar una versión estable.
+El fixture `tests/fixtures/xmind/xmind-md-smoke-test.xmind` fue abierto, inspeccionado, guardado, cerrado y reabierto por el usuario en XMind Desktop 26.05.01107 para Windows. Se comprobaron tema central, ramas, subtema, nota, etiqueta, marcador y relación.
 
-## 7. Criterio para aceptar cambios
+Esta comprobación acredita esos elementos del fixture en esa versión. No demuestra que todos los elementos del IR, todos los estilos o todas las capacidades del formato XMind estén soportados.
 
-Un cambio de arquitectura debe incluir:
+## 7. Extensiones y limitaciones
 
-- La responsabilidad exacta del módulo afectado.
-- Cambios en el modelo intermedio si se introduce un nuevo concepto.
-- Pruebas positivas y negativas.
-- Actualización de documentación y ejemplos.
-- Confirmación explícita de qué está implementado y qué queda pendiente.
+Las capacidades del parser, del IR y del adaptador son distintas. Que el IR pueda representar una entidad no significa que el parser pueda crearla desde Markdown ni que el adaptador XMind pueda exportarla. Consultar:
+
+- [Gramática Markdown](grammar.md).
+- [Especificación IR](ir-specification.md).
+- [Sistema de estilos](style-system.md).
+- [Matriz del adaptador XMind](xmind-adapter.md).
+
+## 8. Criterios para aceptar cambios
+
+Cada cambio debe incluir:
+- responsabilidad y capa afectada;
+- cambios del IR si se introduce un concepto neutral nuevo;
+- pruebas positivas y negativas;
+- actualización de documentación y ejemplos;
+- actualización de la matriz de capacidades;
+- ejecución satisfactoria de CI antes de declarar el cambio validado.

@@ -63,8 +63,10 @@ def _walk_topics(
 
     for index, block in enumerate(topic.content):
         block_path = f"{path}.content[{index}]"
-        if block.type not in _CONTENT_TYPES:
+        if not isinstance(block.type, str) or block.type not in _CONTENT_TYPES:
             raise IRValidationError(f"{block_path}.type: tipo no reconocido {block.type!r}")
+        if not isinstance(block.data, dict):
+            raise IRValidationError(f"{block_path}.data: debe ser un objeto")
         if block.id is not None:
             _register(block.id, f"{block_path}.id", seen)
         if block.type == "image":

@@ -4,7 +4,7 @@
 - **Rama:** `main`
 - **Commit base de auditoría de código:** `a36f36ddc53bc71ef288c829ec5abc6e1eb16cc6`
 - **Última validación funcional y de distribuciones:** [43006735888](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43006735888)
-- **Última revisión documental:** sincronización de tarea 7 completada el 2026-11-11; ver sección 12 y `documentation-audit.md`
+- **Última revisión documental:** tarea 7 completada y validada; preparación de Release 0.1.0 Alpha en sección 13.
 - **Alcance:** árbol del repositorio, arquitectura, parser/IR/estilos/adaptadores/CLI, pruebas, workflow, metadatos de distribución, licencia y documentación.
 - **Entorno:** inspección de GitHub y GitHub Actions; no se ejecutó código en el equipo del usuario.
 
@@ -25,7 +25,7 @@ La estructura real contiene:
 - `docs/`: especificaciones, matrices, continuidad, auditoría y guía.
 - `examples/`, `config/` y `tests/fixtures/xmind/`: ejemplos/configuración y fixture manual.
 
-La versión declarada es `0.1.0` tanto en `pyproject.toml` como en `src/xmind_md/__init__.py`. La coincidencia está comprobada en el commit auditado, pero la duplicidad sigue siendo un riesgo de divergencia. El verificador de distribución también contiene literalmente la versión `0.1.0`; habrá que parametrizarlo o comprobar expresamente los tres puntos al preparar el siguiente versionado.
+La versión `0.1.0` tiene una única fuente en `src/xmind_md/__init__.py`; `pyproject.toml` la obtiene dinámicamente y `scripts/verify_distributions.py` la lee mediante AST para compararla con wheel/sdist. La tarea 5 cerró la divergencia histórica.
 
 ## 3. Evidencia CI y distribución
 
@@ -78,7 +78,7 @@ En ejecuciones históricas aparecía un aviso de deprecación para `checkout@v4`
 | CI | Ubuntu/Python 3.10, 3.11 y 3.12; Ruff, pytest, smoke y build | Matriz y runtime Node.js 24 validados; run #42996452355 |
 | Packaging | Wheel/sdist construidos, inspeccionados, instalados y CLI JSON probada | Fijar versión única o comprobación; ampliar smoke XMind y metadatos |
 | Licencia | MIT declarada y empaquetada | Revisar procedencia/licencia de materiales de terceros |
-| Release | No hay Release estable documentada en esta auditoría | Changelog, versión, tag, assets y notas pendientes |
+| Release | Preparación 0.1.0 Alpha en curso; ver sección 13 | Inspección manual del smoke candidato y CI del SHA final; después workflow de publicación |
 
 ## 5. Licencia y procedencia de materiales
 
@@ -113,7 +113,7 @@ Antes de distribuir:
 | 5 | Resolver versionado y metadatos de publicación | Fuente de versión consistente, verificador no desincronizable, metadatos públicos coherentes |
 | 6 | Auditoría funcional final de parser/IR/estilos/CLI/XMind | Matriz de capacidades basada en código/tests; defectos críticos corregidos o limitaciones explícitas |
 | 7 | Sincronización final de toda la documentación | **Completada y validada** en CI #43009183421 (161 pruebas por versión; wheel/sdist y CLI correctos) |
-| 8 | Preparar changelog, tag y GitHub Release estable | Artefactos identificados y comprobados; notas de versión; tag y Release reproducibles |
+| 8 | Preparar changelog, tag y GitHub Release 0.1.0 Alpha | Changelog/notas/workflow preparados; publicación condicionada a inspección Desktop y CI del SHA final |
 
 El usuario ha autorizado la auditoría de procedencia/licencias (tarea 2). El inventario técnico está documentado; la limitación de dependencias transitivas y la referencia rota del recurso se mantienen como hallazgos pendientes para las tareas correspondientes.
 
@@ -271,3 +271,26 @@ Artefactos: `python-distributions` ID `13850260351` (78.103 bytes; SHA-256 del Z
 Los límites de publicación siguen vigentes: no hay inspección manual del nuevo smoke con estilos en XMind Desktop; CI solo Ubuntu; Python 3.10 fuera de soporte upstream; adaptador XMind parcial; no existe changelog, tag ni Release. La versión se mantiene en 0.1.0.
 
 **Siguiente paso propuesto:** tarea 8, preparación de changelog, tag y GitHub Release. No iniciar hasta recibir autorización expresa del usuario. La autorización previa para publicar queda condicionada a los criterios de esta auditoría y a la validación del commit candidato.
+
+
+## 13. Preparación de primera publicación — tarea 8 (2026-11-11)
+
+**Estado: PREPARACIÓN COMPLETADA; PUBLICACIÓN AÚN NO AUTORIZADA POR LA EVIDENCIA PENDIENTE.**
+
+### Decisión de versionado
+
+Se conserva `0.1.0`, ya centralizada en `src/xmind_md/__init__.py` y leída dinámicamente por setuptools. El paquete se clasifica como `Development Status :: 3 - Alpha`; por tanto, el nombre correcto de la primera publicación es **XMind MD 0.1.0 (Alpha, pre-1.0)**. No debe titularse ni anunciarse como estable. Tag previsto: `v0.1.0`.
+
+### Preparación incorporada
+
+- `CHANGELOG.md`: alcance, cambios, pruebas y limitaciones de 0.1.0.
+- `docs/releases/v0.1.0.md`: notas específicas de la publicación.
+- `.github/workflows/release.yml`: workflow `workflow_dispatch` que solo acepta `main`, exige confirmación explícita de la inspección manual del smoke, comprueba CI exitosa para el SHA exacto, verifica que el tag no exista, construye y verifica wheel/sdist y usa `gh release create` para crear tag y GitHub Release con ambos paquetes.
+- README y catálogo de archivos actualizados; `THIRD_PARTY_NOTICES.md` ya no conserva el hallazgo histórico de `escudo.png` como pendiente.
+- Se mantiene visible que el inventario de terceros no es SBOM transitivo completo. No se redistribuye un bundle de dependencias; PyYAML queda como dependencia declarada de instalación.
+
+### Condición previa obligatoria
+
+La última salida smoke disponible para inspección se generó en CI #43010217583, commit `e4945f0a154c860ea631da950c9c80c9aeeaa007`, artefacto `xmind-desktop-smoke-test-py3.12` ID `13850915238`. Esa salida debe abrirse, guardarse, cerrarse y reabrirse en XMind Desktop. Sin esa inspección no se cumple el criterio de publicación. Tras los cambios documentales/workflow de tarea 8, se ejecutará CI sobre el SHA final y se generará un smoke nuevo; se debe inspeccionar el artefacto del SHA exacto que se publicará.
+
+**No se ha creado tag ni GitHub Release.** El workflow no debe ejecutarse hasta que el usuario confirme la inspección del smoke generado desde el commit final y la CI de ese mismo SHA haya terminado con success.

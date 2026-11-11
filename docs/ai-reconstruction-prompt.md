@@ -773,3 +773,17 @@ No CommonMark/GFM completo. El adaptador XMind rechaza recursos/imágenes, tarea
 ### Siguiente tarea
 
 **Tarea 8 — preparar changelog, fijar la versión final, crear tag y GitHub Release reproducible.** Antes de publicar, ejecutar CI sobre el commit candidato, comprobar artefactos y respetar los criterios de `docs/release-audit.md`. La versión actual sigue siendo 0.1.0 y no existe tag/Release. No iniciar tarea 8 sin autorización expresa del usuario.
+
+
+## Estado de continuidad — tarea 8, preparación de Release (2026-11-11)
+
+La tarea 8 está en curso. Se decidió conservar `0.1.0` y publicarla como Alpha/pre-1.0, nunca como estable: el classifier de pyproject es Alpha y el exportador XMind es parcial.
+
+- `CHANGELOG.md` y `docs/releases/v0.1.0.md` preparados.
+- `.github/workflows/release.yml` creado. Es manual, exige ejecución desde `main`, confirmación del smoke manual en XMind Desktop, CI success para el mismo SHA, ausencia del tag y build/verificación de wheel/sdist antes de crear `v0.1.0` y GitHub Release.
+- README, catálogo, estado operativo y avisos de terceros sincronizados; referencia rota a `escudo.png` corregida en avisos.
+- No hay tag ni Release. No afirmar publicación ni estabilidad.
+
+**Bloqueo:** el smoke generado desde el commit candidato final debe abrirse, guardarse y reabrirse manualmente en XMind Desktop; el usuario debe confirmar el resultado. Luego comprobar CI verde del mismo SHA y solo entonces ejecutar el workflow `Prepare and publish XMind MD release` desde `main`, con `desktop_smoke_verified=yes`. No eludir esta condición.
+
+Consultar `docs/release-audit.md`, sección 13, y `docs/development-status.md`, sección 29, para estado y evidencia actualizados.

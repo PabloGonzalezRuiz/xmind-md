@@ -280,6 +280,7 @@ def _convert(old: Any, source_path: str) -> MindMap:
             target_topic=item["target"],
             title=item.get("title"),
             style=StyleState(ref=item.get("style")),
+            extensions=dict(item.get("extensions", {})),
         )
         for item in old.relationships
     ]
@@ -289,6 +290,7 @@ def _convert(old: Any, source_path: str) -> MindMap:
             topic_ids=list(item["topics"]),
             title=item.get("title"),
             style=StyleState(ref=item.get("style")),
+            extensions=dict(item.get("extensions", {})),
         )
         for item in old.boundaries
     ]
@@ -298,6 +300,7 @@ def _convert(old: Any, source_path: str) -> MindMap:
             topic_ids=list(item["topics"]),
             title=item.get("title"),
             style=StyleState(ref=item.get("style")),
+            extensions=dict(item.get("extensions", {})),
         )
         for item in old.summaries
     ]
@@ -313,6 +316,8 @@ def _convert(old: Any, source_path: str) -> MindMap:
         for key in ("author", "description", "style_set")
         if key in old.metadata
     }
+    if old.extensions:
+        metadata["extensions"] = dict(old.extensions)
     metadata["source_file"] = source_path
     sheet_id = _id("sheet", f"{old.id}|{source_path}")
     mind_map = MindMap(

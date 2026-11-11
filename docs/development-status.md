@@ -85,26 +85,22 @@ El puente del parser y el resolutor disponen de rutas canónicas IR. Los adaptad
 
 La prueba manual acredita el fixture y los elementos comprobados, no compatibilidad universal ni cobertura de todas las capacidades XMind.
 
-### 3.5 CLI, pruebas y automatización
+### 3.5 CLI, pruebas, CI y distribuciones
 
-**Estado: suite y generación de artefacto verificadas históricamente; prueba manual del fixture superada; CI simplificada a Ubuntu con Ruff, pendiente de nueva verificación.**
+**Estado: CLI JSON/XMind integrada; CI Ubuntu con Ruff y 131 pruebas; wheel/sdist construidos, inspeccionados, instalados y probados con salidas JSON y XMind.**
 
-- La CLI genera JSON (`.json`) o libros XMind (`.xmind`) a partir de `parse_file_ir()`; admite `--format` explícito y deducción por extensión.
-- La exportación XMind resuelve estilos antes de invocar el adaptador; la salida JSON conserva el comportamiento anterior y solo resuelve estilos si se proporciona `--styles`.
+- La CLI genera JSON (`.json`) o libros XMind (`.xmind`) desde `parse_file_ir()`; admite `--format` explícito y deducción por extensión.
+- La exportación XMind resuelve estilos antes de invocar el adaptador. La salida JSON solo resuelve estilos si se proporciona `--styles`.
 - Los errores de entrada, configuración, formato y capacidades XMind no exportables se muestran en stderr y devuelven código 2.
-- Hay pruebas unitarias, de integración y de CLI en `tests/`.
-- GitHub Actions contiene un flujo de CI y una generación de artefacto XMind de prueba.
-- CI #165, commit `2250dbf06d86680cbfcf9c5c4c4d208e62a4f53b`: **90 pruebas superadas**, incluyendo validación formal Draft 2020-12, ejemplos y casos negativos; generación y publicación del artefacto XMind correctas.
-- CI #178, commit `f2f491cd52e668a53d31c1dddbf321c30f262882`: **97 pruebas superadas**; generación y publicación del artefacto XMind correctas tras los cambios de gramática.
-- CI #203, run `42842555229`, commit `1995076eee2e5108c37320c7a9df9be21745f5de`: **131 pruebas superadas en 0,45 s**; Tests, generación del smoke XMind y publicación del artefacto correctos. Entorno: GitHub Actions, Ubuntu, Python 3.12.16. https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42842555229
-- CI #205, run `42842726726`, commit `f99273d3f93a95648457aa183bb4ec55bb99fda8`: workflow completo correcto tras la actualización del documento de estado. Los cinco pasos Install, Download XMind reference fixture, Tests, Build XMind Desktop smoke test y Upload XMind smoke test finalizaron correctamente. El log registra **131 pruebas superadas en 0,52 s**. https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42842726726
-- CI #209, run `42843815047`, commit `1fd131cc16786093dba00e09fd551f299a439761`: job tests completado con success; Install, descarga del fixture de referencia, Tests, generación y publicación del smoke test finalizaron correctamente. Log: **131 passed in 0.37s**, GitHub-hosted Linux, Python 3.12.16. https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42843815047
-- Auditoría detallada del run #209 (workflow anterior): job `tests` y sus pasos completados con `success`; artefacto `xmind-desktop-smoke-test` publicado (ID `13776583547`, 1.333 bytes, SHA-256 `a0706df6bc41f5cd1ba04c85bffb04faeb8d93e0422cc454c75895d83d2ae69a`), con expiración `2026-11-24T15:23:39Z`. Esta evidencia no valida la matriz nueva ni Ruff.
-- Validador: `jsonschema 4.26.0` con extra `format`; se comprueban los formatos de fecha/fecha-hora.
-- Commit `509fd41869429526c6a903e3a3bdc2f2507a2be9`: `.github/workflows/ci.yml` incorpora matriz `ubuntu-latest`/`windows-latest`, Python 3.12, `ruff check src tests`, `ruff format --check src tests`, pytest, generación del smoke XMind y artefactos separados por sistema operativo.
-- Commit `a6bd54423f5d79d18207e65be809d4be5f5900fe`: registra la implementación en curso.
-- A fecha de esta auditoría no se ha obtenido evidencia verificable de los runs disparados por esos commits. No afirmar que Ruff, Windows, pytest en ambos runners ni los dos artefactos han pasado.
-- El usuario no quiere instalar ni ejecutar Python localmente; la validación debe realizarse en GitHub Actions.
+- La CI actual está en `.github/workflows/ci.yml`, solo Ubuntu/Python 3.12. El job Tests instala en editable, ejecuta Ruff, descarga el fixture de referencia, pytest y genera el smoke XMind.
+- El job dependiente Build and install distributions construye wheel/sdist, verifica metadatos MIT/archivos esenciales, instala cada distribución en un virtualenv limpio separado y ejecuta CLI para JSON y XMind.
+- Run [42990025087](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42990025087), commit `9831ae89da6e331219e1edbce71f6415752e2f22`: ambos jobs success; Ruff lint/format success; **131 passed in 0.48s**; wheel/sdist y CLI JSON/XMind correctos.
+- La documentación reconciliada se volvió a validar en run [42990299861](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42990299861), commit `a150ed9db79d6b133f3bf7f18f3a5c1f0fadcded`: ambos jobs success; **131 passed in 0.50s**; build, verificación, instalaciones y CLI JSON/XMind success.
+- Artefactos del run #42990299861: `python-distributions` ID `13841446896`, 73.390 bytes, SHA-256 del ZIP `38a138fcae1d115499ff11cf1d0db6cddf13c6a88db0316e732b66933373b912`; `xmind-desktop-smoke-test` ID `13841477803`, 1.331 bytes, SHA-256 del ZIP `5a579a93abc118feb3091a579567b59b65f72dd0dc5a0c04abdbd4c5b5bfffbf`.
+- El smoke XMind desde distribuciones valida ZIP, MIME, posición y compresión de `mimetype`, `content.json`, tema raíz e integridad. No sustituye la inspección visual manual en XMind Desktop.
+- La CI no prueba todavía Python 3.10/3.11 ni Windows. El log de Actions muestra aviso de deprecación Node.js 20 en las versiones de actions actualmente utilizadas; se mantiene como tarea de mejora.
+- El usuario no desea instalar ni ejecutar Python localmente; las validaciones se realizan en GitHub Actions.
+
 
 ## 4. Decisiones técnicas vigentes
 

@@ -45,3 +45,6 @@ El inventario no es un SBOM completo: no fija las versiones resueltas ni enumera
 Se detectó además que examples/constitucion.md referencia assets/escudo.png, pero ese archivo no existe en el árbol versionado. El recurso descrito en el JSON de ejemplo tampoco está disponible como archivo. Debe corregirse antes de presentar el ejemplo como autónomo; no se ha identificado ni añadido una imagen de terceros.
 
 El texto normativo del ejemplo constitucional está sujeto a la exclusión de disposiciones legales del artículo 13 del texto refundido de la Ley de Propiedad Intelectual, según la fuente oficial del BOE. Esta observación no se extiende a imágenes, comentarios o materiales editoriales.
+
+
+La documentación de procedencia de terceros y avisos MIT se validó además en run [42993499900](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42993499900), commit `d31a389a3066ec17d581629b7aa3078c32fcb80e`: ambos jobs success, 131 pruebas, wheel/sdist verificados e instalación/CLI JSON-XMind desde ambos paquetes. El inventario técnico y sus limitaciones se detallan en [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md).

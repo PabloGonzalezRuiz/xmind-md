@@ -446,3 +446,33 @@ No crear la Release hasta que se cumplan todos estos criterios:
 La instrucción del usuario autoriza crear la Release cuando estos criterios se cumplan. No hace falta volver a pedir autorización para la publicación final, pero sí hay que informar antes de cualquier decisión técnica irreversible no cubierta por esa autorización. No inventar número de versión ni declarar estabilidad antes de la auditoría.
 
 Estado de partida 2026-11-11: no apto para Release. Run 42983767866, commit `34c0274f5a5f6e80bf65d6c4b55ff895471b5437`: Install y Ruff lint success; Ruff format failure (17 archivos); fixture, pytest, generación y artefacto skipped. La tarea CI permanece abierta.
+
+
+## Actualización de estado — 2026-11-11: tarea 12 completada
+
+Esta sección es la referencia vigente y prevalece sobre cualquier estado anterior de la tarea 12 en este prompt.
+
+La tarea 12 (CI, Ruff y comprobaciones automáticas) está **COMPLETADA**. El usuario no tuvo que instalar Python ni ejecutar comandos en su equipo: el formateo se realizó en un runner Ubuntu de GitHub Actions.
+
+- Los 17 archivos que requerían formato se corrigieron mediante python -m ruff format src tests.
+- Los cambios se integraron en main mediante PR [#1](https://github.com/PabloGonzalezRuiz/xmind-md/pull/1).
+- Commit integrado y verificado: 23c3a9b4bcae7159f7c46d217cd489265516588c.
+- Se retiró el workflow temporal de autoformateo; no forma parte de la automatización permanente.
+- Run CI verde: [42985048305](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42985048305).
+- Entorno: Ubuntu, Python 3.12.16.
+- Ruff lint: success.
+- Ruff format: success; el formateador informó que los 24 archivos ya estaban formateados después de aplicar los cambios.
+- Descarga del fixture de referencia: success.
+- Pytest: **131 passed in 0.53s**.
+- Generación del archivo smoke XMind: success.
+- Publicación del artefacto xmind-desktop-smoke-test: success (ID 13839211520, 1.332 bytes; SHA-256 7c338dfa36bd345e539eaf9d1dde3e17c31f16db7105ffefce5b6b133271383d).
+
+El job Tests (Ubuntu) y todos sus pasos finalizaron con success. Esto acredita CI y generación del artefacto en ese commit; no amplía por sí solo la cobertura manual de XMind Desktop más allá de los elementos que el usuario ya comprobó.
+
+### Hoja de ruta vigente
+
+12. **CI y Ruff — COMPLETADA.**
+13. **Sincronización del README y documentación técnica — PENDIENTE.**
+14. **Auditoría final y publicación estable — PENDIENTE.**
+
+Al retomar, consultar primero docs/development-status.md, verificar que main sigue en el commit esperado o en un descendiente y revisar el último run CI. La siguiente tarea a proponer es la 13; esperar autorización explícita antes de empezarla.

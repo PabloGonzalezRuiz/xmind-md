@@ -188,12 +188,6 @@ def test_ir_parser_preserves_map_and_global_entity_extensions():
     )
     result = parse_markdown_ir(source)
     assert result.metadata["extensions"] == {"vendor": {"map_flag": True}}
-    assert result.sheet.relationships[0].extensions == {
-        "vendor": {"relation_flag": True}
-    }
-    assert result.sheet.boundaries[0].extensions == {
-        "vendor": {"boundary_flag": True}
-    }
-    assert result.sheet.summaries[0].extensions == {
-        "vendor": {"summary_flag": True}
-    }
+    assert result.sheet.relationships[0].extensions == {"vendor": {"relation_flag": True}}
+    assert result.sheet.boundaries[0].extensions == {"vendor": {"boundary_flag": True}}
+    assert result.sheet.summaries[0].extensions == {"vendor": {"summary_flag": True}}

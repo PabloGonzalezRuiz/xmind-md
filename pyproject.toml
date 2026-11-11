@@ -26,10 +26,6 @@ classifiers = [
     "Topic :: Utilities",
 ]
 
-[project.urls]
-Homepage = "https://github.com/PabloGonzalezRuiz/xmind-md"
-Repository = "https://github.com/PabloGonzalezRuiz/xmind-md"
-Documentation = "https://github.com/PabloGonzalezRuiz/xmind-md/tree/main/docs"
 # PyYAML es la única dependencia de ejecución de la primera versión.
 dependencies = ["PyYAML>=6.0"]
 

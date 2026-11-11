@@ -7,6 +7,7 @@ Este documento identifica los principales archivos versionados y la responsabili
 | Archivo | Responsabilidad |
 |---|---|
 | `README.md` | Presentación, capacidades, instalación y uso de la CLI. |
+| `CHANGELOG.md` | Historial de cambios y alcance de las versiones publicadas. |
 | `LICENSE` | Licencia MIT del código propio del proyecto. |
 | `THIRD_PARTY_NOTICES.md` | Inventario de dependencias, acciones CI, fixtures y procedencia de materiales de terceros. |
 | `pyproject.toml` | Metadatos/versión del paquete, dependencias, entry point y configuración de pytest/Ruff. |
@@ -48,6 +49,7 @@ Este documento identifica los principales archivos versionados y la responsabili
 | `ai-reconstruction-prompt.md` | Prompt autónomo para reconstruir y continuar el proyecto. |
 | `functional-audit.md` | Hallazgos, correcciones, evidencia y limitaciones de la auditoría funcional. |
 | `documentation-audit.md` | Discrepancias contrastadas y cierre de la sincronización documental de tarea 7. |
+| `releases/v0.1.0.md` | Notas de la primera publicación Alpha. |
 | `development-status.md` | Registro operativo, auditoría, hoja de ruta y evidencias. |
 | `architecture.md` | Capas, flujo de datos e invariantes vigentes. |
 | `development.md` | Instalación, CLI, pruebas y ciclo de contribución. |
@@ -87,6 +89,7 @@ Este documento identifica los principales archivos versionados y la responsabili
 | Ruta | Función |
 |---|---|
 | `.github/workflows/ci.yml` | CI Ubuntu: tests/Ruff/XMind y job dependiente de build, verificación e instalación de wheel/sdist. |
+| `.github/workflows/release.yml` | Publicación manual protegida: verifica CI/versión, exige confirmación Desktop, construye distribuciones y crea tag/Release. |
 | `output/` | Salidas locales; el contenido generado no se versiona salvo fixtures expresamente ubicados en tests. |
 
 El catálogo no sustituye a las pruebas: antes de modificar un módulo, inspecciona su implementación y sus tests actuales.

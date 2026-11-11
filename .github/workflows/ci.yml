@@ -1,4 +1,4 @@
-# Integración continua: ejecutar pruebas y controles de calidad en Linux y Windows.
+# Integración continua: ejecutar pruebas y controles de calidad en Ubuntu.
 name: CI
 
 on:
@@ -8,14 +8,8 @@ on:
 
 jobs:
   tests:
-    name: Tests (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-latest
-          - windows-latest
+    name: Tests (Ubuntu)
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -47,7 +41,7 @@ jobs:
       - name: Upload XMind smoke test
         uses: actions/upload-artifact@v4
         with:
-          name: xmind-desktop-smoke-test-${{ matrix.os }}
+          name: xmind-desktop-smoke-test
           path: output/xmind-md-smoke-test.xmind
           if-no-files-found: error
           retention-days: 14

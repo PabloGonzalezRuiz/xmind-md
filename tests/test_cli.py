@@ -4,6 +4,7 @@ import json
 import sys
 import zipfile
 
+from xmind_md import __version__
 from xmind_md.cli import build_parser, main
 
 
@@ -112,3 +113,12 @@ def test_cli_reports_unresolved_style_for_xmind(tmp_path, monkeypatch, capsys):
 
     assert result == 2
     assert "INEXISTENTE" in capsys.readouterr().err
+
+
+def test_cli_reports_package_version(monkeypatch, capsys):
+    try:
+        _run_cli(monkeypatch, "--version")
+    except SystemExit as exc:
+        assert exc.code == 0
+
+    assert capsys.readouterr().out.strip() == f"xmind-md {__version__}"

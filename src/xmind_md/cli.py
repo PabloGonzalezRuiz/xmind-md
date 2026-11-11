@@ -6,6 +6,8 @@ import argparse
 import sys
 from pathlib import Path
 
+from . import __version__
+
 from .adapters.json_adapter import write_json
 from .adapters.xmind_adapter import write_xmind
 from .ir_parser import parse_file_ir
@@ -17,6 +19,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="xmind-md",
         description="Convierte Markdown enriquecido a JSON IR o a un libro XMind.",
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
     )
     parser.add_argument("input", help="Archivo Markdown de entrada")
     parser.add_argument("--styles", help="Archivo YAML con conjuntos de estilos")

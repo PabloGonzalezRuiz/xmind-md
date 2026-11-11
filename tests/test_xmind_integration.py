@@ -5,6 +5,7 @@ Su origen no acredita por sí solo que se haya guardado con XMind Desktop:
 se usa para contrastar la estructura de un archivo real, no como certificación
 de compatibilidad visual.
 """
+
 from __future__ import annotations
 
 import json

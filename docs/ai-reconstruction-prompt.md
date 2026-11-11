@@ -625,3 +625,8 @@ Hallazgos registrados:
 - No hay lockfile ni SBOM; la auditoría no cubre todas las dependencias transitivas y no es asesoramiento jurídico.
 
 La tarea 2 está documentada en THIRD_PARTY_NOTICES.md, docs/license-adoption.md, docs/release-audit.md y docs/development-status.md. La siguiente fase de la hoja de ruta es ampliar la matriz de CI a Python 3.10/3.11/3.12; no empezarla hasta autorización expresa.
+
+
+### Evidencia CI posterior a la auditoría de terceros
+
+La documentación consolidada quedó validada en run [42993499900](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42993499900), commit `d31a389a3066ec17d581629b7aa3078c32fcb80e`: ambos jobs success; Ruff lint/format success; 131 pruebas superadas; wheel/sdist construidos, verificados e instalados; generación JSON/XMind desde ambos paquetes correcta. Artefactos: `python-distributions` ID 13842766711 y `xmind-desktop-smoke-test` ID 13843490530.

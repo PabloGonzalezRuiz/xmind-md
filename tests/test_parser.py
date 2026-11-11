@@ -162,7 +162,6 @@ def test_global_entity_id_cannot_collide_with_topic_id():
         parse_markdown(source)
 
 
-
 def test_detached_topic_kind_is_accepted_with_position():
     result = parse_markdown(
         "# Raíz\n"

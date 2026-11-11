@@ -1,4 +1,5 @@
 """Validación formal del contrato IR 1.0.0 y sus ejemplos JSON."""
+
 from __future__ import annotations
 
 import copy
@@ -60,9 +61,7 @@ def test_all_ir_json_examples_conform_to_schema(validator: Draft202012Validator)
             "propiedad obligatoria ausente",
         ),
         (
-            lambda document: document["sheet"]["root_topic"]["links"][0].update(
-                kind="ftp"
-            ),
+            lambda document: document["sheet"]["root_topic"]["links"][0].update(kind="ftp"),
             "tipo de enlace no admitido",
         ),
         (

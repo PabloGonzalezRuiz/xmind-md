@@ -1,4 +1,5 @@
 """Pruebas de cascada de estilos sobre el modelo IR 1.0.0."""
+
 from copy import deepcopy
 
 import pytest
@@ -166,7 +167,9 @@ def test_sheet_entities_and_notes_resolve_their_own_style_targets():
     relationship = Relationship("rel", "raiz", "otro", style=StyleState(ref="rel-estilo"))
     boundary = Boundary("limite", ["raiz"], style=StyleState(ref="limite-estilo"))
     summary = Summary("resumen", ["raiz"], style=StyleState(ref="resumen-estilo"))
-    mind_map = make_map(root, relationships=[relationship], boundaries=[boundary], summaries=[summary])
+    mind_map = make_map(
+        root, relationships=[relationship], boundaries=[boundary], summaries=[summary]
+    )
     mind_map.style_sets = {
         "BASE": {
             "topic": {"text": {"bold": True}},

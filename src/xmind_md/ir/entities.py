@@ -2,6 +2,7 @@
 
 Este módulo no depende del parser, de PyYAML ni de motores de exportación.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

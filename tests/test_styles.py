@@ -1,4 +1,5 @@
 """Pruebas de precedencia, herencia y validación de estilos."""
+
 import pytest
 
 from xmind_md.model import MindMap, Topic
@@ -7,7 +8,10 @@ from xmind_md.styles import StyleError, load_styles, resolve_styles
 
 def test_style_resolution_merges_set_named_style_and_local_overrides():
     root = Topic(
-        id="root", title="Raíz", level=1, style_set="BASE",
+        id="root",
+        title="Raíz",
+        level=1,
+        style_set="BASE",
         style_ref="importante",
         style_overrides={"text": {"italic": True}},
     )
@@ -17,9 +21,7 @@ def test_style_resolution_merges_set_named_style_and_local_overrides():
         style_sets={
             "BASE": {
                 "topic": {"text": {"font_size": 12, "color": "#000000"}},
-                "styles": {
-                    "importante": {"topic": {"text": {"color": "#ff0000", "bold": True}}}
-                },
+                "styles": {"importante": {"topic": {"text": {"color": "#ff0000", "bold": True}}}},
             }
         },
     )
@@ -85,7 +87,6 @@ def test_load_styles_reads_both_sections(tmp_path):
 
     assert "BASE" in result["style_sets"]
     assert result["styles"]["normal"]["topic"]["text"]["bold"] is True
-
 
 
 def test_load_styles_rejects_duplicate_yaml_keys(tmp_path):

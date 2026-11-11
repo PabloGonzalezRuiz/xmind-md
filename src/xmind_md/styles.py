@@ -3,6 +3,7 @@
 Precedencia: valores base del conjunto -> estilo nombrado -> overrides locales.
 Las definiciones del documento prevalecen sobre las externas con el mismo nombre.
 """
+
 from __future__ import annotations
 
 from copy import deepcopy
@@ -26,13 +27,17 @@ def _construct_unique_mapping(loader: _UniqueKeyLoader, node: yaml.MappingNode, 
             duplicate = key in mapping
         except TypeError as exc:
             raise yaml.constructor.ConstructorError(
-                "while constructing a mapping", node.start_mark,
-                "unhashable mapping key", key_node.start_mark,
+                "while constructing a mapping",
+                node.start_mark,
+                "unhashable mapping key",
+                key_node.start_mark,
             ) from exc
         if duplicate:
             raise yaml.constructor.ConstructorError(
-                "while constructing a mapping", node.start_mark,
-                f"duplicate key {key!r}", key_node.start_mark,
+                "while constructing a mapping",
+                node.start_mark,
+                f"duplicate key {key!r}",
+                key_node.start_mark,
             )
         mapping[key] = loader.construct_object(value_node, deep=deep)
     return mapping
@@ -256,12 +261,12 @@ def resolve_ir_styles(
         return set_name
 
     def visit_topic(topic: Any, inherited_set: str | None = None) -> None:
-        effective_set = resolve_state(
-            topic.style, "topic", inherited_set, f"tema '{topic.title}'"
-        )
+        effective_set = resolve_state(topic.style, "topic", inherited_set, f"tema '{topic.title}'")
         for index, note in enumerate(topic.annotations.notes):
             resolve_state(
-                note.style, "notes", effective_set,
+                note.style,
+                "notes",
+                effective_set,
                 f"nota {index} del tema '{topic.title}'",
             )
         for child in topic.children:
@@ -271,17 +276,23 @@ def resolve_ir_styles(
 
     for index, relationship in enumerate(mind_map.sheet.relationships):
         resolve_state(
-            relationship.style, "relationship", global_set,
+            relationship.style,
+            "relationship",
+            global_set,
             f"relación {relationship.id}",
         )
     for index, boundary in enumerate(mind_map.sheet.boundaries):
         resolve_state(
-            boundary.style, "boundary", global_set,
+            boundary.style,
+            "boundary",
+            global_set,
             f"límite {boundary.id}",
         )
     for index, summary in enumerate(mind_map.sheet.summaries):
         resolve_state(
-            summary.style, "summary", global_set,
+            summary.style,
+            "summary",
+            global_set,
             f"resumen {summary.id}",
         )
 

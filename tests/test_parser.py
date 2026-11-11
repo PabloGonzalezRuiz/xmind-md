@@ -1,4 +1,5 @@
 """Pruebas de la gramática Markdown enriquecida y su validación."""
+
 from pathlib import Path
 
 import pytest
@@ -29,14 +30,16 @@ def test_front_matter_and_structured_content():
     assert result.title == "Mapa de prueba"
     assert result.id == "mapa_1"
     assert [block["type"] for block in root.content_blocks] == [
-        "paragraph", "list", "table", "code"
+        "paragraph",
+        "list",
+        "table",
+        "code",
     ]
 
 
 def test_topic_directive_is_consumed_by_next_heading_only():
     result = parse_markdown(
-        "# Raíz\n:::xmind\nid: hijo_1\nlabels: [IMPORTANTE]\n:::\n"
-        "## Hijo\n## Hermano\n"
+        "# Raíz\n:::xmind\nid: hijo_1\nlabels: [IMPORTANTE]\n:::\n## Hijo\n## Hermano\n"
     )
     child, sibling = result.topics[0].children
     assert child.id == "hijo_1"
@@ -60,29 +63,28 @@ def test_relationship_references_are_validated_after_parse():
     assert result.relationships[0]["source"] == "a"
 
 
-@pytest.mark.parametrize("source", [
-    "Texto sin raíz",
-    "# Uno\n# Dos",
-    "# Raíz\n:::xmind\nid: pendiente\n:::",
-    "# Raíz\n:::xmind-unknown\nx: y\n:::",
-    "# Raíz\n:::xmind-relationship\nid: r\nsource: no\ntarget: tampoco\n:::",
-])
+@pytest.mark.parametrize(
+    "source",
+    [
+        "Texto sin raíz",
+        "# Uno\n# Dos",
+        "# Raíz\n:::xmind\nid: pendiente\n:::",
+        "# Raíz\n:::xmind-unknown\nx: y\n:::",
+        "# Raíz\n:::xmind-relationship\nid: r\nsource: no\ntarget: tampoco\n:::",
+    ],
+)
 def test_invalid_documents_fail(source):
     with pytest.raises(MarkdownParseError):
         parse_markdown(source)
 
 
 def test_note_directive_keeps_markdown_body():
-    result = parse_markdown(
-        "# Raíz\n:::xmind-note\nNota con **énfasis** y texto.\n:::\n"
-    )
+    result = parse_markdown("# Raíz\n:::xmind-note\nNota con **énfasis** y texto.\n:::\n")
     assert result.topics[0].annotations["notes"] == ["Nota con **énfasis** y texto."]
 
 
 def test_yaml_dates_are_normalized_to_json_strings():
-    result = parse_markdown(
-        "# Raíz\n:::xmind\ntask:\n  due_date: 2026-12-15\n:::\n## Hijo\n"
-    )
+    result = parse_markdown("# Raíz\n:::xmind\ntask:\n  due_date: 2026-12-15\n:::\n## Hijo\n")
     assert result.topics[0].children[0].annotations["task"]["due_date"] == "2026-12-15"
 
 
@@ -104,11 +106,8 @@ def test_generated_topic_ids_do_not_depend_on_line_numbers():
     assert first.topics[0].children[0].id == second.topics[0].children[0].id
 
 
-
 def test_nested_lists_keep_recursive_structure():
-    result = parse_markdown(
-        "# Raíz\n- Uno\n  - Uno A\n    - Uno A.1\n  - Uno B\n- Dos\n"
-    )
+    result = parse_markdown("# Raíz\n- Uno\n  - Uno A\n    - Uno A.1\n  - Uno B\n- Dos\n")
     block = result.topics[0].content_blocks[0]
     assert len(block["items"]) == 2
     assert len(block["items"][0]["children"]) == 2
@@ -131,7 +130,6 @@ def test_front_matter_style_fields_must_be_mappings():
         parse_markdown("---\nstyles: texto\n---\n# Raíz\n")
 
 
-
 def test_table_rows_must_match_header_width():
     with pytest.raises(MarkdownParseError, match="Fila de tabla"):
         parse_markdown("# Raíz\n| A | B |\n|---|---|\n| solo una |\n")
@@ -145,7 +143,6 @@ def test_table_separator_must_match_header_width():
 def test_tab_indented_nested_list_is_preserved():
     result = parse_markdown("# Raíz\n- Padre\n\t- Hijo\n")
     assert len(result.topics[0].content_blocks[0]["items"][0]["children"]) == 1
-
 
 
 def test_escaped_pipe_in_table_cell_is_not_a_column_separator():

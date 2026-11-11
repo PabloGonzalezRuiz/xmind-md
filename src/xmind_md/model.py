@@ -3,6 +3,7 @@
 Las clases describen contenido y estructura sin importar Markdown ni motores
 de exportación. Los campos legacy se conservan durante la transición.
 """
+
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field

@@ -54,10 +54,8 @@ def _xmind_id(kind: str, map_id: str, source_id: str) -> str:
 def _validate_style_state(state: Any, label: str) -> None:
     if (state.ref or state.style_set or state.overrides) and not state.resolved:
         raise XMindAdapterError(
-            f"Los estilos de {label} no están resueltos. "
-            "Ejecuta resolve_styles antes de exportar."
+            f"Los estilos de {label} no están resueltos. Ejecuta resolve_styles antes de exportar."
         )
-
 
 
 def _validate_topic_layout(topic: Topic) -> None:
@@ -67,9 +65,7 @@ def _validate_topic_layout(topic: Topic) -> None:
     unknown = set(layout) - supported
     if unknown:
         names = ", ".join(sorted(unknown))
-        raise XMindAdapterError(
-            f"Propiedades de layout no soportadas en '{topic.title}': {names}."
-        )
+        raise XMindAdapterError(f"Propiedades de layout no soportadas en '{topic.title}': {names}.")
 
     position = layout.get("position")
     if position is not None and (
@@ -94,15 +90,11 @@ def _validate_topic_layout(topic: Topic) -> None:
     if structure_class is not None and (
         not isinstance(structure_class, str) or not structure_class
     ):
-        raise XMindAdapterError(
-            f"structure_class de '{topic.title}' debe ser texto no vacío."
-        )
+        raise XMindAdapterError(f"structure_class de '{topic.title}' debe ser texto no vacío.")
 
     branch = layout.get("branch")
     if branch is not None and branch != "folded":
-        raise XMindAdapterError(
-            f"branch de '{topic.title}' solo admite el valor 'folded'."
-        )
+        raise XMindAdapterError(f"branch de '{topic.title}' solo admite el valor 'folded'.")
 
     width = layout.get("width")
     if width is not None and (
@@ -111,9 +103,8 @@ def _validate_topic_layout(topic: Topic) -> None:
         or not math.isfinite(width)
         or width <= 0
     ):
-        raise XMindAdapterError(
-            f"width de '{topic.title}' debe ser un número positivo."
-        )
+        raise XMindAdapterError(f"width de '{topic.title}' debe ser un número positivo.")
+
 
 def _validate_supported_features(mind_map: MindMap) -> None:
     if not isinstance(mind_map, MindMap):
@@ -121,7 +112,10 @@ def _validate_supported_features(mind_map: MindMap) -> None:
     if mind_map.assets:
         raise XMindAdapterError("La exportación de recursos/imágenes aún no está implementada.")
     unsupported_metadata = set(mind_map.metadata) - {
-        "author", "style_set", "style_defaults", "source_file"
+        "author",
+        "style_set",
+        "style_defaults",
+        "source_file",
     }
     if unsupported_metadata:
         names = ", ".join(sorted(unsupported_metadata))
@@ -159,17 +153,11 @@ def _validate_supported_features(mind_map: MindMap) -> None:
         topic_ids.add(topic.id)
 
         if topic.resources.images or topic.resources.attachments or topic.resources.audio:
-            raise XMindAdapterError(
-                f"El tema '{topic.title}' contiene recursos aún no soportados."
-            )
+            raise XMindAdapterError(f"El tema '{topic.title}' contiene recursos aún no soportados.")
         if topic.extensions:
-            raise XMindAdapterError(
-                f"El tema '{topic.title}' contiene extensiones no soportadas."
-            )
+            raise XMindAdapterError(f"El tema '{topic.title}' contiene extensiones no soportadas.")
         if topic.annotations.task is not None:
-            raise XMindAdapterError(
-                f"La anotación task de '{topic.title}' aún no está soportada."
-            )
+            raise XMindAdapterError(f"La anotación task de '{topic.title}' aún no está soportada.")
         _validate_style_state(topic.style, f"'{topic.title}'")
         for index, note in enumerate(topic.annotations.notes):
             _validate_style_state(note.style, f"la nota {index} de '{topic.title}'")
@@ -184,10 +172,7 @@ def _validate_supported_features(mind_map: MindMap) -> None:
     visit(sheet.root_topic, is_root=True)
 
     for relationship in sheet.relationships:
-        if (
-            relationship.source_topic not in topic_ids
-            or relationship.target_topic not in topic_ids
-        ):
+        if relationship.source_topic not in topic_ids or relationship.target_topic not in topic_ids:
             raise XMindAdapterError("Una relationship referencia un tema que no existe en el IR.")
         if relationship.extensions:
             raise XMindAdapterError(
@@ -214,9 +199,7 @@ def _list_text(block: dict[str, Any], depth: int = 0) -> list[str]:
     for index, item in enumerate(block.get("items", []), start=1):
         prefix = f"{index}. " if ordered else "- "
         text = " ".join(
-            _block_text(part)
-            for part in item.get("content", [])
-            if part.get("type") == "paragraph"
+            _block_text(part) for part in item.get("content", []) if part.get("type") == "paragraph"
         )
         lines.append(("  " * depth) + prefix + text)
         for child in item.get("children", []):
@@ -232,9 +215,7 @@ def _block_text(block: dict[str, Any]) -> str:
     kind = block.get("type")
     if kind == "paragraph":
         return (
-            _inline_text(block.get("runs", []))
-            if "runs" in block
-            else str(block.get("text", ""))
+            _inline_text(block.get("runs", [])) if "runs" in block else str(block.get("text", ""))
         )
     if kind == "code":
         fence = chr(96) * 3
@@ -274,7 +255,9 @@ def _style_properties(style: dict[str, Any], label: str) -> dict[str, Any]:
 
     def visit(value: Any, prefix: str = "") -> None:
         if not isinstance(value, dict):
-            raise XMindAdapterError(f"El estilo de {label} debe usar objetos agrupados por propiedad.")
+            raise XMindAdapterError(
+                f"El estilo de {label} debe usar objetos agrupados por propiedad."
+            )
         for key, item in value.items():
             path = f"{prefix}.{key}" if prefix else key
             if isinstance(item, dict):
@@ -284,7 +267,9 @@ def _style_properties(style: dict[str, Any], label: str) -> dict[str, Any]:
             if target is None:
                 raise XMindAdapterError(f"Propiedad de estilo no soportada en {label}: {path}.")
             if item is None:
-                raise XMindAdapterError(f"El reinicio null de estilo no está soportado todavía: {path}.")
+                raise XMindAdapterError(
+                    f"El reinicio null de estilo no está soportado todavía: {path}."
+                )
             if path == "text.bold":
                 item = "bold" if item else "normal"
             elif path == "text.italic":
@@ -375,9 +360,7 @@ def _topic_to_json(topic: Topic, map_id: str, id_map: dict[str, str]) -> dict[st
     if topic.children:
         children: dict[str, list[dict[str, Any]]] = {}
         for child in topic.children:
-            children.setdefault(child.kind, []).append(
-                _topic_to_json(child, map_id, id_map)
-            )
+            children.setdefault(child.kind, []).append(_topic_to_json(child, map_id, id_map))
         data["children"] = children
     return data
 
@@ -420,13 +403,15 @@ def build_xmind_content(mind_map: MindMap) -> list[dict[str, Any]]:
         relationships.append(item)
 
     sheet_id = _xmind_id("sheet", map_id, mind_map.sheet.id)
-    return [{
-        "id": sheet_id,
-        "class": "sheet",
-        "title": mind_map.sheet.title,
-        "rootTopic": _topic_to_json(root, map_id, id_map),
-        "relationships": relationships,
-    }]
+    return [
+        {
+            "id": sheet_id,
+            "class": "sheet",
+            "title": mind_map.sheet.title,
+            "rootTopic": _topic_to_json(root, map_id, id_map),
+            "relationships": relationships,
+        }
+    ]
 
 
 def write_xmind(mind_map: MindMap, destination: str | Path) -> Path:

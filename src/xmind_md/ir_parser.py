@@ -4,6 +4,7 @@ La API legacy se mantiene temporalmente para que el resolutor de estilos y los
 adaptadores aún no migrados sigan funcionando. Las nuevas integraciones deben
 utilizar parse_markdown_ir() o parse_file_ir().
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -41,25 +42,33 @@ def _runs(value: list[dict[str, Any]]) -> list[dict[str, Any]]:
         if run.get("type") == "link":
             target = run.get("url", "")
             if target.startswith("topic:"):
-                result.append({
-                    "text": run.get("text", ""),
-                    "link": {"kind": "topic", "target": target[len("topic:"):]},
-                })
+                result.append(
+                    {
+                        "text": run.get("text", ""),
+                        "link": {"kind": "topic", "target": target[len("topic:") :]},
+                    }
+                )
             else:
-                result.append({
-                    "text": run.get("text", ""),
-                    "link": {"kind": "web", "target": target},
-                })
+                result.append(
+                    {
+                        "text": run.get("text", ""),
+                        "link": {"kind": "web", "target": target},
+                    }
+                )
         elif run.get("type") == "image":
-            result.append({
-                "text": run.get("alt", ""),
-                "image_source": run.get("src", ""),
-            })
+            result.append(
+                {
+                    "text": run.get("alt", ""),
+                    "image_source": run.get("src", ""),
+                }
+            )
         else:
-            result.append({
-                "text": run.get("text", ""),
-                **({"style": run["style"]} if run.get("style") else {}),
-            })
+            result.append(
+                {
+                    "text": run.get("text", ""),
+                    **({"style": run["style"]} if run.get("style") else {}),
+                }
+            )
     return result
 
 
@@ -84,8 +93,12 @@ def _table_cell(runs: list[dict[str, Any]]) -> dict[str, Any]:
     return {"content": [_paragraph("".join(run["text"] for run in converted), converted).to_dict()]}
 
 
-def _block(block: dict[str, Any], source_key: str, assets: dict[str, Asset],
-           resource_refs: ResourceReferences) -> ContentBlock:
+def _block(
+    block: dict[str, Any],
+    source_key: str,
+    assets: dict[str, Asset],
+    resource_refs: ResourceReferences,
+) -> ContentBlock:
     kind = block.get("type")
 
     def make(block_type: str, data: dict[str, Any] | None = None) -> ContentBlock:
@@ -96,64 +109,87 @@ def _block(block: dict[str, Any], source_key: str, assets: dict[str, Asset],
 
     if kind == "paragraph":
         runs = _runs(block.get("runs", []))
-        return make("paragraph", {
-            "text": "".join(run["text"] for run in runs),
-            "runs": runs,
-        })
+        return make(
+            "paragraph",
+            {
+                "text": "".join(run["text"] for run in runs),
+                "runs": runs,
+            },
+        )
     if kind == "list":
-        return make("list", {
-            "ordered": bool(block.get("ordered")),
-            "items": [_list_item(item) for item in block.get("items", [])],
-        })
+        return make(
+            "list",
+            {
+                "ordered": bool(block.get("ordered")),
+                "items": [_list_item(item) for item in block.get("items", [])],
+            },
+        )
     if kind == "table":
         header = [_table_cell(cell) for cell in block.get("header", [])]
         rows = [{"cells": header, "header": True}]
-        rows.extend({
-            "cells": [_table_cell(cell) for cell in row],
-            "header": False,
-        } for row in block.get("rows", []))
+        rows.extend(
+            {
+                "cells": [_table_cell(cell) for cell in row],
+                "header": False,
+            }
+            for row in block.get("rows", [])
+        )
         return make("table", {"rows": rows})
     if kind == "code":
-        return make("code", {
-            "language": block.get("language"),
-            "code": block.get("text", ""),
-        })
+        return make(
+            "code",
+            {
+                "language": block.get("language"),
+                "code": block.get("text", ""),
+            },
+        )
     if kind == "quote":
         paragraphs = block.get("content", [])
-        return make("quote", {
-            "text": "\n".join(
-                "".join(run.get("text", "") for run in item.get("runs", []))
-                for item in paragraphs
-            )
-        })
+        return make(
+            "quote",
+            {
+                "text": "\n".join(
+                    "".join(run.get("text", "") for run in item.get("runs", []))
+                    for item in paragraphs
+                )
+            },
+        )
     if kind == "divider":
         return make("divider")
     if kind == "image":
         src = str(block.get("src", ""))
         asset_id = _id("asset", src)
-        assets.setdefault(asset_id, Asset(
-            kind="image", path=src, name=Path(src).name or None,
-            metadata={"alt": block.get("alt", "")},
-        ))
+        assets.setdefault(
+            asset_id,
+            Asset(
+                kind="image",
+                path=src,
+                name=Path(src).name or None,
+                metadata={"alt": block.get("alt", "")},
+            ),
+        )
         if asset_id not in resource_refs.images:
             resource_refs.images.append(asset_id)
-        return make("image", {
-            "asset_id": asset_id,
-            "alt": block.get("alt"),
-        })
+        return make(
+            "image",
+            {
+                "asset_id": asset_id,
+                "alt": block.get("alt"),
+            },
+        )
     # No se pierde silenciosamente una construcción futura del parser.
-    return make("raw", {
-        "format": "xmind-md-legacy",
-        "data": dict(block),
-    })
+    return make(
+        "raw",
+        {
+            "format": "xmind-md-legacy",
+            "data": dict(block),
+        },
+    )
 
 
 def _topic(old: Any, assets: dict[str, Asset]) -> Topic:
     resources = ResourceReferences()
-    content = [
-        _block(block, old.id, assets, resources)
-        for block in old.content_blocks
-    ]
+    content = [_block(block, old.id, assets, resources) for block in old.content_blocks]
 
     labels = [
         Label(_id("label", f"{old.id}|{index}|{value}"), value)
@@ -162,7 +198,8 @@ def _topic(old: Any, assets: dict[str, Asset]) -> Topic:
     markers = [
         Marker(
             _id("marker", f"{old.id}|{index}|{marker.get('group')}|{marker.get('value')}"),
-            marker["group"], marker["value"],
+            marker["group"],
+            marker["value"],
         )
         for index, marker in enumerate(old.annotations.get("markers", []))
     ]
@@ -170,10 +207,12 @@ def _topic(old: Any, assets: dict[str, Asset]) -> Topic:
     for index, value in enumerate(old.annotations.get("notes", [])):
         note_runs = _runs(_inline_runs(value))
         note_text = "".join(run["text"] for run in note_runs)
-        notes.append(Note(
-            _id("note", f"{old.id}|{index}|{value}"),
-            [_paragraph(note_text, note_runs)],
-        ))
+        notes.append(
+            Note(
+                _id("note", f"{old.id}|{index}|{value}"),
+                [_paragraph(note_text, note_runs)],
+            )
+        )
     annotation = Annotation(
         notes=notes,
         labels=labels,
@@ -218,10 +257,15 @@ def _convert(old: Any, source_path: str) -> MindMap:
             src = str(resource.get("src", ""))
             if src:
                 asset_id = _id("asset", src)
-                assets.setdefault(asset_id, Asset(
-                    kind="image", path=src, name=Path(src).name or None,
-                    metadata={"alt": resource.get("alt", "")},
-                ))
+                assets.setdefault(
+                    asset_id,
+                    Asset(
+                        kind="image",
+                        path=src,
+                        name=Path(src).name or None,
+                        metadata={"alt": resource.get("alt", "")},
+                    ),
+                )
         for child in topic.children:
             collect_images(child)
 

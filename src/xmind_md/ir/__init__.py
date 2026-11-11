@@ -20,7 +20,21 @@ from .entities import (
 from .validation import IRValidationError, validate_mind_map
 
 __all__ = [
-    "Annotation", "Asset", "Boundary", "ContentBlock", "IRValidationError",
-    "Label", "Marker", "MindMap", "Note", "Relationship", "ResourceReferences",
-    "Sheet", "SheetLayout", "StyleState", "Summary", "Topic", "validate_mind_map",
+    "Annotation",
+    "Asset",
+    "Boundary",
+    "ContentBlock",
+    "IRValidationError",
+    "Label",
+    "Marker",
+    "MindMap",
+    "Note",
+    "Relationship",
+    "ResourceReferences",
+    "Sheet",
+    "SheetLayout",
+    "StyleState",
+    "Summary",
+    "Topic",
+    "validate_mind_map",
 ]

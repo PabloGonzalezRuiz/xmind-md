@@ -9,8 +9,15 @@ from .entities import MindMap, Topic
 
 _ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]*$")
 _CONTENT_TYPES = {
-    "paragraph", "list", "table", "code", "quote",
-    "equation", "image", "divider", "raw",
+    "paragraph",
+    "list",
+    "table",
+    "code",
+    "quote",
+    "equation",
+    "image",
+    "divider",
+    "raw",
 }
 
 
@@ -26,9 +33,7 @@ def _require_id(value: str, path: str) -> None:
 def _register(value: str, path: str, seen: dict[str, str]) -> None:
     _require_id(value, path)
     if value in seen:
-        raise IRValidationError(
-            f"{path}: ID duplicado {value!r}; ya se utiliza en {seen[value]}"
-        )
+        raise IRValidationError(f"{path}: ID duplicado {value!r}; ya se utiliza en {seen[value]}")
     seen[value] = path
 
 
@@ -65,9 +70,7 @@ def _walk_topics(
         if block.type == "image":
             asset_id = block.data.get("asset_id")
             if asset_id is not None and asset_id not in asset_ids:
-                raise IRValidationError(
-                    f"{block_path}.asset_id: recurso inexistente {asset_id!r}"
-                )
+                raise IRValidationError(f"{block_path}.asset_id: recurso inexistente {asset_id!r}")
 
     for index, note in enumerate(topic.annotations.notes):
         note_path = f"{path}.annotations.notes[{index}]"
@@ -101,8 +104,13 @@ def _walk_topics(
 
     for index, child in enumerate(topic.children):
         _walk_topics(
-            child, f"{path}.children[{index}]", seen, topic_ids,
-            asset_ids, active, visited,
+            child,
+            f"{path}.children[{index}]",
+            seen,
+            topic_ids,
+            asset_ids,
+            active,
+            visited,
         )
     active.remove(identity)
 
@@ -132,8 +140,13 @@ def validate_mind_map(mind_map: MindMap) -> MindMap:
 
     topic_ids: set[str] = set()
     _walk_topics(
-        mind_map.sheet.root_topic, "sheet.root_topic", seen, topic_ids,
-        asset_ids, set(), set(),
+        mind_map.sheet.root_topic,
+        "sheet.root_topic",
+        seen,
+        topic_ids,
+        asset_ids,
+        set(),
+        set(),
     )
 
     def validate_inline_targets(value: Any, path: str) -> None:
@@ -163,14 +176,10 @@ def validate_mind_map(mind_map: MindMap) -> MindMap:
         if selected_set:
             available_styles.update(mind_map.style_sets[selected_set].get("styles", {}))
         if topic.style.ref and topic.style.ref not in available_styles:
-            raise IRValidationError(
-                f"{path}.style.ref: estilo inexistente {topic.style.ref!r}"
-            )
+            raise IRValidationError(f"{path}.style.ref: estilo inexistente {topic.style.ref!r}")
         for index, link in enumerate(topic.links):
             if link.get("kind") == "topic" and link.get("target") not in topic_ids:
-                raise IRValidationError(
-                    f"{path}.links[{index}].target: tema enlazado inexistente"
-                )
+                raise IRValidationError(f"{path}.links[{index}].target: tema enlazado inexistente")
         for index, block in enumerate(topic.content):
             validate_inline_targets(block.data, f"{path}.content[{index}]")
         for note_index, note in enumerate(topic.annotations.notes):
@@ -209,7 +218,9 @@ def validate_mind_map(mind_map: MindMap) -> MindMap:
             if not entity.topic_ids:
                 raise IRValidationError(f"sheet.{collection_name}[{index}].topic_ids: lista vacía")
             if len(entity.topic_ids) != len(set(entity.topic_ids)):
-                raise IRValidationError(f"sheet.{collection_name}[{index}].topic_ids: IDs duplicados")
+                raise IRValidationError(
+                    f"sheet.{collection_name}[{index}].topic_ids: IDs duplicados"
+                )
             if any(topic_id not in topic_ids for topic_id in entity.topic_ids):
                 raise IRValidationError(
                     f"sheet.{collection_name}[{index}].topic_ids: referencia a tema inexistente"

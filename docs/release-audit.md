@@ -173,3 +173,17 @@ La documentación de terceros es descriptiva; no se ha cambiado el código de ej
 El inventario THIRD_PARTY_NOTICES.md y los documentos actualizados quedaron validados en run [42993499900](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42993499900), commit `d31a389a3066ec17d581629b7aa3078c32fcb80e`. Ambos jobs success; Ruff lint/format success; 131 pruebas superadas; wheel/sdist construidos y verificados; instalación y generación CLI JSON/XMind desde ambas distribuciones success.
 
 Artefactos: `python-distributions` ID 13842766711 (73.605 bytes; SHA-256 ZIP `e6490d4d8e80a94f7fbd97afe56e534a4f98d256107e503cc9d27bf97726b41b`) y `xmind-desktop-smoke-test` ID 13843490530 (1.333 bytes; SHA-256 ZIP `d1fc50796fd95e350b2d2869a0a5281c0f8c3c5eb416c84490ca36522966f9ba`).
+
+### Cierre de tarea 3 — matriz Python
+
+La matriz se incorporó a `.github/workflows/ci.yml` en commit `db241f04b489de23c429d4189c589859aaffc8fb`. Run [42995180722](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42995180722) finalizó completed/success:
+
+- Python 3.10: Ruff lint/format y 131 pruebas success.
+- Python 3.11: Ruff lint/format y 131 pruebas success.
+- Python 3.12: Ruff lint/format y 131 pruebas success.
+- Cada versión generó su artefacto XMind independiente.
+- El job de distribuciones construyó wheel/sdist, verificó licencia/contenido, instaló ambos en entornos limpios y generó JSON/XMind correctamente.
+
+La matriz prueba compatibilidad de la suite con las versiones declaradas. Python 3.10 está fuera de soporte de seguridad desde 2026-10-01; la decisión de elevar `requires-python` se reserva para la tarea de versionado/metadatos. No afirmar que wheel/sdist se probaron en cada versión de matriz: su instalación funcional se ejecutó en Python 3.12.
+
+La siguiente tarea pendiente es actualizar las acciones CI para retirar el runtime Node.js 20 obsoleto. Requiere autorización del usuario.

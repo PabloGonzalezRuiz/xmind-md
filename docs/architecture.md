@@ -62,7 +62,7 @@ Archivo: `src/xmind_md/styles.py`.
 4. Estilo nombrado.
 5. Overrides locales.
 
-El conjunto se hereda por descendencia y puede sustituirse en un tema. Las definiciones del documento prevalecen sobre las externas con el mismo nombre. La fusión es recursiva y no muta las definiciones originales; escribe el resultado en `style.resolved`. Se resuelven estilos de temas, notas, relaciones, límites y resúmenes.
+El conjunto se hereda por descendencia y puede sustituirse en un tema. Las definiciones del documento prevalecen sobre las externas con el mismo nombre. Las referencias de estilo se resuelven después de cargar ambos catálogos; las referencias externas no deben rechazarse antes de ejecutar `resolve_styles()`. La fusión es recursiva y no muta las definiciones originales; escribe el resultado en `style.resolved`. Se resuelven estilos de temas, notas, relaciones, límites y resúmenes.
 
 La resolución neutral no implica que el adaptador XMind pueda traducir todas las propiedades. El adaptador mantiene su propio catálogo de propiedades admitidas y falla ante propiedades desconocidas.
 
@@ -93,12 +93,12 @@ El comando instalado es `xmind-md`; también está disponible `python -m xmind_m
 ### 3.6 Automatización y pruebas
 
 - `tests/`: pruebas unitarias y de integración de parser, IR, estilos, adaptadores y CLI.
-- `.github/workflows/ci.yml`: dos jobs Ubuntu/Python 3.12; el primero ejecuta instalación editable, Ruff, fixture, pytest y generación XMind; el segundo construye wheel/sdist, inspecciona metadatos/licencia, instala cada distribución en un entorno limpio y ejecuta una conversión CLI a JSON.
+- `.github/workflows/ci.yml`: matriz de pruebas Ubuntu/Python 3.10, 3.11 y 3.12 con Ruff, fixture, pytest y generación XMind; el job dependiente construye wheel/sdist, inspecciona metadatos/licencia, instala cada distribución en un entorno limpio con Python 3.12 y ejecuta conversiones CLI a JSON y XMind.
 - `scripts/create_xmind_smoke.py`: genera un libro de comprobación para interoperabilidad manual.
 - `scripts/verify_distributions.py`: comprueba que wheel/sdist contienen metadatos, LICENSE y módulos esenciales.
 - `pyproject.toml`: metadatos de paquete, dependencias, entry point y configuración de herramientas.
 
-La CI [42988289597](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42988289597) completó ambos jobs: Ruff, 131 pruebas, generación XMind, build wheel/sdist, verificación de contenido/licencia e instalación limpia de ambas distribuciones con prueba CLI JSON. La CLI instalada desde wheel y sdist también genera XMind; el smoke comprueba MIME, entrada inicial sin compresión, contenido raíz e integridad del ZIP. La evidencia vigente se mantiene en [development-status.md](development-status.md) y [release-audit.md](release-audit.md).
+La CI [43009510391](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43009510391), commit `69a583350a794ec0a567ff8e5e3770acd81f0110`, completó los cuatro jobs: Ruff y 161 pruebas en cada versión Python 3.10/3.11/3.12; smoke XMind en cada versión; build y verificación de wheel/sdist; instalación limpia de ambas distribuciones y conversiones CLI JSON/XMind con validación estructural ZIP/MIME/JSON. La evidencia detallada se mantiene en [development-status.md](development-status.md) y [release-audit.md](release-audit.md).
 
 ## 4. Contratos e invariantes
 
@@ -114,7 +114,7 @@ La CI [42988289597](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/4
 
 ## 5. Decisiones técnicas vigentes
 
-- Python >= 3.10; CI actual en Python 3.12 sobre Ubuntu.
+- Python >= 3.10; CI de pruebas en Python 3.10/3.11/3.12 sobre Ubuntu; build/install wheel/sdist en Python 3.12.
 - Paquete con diseño `src/`.
 - PyYAML como dependencia de ejecución.
 - pytest, Ruff y jsonschema como dependencias de desarrollo.

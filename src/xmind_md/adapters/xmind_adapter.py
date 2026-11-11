@@ -187,12 +187,12 @@ def _validate_supported_features(mind_map: MindMap) -> None:
 def _inline_text(runs: list[dict[str, Any]]) -> str:
     values: list[str] = []
     for run in runs:
+        if "image_source" in run:
+            raise XMindAdapterError("Las imágenes en línea aún no están soportadas.")
         if "text" in run:
             values.append(str(run["text"]))
         elif "link" in run:
             values.append(str(run.get("text", "")))
-        elif "image_source" in run:
-            raise XMindAdapterError("Las imágenes en línea aún no están soportadas.")
     return "".join(values)
 
 

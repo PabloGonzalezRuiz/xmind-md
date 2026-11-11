@@ -951,7 +951,7 @@ El adaptador XMind continúa siendo parcial: no exporta imágenes/recursos, tare
 
 **Estado: COMPLETADA Y VALIDADA.**
 
-Se han auditado y sincronizado README, gramática, IR, sistema de estilos, adaptador XMind, guía de desarrollo y catálogo de archivos. El informe detallado es [documentation-audit.md](documentation-audit.md).
+Se han auditado y sincronizado README, gramática, IR, sistema de estilos, adaptador XMind, guía de desarrollo, arquitectura, plan histórico de migración IR, evaluación del motor XMind, guía de integración, adopción de licencia y catálogo de archivos. El informe detallado es [documentation-audit.md](documentation-audit.md).
 
 Cambios relevantes:
 - README actualizado a 161 pruebas por versión y matriz Python 3.10/3.11/3.12; comando XMind corregido para usar `examples/xmind-smoke-test.md`.

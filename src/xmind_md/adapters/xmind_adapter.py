@@ -72,20 +72,19 @@ def _validate_topic_layout(topic: Topic) -> None:
         )
 
     position = layout.get("position")
-    if position is not None:
-        if (
-            not isinstance(position, dict)
-            or set(position) != {"x", "y"}
-            or any(
-                isinstance(position[key], bool)
-                or not isinstance(position[key], (int, float))
-                or not math.isfinite(position[key])
-                for key in ("x", "y")
-            )
-        ):
-            raise XMindAdapterError(
-                f"La posición de '{topic.title}' debe contener coordenadas numéricas x e y."
-            )
+    if position is not None and (
+        not isinstance(position, dict)
+        or set(position) != {"x", "y"}
+        or any(
+            isinstance(position[key], bool)
+            or not isinstance(position[key], (int, float))
+            or not math.isfinite(position[key])
+            for key in ("x", "y")
+        )
+    ):
+        raise XMindAdapterError(
+            f"La posición de '{topic.title}' debe contener coordenadas numéricas x e y."
+        )
     if topic.kind == "detached" and position is None:
         raise XMindAdapterError(
             f"El tema detached '{topic.title}' necesita layout.position con x e y."

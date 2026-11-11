@@ -146,11 +146,11 @@ python -m pytest
 python scripts/create_xmind_smoke.py
 ```
 
-La CI actual ejecuta Ruff, 131 pruebas y genera un XMind de comprobación. Un segundo job construye wheel y sdist, verifica sus metadatos/licencia, instala cada paquete en un entorno limpio y ejecuta una conversión CLI a JSON. La evidencia y los límites de las pruebas están en el [estado de desarrollo](docs/development-status.md) y la [auditoría de Release](docs/release-audit.md).
+La CI actual ejecuta Ruff, 131 pruebas y genera un XMind de comprobación. Un segundo job construye wheel y sdist, verifica sus metadatos/licencia, instala cada paquete en un entorno limpio y ejecuta conversiones CLI a JSON y XMind; los libros generados pasan verificaciones estructurales ZIP/MIME/JSON. La evidencia y los límites de las pruebas están en el [estado de desarrollo](docs/development-status.md) y la [auditoría de Release](docs/release-audit.md).
 
 ## Licencia
 
-XMind MD se distribuye bajo la licencia [MIT](LICENSE), con el aviso de copyright de Pablo González Ruiz. Consulta [la decisión y el alcance de la licencia](docs/license-adoption.md). Los recursos y fixtures de terceros pueden estar sujetos a licencias independientes.
+XMind MD se distribuye bajo la licencia [MIT](LICENSE), con el aviso de copyright de Pablo González Ruiz. Consulta [la decisión y el alcance de la licencia](docs/license-adoption.md) y el [inventario de avisos y procedencia de terceros](THIRD_PARTY_NOTICES.md). La licencia MIT del proyecto no cubre automáticamente los recursos y fixtures de terceros.
 
 ## Documentación
 
@@ -158,6 +158,7 @@ XMind MD se distribuye bajo la licencia [MIT](LICENSE), con el aviso de copyrigh
 - [Prompt maestro de reconstrucción](docs/ai-reconstruction-prompt.md)
 - [Auditoría de empaquetado y publicación](docs/release-audit.md)
 - [Decisión y adopción de licencia MIT](docs/license-adoption.md)
+- [Avisos de terceros y procedencia](THIRD_PARTY_NOTICES.md)
 - [Arquitectura](docs/architecture.md)
 - [Especificación IR 1.0.0](docs/ir-specification.md)
 - [Gramática Markdown y matriz de implementación](docs/grammar.md)

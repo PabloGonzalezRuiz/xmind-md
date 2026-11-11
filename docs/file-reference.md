@@ -1,93 +1,86 @@
 # Catálogo de archivos
 
-Este documento explica la finalidad de cada archivo versionado y qué tipo de cambios deben realizarse en él.
+Este documento identifica los principales archivos versionados y la responsabilidad de cada uno. Se mantiene alineado con el árbol real del repositorio; para el estado de tareas y evidencias consultar [development-status.md](development-status.md).
 
-## Raíz del repositorio
-
-| Archivo | Función | Cuándo modificarlo |
-|---|---|---|
-| README.md | Presentación, estado, instalación y uso rápido. | Cuando cambie el estado funcional, la instalación o el flujo básico. |
-| pyproject.toml | Construcción del paquete, dependencias, comando CLI y configuración de pruebas/lint. | Al añadir dependencias, comandos o herramientas. |
-| .gitignore | Evita versionar cachés, entornos virtuales y artefactos locales. | Al introducir nuevos artefactos generados. |
-
-## Código fuente: src/xmind_md/
-
-| Archivo | Responsabilidad | No debe hacer |
-|---|---|---|
-| __init__.py | Identidad del paquete y versión pública. | Ejecutar el programa o importar adaptadores innecesariamente. |
-| __main__.py | Permite python -m xmind_md. | Duplicar la lógica de la CLI. |
-| model.py | Define MindMap y Topic, el modelo intermedio y los bloques de contenido estructurados. | Conocer XMind, Markdown o detalles de serialización externos. |
-| parser.py | Convierte front matter, encabezados, directivas y bloques Markdown en el IR; valida jerarquía e IDs. | Escribir archivos ni resolver propiedades visuales específicas de XMind. |
-| styles.py | Lee YAML y resuelve conjuntos/estilos. | Convertir propiedades a XML/JSON interno de XMind. |
-| cli.py | Coordina las operaciones y gestiona argumentos/errores. | Acumular reglas de parsing o exportación. |
-
-### Adaptadores: src/xmind_md/adapters/
+## Raíz
 
 | Archivo | Responsabilidad |
 |---|---|
-| __init__.py | Declara el paquete de adaptadores y su contrato general. |
-| json_adapter.py | Escribe una representación JSON del modelo intermedio. |
-| xmind_adapter.py | Genera una primera versión del formato moderno `.xmind` mediante ZIP + JSON nativo Python; valida el subconjunto soportado y rechaza características pendientes. La compatibilidad con XMind Desktop aún no está verificada. |
+| `README.md` | Presentación, capacidades, instalación y uso de la CLI. |
+| `pyproject.toml` | Metadatos/versión del paquete, dependencias, entry point y configuración de pytest/Ruff. |
+| `.gitignore` | Exclusión de entornos, cachés y salidas generadas. |
 
-El futuro adaptador XMind debe añadirse como módulo separado, por ejemplo xmind_adapter.py, sin reemplazar el modelo neutral.
+## Código: `src/xmind_md/`
 
-## Configuración: config/
+| Archivo o directorio | Responsabilidad |
+|---|---|
+| `__init__.py` | Publica `__version__`; debe coincidir con `pyproject.toml`. |
+| `__main__.py` | Permite ejecutar el paquete con `python -m xmind_md`. |
+| `model.py` | Modelo legacy conservado por compatibilidad. No es el contrato de los adaptadores. |
+| `parser.py` | Analiza el subconjunto Markdown enriquecido y conserva la API/modelo legacy. |
+| `ir_parser.py` | Puente de parsing al modelo canónico IR 1.0.0; expone `parse_markdown_ir()` y `parse_file_ir()`. |
+| `styles.py` | Carga YAML y resuelve estilos en modelos IR y legacy. |
+| `cli.py` | Coordina parsing, resolución de estilos y exportación JSON/XMind. |
+| `ir/` | Entidades, serialización y validación del contrato neutral IR 1.0.0. |
+| `adapters/json_adapter.py` | Serializa el modelo IR a JSON. |
+| `adapters/xmind_adapter.py` | Genera libros XMind modernos ZIP + JSON desde IR y valida el perfil soportado. |
+
+### Responsabilidades que no deben mezclarse
+
+- Parser: no genera archivos XMind ni contiene reglas de serialización del motor.
+- IR: no importa bibliotecas externas de exportación.
+- Resolutor: materializa propiedades neutrales en `style.resolved`.
+- Adaptador: no interpreta Markdown ni ejecuta la cascada de estilos.
+- CLI: orquesta las capas; no debe duplicar lógica de parser/adaptador.
+
+## Configuración
 
 | Archivo | Función |
 |---|---|
-| styles.yaml | Define conjuntos de estilos reutilizables y sus propiedades neutrales. |
+| `config/styles.yaml` | Ejemplo de conjuntos y definiciones de estilos neutrales. |
 
-No incluir aquí identificadores ni estructuras privadas de una biblioteca de exportación.
-
-## Documentación: docs/
+## Documentación: `docs/`
 
 | Archivo | Función |
 |---|---|
-| architecture.md | Explica capas, flujo de datos, contratos e invariantes. |
-| file-reference.md | Catálogo de archivos y responsabilidades. |
-| grammar.md | Sintaxis de los documentos fuente y límites del parser actual. |
-| style-system.md | Catálogo de propiedades visuales, conjuntos, herencia y resolución de estilos. |
-| ai-reconstruction-prompt.md | Prompt autónomo para que otra IA reconstruya y continúe el proyecto. |
-| development.md | Instalación, ejecución, pruebas y ciclo de contribución. |
-| xmind-engine-evaluation.md | Comparación de motores y decisión de arquitectura para el adaptador XMind. |
-| xmind-adapter.md | Contrato, mapeos, características soportadas y limitaciones de la primera versión del adaptador. |
-| xmind-integration-tests.md | Procedencia del fixture externo, pruebas de integración y límites de la validación. |
+| `ai-reconstruction-prompt.md` | Prompt autónomo para reconstruir y continuar el proyecto. |
+| `development-status.md` | Registro operativo, auditoría, hoja de ruta y evidencias. |
+| `architecture.md` | Capas, flujo de datos e invariantes vigentes. |
+| `development.md` | Instalación, CLI, pruebas y ciclo de contribución. |
+| `file-reference.md` | Este catálogo. |
+| `grammar.md` | Sintaxis Markdown y matriz real de implementación. |
+| `ir-specification.md` | Contrato neutral IR 1.0.0. |
+| `ir-schema.json` | JSON Schema Draft 2020-12 del IR. |
+| `ir-migration-plan.md` | Registro/plan histórico de migración al IR. |
+| `style-system.md` | Modelo de estilos, precedencia y capacidades implementadas. |
+| `xmind-adapter.md` | Mapeo IR→XMind y matriz de soporte/rechazo/pérdidas. |
+| `xmind-engine-evaluation.md` | Evaluación de motores y decisión de serialización Python nativa. |
+| `xmind-integration-tests.md` | Fixture de referencia, CI y prueba manual XMind Desktop. |
 
-## Ejemplos: examples/
+## Ejemplos
 
-| Archivo | Función |
+| Ruta | Función |
 |---|---|
-| constitucion.md | Documento de muestra para probar encabezados, contenido y directivas de estilo. |
-| xmind-smoke-test.md | Documento mínimo usado para generar el archivo de comprobación manual en XMind Desktop. |
+| `examples/constitucion.md` | Ejemplo de entrada Markdown enriquecida. |
+| `examples/xmind-smoke-test.md` | Fuente del libro mínimo para prueba manual XMind Desktop. |
+| `examples/ir/constitucion.json` | Ejemplo de documento IR serializado. |
 
-Los ejemplos también actúan como fixtures legibles: al cambiar la gramática, deben actualizarse y añadirse pruebas.
+## Pruebas y scripts
 
-## Pruebas: tests/
-
-| Archivo | Función |
+| Ruta | Función |
 |---|---|
-| test_parser.py | Comprueba gramática enriquecida, bloques estructurados, directivas, referencias y errores. |
-| test_styles.py | Comprueba la resolución de estilos desde un conjunto heredado. |
-| test_xmind_adapter.py | Comprueba JSON, árbol de temas, IDs, relaciones, estilos básicos y estructura ZIP del adaptador XMind. |
-| test_xmind_integration.py | Contrasta la estructura del adaptador con un fixture `.xmind` externo descargado por CI. |
-| scripts/create_xmind_smoke.py | Genera un `.xmind` de prueba a partir del ejemplo Markdown para validación manual. |
+| `tests/test_parser.py` | Gramática, directivas, bloques y errores de parsing. |
+| `tests/test_styles.py` | Carga, precedencia, herencia y resolución de estilos. |
+| `tests/test_xmind_adapter.py` | Traducción del IR, validación de capacidades y paquete ZIP/JSON. |
+| `tests/test_xmind_integration.py` | Contraste estructural con fixture XMind externo. |
+| `tests/fixtures/xmind/xmind-md-smoke-test.xmind` | Fixture propio abierto y guardado manualmente en XMind Desktop. |
+| `scripts/create_xmind_smoke.py` | Genera el artefacto XMind de smoke test usado en CI. |
 
-Toda funcionalidad nueva debe tener pruebas. No basta con modificar un ejemplo o comprobar visualmente el JSON.
+## Automatización y salida
 
-## Automatización: .github/workflows/
-
-| Archivo | Función |
+| Ruta | Función |
 |---|---|
-| ci.yml | Ejecuta la instalación y las pruebas en GitHub Actions. |
+| `.github/workflows/ci.yml` | CI Ubuntu: instalación, Ruff, pytest, generación y publicación del artefacto. |
+| `output/` | Salidas locales; el contenido generado no se versiona salvo fixtures expresamente ubicados en tests. |
 
-## Salida: output/
-
-El directorio está reservado para resultados locales. .gitkeep conserva el directorio en Git y .gitignore excluye los resultados generados.
-
-
-## Cambios del paso 5 (segunda fase)
-
-- `parser.py`: loader YAML seguro con detección de claves duplicadas, listas anidadas, validación de IDs explícitos, tipos de directivas y referencias globales.
-- `styles.py`: carga de estilos globales y conjuntos; fusión recursiva; herencia de conjuntos; precedencia de definiciones del documento frente a las externas; overrides locales.
-- `tests/test_parser.py`: casos de listas anidadas, YAML duplicado, IDs inválidos y tipos del front matter.
-- `tests/test_styles.py`: precedencia, herencia, fusión y errores de referencias.
+El catálogo no sustituye a las pruebas: antes de modificar un módulo, inspecciona su implementación y sus tests actuales.

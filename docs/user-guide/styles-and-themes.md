@@ -289,3 +289,7 @@ La especificación técnica del sistema está en [Sistema de estilos](../style-s
 6. Prueba una propiedad no admitida para comprobar cómo informa el adaptador.
 
 Este recorrido permite aprender el comportamiento real del motor antes de estudiar ampliaciones del catálogo o cambios en el código.
+
+## 13. Laboratorio práctico
+
+Para practicar con cuatro catálogos completos, consulta el [laboratorio de estilos personalizados](../../examples/styles/README.md). Incluye ejemplos académico, legislación, minimalista y alto contraste, cada uno con su YAML y su documento Markdown de prueba.

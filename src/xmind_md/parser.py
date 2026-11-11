@@ -183,8 +183,7 @@ def _list_plain_text(block: dict[str, Any]) -> str:
 def _parse_table(lines: list[str], start: int) -> tuple[dict[str, Any], int]:
     def cells(line: str) -> list[str]:
         value = line.strip()
-        if value.startswith("|"):
-            value = value[1:]
+        value = value.removeprefix("|")
         if value.endswith("|") and not value.endswith("\\|"):
             value = value[:-1]
         result: list[str] = []

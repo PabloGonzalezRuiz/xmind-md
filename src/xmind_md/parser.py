@@ -182,7 +182,7 @@ def _list_plain_text(block: dict[str, Any]) -> str:
                 values.append("".join(run.get("text", "") for run in content.get("runs", [])))
         if item.get("children"):
             values.append(_list_plain_text({"items": item["children"]}))
-    return "\\n".join(values)
+    return "\n".join(values)
 
 
 def _parse_table(lines: list[str], start: int) -> tuple[dict[str, Any], int]:
@@ -479,11 +479,7 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             block, i = _parse_list(lines, i)
             block["source"] = {"file": source_path, "line_start": line_no, "line_end": i}
             topic.content_blocks.append(block)
-            topic.content.append(
-                "\n".join(
-                    "".join(r.get("text", "") for r in item["content"]) for item in block["items"]
-                )
-            )
+            topic.content.append(_list_plain_text(block))
             continue
         if "|" in raw and i + 1 < len(lines) and re.match(r"^\s*\|?\s*:?-{3,}", lines[i + 1]):
             block, i = _parse_table(lines, i)

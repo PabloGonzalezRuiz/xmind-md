@@ -16,7 +16,6 @@ from uuid import NAMESPACE_URL, uuid5
 
 from ..ir import MindMap, Topic
 
-
 MIMETYPE = "application/vnd.xmind.workbook"
 DATA_STRUCTURE_VERSION = "3"
 LAYOUT_ENGINE_VERSION = "5"

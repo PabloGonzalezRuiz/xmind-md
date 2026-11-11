@@ -784,6 +784,8 @@ La tarea 8 está en curso. Se decidió conservar `0.1.0` y publicarla como Alpha
 - README, catálogo, estado operativo y avisos de terceros sincronizados; referencia rota a `escudo.png` corregida en avisos.
 - No hay tag ni Release. No afirmar publicación ni estabilidad.
 
+La CI de preparación [43011780314](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43011780314), commit `12e876f02a87ffa954292310f089fd9a81345496`, finalizó `completed / success`: 161 pruebas por versión en Python 3.10/3.11/3.12, Ruff lint/format, tres smoke XMind y build/verificación/instalación limpia de wheel y sdist con conversiones CLI JSON/XMind. Artefacto `python-distributions` ID `13851276208`; smoke Python 3.12 ID `13850228137`.
+
 **Bloqueo:** el smoke generado desde el commit candidato final debe abrirse, guardarse y reabrirse manualmente en XMind Desktop; el usuario debe confirmar el resultado. Luego comprobar CI verde del mismo SHA y solo entonces ejecutar el workflow `Prepare and publish XMind MD release` desde `main`, con `desktop_smoke_verified=yes`. No eludir esta condición.
 
 Consultar `docs/release-audit.md`, sección 13, y `docs/development-status.md`, sección 29, para estado y evidencia actualizados.

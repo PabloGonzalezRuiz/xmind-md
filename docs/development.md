@@ -94,4 +94,11 @@ Evita comentarios redundantes del tipo "# incrementar i" justo antes de "i += 1"
 
 ## GitHub Actions
 
-El workflow `.github/workflows/ci.yml` se ejecuta en Ubuntu con Python 3.12 en los eventos configurados en el propio YAML. Instala el paquete con `.[dev]`, ejecuta `ruff check src tests`, `ruff format --check src tests`, descarga el fixture XMind de referencia, ejecuta pytest, genera el archivo smoke y publica el artefacto.\n\nUn cambio no debe considerarse validado hasta que el run correspondiente al commit termine con conclusión `success`. El usuario puede delegar esta verificación en GitHub Actions sin instalar Python localmente; la evidencia debe quedar registrada en `docs/development-status.md`.
+El workflow `.github/workflows/ci.yml` se ejecuta en Ubuntu con Python 3.12 y contiene dos jobs:
+
+1. `Tests (Ubuntu)`: instalación editable con `.[dev]`, Ruff lint/format, descarga del fixture XMind de referencia, pytest, generación del smoke XMind y publicación del artefacto.
+2. `Build and install distributions (Ubuntu)`: depende del job anterior; construye wheel y sdist, ejecuta `scripts/verify_distributions.py`, instala cada distribución en un entorno virtual limpio separado, convierte un Markdown autónomo a JSON y XMind y publica `python-distributions`.
+
+El run [42990025087](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42990025087) validó ambos jobs: 131 pruebas, Ruff, build, verificación de LICENSE/metadatos e instalación/CLI JSON y XMind de wheel y sdist. Los libros XMind generados desde ambas distribuciones pasaron comprobaciones estructurales ZIP/MIME/JSON.
+
+La CI solo prueba Python 3.12 en Ubuntu; la compatibilidad con Python 3.10/3.11 y Windows no se deduce de ese resultado. Un cambio no debe considerarse validado hasta que el run correspondiente al commit termine con conclusión `success`. Toda evidencia debe quedar registrada en `docs/development-status.md`.

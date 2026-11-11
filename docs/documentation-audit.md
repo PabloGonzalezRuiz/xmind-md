@@ -55,13 +55,22 @@ Se han contrastado las afirmaciones documentales con el parser, el modelo IR, el
 - Se conserva la advertencia de que CI es Ubuntu y no acredita compatibilidad Windows.
 - El catálogo incluye este informe de auditoría.
 
-## 3. Ejemplos y pruebas manuales
+## 3. Documentos complementarios revisados
+
+- **Arquitectura:** flujo real de CLI, matriz de Python y evidencia CI actualizadas; se aclara la resolución de estilos externos.
+- **Plan de migración IR:** marcado como registro histórico completado; se eliminan afirmaciones pendientes sobre integración XMind en CLI y consolidación del contrato.
+- **Evaluación del motor XMind:** las secciones históricas de plan/resultado se sustituyen por el perfil real; relaciones con control points, integración CLI y estado de interoperabilidad quedan descritos.
+- **Licencia MIT:** se corrige el hallazgo antiguo de `escudo.png`; el ejemplo utiliza el SVG original versionado y la suite comprueba su presencia. Se mantiene el límite del inventario de terceros (no es SBOM completo).
+- **Pruebas de integración XMind:** se documenta la matriz CI actual, 161 pruebas por versión y validación wheel/sdist.
+- **Catálogo de archivos:** incluye el nuevo informe de esta tarea.
+
+## 4. Ejemplos y pruebas manuales
 
 - `examples/constitucion.md` demuestra el subconjunto enriquecido y genera IR/JSON; incluye recursos, tareas, boundaries y summaries no exportables a XMind.
 - `examples/xmind-smoke-test.md` es el documento mínimo para generar un libro XMind.
 - El fixture versionado `tests/fixtures/xmind/xmind-md-smoke-test.xmind` fue abierto, guardado y reabierto manualmente en XMind Desktop 26.05.01107. Esa prueba no equivale a una inspección manual del smoke más reciente con estilos.
 
-## 4. Limitaciones que deben permanecer visibles
+## 5. Limitaciones que deben permanecer visibles
 
 - No es un parser CommonMark/GFM completo.
 - XMind no exporta assets/imágenes, tareas, boundaries, summaries, extensiones ni temas `summary`.
@@ -70,7 +79,7 @@ Se han contrastado las afirmaciones documentales con el parser, el modelo IR, el
 - La CI ejecuta en Ubuntu. No hay evidencia de ejecución Windows.
 - Python 3.10 permanece declarado por compatibilidad técnica, aunque upstream dejó de darle soporte el 2026-10-01.
 
-## 5. Evidencia y cierre
+## 6. Evidencia y cierre
 
 Run [43009183421](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43009183421), commit `6cd1c937ee090bc36483be49e7d1f5c740e0926a`, finalizó `completed / success`. Python 3.10/3.11/3.12: Ruff lint/format correctos y **161 pruebas superadas por versión**. Los tres jobs generaron sus XMind smoke. El job de distribuciones construyó wheel/sdist, verificó contenido/licencia, instaló ambos en entornos limpios separados y ejecutó conversiones CLI JSON/XMind; validación ZIP/MIME/JSON correcta.
 

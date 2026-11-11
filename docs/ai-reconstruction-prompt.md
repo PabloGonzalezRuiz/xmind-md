@@ -553,3 +553,10 @@ El titular del proyecto ha elegido MIT y ha indicado el aviso de copyright **Pab
 No cambiar la licencia ni el titular sin instrucción expresa. La licencia MIT no se extiende automáticamente a dependencias, fixtures ni materiales de terceros; auditar sus condiciones antes de distribuir. La versión sigue en 0.1.0 y no hay Release.
 
 Pendiente inmediato: extender GitHub Actions para construir wheel y sdist, inspeccionar que incluyen los metadatos y LICENSE, instalar cada distribución en un entorno limpio y ejecutar una prueba funcional de la CLI. El usuario no desea ejecutar Python localmente. Esperar autorización expresa para iniciar esa siguiente tarea.
+
+
+### Evidencia CI de la adopción MIT
+
+Run [42986904524](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42986904524), commit `a64921cfdcc49016b5fd8eeb90cb7703ebb5355a`, finalizó success en Ubuntu. Instalación, Ruff lint, Ruff format, fixture, **131 pruebas**, generación XMind y artefacto finalizaron correctamente. El artefacto smoke tiene ID `13840285930` y SHA-256 `24e880172a25dcc52046db2f4978ff8d5dfdc8ebd2548d6890d5ebd551cf6a84`.
+
+La CI solo confirma el flujo de instalación editable actual. Todavía no construye ni instala wheel/sdist.

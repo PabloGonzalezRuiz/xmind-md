@@ -53,7 +53,7 @@ tests/fixtures/xmind/xmind-md-smoke-test.xmind está documentado como artefacto 
 
 - examples/xmind-smoke-test.md: contenido de prueba redactado para el proyecto; no se han identificado citas o recursos externos.
 - examples/constitucion.md: contiene texto de ejemplo relacionado con la Constitución Española y un enlace a BOE. El artículo 13 del texto refundido de la Ley de Propiedad Intelectual excluye de su objeto las disposiciones legales y reglamentarias y determinados actos públicos. Fuente oficial: https://www.boe.es/eli/es/rdlg/1996/04/12/1/con/20200708. Esta observación se limita al texto normativo; no cubre imágenes, comentarios, selecciones, anotaciones o materiales editoriales añadidos.
-- La referencia Markdown ![Escudo](assets/escudo.png) no tiene un archivo correspondiente en el árbol actual. El ejemplo y examples/ir/constitucion.json describen un recurso que no está presente. Es una inconsistencia de ejemplo/paquete pendiente de corregir en la auditoría funcional; no se ha incluido ni identificado un escudo gráfico de terceros.
+- La referencia histórica a `assets/escudo.png` se corrigió en la auditoría funcional: `examples/constitucion.md` y `examples/ir/constitucion.json` apuntan ahora a `examples/assets/escudo.svg`, un recurso ilustrativo original versionado y comprobado por tests. No se ha incluido ni identificado un escudo gráfico de terceros.
 - examples/ir/constitucion.json es un ejemplo de datos IR y no contiene un archivo de imagen binario; la ruta de recurso indicada es solo una referencia.
 
 No se han encontrado directorios de dependencias vendorizadas, fuentes de iconos, tipografías, imágenes o bibliotecas de terceros en el árbol actual. Esta comprobación es una inspección del contenido versionado y no una certificación legal de titularidad.
@@ -73,7 +73,7 @@ Se ejecutan en GitHub Actions y no se incorporan como código al paquete Python.
 1. No se ha detectado una incompatibilidad evidente entre la licencia MIT del código propio y las licencias declaradas de las dependencias directas/herramientas inventariadas.
 2. El fixture externo de CI declara MIT en el repositorio de origen; se ha añadido atribución explícita y el fixture no forma parte de las distribuciones Python.
 3. El fixture manual del proyecto aparece generado por la CI propia, según su documentación.
-4. El ejemplo constitucional se apoya en texto normativo sujeto a la exclusión del artículo 13 LPI; no se ha identificado un recurso gráfico, aunque el Markdown referencia uno inexistente.
+4. El ejemplo constitucional se apoya en texto normativo sujeto a la exclusión del artículo 13 LPI; su recurso gráfico actual es un SVG ilustrativo original versionado.
 5. El inventario de dependencias transitivas no está cerrado porque no hay lockfile ni SBOM de resolución. No debe describirse como inventario exhaustivo.
 6. Antes de publicar, mantener este aviso dentro del repositorio y resolver la referencia rota al recurso assets/escudo.png. Si se incorporan imágenes o fixtures externos, registrar origen, licencia, atribución y checksum.
 

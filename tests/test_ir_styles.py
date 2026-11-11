@@ -198,6 +198,7 @@ def test_public_resolve_styles_dispatches_to_ir_model():
     resolve_styles(mind_map, defaults={"topic": {"text": {"bold": True}}})
     assert root.style.resolved == {"text": {"bold": True}}
 
+
 def test_repository_style_configuration_resolves_external_document_references():
     root = Path(__file__).resolve().parents[1]
     styles = load_styles(root / "config" / "styles.yaml")

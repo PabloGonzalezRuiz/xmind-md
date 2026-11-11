@@ -78,9 +78,13 @@ def _walk_topics(
         note_path = f"{path}.annotations.notes[{index}]"
         _register(note.id, f"{note_path}.id", seen)
         for block_index, block in enumerate(note.content):
-            if block.type not in _CONTENT_TYPES:
+            if not isinstance(block.type, str) or block.type not in _CONTENT_TYPES:
                 raise IRValidationError(
                     f"{note_path}.content[{block_index}].type: tipo no reconocido {block.type!r}"
+                )
+            if not isinstance(block.data, dict):
+                raise IRValidationError(
+                    f"{note_path}.content[{block_index}].data: debe ser un objeto"
                 )
             if block.id is not None:
                 _register(block.id, f"{note_path}.content[{block_index}].id", seen)

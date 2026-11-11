@@ -55,7 +55,11 @@ def verify_wheel(path: Path, expected_version: str) -> None:
 def verify_sdist(path: Path, expected_version: str) -> None:
     with tarfile.open(path, "r:gz") as archive:
         names = set(archive.getnames())
-        metadata_files = [name for name in names if name.endswith("/PKG-INFO")]
+        metadata_files = [
+            name
+            for name in names
+            if name.endswith("/PKG-INFO") and ".egg-info/" not in name
+        ]
         if len(metadata_files) != 1:
             raise SystemExit(f"{path}: se esperaba un único PKG-INFO")
         metadata = archive.extractfile(metadata_files[0])

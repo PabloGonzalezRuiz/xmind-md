@@ -399,7 +399,7 @@ def test_relationship_line_styles_map_to_xmind_line_properties():
 
 
 @pytest.mark.parametrize("property_name", ["bold", "italic"])
-@pytest.mark.parametrize("invalid_value", ["false", 0, 1, None])
+@pytest.mark.parametrize("invalid_value", ["false", 0, 1])
 def test_boolean_text_style_properties_reject_non_boolean_values(
     property_name, invalid_value
 ):

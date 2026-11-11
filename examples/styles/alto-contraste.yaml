@@ -1,0 +1,36 @@
+# Tema de alto contraste para distinguir claramente los niveles.
+style_sets:
+  ALTO_CONTRASTE:
+    topic:
+      text:
+        font_family: Arial
+        font_size: 14
+        color: "#FFFFFF"
+      background:
+        color: "#202020"
+    styles:
+      raiz:
+        topic:
+          text:
+            font_size: 20
+            bold: true
+            color: "#FFFFFF"
+          background:
+            color: "#000000"
+          border:
+            color: "#FFFFFF"
+            width: 2
+      alerta:
+        topic:
+          text:
+            bold: true
+            color: "#FFFF00"
+          background:
+            color: "#303030"
+          border:
+            color: "#FFFF00"
+            width: 1.5
+      secundario:
+        topic:
+          text:
+            color: "#FFFFFF"

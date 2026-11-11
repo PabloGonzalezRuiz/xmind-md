@@ -746,3 +746,25 @@ No hay tag ni Release; versión actual 0.1.0.
 ### Siguiente tarea
 
 **Tarea 7 — sincronización documental final.** Revisar y corregir README, grammar.md, ir-specification.md, style-system.md, xmind-adapter.md, development.md, file-reference.md y ejemplos para que reflejen el comportamiento actual. En particular, actualizar esquema de estilos, resolución externa, soporte detached, restricciones YAML/inline images y límites XMind. Esperar autorización expresa antes de iniciarla.
+
+
+## Estado de continuidad actualizado — cierre de tarea 7 (2026-11-11)
+
+La tarea 7 de sincronización documental está completada en contenido; queda registrada su validación CI en cuanto termine el workflow del HEAD final. El informe de auditoría es `docs/documentation-audit.md`; el estado operativo es la sección 28 de `docs/development-status.md`.
+
+### Documentación sincronizada
+
+- README: 161 pruebas por versión y matriz Python 3.10/3.11/3.12; ejemplo de exportación XMind correcto.
+- Gramática: kinds attached/detached/callout/summary; raíz attached; YAML normalizado a JSON; subconjunto real de Markdown delimitado.
+- IR: contrato neutral separado de capacidades parser/exportador; referencias a estilos externos se resuelven tras cargar ambos catálogos.
+- Estilos: esquema ejecutable real `style_sets` + `styles`; no utilizar `extends`, `elements`, `applies_to` ni `properties` en la configuración actual; precedencia real documentada.
+- XMind: attached/detached/callout soportados; detached exige posición; summary no exportable; enlaces, estilos, pérdidas y rechazos explicitados.
+- Desarrollo: CLI de XMind usa el smoke fixture; CI matriz Ubuntu Python 3.10/3.11/3.12; build/install wheel/sdist en Python 3.12.
+
+### Límites que no deben ocultarse
+
+No CommonMark/GFM completo. El adaptador XMind rechaza recursos/imágenes, tareas, boundaries, summaries, extensiones, Topic.kind=summary y propiedades no soportadas; aplana bloques a notas y pierde parte del formato inline. El smoke con estilos aún no se ha inspeccionado manualmente de nuevo en XMind Desktop. CI solo Ubuntu; Python 3.10 está fuera de soporte upstream desde 2026-10-01.
+
+### Siguiente tarea
+
+**Tarea 8 — preparar changelog, fijar la versión final, crear tag y GitHub Release reproducible.** Antes de publicar, ejecutar CI sobre el commit candidato, comprobar artefactos y respetar los criterios de `docs/release-audit.md`. La versión actual sigue siendo 0.1.0 y no existe tag/Release. No iniciar tarea 8 sin autorización expresa del usuario.

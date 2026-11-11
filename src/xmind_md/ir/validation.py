@@ -7,7 +7,6 @@ from typing import Any
 
 from .entities import MindMap, Topic
 
-
 _ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]*$")
 _CONTENT_TYPES = {
     "paragraph", "list", "table", "code", "quote",

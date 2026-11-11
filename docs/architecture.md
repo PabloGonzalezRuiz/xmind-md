@@ -93,11 +93,12 @@ El comando instalado es `xmind-md`; también está disponible `python -m xmind_m
 ### 3.6 Automatización y pruebas
 
 - `tests/`: pruebas unitarias y de integración de parser, IR, estilos, adaptadores y CLI.
-- `.github/workflows/ci.yml`: CI sobre Ubuntu, Python 3.12; instalación editable con dependencias de desarrollo, Ruff lint, Ruff format, descarga de fixture externo, pytest, generación del smoke test y publicación del artefacto.
+- `.github/workflows/ci.yml`: dos jobs Ubuntu/Python 3.12; el primero ejecuta instalación editable, Ruff, fixture, pytest y generación XMind; el segundo construye wheel/sdist, inspecciona metadatos/licencia, instala cada distribución en un entorno limpio y ejecuta una conversión CLI a JSON.
 - `scripts/create_xmind_smoke.py`: genera un libro de comprobación para interoperabilidad manual.
+- `scripts/verify_distributions.py`: comprueba que wheel/sdist contienen metadatos, LICENSE y módulos esenciales.
 - `pyproject.toml`: metadatos de paquete, dependencias, entry point y configuración de herramientas.
 
-La CI de referencia de la tarea 12 completó correctamente 131 pruebas y publicó el artefacto XMind. La evidencia y el último estado se mantienen en [development-status.md](development-status.md).
+La CI [42988289597](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42988289597) completó ambos jobs: Ruff, 131 pruebas, generación XMind, build wheel/sdist, verificación de contenido/licencia e instalación limpia de ambas distribuciones con prueba CLI JSON. La CLI XMind desde los paquetes instalados sigue siendo una comprobación pendiente. La evidencia vigente se mantiene en [development-status.md](development-status.md) y [release-audit.md](release-audit.md).
 
 ## 4. Contratos e invariantes
 

@@ -182,7 +182,7 @@ XMind MD se distribuye bajo la licencia [MIT](LICENSE), con el aviso de copyrigh
 
 - `src/xmind_md/`: parser, puente al IR, modelo, estilos, CLI y adaptadores.
 - `config/`: estilos YAML de ejemplo.
-- `examples/`: documentos Markdown de ejemplo.
+- `examples/`: documentos Markdown de ejemplo y [mapas XMind de estudio y referencia](examples/xmind-study/README.md).
 - `tests/`: pruebas unitarias, de integración y fixture XMind.
 - `scripts/`: utilidades de generación de pruebas.
 - `docs/`: especificaciones y documentación operativa.

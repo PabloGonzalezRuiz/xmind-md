@@ -146,7 +146,7 @@ python -m pytest
 python scripts/create_xmind_smoke.py
 ```
 
-La ejecución de referencia más reciente de la tarea CI/Ruff completó lint, formato, descarga del fixture, 131 pruebas, generación XMind y publicación del artefacto. Consulta el [estado de desarrollo](docs/development-status.md) para la evidencia más reciente.
+La CI actual ejecuta Ruff, 131 pruebas y genera un XMind de comprobación. Un segundo job construye wheel y sdist, verifica sus metadatos/licencia, instala cada paquete en un entorno limpio y ejecuta una conversión CLI a JSON. La evidencia y los límites de las pruebas están en el [estado de desarrollo](docs/development-status.md) y la [auditoría de Release](docs/release-audit.md).
 
 ## Licencia
 
@@ -180,4 +180,4 @@ XMind MD se distribuye bajo la licencia [MIT](LICENSE), con el aviso de copyrigh
 
 ## Versión y estado
 
-La versión del paquete es `0.1.0`, declarada en `pyproject.toml` y `src/xmind_md/__init__.py`. Todavía no se ha publicado una Release estable. La publicación se realizará después de la auditoría final de capacidades, packaging, licencia y documentación.
+La versión del paquete es `0.1.0`, declarada en `pyproject.toml` y `src/xmind_md/__init__.py`; el verificador de distribuciones también comprueba esa versión. Wheel y sdist se construyen y prueban en CI, aunque la prueba instalada todavía cubre salida JSON y no salida XMind. Todavía no se ha publicado una Release estable. La publicación se realizará después de la auditoría final de capacidades, packaging, licencia y documentación.

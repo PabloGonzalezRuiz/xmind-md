@@ -666,3 +666,22 @@ Esta ejecución valida la documentación sincronizada en ese commit y confirma q
 - No se ha instalado ni ejecutado Python en el equipo del usuario.
 
 **Siguiente paso bloqueado por decisión:** confirmar la licencia deseada antes de modificar los metadatos o añadir el texto legal. Después se podrá implementar la prueba de construcción e instalación de wheel/sdist en GitHub Actions, con autorización para ese siguiente punto.
+
+
+## 20. Adopción de licencia MIT — 2026-11-11
+
+Esta sección prevalece sobre la sección 19 y cualquier referencia anterior que indique que la licencia está pendiente o ausente.
+
+El usuario ha elegido expresamente MIT como opción de menor fricción práctica y ha indicado el titular que debe aparecer: **Pablo González Ruiz**.
+
+Cambios publicados en `main`:
+- `LICENSE`: texto estándar MIT con `Copyright (c) 2026 Pablo González Ruiz`. Commit `b2cb8ae2f4bf9a130699fed7cf714d808475e901`.
+- `pyproject.toml`: `license = "MIT"`, `license-files = ["LICENSE"]` y build requirement `setuptools>=77.0.3` para metadatos PEP 639. Commit `7a1c7a60aab31d94329f80d5302cee5b53ef6e23`.
+- `docs/license-adoption.md`: decisión, alcance, condiciones y cautelas sobre materiales de terceros. Commit `52eda912895cdde8e7838a9a6b58cd262f6cdfcb`.
+- `README.md`: sección de licencia y enlaces a la documentación. Commit `c85109dff2ef99f82d5c3749f114eb858f8f0b3b`.
+
+La licencia del repositorio no relicencia automáticamente dependencias, fixtures ni materiales de terceros. Antes de distribuir debe verificarse que el titular puede licenciar bajo MIT todos los materiales propios incluidos.
+
+**Validación pendiente:** CI debe procesar los metadatos PEP 639, construir wheel y sdist, verificar que ambos contienen el archivo de licencia e instalar/probar las distribuciones en entornos limpios. No se ha publicado Release ni cambiado la versión 0.1.0.
+
+**Siguiente punto propuesto:** ampliar GitHub Actions para construir y validar wheel/sdist, sin ejecutar instalaciones locales. Esperar autorización antes de iniciar ese trabajo.

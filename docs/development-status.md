@@ -7,7 +7,7 @@
 - **Última prueba manual XMind Desktop:** superada en Windows, XMind 26.05.01107.
 - **Commit de incorporación del fixture XMind permanente:** `a1cf99861c819d9f148a7c7a3d779df6a95fc394`.
 - **Contrato objetivo:** IR 1.0.0
-- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; exportación JSON/XMind disponible; fixture comprobado manualmente en XMind Desktop 26.05.01107; CI Ubuntu con Ruff, 131 pruebas y generación/publicación del artefacto superadas. La tarea 13 de sincronización documental se ha completado; pendiente auditoría final y Release.
+- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; exportación JSON/XMind disponible; fixture comprobado manualmente en XMind Desktop 26.05.01107; documentación sincronizada; CI Ubuntu verde en commit fd2002cac38348162860f8dfc706721febfcf217 con Ruff, 131 pruebas y artefacto publicado. Pendiente auditoría final y Release.
 
 ## 1. Para qué sirve este documento
 
@@ -625,7 +625,7 @@ Cambios publicados:
 - Resolución IR: `resolve_ir_styles()` implementa precedencia por propiedad, herencia y overrides.
 - Adaptador: genera ZIP + JSON moderno y rechaza características fuera del perfil implementado.
 - Fixture manual: apertura, inspección, guardado y reapertura en XMind Desktop 26.05.01107; solo se acreditan los elementos enumerados en `docs/xmind-integration-tests.md`.
-- CI funcional de referencia antes de la sincronización documental: run [42985176851](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42985176851), commit `3b98dab084509167526f485280a22d40559dd815`, conclusión success, 131 pruebas y artefacto smoke publicado.
+- CI funcional de referencia después de la sincronización documental: run [42985726802](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42985726802), commit `fd2002cac38348162860f8dfc706721febfcf217`, conclusión success, 131 pruebas superadas y artefacto smoke publicado.
 - Cada cambio documental ha disparado la CI configurada. Debe comprobarse el run correspondiente al último commit de documentación antes de cerrar definitivamente la tarea.
 
 ### Hoja de ruta vigente
@@ -635,3 +635,16 @@ Cambios publicados:
 14. **Auditoría final y publicación estable — PENDIENTE.**
 
 La siguiente tarea es la 14. No iniciarla hasta recibir autorización expresa del usuario. La Release solo se publicará cuando se cumplan los criterios de la sección 9: CI verde en el commit candidato, auditoría de alcance, packaging y licencia, versión/etiqueta reproducibles y artefactos de distribución reales.
+
+
+### Verificación CI posterior a la sincronización documental
+
+- Run: [42985726802](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42985726802), workflow CI #281.
+- Commit probado: `fd2002cac38348162860f8dfc706721febfcf217`.
+- Runner: Ubuntu, Python 3.12.16.
+- Install, Ruff lint, Ruff format, descarga fixture, pytest, generación XMind y subida de artefacto: todos los pasos success.
+- Pytest: **131 passed in 0.50s**.
+- Artefacto: `xmind-desktop-smoke-test`, ID `13838948884`, tamaño 1.333 bytes, SHA-256 `7a723811f728e517e0f683a14e5ba514c71caa9c12a75f0d2c842282b59c99a9`.
+- Conclusión del run: success.
+
+Esta ejecución valida la documentación sincronizada en ese commit y confirma que los cambios documentales no han roto la CI. La Release sigue pendiente de la tarea 14.

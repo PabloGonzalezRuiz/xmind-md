@@ -505,3 +505,40 @@ La tarea 12 permanece **en curso** hasta verificar en el nuevo run Ubuntu todos 
 ### Decisión técnica vigente
 
 Para este proyecto se utilizará exclusivamente `ubuntu-latest` en GitHub Actions. No se instalará ni ejecutará Python localmente durante esta fase. La compatibilidad del artefacto se comprobará con XMind Desktop en Windows, sin mantener un segundo runner Windows en CI.
+
+
+## 8. Automatización de consulta CI y resultado Ubuntu — 2026-11-11
+
+### No volver a solicitar manualmente la URL de Actions
+
+Se ha comprobado que el conector GitHub permite consultar directamente el listado REST de ejecuciones recientes del repositorio, aunque no exista una acción especializada para listar los runs push recientes.
+
+Consulta operativa:
+`GET https://api.github.com/repos/PabloGonzalezRuiz/xmind-md/actions/runs?branch=main&per_page=10`
+
+Procedimiento obligatorio al retomar:
+1. Consultar ese endpoint directamente mediante la acción genérica de lectura GitHub.
+2. Seleccionar el run más reciente de la rama `main` cuyo `path` sea `.github/workflows/ci.yml`; revisar `head_sha`, `created_at`, `status`, `conclusion` y `html_url`.
+3. Consultar sus jobs con `fetch_workflow_run_jobs`.
+4. Consultar logs de los jobs no satisfactorios o relevantes con `fetch_workflow_job_logs`.
+5. Consultar artefactos con `fetch_workflow_run_artifacts`.
+6. Si el listado no está disponible o no devuelve runs, solo entonces pedir al usuario un enlace.
+
+**Regla:** no volver a pedir al usuario la URL de una ejecución cuando el endpoint de listado esté accesible. El usuario no tiene que hacer de intermediario para localizar ejecuciones de CI.
+
+### Run 42983466610 — primera CI Ubuntu-only
+
+- URL: https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42983466610
+- Commit: `88a62c94d01bbb6d2b90228d6f175ac8bf444cfc`.
+- Runner confirmado: Ubuntu 26.04, Python 3.12.16.
+- Instalación: correcta.
+- Ruff lint: correcto.
+- Ruff format: **fallido**.
+- El log indica que **17 archivos** de `src`/ `tests` necesitan formato Ruff; 7 ya estaban formateados.
+- Descarga fixture, pytest, generación XMind y publicación de artefacto: omitidos por el fallo anterior.
+- Artefactos: ninguno.
+- Conclusión: el runner Ubuntu-only está funcionando y el problema I001 de Ruff lint está resuelto; la tarea 12 sigue abierta por formato.
+
+### Siguiente acción
+
+Corregir el formato de los 17 archivos señalados por Ruff y volver a ejecutar CI. No marcar la tarea 12 como completada hasta que Ruff lint, Ruff format, fixture, pytest, generación XMind y subida del artefacto estén todos verificados como satisfactorios.

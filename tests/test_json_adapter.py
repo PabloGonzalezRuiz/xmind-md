@@ -49,3 +49,10 @@ def test_write_json_rejects_legacy_model():
 
     with pytest.raises(TypeError, match="IR 1.0.0"):
         write_json(LegacyMindMap(title="legacy"), "unused.json")
+
+def test_write_json_rejects_non_finite_numbers():
+    mind_map = make_map()
+    mind_map.metadata["invalid"] = float("nan")
+
+    with pytest.raises(ValueError, match="Out of range float values"):
+        write_json(mind_map, "unused.json")

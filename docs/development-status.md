@@ -753,3 +753,24 @@ La documentación de continuidad se ha reconciliado con el resultado de empaquet
 **Límite:** el smoke comprueba la estructura del libro generado desde las distribuciones, no su apertura visual en XMind Desktop. La prueba manual anterior sigue acreditando el fixture y las funciones inspeccionadas en XMind Desktop 26.05.01107.
 
 Siguiente tarea propuesta: auditoría de procedencia/licencias de dependencias, fixtures y ejemplos. No iniciarla sin autorización expresa del usuario.
+
+
+## 23. Auditoría de licencias y procedencia de terceros — 2026-11-11
+
+**Estado: inventario técnico completado; limitaciones identificadas y documentadas.**
+
+- Nuevo documento: [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md).
+- Dependencia runtime declarada: PyYAML, licencia MIT según el proyecto de origen.
+- Dependencias de desarrollo: pytest, Ruff y jsonschema, licencia MIT declarada por sus proyectos.
+- Build: setuptools, wheel y build, MIT.
+- Acciones CI: actions/checkout, actions/setup-python y actions/upload-artifact, MIT.
+- Fixture externo de CI: sc0tfree/xmind-mcp, archivo tests/fixture.xmind en revisión fija 6225cbcd3e8fc565bc18e80346699a6e118dd0f7. El LICENSE de esa revisión declara MIT y Copyright (c) 2026 Henry Prince. El archivo se descarga temporalmente y no está incluido en wheel/sdist.
+- Fixture propio: tests/fixtures/xmind/xmind-md-smoke-test.xmind; README documenta generación por CI propia y checksum.
+- Ejemplos: examples/xmind-smoke-test.md es contenido de prueba propio según su contenido. examples/constitucion.md referencia texto normativo y BOE; artículo 13 LPI excluye disposiciones legales/reglamentarias y actos públicos. No se extiende esa observación a imágenes o material editorial.
+- Hallazgo: examples/constitucion.md referencia assets/escudo.png, pero el archivo no existe en el repositorio. El JSON de ejemplo también describe ese recurso sin incorporar el binario.
+- No se han detectado bibliotecas, tipografías, imágenes o directorios de código vendorizado en el árbol actual.
+- Limitación: el inventario no es un SBOM exhaustivo. No existe lockfile y no se han resuelto ni enumerado todas las dependencias transitivas del extra jsonschema[format] y de las herramientas.
+
+No se ha detectado una incompatibilidad evidente entre MIT y las dependencias directas/herramientas inventariadas. No se emite certificación jurídica ni garantía de titularidad completa.
+
+La hoja de ruta sigue con: (3) matriz de Python, (4) actualización de actions, (5) versionado, (6) auditoría funcional, (7) sincronización final, (8) release. El recurso assets/escudo.png deberá corregirse en la auditoría funcional o de ejemplos antes de Release.

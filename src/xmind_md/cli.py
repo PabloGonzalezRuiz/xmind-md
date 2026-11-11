@@ -6,12 +6,11 @@ import argparse
 import sys
 from pathlib import Path
 
-from . import __version__
-
 from .adapters.json_adapter import write_json
 from .adapters.xmind_adapter import write_xmind
 from .ir_parser import parse_file_ir
 from .styles import StyleError, load_styles, resolve_styles
+from . import __version__
 
 
 def build_parser() -> argparse.ArgumentParser:

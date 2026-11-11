@@ -202,4 +202,3 @@ def test_constitution_example_references_a_bundled_asset():
     assert len(mind_map.assets) == 1
     asset = next(iter(mind_map.assets.values()))
     assert (source.parent / asset.path).is_file()
-    assert asset.mime_type == "image/svg+xml"

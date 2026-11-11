@@ -55,7 +55,7 @@ Puede incluir **formato**, listas y [enlaces](https://www.boe.es/).
 
 Consulta el [Boletín Oficial del Estado](https://www.boe.es/).
 
-![Escudo](assets/escudo.png)
+![Escudo ilustrativo](assets/escudo.svg)
 
 ```python
 def igualdad(persona_a, persona_b):

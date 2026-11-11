@@ -56,7 +56,7 @@ Los hashes anteriores identifican los ZIP de artefactos de GitHub Actions, no lo
 
 ### 3.2 Alcance y límites de la evidencia
 
-La instalación de wheel y sdist ejecutó una conversión CLI a JSON. La salida XMind se prueba en el job de tests desde el checkout, y el fixture histórico se abrió/guardó/reabrió manualmente en XMind Desktop 26.05.01107. **Todavía no se ha probado una salida `.xmind` generada desde cada distribución instalada en entorno limpio**, ni se ha probado manualmente en XMind Desktop el artefacto producido por el workflow actual de cada commit.
+La instalación de wheel y sdist ejecutó conversiones CLI a JSON y XMind en entornos limpios separados. La salida XMind se verificó como ZIP íntegro, con `mimetype` en primera posición y sin compresión, valor MIME correcto y `content.json` con el tema raíz esperado. El fixture histórico se abrió/guardó/reabrió manualmente en XMind Desktop 26.05.01107. Esa prueba manual sigue limitada a los elementos comprobados y no certifica todas las capacidades.
 
 La CI solo ejecuta Python 3.12 en Ubuntu aunque el paquete declara Python `>=3.10`. La compatibilidad de ejecución en Python 3.10/3.11 y Windows no queda acreditada por este pipeline.
 
@@ -137,3 +137,10 @@ La instrucción previa del usuario autoriza crear la Release cuando se cumplan e
 - [Gramática](grammar.md)
 - [Matriz del adaptador XMind](xmind-adapter.md)
 - [Guía de desarrollo](development.md)
+
+
+### Cierre de tarea 1 — smoke XMind de distribuciones
+
+La tarea 1 quedó completada en run [42990025087](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42990025087), commit `9831ae89da6e331219e1edbce71f6415752e2f22`. Los dos jobs terminaron success. Pytest: **131 passed in 0.48s**; Ruff lint/format success. Wheel y sdist se instalaron en entornos limpios, generaron JSON y XMind, y cada archivo XMind pasó las comprobaciones ZIP, `mimetype`, `content.json` y `testzip()`. Artefacto de distribución ID `13840773838`, 73.210 bytes, SHA-256 del ZIP `eb6a4f8235544b66106615734791605eed540ad0eb98f39d6af0ebf3fb5d6c3a`. Artefacto smoke ID `13841725579`, 1.331 bytes, SHA-256 del ZIP `ee794ec21589f37d59d85c4f25f519d2f45c547ba7f8dcb5eee1aa5f733f7c65`.
+
+Esta verificación acredita generación estructural desde ambas distribuciones instaladas; no sustituye una nueva apertura manual de ese artefacto en XMind Desktop.

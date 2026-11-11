@@ -419,7 +419,7 @@ Este documento es una fotografía mantenida del estado de desarrollo, no una gar
 - Run inicial aportado por el usuario: `42977948292` (https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42977948292). Los dos jobs fallaron en Ruff antes de pytest.
 - Run `42981097378` (https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42981097378): ambos runners fallaron en Ruff lint; quedaron exactamente tres `I001` en `src/xmind_md/adapters/xmind_adapter.py`, `src/xmind_md/ir/validation.py` y `tests/test_xmind_integration.py`. Ruff format, fixture, pytest, generación y artefactos fueron omitidos.
 - Se comprobó que las otras incidencias del run anterior habían desaparecido. Se corrigió la agrupación de imports en esos tres archivos mediante los commits `c03293b31f18fda69a274259a86b1225265fce48`, `80b781ed8a1fcde254d1cfac0d1d80b757c5496b` y `d3f545fcecc0f98d1031f37b1aadcfad6b3f7dda`.
-- La ejecución posterior a estos tres commits aún no está identificada/verificada. No declarar lint, formato, pytest ni artefactos superados hasta revisar ambos jobs.
+- Run 42981647696 (11-11-2026), posterior a c03293b, 80b781e y d3f545f: ambos jobs fallaron en Ruff lint; se repiten exactamente tres I001 en los mismos archivos. Los pasos Ruff format, descarga del fixture, pytest, generación XMind y upload quedaron omitidos; no se generaron artefactos.
 - Correcciones publicadas: `a7225b5` (import Any), `ab05615` (anotación recursiva), `c2aff0d` (removeprefix), `2b005f9` (import no usado), `ec18113` (imports test parser), `c66d92a` (condición de layout), `40e875a`, `98c360b` y `2e16371` (separación docstring/imports para reglas I001).
 - Los commits de corrección disparan CI por push. Aún no se ha inspeccionado el resultado de la nueva ejecución; lint, formato, pytest y artefactos siguen pendientes de evidencia.
 
@@ -459,3 +459,17 @@ Se mantienen para la tarea 13, sin confundirlos con defectos de ejecución:
 ### 7.6 Regla de continuidad inmediata
 
 El siguiente trabajo sigue siendo la tarea 12. Antes de cerrarla hay que obtener el resultado real de ambos jobs, revisar cada paso (Ruff lint, Ruff format, pytest, generación y artefacto) y corregir los fallos encontrados. Si no se puede acceder a los runs desde el conector, solicitar al usuario el enlace o una captura del resultado de GitHub Actions; no pedir ejecución local. Tras cerrar la tarea 12, presentar la evidencia y pedir autorización para la tarea 13.
+
+
+### 7.7 Diagnóstico y corrección del run 42981647696
+
+- URL: https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42981647696
+- Jobs: Windows 130393211673 y Ubuntu 130393211896; ambos concluyeron failure.
+- En ambos logs, Ruff 0.17.4 identifica los mismos tres errores I001: src/xmind_md/adapters/xmind_adapter.py:7:1; src/xmind_md/ir/validation.py:3:1; tests/test_xmind_integration.py:9:1.
+- La sugerencia exacta de Ruff era insertar una línea en blanco después de from __future__ import annotations. La corrección anterior había eliminado esa separación, por lo que no resolvió el error.
+- No hubo artefactos. Ruff format, descarga de fixture, pytest y generación XMind no se ejecutaron.
+- Corrección publicada: se restauró el contenido íntegro de los tres archivos desde el commit previo y se añadió únicamente la línea en blanco requerida:
+  - Adaptador: 6a3313c353e0a180fbe1950ce1c324e2eff3da22
+  - Validación IR: aa67bf2567599d50caf720399c60c495bea05367
+  - Pruebas de integración: 0f3c8fedb5e9cce3b133c53dcc75fe8ef6439a39
+- Estado: tarea 12 sigue abierta. La nueva ejecución desencadenada por estos commits debe confirmar Ruff lint y, después, todos los pasos restantes en ambos runners.

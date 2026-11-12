@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from copy import deepcopy
 import warnings
+from copy import deepcopy
 
 from .entities import MindMap, Topic
 from .validation import IRValidationError, validate_mind_map

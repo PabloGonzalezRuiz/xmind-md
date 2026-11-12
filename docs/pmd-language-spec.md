@@ -1,7 +1,7 @@
 # Especificación del lenguaje PMD
 
 **Nombre:** Pableras Markdown (PMD) · **Versión:** 1.0.0 · **IR de destino:** 1.1.0 · **Catálogo de referencia:** `xmind-md.study` 1.0.0  
-**Estado:** especificación aprobada en Fase 4; parser no implementado.  
+**Estado:** especificación normativa PMD 1.0.0; parser PMD 1.0.0 implementado y validado en Fase 5. La resolución completa del catálogo y el adaptador XMind siguen pendientes.  
 **Fecha:** 2026-11-12.
 
 ## 1. Propósito y alcance
@@ -339,7 +339,7 @@ El AST sintáctico puede ser temporal; no se crea un segundo modelo de dominio. 
 - [Constitución Española — jerarquía legal y tabla de árbol](../examples/pmd/constitucion-estructura.pmd.md).
 - [Tabla de árbol — patrón de Tema1](../examples/pmd/tabla-arbol-tema1.pmd.md).
 
-Son fixtures de especificación, todavía no parseados por el runtime.
+Son fixtures normativos parseados por la API PMD y validados como IR 1.1.0; sus pruebas están en tests/test_pmd_parser.py.
 
 ## 16. Cierre de Fase 4
 
@@ -353,4 +353,4 @@ Son fixtures de especificación, todavía no parseados por el runtime.
 - [x] Correspondencia con IR 1.1.0.
 - [x] Ejemplos legislativo y de tabla de árbol.
 
-**Fuera de alcance:** parser, validador runtime, loader y resolución PMD del catálogo, conversión IA, ampliación del adaptador XMind, pruebas Desktop y publicación. Corresponden a fases posteriores.
+**Fase 5:** parser, validación PMD y conversión PMD → IR 1.1.0 implementados. **Fuera de alcance:** conversión IA, ejecución de la cascada completa del catálogo, integración con style_sets/styles, ampliación del adaptador XMind, pruebas Desktop específicas para tree_table y publicación. Corresponden a fases posteriores.

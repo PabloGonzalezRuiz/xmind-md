@@ -510,7 +510,7 @@ def parse_markdown_syntax(text: str, source_path: str = "<string>") -> DocumentS
                 {
                     "type": "quote",
                     "content": [
-                        {"type": "paragraph", "runs": _inline_runs(value)} for value in quote
+                        {"type": "paragraph", "text": value, "runs": _inline_runs(value)} for value in quote
                     ],
                     "source": {"file": source_path, "line_start": line_no, "line_end": i},
                 }
@@ -566,6 +566,7 @@ def parse_markdown_syntax(text: str, source_path: str = "<string>") -> DocumentS
         topic.blocks.append(
             {
                 "type": "paragraph",
+                "text": joined,
                 "runs": _inline_runs(joined),
                 "source": {"file": source_path, "line_start": paragraph_start, "line_end": i},
             }

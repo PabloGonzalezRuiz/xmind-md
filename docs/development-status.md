@@ -1107,11 +1107,13 @@ No se ha implementado código ni se ha iniciado la Fase 2 de especificación de 
 
 **Estado: investigación documental completada; sin cambios de código ni de dependencias.**
 
-Se identificaron y estudiaron tres repositorios de XMind Ltd., todos TypeScript y MIT:
+Se identificaron y estudiaron tres repositorios oficiales de implementación/modelo TypeScript/MIT y un repositorio oficial de Skill/CLI MIT:
 
 - **xmind-sdk-js** (SDK oficial, paquete observado 2.2.33; último commit consultado 2024-06-13).
 - **xmind-model** (modelo y JSON Schema Draft-07; paquete 1.1.12; último commit consultado 2020-06-12). Su README recomienda no consumirlo directamente y usar xmind-sdk-js.
 - **xmind-generator** (generador oficial; paquete 1.0.1; último push consultado 2024-06-14).
+- **xmindmark** (lenguaje de marcado oficial inspirado en Markdown; paquete 0.3.2, TypeScript 4.5, MIT; último push consultado 2022-05-17). Es probablemente el proyecto que mejor encaja con la pista de un lenguaje TypeScript/MIT para mapas.
+- **xmind-cli** (repositorio de Skill oficial para agentes, MIT; el CLI se publica por separado como paquete npm; el repositorio no contiene el código del serializador).
 
 El informe completo está en [xmind-official-sdk-research.md](xmind-official-sdk-research.md). Se ha ampliado [xmind-json-format.md](xmind-json-format.md) y se han sincronizado arquitectura, roadmap, catálogo y README.
 
@@ -1121,6 +1123,9 @@ El informe completo está en [xmind-official-sdk-research.md](xmind-official-sdk
 - Los temas pueden contener colecciones children diferenciadas (attached, detached, summary, callout), además de structureClass, class, estilos locales, notas, imágenes, marcadores, límites, resúmenes y extensiones.
 - class, structureClass y style.properties tienen funciones distintas. El modelo muestra perfiles Theme y consulta de familias de estilo, pero no documenta completamente la herencia del motor Desktop.
 - xmind-generator construye y serializa una estructura con temas, notas, etiquetas, marcadores, imágenes, relaciones y resúmenes; su metadata declara dataStructureVersion = "2".
+- XMindMark define una gramática textual propia: primera línea como central topic, listas indentadas, relaciones [n]/[^n], boundaries [B] y summaries [S]. Su parser aplica un Theme predefinido y genera hojas, temas, rangos y relaciones; su conversor inverso es parcial y con pérdida.
+- XMindMark incluye un helper makeKeyValueTable que usa org.xmind.ui.spreadsheet y una extensión asociada; no equivale a la tabla de árbol org.xmind.ui.treetable.toptitle de Tema1.
+- El repositorio xmind-cli documenta el flujo actual de agentes para generar, leer, editar y validar libros, pero no publica en ese repositorio el código interno del CLI ni su serializador.
 - Los ZIP generados por xmind-sdk-js y xmind-generator difieren del perfil actual del proyecto. El primero incluye content.xml heredado; el segundo incluye resources y metadata v2; ninguno de los dos serializadores inspeccionados añade mimetype y thumbnail. El adaptador XMind MD mantiene su perfil actual con dataStructureVersion 3, layoutEngineVersion 5, mimetype y thumbnail.
 
 ### Conclusión y límites

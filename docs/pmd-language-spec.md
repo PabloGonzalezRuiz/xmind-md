@@ -135,7 +135,7 @@ Se permite espacio en blanco entre directiva y encabezado, pero no otro bloque M
 | `links` | lista de mappings | `Topic.links` |
 | `extensions` | mapping | `Topic.extensions` |
 
-No se admiten claves desconocidas. Se utiliza `role` como forma compacta de autoría; el IR mantiene el nombre `semantic_role`. El campo opcional `parent` declara el ID del tema padre y prevalece sobre el padre inferido por nivel de encabezado; permite representar árboles con más de seis niveles sin convertir listas en temas.
+No se admiten claves desconocidas. Se utiliza `role` como forma compacta de autoría; el IR mantiene el nombre `semantic_role`. El campo opcional `parent` declara el ID del tema padre y prevalece sobre el padre inferido por nivel de encabezado; permite representar árboles con más de seis niveles sin convertir listas en temas. Si varios temas declaran el mismo padre, su orden en `children` es el orden de aparición en el documento.
 
 ### 5.3 Kind y rol
 
@@ -170,7 +170,7 @@ La herencia por primer hijo es política del catálogo. Las excepciones parciale
 
 ### 5.5 Anotaciones
 
-`labels` es una lista ordenada de cadenas. `markers` es una lista ordenada de mappings con `group` y `value`. `task` sigue el contrato de anotaciones IR y sus estados, progreso, fechas y asignación admitidos. Anotaciones, roles y estilos son conceptos independientes.
+`labels` es una lista ordenada de cadenas. `markers` es una lista ordenada de mappings con `group` y `value`; puede incluir `id` explícito, y si se omite el parser genera uno determinista. Los IDs de etiquetas y notas también se generan determinísticamente cuando el IR los requiere. `task` sigue el contrato de anotaciones IR y sus estados, progreso, fechas y asignación admitidos. Anotaciones, roles y estilos son conceptos independientes.
 
 ## 6. Estructura compuesta `tree_table`
 
@@ -261,8 +261,8 @@ Los IDs explícitos son cadenas no vacías y únicas en el mapa. Deben declarars
 
 Si un tema no declara ID, el parser genera uno determinista:
 1. Normalizar la ruta de origen a separadores `/` y Unicode NFC.
-2. Construir la ruta de títulos desde la raíz; normalizar cada título a NFC conservando el texto.
-3. Añadir el ordinal 1-based del tema entre hermanos con igual título normalizado.
+2. Construir la ruta de encabezados según la pila sintáctica ATX (antes de aplicar overrides `parent`); normalizar cada título a NFC conservando el texto.
+3. Añadir el ordinal 1-based del tema entre encabezados con igual título normalizado bajo el mismo padre inferido por la pila ATX.
 4. Unir los componentes con U+0000 y calcular SHA-256 UTF-8.
 5. Usar `auto-` + los primeros 16 caracteres hexadecimales minúsculos.
 

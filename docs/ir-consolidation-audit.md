@@ -145,3 +145,21 @@ Pruebas añadidas:
 Evidencia CI de la implementación con builder separado: [run 43226219111](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43226219111), commit `5d082a9c09bb41f667fbd5fbf07aa483a5076975`. Resultado: jobs Python 3.10, 3.11 y 3.12 en success; Ruff lint y format correctos; 166 pruebas superadas por versión; wheel/sdist construidos, instalados en entornos limpios y probados.
 
 **Pendiente de Fase 1:** styles.py conserva resolución legacy y model.py sigue siendo requerido por esa compatibilidad. La tarea 1.3 debe aislar esa ruta y decidir su política de deprecación/retirada. No se ha integrado la rama en main ni se ha publicado una nueva release.
+
+
+## 11. Cierre de la consolidación del modelo
+
+La última parte de la Fase 1 ha aislado la resolución de estilos legacy:
+
+- styles.py ya no importa model.py.
+- resolve_styles() deriva objetos IR a resolve_ir_styles() y los objetos antiguos a legacy_styles.py.
+- legacy_styles.py contiene la resolución histórica y es invocado únicamente por la compatibilidad de la API antigua.
+- Los consumidores internos canónicos (CLI, parser IR, builder y adaptadores) trabajan con IR.
+- legacy_adapter.py conserva la proyección AST → modelo antiguo para parse_markdown() / parse_file().
+- model.py no se elimina ni se depreca en esta fase porque el repositorio no permite identificar consumidores externos.
+
+La decisión es mantener las API antiguas como compatibilidad aislada y considerar IR el único modelo de dominio de la ruta canónica. Esto evita una rotura externa no justificada sin mantener el modelo antiguo en el flujo principal.
+
+Evidencia final de código: [run 43227325673](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43227325673), commit `0361f290a490c61e108ee0aa8a9d212c7f7b73c3`; 166 pruebas en Python 3.10, 3.11 y 3.12, Ruff, build e instalación de wheel/sdist correctos.
+
+**Fase 1 completada en la rama architecture/pmd-ir-roadmap.** No se ha integrado en main ni publicado una nueva versión. La Fase 2 (roles semánticos y estructuras compuestas neutrales, empezando por tree_table) queda pendiente de autorización.

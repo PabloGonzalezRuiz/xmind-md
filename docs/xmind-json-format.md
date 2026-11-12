@@ -284,3 +284,28 @@ Cada fixture debe documentar la versión de XMind, el caso que representa y las 
 | Significado universal de cada clave privada `org.xmind...` | Requiere fixtures/documentación adicional |
 | Reglas completas de herencia nativa XMind | Pendiente de investigación controlada |
 | Lector XMind → PMD/IR | No implementado |
+
+
+## 14. Investigación de repositorios y modelo oficial
+
+La investigación adicional está desarrollada en [xmind-official-sdk-research.md](xmind-official-sdk-research.md). Se han identificado tres repositorios oficiales TypeScript/MIT:
+
+- **xmind-sdk-js**: SDK oficial; usa xmind-model y genera/valida libros mediante Workbook, Sheet, Topic, Marker, Note y Zipper.
+- **xmind-model**: interfaces, clases y esquemas JSON Schema Draft-07 para hojas, temas, estilos, marcadores, notas, relaciones, límites, resúmenes, imágenes y extensiones.
+- **xmind-generator**: generador oficial con un serializador explícito de un perfil ZIP + JSON y recursos.
+
+### 14.1 Hallazgos que amplían el formato
+
+- El documento se representa como array de hojas.
+- La hoja puede incluir rootTopic, style, topicPositioning, topicOverlapping, theme, relationships, legend y settings.
+- Los temas tienen colecciones children por tipo: attached, detached, summary y callout en xmind-model.
+- class (familias de estilo), structureClass (estructura) y style.properties (propiedades visuales locales) son conceptos separados.
+- El modelo contempla entidades auxiliares explícitas para Relationship, Boundary, Summary, Marker, Notes, Image, Numbering y Extension.
+- El modelo de estilo combina perfiles de Theme, clases del componente y propiedades locales. No se ha encontrado una especificación completa y actual del algoritmo de herencia del Desktop.
+
+### 14.2 Perfiles ZIP distintos: no mezclar implementaciones
+
+xmind-sdk-js incluye content.json, metadata.json, content.xml, manifest.json y recursos; el Zipper consultado no añade mimetype ni miniatura. xmind-generator genera content.json, metadata.json, manifest.json y resources; declara dataStructureVersion = "2" y tampoco añade mimetype, content.xml ni miniatura. Nuestro adaptador actual declara dataStructureVersion = "3" y layoutEngineVersion = "5", e incluye mimetype y thumbnail. Tema1 es otra referencia real exportada por Desktop.
+
+Por tanto, estos repositorios son fuentes oficiales de implementación, pero sus perfiles de serialización no deben combinarse ni sustituir automáticamente el formato actual del proyecto. La diferencia de versiones debe validarse con XMind Desktop.
+

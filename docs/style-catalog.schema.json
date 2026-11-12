@@ -230,57 +230,113 @@
           "type": "object",
           "properties": {
             "font_family": {
-              "type": "string"
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "font_size": {
-              "type": "number",
-              "exclusiveMinimum": 0
+              "oneOf": [
+                {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "font_weight": {
               "oneOf": [
                 {
-                  "enum": [
-                    "normal",
-                    "bold"
+                  "oneOf": [
+                    {
+                      "enum": [
+                        "normal",
+                        "bold"
+                      ]
+                    },
+                    {
+                      "type": "integer",
+                      "minimum": 100,
+                      "maximum": 900
+                    }
                   ]
                 },
                 {
-                  "type": "integer",
-                  "minimum": 100,
-                  "maximum": 900
+                  "type": "null"
                 }
               ]
             },
             "font_style": {
-              "enum": [
-                "normal",
-                "italic"
+              "oneOf": [
+                {
+                  "enum": [
+                    "normal",
+                    "italic"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
               ]
             },
             "color": {
-              "$ref": "#/$defs/color"
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/color"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "text_transform": {
-              "enum": [
-                "none",
-                "uppercase",
-                "lowercase",
-                "capitalize"
+              "oneOf": [
+                {
+                  "enum": [
+                    "none",
+                    "uppercase",
+                    "lowercase",
+                    "capitalize"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
               ]
             },
             "decoration": {
-              "enum": [
-                "none",
-                "underline",
-                "line_through"
+              "oneOf": [
+                {
+                  "enum": [
+                    "none",
+                    "underline",
+                    "line_through"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
               ]
             },
             "align": {
-              "enum": [
-                "left",
-                "center",
-                "right",
-                "justify"
+              "oneOf": [
+                {
+                  "enum": [
+                    "left",
+                    "center",
+                    "right",
+                    "justify"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
               ]
             }
           },
@@ -290,12 +346,26 @@
           "type": "object",
           "properties": {
             "color": {
-              "$ref": "#/$defs/color"
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/color"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "opacity": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1
+              "oneOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           },
           "additionalProperties": false
@@ -304,18 +374,39 @@
           "type": "object",
           "properties": {
             "color": {
-              "$ref": "#/$defs/color"
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/color"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "width": {
-              "type": "number",
-              "minimum": 0
+              "oneOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "pattern": {
-              "enum": [
-                "solid",
-                "dashed",
-                "dotted",
-                "dash_dot"
+              "oneOf": [
+                {
+                  "enum": [
+                    "solid",
+                    "dashed",
+                    "dotted",
+                    "dash_dot"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
               ]
             }
           },
@@ -325,13 +416,20 @@
           "type": "object",
           "properties": {
             "type": {
-              "enum": [
-                "rectangle",
-                "rounded_rectangle",
-                "ellipse",
-                "underline",
-                "double_underline",
-                "none"
+              "oneOf": [
+                {
+                  "enum": [
+                    "rectangle",
+                    "rounded_rectangle",
+                    "ellipse",
+                    "underline",
+                    "double_underline",
+                    "none"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
               ]
             }
           },

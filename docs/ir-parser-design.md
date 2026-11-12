@@ -35,15 +35,12 @@ Separar el flujo en cuatro responsabilidades:
        |
        +--> resolución de estilos / adaptadores / CLI
 
-La API de compatibilidad sigue una ruta inversa y explícita:
+La API de compatibilidad utiliza el mismo análisis sintáctico, pero proyecta el AST a la estructura antigua:
 
     parse_markdown() / parse_file()
        |
        v
-    parse_markdown_ir() / parse_file_ir()
-       |
-       v
-    IR 1.0.0
+    parser.py → DocumentSyntax
        |
        v
     legacy_adapter.py
@@ -51,7 +48,7 @@ La API de compatibilidad sigue una ruta inversa y explícita:
        v
     model.MindMap / model.Topic
 
-El adaptador inverso existe únicamente para conservar el contrato legacy. No participa en la ruta canónica, no se utiliza por CLI ni por los adaptadores y no debe convertirse en un segundo modelo de ejecución.
+Esta ruta solo se ejecuta cuando un consumidor invoca explícitamente la API antigua. No participa en la ruta canónica IR ni se utiliza por CLI o adaptadores. Se mantiene separada porque el contrato legacy conserva datos de autoría (por ejemplo, nivel exacto del encabezado y texto Markdown original) que el IR no pretende almacenar.
 
 ## 3. AST sintáctico temporal
 
@@ -98,15 +95,15 @@ Diseño objetivo de módulos:
 | Módulo | Responsabilidad |
 |---|---|
 | syntax.py | Tipos AST sintácticos y, si conviene, utilidades de procedencia. |
-| parser.py | Gramática actual; produce DocumentSyntax. Conserva wrappers legacy. |
+| parser.py | Gramática actual; produce DocumentSyntax. Las funciones antiguas delegan en el adaptador legacy. |
 | ir_builder.py | AST → IR, con constructores deterministas. |
 | ir_parser.py | Fachada pública parse_markdown_ir() y parse_file_ir(); orquesta parser + builder. |
-| legacy_adapter.py | IR → model.MindMap / model.Topic para compatibilidad temporal. |
+| legacy_adapter.py | AST → model.MindMap / model.Topic para compatibilidad temporal. |
 | ir/entities.py | Entidades canónicas, sin dependencia de parser ni adaptadores. |
 
-Para evitar importaciones circulares, parser.py no importará ir_parser.py en tiempo de módulo. Los wrappers legacy harán una importación local al invocarse. ir_parser.py podrá importar el parser sintáctico sin que este importe la fachada IR.
+Para evitar importaciones circulares, parser.py no importa ir_parser.py. ir_parser.py importa parse_markdown_syntax(); el parser solo importa legacy_adapter dentro de las funciones antiguas. El adaptador consume DocumentSyntax y construye model.MindMap / model.Topic sin intervenir en la ruta IR.
 
-Las funciones parse_markdown_ir() y parse_file_ir() serán la única ruta canónica. parse_markdown() y parse_file() delegarán en ellas y convertirán el resultado mediante el adaptador legacy.
+Las funciones parse_markdown_ir() y parse_file_ir() son la única ruta canónica. parse_markdown() y parse_file() reutilizan el mismo AST y lo proyectan al modelo antiguo.
 
 ## 6. Compatibilidad y fidelidad
 
@@ -130,7 +127,7 @@ La adaptación IR → legacy puede reconstruir los campos legacy derivados cuand
 2. Separar el reconocimiento sintáctico de la construcción de entidades legacy.
 3. Implementar el builder IR reutilizando las reglas actuales de conversión, sin duplicar lógica.
 4. Cambiar parse_markdown_ir() para consumir AST directamente y retirar _convert() / _topic() del camino canónico.
-5. Implementar el adaptador inverso IR → legacy y hacer que las funciones antiguas deleguen en la ruta canónica.
+5. Implementar el adaptador AST → legacy y hacer que las funciones antiguas reutilicen el análisis sintáctico común.
 6. Añadir pruebas de equivalencia de ida y vuelta para el contrato legacy observable y pruebas de que la ruta IR no instancia model.MindMap ni model.Topic.
 7. Migrar el resolutor legacy de estilos o encapsularlo detrás del adaptador; retirar dependencias internas de model.py cuando las pruebas lo permitan.
 8. Ejecutar suite completa, Ruff, build/install y CI en Python 3.10–3.12.
@@ -142,7 +139,7 @@ Cada paso se realizará en commits pequeños. No se retirará model.py ni se cam
 - parse_markdown_ir() y parse_file_ir() producen IR sin construir objetos del modelo legacy.
 - No existe conversión legacy → IR en la ruta canónica.
 - El AST no es un modelo de dominio alternativo ni persiste en el resultado.
-- Las APIs legacy conservan su forma y comportamiento documentados mediante un adaptador inverso.
+- Las APIs legacy conservan su forma y comportamiento documentados mediante un adaptador AST → legacy aislado.
 - El fixture de caracterización y las pruebas de parsing/IR conservan IDs, contenido, orden, referencias y procedencia.
 - Las pruebas negativas mantienen la validación de YAML, directivas, IDs y referencias.
 - La CLI y los adaptadores siguen consumiendo IR directamente.
@@ -156,7 +153,7 @@ Cada paso se realizará en commits pequeños. No se retirará model.py ni se cam
 - Notas: hoy se analizan después con _inline_runs(); la nueva ruta debe conservar formato y generación de ID.
 - Validación de referencias: las relaciones se validan al terminar de construir el árbol; los enlaces internos se validan en la validación IR. No adelantar validaciones si cambia el error observable sin justificarlo.
 - Estilos legacy: styles.py todavía importa model.Topic; su retirada es una parte separada de la consolidación y no debe bloquear el primer corte del parser.
-- Compatibilidad externa: no se conocen consumidores externos. Mantener temporalmente las funciones legacy es la opción conservadora.
+- Compatibilidad externa: no se conocen consumidores externos. Mantener temporalmente las funciones legacy es la opción conservadora. La ruta antigua no se fuerza a pasar por IR cuando ello perdería información de autoría que el modelo legacy sí conservaba.
 
 ## 10. Estado
 

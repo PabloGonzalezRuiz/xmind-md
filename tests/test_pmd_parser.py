@@ -144,9 +144,7 @@ def test_yaml_aliases_and_implicit_dates_are_rejected() -> None:
     with pytest.raises(PMDParseError, match="alias YAML"):
         parse_pmd_markdown(alias_source)
 
-    date_source = _document(
-        ":::pmd\\nid: raiz\\ntask: {due_date: 2026-12-15}\\n:::\\n# Raíz\\n"
-    )
+    date_source = _document(":::pmd\\nid: raiz\\ntask: {due_date: 2026-12-15}\\n:::\\n# Raíz\\n")
     with pytest.raises(PMDParseError, match="cadenas ISO 8601"):
         parse_pmd_markdown(date_source)
 

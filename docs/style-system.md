@@ -2,7 +2,7 @@
 
 **Versión de diseño:** 1.0-draft  
 **Contrato IR objetivo:** 1.0.0  
-**Estado:** resolución implementada para IR 1.0.0 y ruta legacy. Las secciones de diseño general describen vocabulario neutral objetivo; el esquema YAML ejecutable y la cascada efectiva se especifican en las secciones 3.1 y 15.
+**Estado:** resolución implementada y compatible con IR 1.0.0/1.1.0 y ruta legacy. Los roles semánticos existen en el modelo, pero su catálogo y reglas de aplicación pertenecen a la Fase 3. Las secciones de diseño general describen vocabulario neutral objetivo; el esquema YAML ejecutable y la cascada efectiva se especifican en las secciones 3.1 y 15.
 
 ## 1. Objetivo
 
@@ -47,7 +47,7 @@ El sistema no debe confundir estilos con estructura. Por ejemplo, el plegado de 
 
 ### 3.1 Estructura de configuración
 
-**Esquema ejecutable actual (IR 1.0.0):** el resolutor consume dos catálogos superiores, `style_sets` y `styles`. No consume las secciones superiores `version`, `defaults`, `elements` ni `extensions` descritas en diseños históricos.
+**Esquema ejecutable actual (IR 1.x):** el resolutor consume dos catálogos superiores, `style_sets` y `styles`. No consume las secciones superiores `version`, `defaults`, `elements` ni `extensions` descritas en diseños históricos.
 
 - `style_sets`: cada nombre de conjunto contiene propiedades agrupadas directamente por tipo de elemento (`topic`, `relationship`, `boundary`, `summary`, `notes`) y, opcionalmente, un mapping `styles` con estilos nombrados del conjunto.
 - `styles`: catálogo global; cada estilo agrupa sus propiedades por tipo de elemento.
@@ -263,7 +263,7 @@ El resolutor actual no utiliza `applies_to` ni `properties`. El tipo destinatari
 
 ## 8. Cascada y precedencia
 
-Para IR 1.0.0, `resolve_ir_styles()` aplica por propiedad esta precedencia, de menor a mayor:
+Para IR 1.x, `resolve_ir_styles()` aplica por propiedad esta precedencia, de menor a mayor:
 
 1. Defaults del sistema suministrados al resolutor.
 2. `MindMap.metadata.style_defaults`.
@@ -393,7 +393,7 @@ Estas fuentes permiten inventariar capacidades y vocabulario, pero no sustituyen
 
 ## 15. Estado real de implementación
 
-La resolución de estilos ya está implementada en `src/xmind_md/styles.py`. Para IR 1.0.0, `resolve_ir_styles()` aplica por propiedad esta precedencia:
+La resolución de estilos ya está implementada en `src/xmind_md/styles.py`. Para IR 1.x, `resolve_ir_styles()` aplica por propiedad esta precedencia:
 
 1. Defaults del sistema proporcionados a la función.
 2. `MindMap.metadata.style_defaults`.
@@ -417,7 +417,7 @@ La matriz de traducción vigente se mantiene en [xmind-adapter.md](xmind-adapter
 
 ## 16. Evolución prevista: catálogo semántico y reglas para PMD
 
-Esta sección describe el diseño objetivo, **no funciones implementadas en el resolutor IR 1.0.0**. La ejecución actual sigue siendo la descrita en las secciones 3.1, 8 y 15.
+Esta sección describe el diseño objetivo, **no funciones implementadas en el resolutor IR 1.x**. La ejecución actual sigue siendo la descrita en las secciones 3.1, 8 y 15.
 
 Los estilos deberán residir en una biblioteca reutilizable separada del contenido. Cada entrada tendrá identificador estable, descripción semántica, destinatarios, propiedades visuales, restricciones y ejemplos. El catálogo estructurado debe poder ser leído por el motor y suministrado a la IA; la documentación descriptiva debe ser coherente con él. YAML/JSON y Markdown son candidatos, pero el esquema final está pendiente.
 

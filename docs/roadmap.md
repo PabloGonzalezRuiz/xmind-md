@@ -39,8 +39,8 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 #### 1.1 Caracterización y mapa de consumidores
 - [x] Inventariar las llamadas internas a `parse_markdown()`, `parse_file()`, `parse_markdown_ir()` y `parse_file_ir()`.
 - [x] Inventariar importaciones y consumidores internos de `model.py`, `Topic`, `MindMap` y la ruta legacy de `styles.py`.
-- [ ] Registrar contratos observables: IDs deterministas, fuentes, errores, directivas, contenido, anotaciones, recursos, relaciones, límites y resúmenes.
-- [ ] Añadir pruebas de caracterización que comparen el IR actual con fixtures de entrada representativos.
+- [x] Registrar contratos observables mediante suites existentes y fixture de caracterización: IDs, procedencia, errores, directivas, contenido, anotaciones, recursos, relaciones, límites y resúmenes.
+- [x] Añadir fixture Markdown y prueba de caracterización del IR actual; CI 43221134964 correcta en Python 3.10–3.12.
 
 #### 1.2 Parser con salida IR directa
 - [ ] Separar la sintaxis temporal del modelo de dominio legacy.
@@ -154,4 +154,4 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 
 ## Ejecución activa
 
-La Fase 0 queda documentada en ADR-001. La Fase 1 está iniciada: el mapa inicial de consumidores está en [ir-consolidation-audit.md](ir-consolidation-audit.md). Siguiente tarea: completar caracterización mediante fixtures/pruebas de salida IR y confirmar el alcance de compatibilidad pública. No se modificará el parser ni se retirará código legacy hasta disponer de esas pruebas.
+La Fase 0 queda documentada en ADR-001. La Fase 1 está iniciada: el mapa inicial de consumidores está en [ir-consolidation-audit.md](ir-consolidation-audit.md). Caracterización inicial completada con 162 pruebas por versión Python y build/install correcto (CI [43221134964](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43221134964)). Sigue pendiente comparar de forma explícita la salida legacy y la salida IR para los casos equivalentes y cerrar la política de compatibilidad externa. No se modificará el parser ni se retirará código legacy hasta cerrar esa comparación.

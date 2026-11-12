@@ -70,6 +70,12 @@ def _walk_topics(
         if not isinstance(topic.semantic_role, str) or not topic.semantic_role.strip():
             raise IRValidationError(f"{path}.semantic_role: debe ser texto no vacío")
 
+    if ir_version == "1.1.0" and "structure_class" in topic.layout:
+        raise IRValidationError(
+            f"{path}.layout.structure_class: no se admite en IR 1.1.0; "
+            "utiliza Topic.structure"
+        )
+
     if topic.structure is not None:
         if ir_version != "1.1.0":
             raise IRValidationError(f"{path}.structure: requiere ir_version 1.1.0")
@@ -107,11 +113,6 @@ def _walk_topics(
             raise IRValidationError(
                 f"{path}.structure: todos los hijos deben aparecer exactamente una vez; "
                 f"faltan {missing}"
-            )
-        if "structure_class" in topic.layout:
-            raise IRValidationError(
-                f"{path}.layout.structure_class: no se admite en IR 1.1.0; "
-                "utiliza Topic.structure"
             )
 
     for index, block in enumerate(topic.content):

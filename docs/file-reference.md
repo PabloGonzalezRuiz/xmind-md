@@ -53,6 +53,7 @@ Este documento identifica los principales archivos versionados y la responsabili
 | `development-status.md` | Registro operativo, estado y evidencias. |
 | `roadmap.md` | Hoja de ruta vigente de PMD y conversión asistida por IA. |
 | `pmd-design.md` | Dirección de producto, decisiones PMD y diseño objetivo de estilos/IA. |
+| `reference-analysis-tema1.md` | Análisis contrastado de estructura JSON, estilos, marcadores, SVG y pérdidas de Markdown en la referencia Tema1. |
 | `architecture.md` | Capas, flujo de datos e invariantes vigentes. |
 | `development.md` | Instalación, CLI, pruebas y ciclo de contribución. |
 | `file-reference.md` | Este catálogo. |

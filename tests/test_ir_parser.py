@@ -239,7 +239,6 @@ def test_characterization_fixture_preserves_the_complete_ir_contract():
         "file": source_path,
         "line_start": 25,
         "line_end": 25,
-        "markdown_heading": "Mapa",
     }
     assert root_topic.style.style_set == "LEGISLACION"
     assert root_topic.content[0].type == "paragraph"

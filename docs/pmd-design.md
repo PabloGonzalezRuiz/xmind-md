@@ -1,6 +1,6 @@
 # Dirección de producto y diseño de PMD
 
-**Fecha:** 2026-11-12. **Estado:** dirección y principios aceptados; sintaxis y ejecución pendientes.
+**Fecha:** 2026-11-12. **Estado:** dirección y principios aceptados; sintaxis PMD 1.0.0 especificada en Fase 4; ejecución pendiente.
 
 ## 1. Problema y objetivo
 
@@ -8,7 +8,7 @@ La importación nativa de Markdown en XMind conserva principalmente texto y jera
 
 El objetivo no es imitar esa importación, sino crear **PMD (Pableras Markdown)**: un lenguaje de autoría legible por personas y fácil de generar por IA, que permita describir un mapa con suficiente riqueza para que el programa construya un XMind prácticamente terminado.
 
-PMD deberá expresar jerarquía, orden, roles semánticos, estructuras (incluidas tablas de árbol y celdas), referencias a estilos reutilizables, marcadores y excepciones locales. La sintaxis definitiva todavía no está aprobada y debe minimizar las anotaciones manuales.
+PMD deberá expresar jerarquía, orden, roles semánticos, estructuras (incluidas tablas de árbol y celdas), referencias a estilos reutilizables, marcadores y excepciones locales. La sintaxis PMD 1.0.0 está aprobada y documentada en [pmd-language-spec.md](pmd-language-spec.md); su implementación debe minimizar las anotaciones manuales.
 
 ## 2. Flujo objetivo
 
@@ -62,7 +62,7 @@ Los estilos deben almacenarse en una biblioteca reutilizable, separada del conte
 - Restricciones, exclusiones y requisitos.
 - Ejemplos de aplicación correcta e incorrecta.
 
-Los datos estructurados pueden almacenarse en YAML/JSON y acompañarse de documentación Markdown. El formato exacto y el esquema definitivo quedan pendientes. No confundir este catálogo futuro con el YAML `style_sets`/`styles` que ya consume el resolutor IR 1.0.0.
+El catálogo de autoría está definido en `catalog/style-catalog.json`, con contrato en `docs/style-catalog.md` y esquema independiente. No confundirlo con el YAML `style_sets`/`styles` que consume el resolutor IR 1.x; la integración entre ambos sigue pendiente.
 
 ## 4. Reglas de aplicación
 
@@ -84,7 +84,7 @@ Se conserva el principio propuesto por el usuario:
 
 Es especialmente útil en tablas de árbol, donde las celdas pueden tener formatos diferentes dentro de una misma estructura.
 
-Queda pendiente precisar qué ocurre si el primer hijo carece de estilo explícito, cómo se fusionan propiedades parciales y cómo se combinan esta regla, las reglas semánticas, los defaults y los overrides. No confundirla con la herencia actual del conjunto de estilos por rama del IR.
+La política se especifica en `docs/style-catalog.md` y `docs/pmd-language-spec.md`: el primer hijo aporta su estilo efectivo, la herencia rellena propiedades ausentes, las excepciones son locales por propiedad y las filas de `tree_table` son grupos independientes. No confundirla con la herencia actual del conjunto de estilos por rama del IR.
 
 ## 6. Papel de la IA
 

@@ -193,6 +193,10 @@ def _transform_document(
         directive = re.fullmatch(r":::([a-z][a-z0-9-]*)", stripped) if fence_char is None else None
         if directive:
             name = directive.group(1)
+            if pending is not None and name != "pmd":
+                raise PMDParseError(
+                    f":::pmd debe preceder inmediatamente a un encabezado (línea {i + 1})"
+                )
             if name == "pmd":
                 if pending is not None:
                     raise PMDParseError(f"Directivas :::pmd consecutivas (línea {i + 1})")

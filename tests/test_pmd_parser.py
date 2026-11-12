@@ -96,7 +96,7 @@ def test_pmd_note_is_converted_to_topic_annotation() -> None:
         (_document("# Raíz\n", catalog=False).replace('pmd_version: "1.0.0"', 'pmd_version: "2.0.0"'), "pmd_version"),
         (_document(":::pmd\nrole: unknown.role\n:::\n# Raíz\n"), "Rol semántico"),
         (_document(":::pmd\nstyle_ref: visual.no-existe\n:::\n# Raíz\n"), "Referencia visual"),
-        (_document(":::pmd\nid: a\n:::\n# Raíz\n:::pmd\nparent: a\n:::\n## Hijo\n"), "parent"),
+        (_document(":::pmd\nid: a\n:::\n# Raíz\n:::pmd\nparent: ausente\n:::\n## Hijo\n"), "parent"),
         (_document(":::pmd\nid: a\nstructure:\n  type: tree_table\n  rows:\n    - cells: [no_existe]\n:::\n# Raíz\n## Hijo\n"), "tree_table"),
         (_document("# Raíz\n:::xmind\nid: legacy\n:::\n## Hijo\n"), "legacy"),
     ],

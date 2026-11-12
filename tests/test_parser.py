@@ -229,3 +229,11 @@ def test_yaml_keys_that_collide_after_string_normalization_are_rejected():
     source = '---\ncustom:\n  1: primero\n  "1": segundo\n---\n# Raíz\n'
     with pytest.raises(MarkdownParseError, match="colisionan"):
         parse_markdown(source)
+
+
+def test_legacy_parser_adapter_preserves_heading_levels_and_markdown_text():
+    result = parse_markdown("# Raíz\n### Hijo\nPárrafo **importante**.\n")
+    root = result.topics[0]
+    assert root.level == 1
+    assert root.children[0].level == 3
+    assert root.children[0].content == ["Párrafo **importante**."]

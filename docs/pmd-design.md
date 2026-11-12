@@ -112,12 +112,15 @@ Esta referencia no demuestra herencia nativa del primer hijo hacia los demás. L
 6. La resolución será determinista.
 7. El SVG buscará fidelidad visual, no identidad XML.
 
-## 9. Cuestiones abiertas
+## 9. Especificación PMD aprobada en Fase 4
 
-Sintaxis PMD; extensión; esquema y estructura de archivos del catálogo; vocabulario semántico; algoritmo completo de herencia/fallback/precedencia; representación de tablas de árbol; mapeo PMD→IR y posible versionado del IR; evaluación de inferencias de IA; alcance del generador SVG.
+La gramática normativa PMD 1.0.0 está en [`pmd-language-spec.md`](pmd-language-spec.md). Define front matter versionado, encabezados como única fuente de temas, directivas `:::pmd`, roles, referencias visuales, overrides, `tree_table`, notas, anotaciones, referencias globales, IDs, escapes, diagnósticos y correspondencia con IR 1.1.0.
+
+Los ejemplos de referencia son [`constitucion-estructura.pmd.md`](../examples/pmd/constitucion-estructura.pmd.md) y [`tabla-arbol-tema1.pmd.md`](../examples/pmd/tabla-arbol-tema1.pmd.md). La especificación está aprobada como contrato de lenguaje; no existe todavía parser ni ejecución runtime.
 
 ## 10. Continuidad
 
+- [Especificación normativa PMD 1.0.0](pmd-language-spec.md)
 - [Hoja de ruta](roadmap.md)
 - [Arquitectura](architecture.md)
 - [Sistema de estilos](style-system.md)

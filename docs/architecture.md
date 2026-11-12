@@ -184,3 +184,10 @@ Conclusión arquitectónica: se utilizan como referencias y fuentes de fixtures,
 ### Referencias oficiales de autoría y agentes
 
 Además de los SDKs y serializadores, se ha estudiado [XMindMark](https://github.com/xmindltd/xmindmark), un lenguaje oficial de marcado para mapas mentales inspirado en Markdown (TypeScript/MIT), y el [XMind CLI Skill](https://github.com/xmindltd/xmind-cli), guía oficial para generación/edición asistida por agentes. XMindMark confirma un precedente de sintaxis textual ligera con relaciones, límites y resúmenes, pero no cubre tabla de árbol ni estilos semánticos por nodo. El repositorio público del CLI distribuye el Skill; el paquete CLI se publica por separado y no se ha inspeccionado su serializador. Ver [xmind-official-sdk-research.md](xmind-official-sdk-research.md).
+
+
+## 11. Decisión arquitectónica vigente
+
+La evolución PMD/IR se rige por [ADR-001](decisions/ADR-001-pmd-ir-architecture.md) y por [roadmap.md](roadmap.md). La dirección aprobada es consolidar el IR como único modelo de dominio de ejecución, añadir roles semánticos y estructuras neutrales (incluida `tree_table`), diseñar un catálogo de estilos semántico/visual y mantener los adaptadores desacoplados.
+
+**Estado real importante:** el parser todavía construye el modelo legacy de `model.py` y `ir_parser.py` lo convierte al IR; `styles.py` conserva resolución legacy. La migración de adaptadores/CLI no equivale a retirar esa duplicidad. El inventario inicial está en [ir-consolidation-audit.md](ir-consolidation-audit.md). No diseñar la sintaxis PMD definitiva antes de cerrar las necesidades semánticas/estructurales del IR.

@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from . import pmd_parser as _pmd_parser
 from .ir import MindMap
 from .ir_builder import build_ir
 from .parser import parse_markdown_syntax
-from . import pmd_parser as _pmd_parser
 
 PMDParseError = _pmd_parser.PMDParseError
 parse_pmd_file = _pmd_parser.parse_pmd_file

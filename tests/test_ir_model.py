@@ -258,6 +258,7 @@ def test_ir_1_0_rejects_semantic_roles_and_structures():
 def test_tree_table_requires_each_direct_child_exactly_once():
     mind_map = make_map()
     root = mind_map.sheet.root_topic
+    root.children.append(Topic(id="topic_extra", title="Extra"))
     root.structure = TopicStructure(
         "tree_table",
         [TreeTableRow([TreeTableCell(root.children[0].id)])],

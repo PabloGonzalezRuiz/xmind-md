@@ -1,0 +1,789 @@
+{
+  "catalog_version": "1.0.0",
+  "catalog_id": "xmind-md.study",
+  "title": "Catálogo de estilos para mapas de estudio",
+  "description": "Catálogo de referencia PMD para documentación estructurada y legislación. Es una especificación de diseño; no lo consume todavía el resolutor IR 1.x.",
+  "defaults": {
+    "topic": {
+      "text": {
+        "font_family": "Arial",
+        "font_size": 14,
+        "font_weight": "normal",
+        "color": "#263B5A"
+      },
+      "fill": {
+        "color": "#FFFFFF",
+        "opacity": 1
+      },
+      "border": {
+        "color": "#B7C3D0",
+        "width": 1,
+        "pattern": "solid"
+      }
+    }
+  },
+  "roles": [
+    {
+      "id": "legal.document_title",
+      "label": "Título del documento",
+      "description": "Identifica el documento normativo o material de estudio completo.",
+      "applies_to": [
+        "topic"
+      ],
+      "when_to_use": [
+        "Título oficial o nombre principal del documento."
+      ],
+      "when_not_to_use": [
+        "Título de una división interna o de un artículo."
+      ],
+      "style_ref": "visual.legal.document-title",
+      "examples": {
+        "positive": [
+          "Ley 39/2015, de 1 de octubre"
+        ],
+        "negative": [
+          "Artículo 14. Igualdad ante la ley"
+        ]
+      }
+    },
+    {
+      "id": "legal.book",
+      "label": "Libro",
+      "description": "División normativa de nivel libro.",
+      "applies_to": [
+        "topic"
+      ],
+      "when_to_use": [
+        "La fuente identifica expresamente una división como libro."
+      ],
+      "when_not_to_use": [
+        "Títulos, capítulos o artículos."
+      ],
+      "style_ref": "visual.legal.hierarchy"
+    },
+    {
+      "id": "legal.part",
+      "label": "Parte",
+      "description": "División normativa denominada parte.",
+      "applies_to": [
+        "topic"
+      ],
+      "when_to_use": [
+        "La fuente contiene una parte formal."
+      ],
+      "when_not_to_use": [
+        "Un bloque editorial añadido para organizar apuntes."
+      ],
+      "style_ref": "visual.legal.hierarchy"
+    },
+    {
+      "id": "legal.title",
+      "label": "Título",
+      "description": "División normativa formal denominada título.",
+      "applies_to": [
+        "topic"
+      ],
+      "when_to_use": [
+        "La numeración o rótulo de la fuente identifica un título."
+      ],
+      "when_not_to_use": [
+        "El título informal de un tema o documento."
+      ],
+      "style_ref": "visual.legal.hierarchy"
+    },
+    {
+      "id": "legal.chapter",
+      "label": "Capítulo",
+      "description": "División normativa formal denominada capítulo.",
+      "applies_to": [
+        "topic"
+      ],
+      "when_to_use": [
+        "La fuente identifica un capítulo."
+      ],
+      "when_not_to_use": [
+        "Un grupo de apuntes sin correspondencia normativa."
+      ],
+      "style_ref": "visual.legal.hierarchy"
+    },
+    {
+      "id": "legal.section",
+      "label": "Sección",
+      "description": "División normativa formal denominada sección.",
+      "applies_to": [
+        "topic"
+      ],
+      "when_to_use": [
+        "La fuente identifica una sección."
+      ],
+      "when_not_to_use": [
+        "Un apartado o párrafo numerado."
+      ],
+      "style_ref": "visual.legal.hierarchy"
+    },
+    {
+      "id": "legal.article",
+      "label": "Artículo",
+      "description": "Unidad normativa identificada como artículo, conservando su número y rúbrica.",
+      "applies_to": [
+        "topic"
+      ],
+      "when_to_use": [
+        "La fuente contiene un artículo normativo identificable."
+      ],
+      "when_not_to_use": [
+        "Una explicación o resumen propio sobre el artículo."
+      ],
+      "style_ref": "visual.legal.article"
+    },
+    {
+      "id": "legal.paragraph",
+      "label": "Apartado",
+      "description": "Unidad subordinada de un artículo, normalmente numerada o identificada como apartado.",
+      "applies_to": [
+        "topic"
+      ],
+      "when_to_use": [
+        "La fuente presenta un apartado dentro de un artículo."
+      ],
+      "when_not_to_use": [
+        "Una frase o párrafo sin identidad estructural independiente."
+      ],
+      "style_ref": "visual.legal.body"
+    },
+    {
+      "id": "legal.definition",
+      "label": "Definición",
+      "description": "Contenido que establece el significado de un término o concepto.",
+      "applies_to": [
+        "topic"
+      ],
+      "when_to_use": [
+        "La norma define expresamente un término o concepto."
+      ],
+      "when_not_to_use": [
+        "Una explicación contextual que no define."
+      ],
+      "style_ref": "visual.legal.definition"
+    },
+    {
+      "id": "legal.exception",
+      "label": "Excepción",
+      "description": "Regla o supuesto que limita el alcance de una regla general.",
+      "applies_to": [
+        "topic"
+      ],
+      "when_to_use": [
+        "La fuente establece una excepción, salvedad o exclusión normativa."
+      ],
+      "when_not_to_use": [
+        "Una condición ordinaria que forma parte de la regla general."
+      ],
+      "style_ref": "visual.legal.exception"
+    },
+    {
+      "id": "legal.obligation",
+      "label": "Obligación",
+      "description": "Mandato que impone una conducta o deber.",
+      "applies_to": [
+        "topic"
+      ],
+      "when_to_use": [
+        "El texto establece una obligación o deber."
+      ],
+      "when_not_to_use": [
+        "Una recomendación o facultad."
+      ],
+      "style_ref": "visual.legal.obligation"
+    },
+    {
+      "id": "legal.prohibition",
+      "label": "Prohibición",
+      "description": "Mandato que impide una conducta.",
+      "applies_to": [
+        "topic"
+      ],
+      "when_to_use": [
+        "El texto prohíbe expresamente una conducta."
+      ],
+      "when_not_to_use": [
+        "Una obligación positiva."
+      ],
+      "style_ref": "visual.legal.prohibition"
+    },
+    {
+      "id": "legal.deadline",
+      "label": "Plazo",
+      "description": "Periodo temporal o fecha límite con relevancia normativa.",
+      "applies_to": [
+        "topic"
+      ],
+      "when_to_use": [
+        "El plazo aparece expresamente en la fuente."
+      ],
+      "when_not_to_use": [
+        "Una duración inferida o calculada sin respaldo."
+      ],
+      "style_ref": "visual.legal.deadline"
+    },
+    {
+      "id": "legal.reference",
+      "label": "Remisión normativa",
+      "description": "Referencia explícita a otro artículo, norma o disposición.",
+      "applies_to": [
+        "topic"
+      ],
+      "when_to_use": [
+        "El contenido remite a otra disposición."
+      ],
+      "when_not_to_use": [
+        "Una mención incidental sin función de remisión."
+      ],
+      "style_ref": "visual.legal.reference"
+    },
+    {
+      "id": "table.header_cell",
+      "label": "Celda de cabecera",
+      "description": "Celda que identifica el nombre, categoría o dimensión de una columna o fila.",
+      "applies_to": [
+        "topic"
+      ],
+      "when_to_use": [
+        "La estructura de tabla asigna a la celda una función de encabezado."
+      ],
+      "when_not_to_use": [
+        "Una celda de datos destacada solo por su apariencia."
+      ],
+      "style_ref": "visual.table.header-cell"
+    },
+    {
+      "id": "table.body_cell",
+      "label": "Celda de contenido",
+      "description": "Celda que contiene el valor, explicación o dato asociado a una cabecera.",
+      "applies_to": [
+        "topic"
+      ],
+      "when_to_use": [
+        "La celda contiene datos o explicación dentro de una tabla."
+      ],
+      "when_not_to_use": [
+        "Una cabecera o rótulo estructural."
+      ],
+      "style_ref": "visual.table.body-cell"
+    },
+    {
+      "id": "study.note",
+      "label": "Nota de estudio",
+      "description": "Aclaración editorial añadida para facilitar el aprendizaje, no perteneciente al texto normativo.",
+      "applies_to": [
+        "topic"
+      ],
+      "when_to_use": [
+        "El contenido es una explicación, mnemotecnia o aclaración propia."
+      ],
+      "when_not_to_use": [
+        "Texto literal de la norma."
+      ],
+      "style_ref": "visual.study.note"
+    }
+  ],
+  "styles": [
+    {
+      "id": "visual.legal.document-title",
+      "label": "Título principal de norma",
+      "description": "Jerarquía visual del título del documento.",
+      "applies_to": [
+        "topic"
+      ],
+      "properties": {
+        "topic": {
+          "text": {
+            "font_size": 22,
+            "font_weight": "bold",
+            "color": "#FFFFFF",
+            "text_transform": "uppercase"
+          },
+          "fill": {
+            "color": "#17365D"
+          },
+          "border": {
+            "color": "#17365D",
+            "width": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "visual.legal.hierarchy",
+      "label": "División normativa",
+      "description": "Estilo común para libros, partes, títulos, capítulos y secciones.",
+      "applies_to": [
+        "topic"
+      ],
+      "properties": {
+        "topic": {
+          "text": {
+            "font_size": 17,
+            "font_weight": "bold",
+            "color": "#263B5A"
+          },
+          "fill": {
+            "color": "#EAF0F6"
+          },
+          "border": {
+            "color": "#9EADBC",
+            "width": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "visual.legal.article",
+      "label": "Artículo",
+      "description": "Destaca el encabezado de cada artículo.",
+      "applies_to": [
+        "topic"
+      ],
+      "properties": {
+        "topic": {
+          "text": {
+            "font_size": 16,
+            "font_weight": "bold",
+            "color": "#613204",
+            "text_transform": "uppercase"
+          },
+          "fill": {
+            "color": "#EEEEEE"
+          },
+          "border": {
+            "color": "#F6A04D",
+            "width": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "visual.legal.body",
+      "label": "Texto normativo",
+      "description": "Presentación base para apartados y contenido jurídico.",
+      "applies_to": [
+        "topic"
+      ],
+      "properties": {
+        "topic": {
+          "text": {
+            "font_size": 14,
+            "font_weight": "normal",
+            "color": "#263238"
+          },
+          "fill": {
+            "color": "#FFFFFF"
+          },
+          "border": {
+            "color": "#D5DDE5",
+            "width": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "visual.legal.definition",
+      "label": "Definición",
+      "description": "Destaca conceptos definidos por la norma.",
+      "applies_to": [
+        "topic"
+      ],
+      "properties": {
+        "topic": {
+          "text": {
+            "font_weight": "bold",
+            "color": "#245B43"
+          },
+          "fill": {
+            "color": "#E8F3EC"
+          },
+          "border": {
+            "color": "#79A98C",
+            "width": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "visual.legal.exception",
+      "label": "Excepción",
+      "description": "Diferencia visualmente las excepciones de la regla general.",
+      "applies_to": [
+        "topic"
+      ],
+      "properties": {
+        "topic": {
+          "text": {
+            "font_weight": "bold",
+            "color": "#8A3B12"
+          },
+          "fill": {
+            "color": "#FFF0E5"
+          },
+          "border": {
+            "color": "#D98A55",
+            "width": 1.5
+          }
+        }
+      }
+    },
+    {
+      "id": "visual.legal.obligation",
+      "label": "Obligación",
+      "description": "Resalta mandatos obligatorios.",
+      "applies_to": [
+        "topic"
+      ],
+      "properties": {
+        "topic": {
+          "text": {
+            "font_weight": "bold",
+            "color": "#174A7E"
+          },
+          "fill": {
+            "color": "#E7F0FA"
+          },
+          "border": {
+            "color": "#6C9BC8",
+            "width": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "visual.legal.prohibition",
+      "label": "Prohibición",
+      "description": "Resalta mandatos prohibitivos.",
+      "applies_to": [
+        "topic"
+      ],
+      "properties": {
+        "topic": {
+          "text": {
+            "font_weight": "bold",
+            "color": "#9C0006"
+          },
+          "fill": {
+            "color": "#FCE8E8"
+          },
+          "border": {
+            "color": "#C00000",
+            "width": 1.5
+          }
+        }
+      }
+    },
+    {
+      "id": "visual.legal.deadline",
+      "label": "Plazo",
+      "description": "Destaca periodos y fechas límite expresos.",
+      "applies_to": [
+        "topic"
+      ],
+      "properties": {
+        "topic": {
+          "text": {
+            "font_weight": "bold",
+            "color": "#6A4A00"
+          },
+          "fill": {
+            "color": "#FFF6D8"
+          },
+          "border": {
+            "color": "#D6B64C",
+            "width": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "visual.legal.reference",
+      "label": "Remisión normativa",
+      "description": "Presenta referencias cruzadas sin confundirlas con contenido nuevo.",
+      "applies_to": [
+        "topic"
+      ],
+      "properties": {
+        "topic": {
+          "text": {
+            "color": "#385D8A",
+            "font_style": "italic"
+          },
+          "fill": {
+            "color": "#F0F4FA"
+          }
+        }
+      }
+    },
+    {
+      "id": "visual.table.header-cell",
+      "label": "Cabecera de tabla",
+      "description": "Estilo predeterminado de celda que identifica una columna o fila.",
+      "applies_to": [
+        "topic"
+      ],
+      "properties": {
+        "topic": {
+          "text": {
+            "font_weight": "bold",
+            "color": "#613204",
+            "text_transform": "uppercase"
+          },
+          "fill": {
+            "color": "#EEEEEE"
+          },
+          "border": {
+            "color": "#333333",
+            "width": 1.5
+          }
+        }
+      }
+    },
+    {
+      "id": "visual.table.body-cell",
+      "label": "Cuerpo de tabla",
+      "description": "Estilo base de las celdas de datos.",
+      "applies_to": [
+        "topic"
+      ],
+      "properties": {
+        "topic": {
+          "text": {
+            "font_weight": "normal",
+            "color": "#613204"
+          },
+          "fill": {
+            "color": "#F6A04D"
+          },
+          "border": {
+            "color": "#B8753B",
+            "width": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "visual.study.note",
+      "label": "Nota de estudio",
+      "description": "Aclaración editorial diferenciada del contenido normativo.",
+      "applies_to": [
+        "topic"
+      ],
+      "properties": {
+        "topic": {
+          "text": {
+            "font_style": "italic",
+            "color": "#555555"
+          },
+          "fill": {
+            "color": "#F3F3F3"
+          },
+          "border": {
+            "color": "#BBBBBB",
+            "width": 1,
+            "pattern": "dashed"
+          }
+        }
+      }
+    }
+  ],
+  "rules": [
+    {
+      "id": "semantic.article",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "legal.article"
+      },
+      "style_ref": "visual.legal.article",
+      "priority": 100,
+      "description": "Aplica el estilo del rol artículo."
+    },
+    {
+      "id": "semantic.exception",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "legal.exception"
+      },
+      "style_ref": "visual.legal.exception",
+      "priority": 100,
+      "description": "Aplica el estilo del rol excepción."
+    },
+    {
+      "id": "semantic.table-header",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "table.header_cell"
+      },
+      "style_ref": "visual.table.header-cell",
+      "priority": 100,
+      "description": "Aplica el estilo de cabecera."
+    },
+    {
+      "id": "semantic.table-body",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "table.body_cell"
+      },
+      "style_ref": "visual.table.body-cell",
+      "priority": 100,
+      "description": "Aplica el estilo de celda de contenido."
+    },
+    {
+      "id": "structural.tree-table-cell",
+      "kind": "structural",
+      "match": {
+        "structure_type": "tree_table",
+        "relation": "cell"
+      },
+      "style_ref": "visual.table.body-cell",
+      "priority": 10,
+      "description": "Fallback visual para una celda de tabla sin un rol semántico más específico."
+    },
+    {
+      "id": "semantic.legal-document-title",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "legal.document_title"
+      },
+      "style_ref": "visual.legal.document-title",
+      "priority": 100,
+      "description": "Aplica el estilo recomendado para el rol legal.document_title."
+    },
+    {
+      "id": "semantic.legal-book",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "legal.book"
+      },
+      "style_ref": "visual.legal.hierarchy",
+      "priority": 100,
+      "description": "Aplica el estilo recomendado para el rol legal.book."
+    },
+    {
+      "id": "semantic.legal-part",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "legal.part"
+      },
+      "style_ref": "visual.legal.hierarchy",
+      "priority": 100,
+      "description": "Aplica el estilo recomendado para el rol legal.part."
+    },
+    {
+      "id": "semantic.legal-title",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "legal.title"
+      },
+      "style_ref": "visual.legal.hierarchy",
+      "priority": 100,
+      "description": "Aplica el estilo recomendado para el rol legal.title."
+    },
+    {
+      "id": "semantic.legal-chapter",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "legal.chapter"
+      },
+      "style_ref": "visual.legal.hierarchy",
+      "priority": 100,
+      "description": "Aplica el estilo recomendado para el rol legal.chapter."
+    },
+    {
+      "id": "semantic.legal-section",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "legal.section"
+      },
+      "style_ref": "visual.legal.hierarchy",
+      "priority": 100,
+      "description": "Aplica el estilo recomendado para el rol legal.section."
+    },
+    {
+      "id": "semantic.legal-paragraph",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "legal.paragraph"
+      },
+      "style_ref": "visual.legal.body",
+      "priority": 100,
+      "description": "Aplica el estilo recomendado para el rol legal.paragraph."
+    },
+    {
+      "id": "semantic.legal-definition",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "legal.definition"
+      },
+      "style_ref": "visual.legal.definition",
+      "priority": 100,
+      "description": "Aplica el estilo recomendado para el rol legal.definition."
+    },
+    {
+      "id": "semantic.legal-obligation",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "legal.obligation"
+      },
+      "style_ref": "visual.legal.obligation",
+      "priority": 100,
+      "description": "Aplica el estilo recomendado para el rol legal.obligation."
+    },
+    {
+      "id": "semantic.legal-prohibition",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "legal.prohibition"
+      },
+      "style_ref": "visual.legal.prohibition",
+      "priority": 100,
+      "description": "Aplica el estilo recomendado para el rol legal.prohibition."
+    },
+    {
+      "id": "semantic.legal-deadline",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "legal.deadline"
+      },
+      "style_ref": "visual.legal.deadline",
+      "priority": 100,
+      "description": "Aplica el estilo recomendado para el rol legal.deadline."
+    },
+    {
+      "id": "semantic.legal-reference",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "legal.reference"
+      },
+      "style_ref": "visual.legal.reference",
+      "priority": 100,
+      "description": "Aplica el estilo recomendado para el rol legal.reference."
+    },
+    {
+      "id": "semantic.study-note",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "study.note"
+      },
+      "style_ref": "visual.study.note",
+      "priority": 100,
+      "description": "Aplica el estilo recomendado para el rol study.note."
+    }
+  ],
+  "inheritance": {
+    "mode": "first_child",
+    "enabled": true,
+    "scopes": [
+      "direct_children",
+      "tree_table_row_cells"
+    ],
+    "property_mode": "missing_only",
+    "source": "first_child_resolved_style",
+    "description": "El primer hijo de cada grupo actúa como referencia visual para los siguientes. Los hijos heredan solo propiedades no definidas por capas de mayor prioridad; sus reglas semánticas y excepciones explícitas pueden sustituir propiedades heredadas. La regla se aplica recursivamente al resolver el árbol."
+  }
+}

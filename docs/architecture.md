@@ -12,10 +12,10 @@ La arquitectura separa parsing, representación semántica, resolución de estil
 Markdown + front matter/directivas YAML
                   |
                   v
-      parser.py (sintaxis/AST legacy)
+       parser.py → DocumentSyntax
                   |
                   v
-       ir_parser.py (puente canónico)
+          ir_builder.py
                   |
                   v
              IR 1.0.0
@@ -52,7 +52,7 @@ Directorio: `src/xmind_md/ir/`.
 
 El contrato neutral incluye `MindMap`, `Sheet`, `Topic`, `ContentBlock`, anotaciones, recursos, relaciones, límites, resúmenes y estados de estilo. El esquema JSON Draft 2020-12 y el ejemplo canónico están en `docs/ir-schema.json` y `examples/ir/constitucion.json`.
 
-`src/xmind_md/model.py` mantiene el modelo legacy requerido por el parser y consumidores anteriores. No es el contrato que reciben los adaptadores. Su retirada dependerá de la migración de estilos y de la política de compatibilidad.
+`src/xmind_md/model.py` mantiene el modelo legacy para consumidores de la API antigua y la ruta de compatibilidad de estilos. La ruta canónica de parsing y los adaptadores no lo utilizan. Su retirada dependerá de la migración de estilos y de la política de compatibilidad.
 
 ### 3.3 Resolución de estilos
 
@@ -194,4 +194,4 @@ Además de los SDKs y serializadores, se ha estudiado [XMindMark](https://github
 
 La evolución PMD/IR se rige por [ADR-001](decisions/ADR-001-pmd-ir-architecture.md) y por [roadmap.md](roadmap.md). La dirección aprobada es consolidar el IR como único modelo de dominio de ejecución, añadir roles semánticos y estructuras neutrales (incluida `tree_table`), diseñar un catálogo de estilos semántico/visual y mantener los adaptadores desacoplados.
 
-**Estado real importante:** el parser todavía construye el modelo legacy de `model.py` y `ir_parser.py` lo convierte al IR; `styles.py` conserva resolución legacy. La migración de adaptadores/CLI no equivale a retirar esa duplicidad. El inventario inicial está en [ir-consolidation-audit.md](ir-consolidation-audit.md). No diseñar la sintaxis PMD definitiva antes de cerrar las necesidades semánticas/estructurales del IR.
+**Estado real importante:** el parser todavía construye el modelo legacy de `model.py` y `ir_parser.py` lo convierte al IR; `styles.py` conserva resolución legacy. La migración de adaptadores/CLI no equivale a retirar esa duplicidad. El inventario y el estado de la migración están en [ir-consolidation-audit.md](ir-consolidation-audit.md) y el diseño técnico en [ir-parser-design.md](ir-parser-design.md). El parser ahora construye IR desde AST; la ruta legacy está aislada, pero `styles.py` aún conserva compatibilidad con `model.py`.

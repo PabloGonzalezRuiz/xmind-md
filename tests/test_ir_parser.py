@@ -258,7 +258,13 @@ def test_characterization_fixture_preserves_the_complete_ir_contract():
     assert article.annotations.task == {"status": "in_progress", "progress": 50}
     assert article.links[0]["target"] == "https://www.boe.es/"
     assert [block.type for block in article.content] == [
-        "paragraph", "list", "table", "quote", "divider", "image", "code"
+        "paragraph",
+        "list",
+        "table",
+        "quote",
+        "divider",
+        "image",
+        "code",
     ]
     assert article.content[0].data["runs"][1]["style"] == {"bold": True}
     assert article.content[1].data["items"][0]["children"][0]["content"][0]["text"] == "Excepción"

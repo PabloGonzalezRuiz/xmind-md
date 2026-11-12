@@ -11,7 +11,7 @@
 - **Contrato runtime:** IR 1.0.0.
 - **Implementado:** ruta Markdown → IR → JSON/XMind, CLI, resolutor de estilos, pruebas y publicación Alpha. El adaptador XMind sigue siendo parcial.
 - **Dirección de producto:** PMD como lenguaje de autoría enriquecido, con conversión asistida por IA desde Markdown ordinario. Ver [pmd-design.md](pmd-design.md).
-- **Fase 1:** análisis de la referencia Tema1 completado y documentado en [reference-analysis-tema1.md](reference-analysis-tema1.md).
+- **Análisis de referencia Tema1:** completado y documentado en [reference-analysis-tema1.md](reference-analysis-tema1.md).
 - **Fase 1:** consolidación del modelo de ejecución completada en `architecture/pmd-ir-roadmap`.
 - **Siguiente paso:** Fase 2, evolución semántica y estructural del IR; pendiente de autorización expresa. No iniciar hasta recibirla.
 - **Regla:** distinguir implementado, decidido y pendiente; no iniciar una fase nueva sin autorización expresa.

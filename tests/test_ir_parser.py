@@ -237,8 +237,8 @@ def test_characterization_fixture_preserves_the_complete_ir_contract():
     assert root_topic.id == "topic_7c08e4afc0d151cc"
     assert root_topic.source == {
         "file": source_path,
-        "line_start": 22,
-        "line_end": 22,
+        "line_start": 25,
+        "line_end": 25,
         "markdown_heading": "Mapa",
     }
     assert root_topic.style.style_set == "LEGISLACION"
@@ -254,7 +254,7 @@ def test_characterization_fixture_preserves_the_complete_ir_contract():
     assert article.source["markdown_heading"] == "Artículo 1"
     assert article.style.ref == "destacado"
     assert article.annotations.labels[0].text == "IMPORTANTE"
-    assert article.annotations.markers[0].to_dict()["group"] == "priority"
+    assert article.annotations.markers[0].group == "priority"
     assert article.annotations.task == {"status": "in_progress", "progress": 50}
     assert article.links[0]["target"] == "https://www.boe.es/"
     assert [block.type for block in article.content] == [
@@ -277,4 +277,8 @@ def test_characterization_fixture_preserves_the_complete_ir_contract():
     assert article.content[5].data["asset_id"] == asset_id
     assert sheet.relationships[0].id == "rel_articulo"
     assert sheet.relationships[0].source_topic == "articulo_1"
-    assert sheet.relationships[0].target_topic == "articulo_1"
+    assert sheet.relationships[0].target_topic == root_topic.id
+    assert sheet.boundaries[0].topic_ids == ["articulo_1"]
+    assert sheet.boundaries[0].title == "Ámbito normativo"
+    assert sheet.summaries[0].topic_ids == ["articulo_1"]
+    assert sheet.summaries[0].title == "Resumen del artículo"

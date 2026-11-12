@@ -15,16 +15,16 @@ Esta es la hoja de ruta vigente. El histórico de tareas Alpha se conserva en `d
 
 ## Fase 1 — Analizar referencias reales XMind
 
-**Estado: EN CURSO.**
+**Estado: COMPLETADA para la referencia Tema1.**
 
 - [x] Incorporar `themes/Tema1/content.json`, `Tema1.svg` y `Tema1.md`.
 - [x] Confirmar que Markdown conserva principalmente texto y jerarquía.
 - [x] Identificar `Articulo` como tabla de árbol y `Cabecera`/`cuerpo` como celdas.
-- [ ] Documentar la jerarquía completa, estilos explícitos, marcadores y diferencias entre nodos.
-- [ ] Relacionar nodos JSON con la representación visual SVG y las pérdidas de Markdown.
-- [ ] Extraer requisitos semánticos/estructurales sin convertir detalles internos de XMind en sintaxis PMD obligatoria.
+- [x] Documentar la jerarquía completa, estilos explícitos, marcadores y diferencias entre nodos.
+- [x] Relacionar los 10 nodos JSON con los títulos SVG mediante `data-view-id` y documentar las pérdidas de Markdown.
+- [x] Extraer requisitos semánticos/estructurales sin convertir detalles internos de XMind en sintaxis PMD obligatoria.
 
-**Cierre:** análisis de referencia que distingue datos explícitos de XMind, información conservada por Markdown e información que PMD debe poder expresar.
+**Cierre:** cumplido para Tema1. El informe reproducible está en [reference-analysis-tema1.md](reference-analysis-tema1.md). No se dispone del `.xmind` original y el análisis no pretende cubrir todas las variantes de tablas.
 
 ## Fase 2 — Especificar biblioteca de estilos y reglas
 

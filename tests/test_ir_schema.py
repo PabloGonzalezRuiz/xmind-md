@@ -102,3 +102,25 @@ def test_schema_accepts_ir_1_1_tree_table_example(
 
     assert document["ir_version"] == "1.1.0"
     assert validator.is_valid(document)
+
+
+@pytest.mark.parametrize(
+    "mutate",
+    [
+        lambda document: document["sheet"]["root_topic"]["structure"].update(type="xmind_tree_table"),
+        lambda document: document["sheet"]["root_topic"]["structure"].update(rows=[]),
+        lambda document: document["sheet"]["root_topic"]["structure"]["rows"][0]["cells"][0].update(
+            xmind_shape_class="org.xmind.internal.topicShape.treeTableCell"
+        ),
+    ],
+)
+def test_schema_rejects_invalid_tree_table_descriptors(
+    validator: Draft202012Validator,
+    mutate,
+) -> None:
+    example_path = EXAMPLES_DIR / "tree_table.json"
+    document = json.loads(example_path.read_text(encoding="utf-8"))
+    invalid_document = copy.deepcopy(document)
+    mutate(invalid_document)
+
+    assert not validator.is_valid(invalid_document)

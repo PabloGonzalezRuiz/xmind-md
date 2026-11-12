@@ -37,7 +37,7 @@ Campos obligatorios:
 - `defaults`: valores base visuales para elementos sin regla más específica.
 - `inheritance`: política explícita de herencia por primer hijo.
 
-Los identificadores usan minúsculas ASCII y namespaces con punto, por ejemplo `legal.article`, `table.header_cell`, `legal.article` (rol) y `legal.article` (estilo) solo se pueden reutilizar si el contexto tipado deja inequívoco cuál es cuál; se recomienda usar IDs diferenciados cuando mejore la legibilidad. Los IDs publicados no se renombran: se deprecian y se añade un sustituto con alias/migración documentada en una versión posterior.
+Los identificadores usan minúsculas ASCII y namespaces con punto. Los roles usan namespaces semánticos como `legal.article` o `table.header_cell`; los estilos visuales usan el prefijo `visual.`, por ejemplo `visual.legal.article` o `visual.table.header-cell`. Esta convención evita colisiones y permite reconocer el tipo de referencia sin contexto adicional. Los IDs publicados no se renombran: se deprecian y se añade un sustituto con alias/migración documentada en una versión posterior.
 
 ### 3.1 Metadatos de rol
 
@@ -105,7 +105,7 @@ Orden de familia:
 4. Si varias reglas de una misma familia coinciden, se aplica la de mayor prioridad. En empate, solo se permite combinar si no hay conflictos de propiedad; si hay conflicto, error.
 5. Una regla desconocida o un estilo referenciado inexistente es error de catálogo, no fallback silencioso.
 
-Ejemplo: una celda de `tree_table` sin rol recibe el estilo estructural `table.body-cell`. Si su rol es `table.header_cell`, prevalece la regla semántica de cabecera. Así la estructura no anula el significado.
+Ejemplo: una celda de `tree_table` sin rol recibe el estilo estructural `visual.table.body-cell`. Si su rol es `table.header_cell`, prevalece la regla semántica de cabecera. Así la estructura no anula el significado.
 
 ## 7. Herencia por referencia al primer hijo
 

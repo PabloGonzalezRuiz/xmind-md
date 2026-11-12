@@ -68,7 +68,7 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 
 ### Fase 2 — Evolución semántica y estructural del IR
 
-**Estado: IMPLEMENTACIÓN EN CURSO.** El diseño del contrato 1.1.0 está documentado en [ir-1.1-design.md](ir-1.1-design.md) y ADR-002.
+**Estado: COMPLETADA en la rama de trabajo.** El contrato IR 1.1.0, las entidades, validación, esquema, migración, ejemplos y documentación están implementados. Diseño: [ir-1.1-design.md](ir-1.1-design.md); decisión: ADR-002.
 
 - [x] Definir roles semánticos abiertos en `Topic.semantic_role`, separados de `Topic.kind`.
 - [x] Definir `Topic.structure` neutral, empezando por `tree_table`.
@@ -78,10 +78,10 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 - [x] Precisar ausencia, valor explícito, `null` y literal `inherited`.
 - [x] Definir versionado IR 1.1.0 y migración explícita desde 1.0.0.
 - [x] Añadir entidades Python, esquema JSON, validación semántica y ejemplo 1.1.0.
-- [ ] Completar pruebas positivas/negativas, round-trip y validación de migración en CI.
-- [ ] Sincronizar documentación operativa y verificar wheel/sdist.
+- [x] Completar pruebas positivas/negativas, serialización JSON, validación de migración y rechazo explícito del adaptador XMind.
+- [x] Sincronizar documentación operativa y verificar wheel/sdist en CI [43246986236](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43246986236): 189 pruebas por Python 3.10/3.11/3.12; Ruff, smoke XMind, wheel/sdist y sus instalaciones correctas.
 
-**Criterio de cierre:** esquema y validación aprobados, fixtures positivos/negativos, migración documentada y ninguna filtración de clases internas XMind al IR. El adaptador XMind debe rechazar explícitamente las nuevas estructuras hasta que se implemente su mapeo en Fase 7.
+**Criterio de cierre:** CUMPLIDO. Esquema y validación aprobados, fixtures positivos/negativos, migración documentada, ninguna clase interna XMind en la estructura neutral y rechazo explícito de capacidades no exportables.
 
 ### Fase 3 — Catálogo semántico y visual de estilos
 
@@ -163,4 +163,4 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 
 ## Ejecución activa
 
-La Fase 0 y la Fase 1 están completadas en la rama de trabajo. La Fase 2 está autorizada y en implementación; el contrato 1.1.0 y su decisión ADR-002 ya están documentados. El mapa de consumidores, la caracterización y el resultado de la migración están en [ir-consolidation-audit.md](ir-consolidation-audit.md); el diseño de parsing en [ir-parser-design.md](ir-parser-design.md). La ruta canónica ya construye IR desde AST y la resolución legacy está aislada en legacy_styles.py. Se conserva model.py y las API legacy por no conocerse consumidores externos; no se han integrado cambios en main ni publicado una nueva release. CI final: [run 43227325673](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43227325673), 166 pruebas por Python 3.10–3.12, Ruff, build e instalación de wheel/sdist correctos. **Trabajo activo: completar y validar Fase 2 — IR 1.1.0.**
+La Fase 0 y la Fase 1 están completadas en la rama de trabajo. La Fase 2 está autorizada y en implementación; el contrato 1.1.0 y su decisión ADR-002 ya están documentados. El mapa de consumidores, la caracterización y el resultado de la migración están en [ir-consolidation-audit.md](ir-consolidation-audit.md); el diseño de parsing en [ir-parser-design.md](ir-parser-design.md). La ruta canónica ya construye IR desde AST y la resolución legacy está aislada en legacy_styles.py. Se conserva model.py y las API legacy por no conocerse consumidores externos; no se han integrado cambios en main ni publicado una nueva release. CI final: [run 43227325673](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43227325673), 166 pruebas por Python 3.10–3.12, Ruff, build e instalación de wheel/sdist correctos. **Fase 2 completada:** IR 1.1.0 está implementado y validado. **Siguiente: Fase 3 — catálogo semántico y visual de estilos; pendiente de autorización expresa.**

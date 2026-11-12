@@ -48,7 +48,8 @@ El modelo no importa parser, PyYAML ni bibliotecas de exportación. Las entidade
 
 **Estado: implementada parcialmente y probada.**
 
-- `parse_markdown_ir()` / `parse_file_ir()` construyen una única hoja y convierten la raíz en `sheet.root_topic`.
+- `parser.py` produce `DocumentSyntax` / `TopicSyntax`, sin construir entidades legacy.
+- `ir_builder.py` construye una única hoja y coloca la raíz en `sheet.root_topic` directamente desde el AST.
 - Convierte bloques actuales a formas estructuradas del IR y crea assets indexados por ID.
 - Conserva trazabilidad de origen.
 - El resolutor IR aplica la cascada de estilos y almacena el resultado en `style.resolved`.
@@ -93,7 +94,7 @@ La migración de consumidores se considera completada cuando:
 - La suite completa no presenta regresiones.
 - Se comprueba que la exportación no muta el documento IR.
 
-La migración de adaptadores y CLI al IR está completada, pero la consolidación total del modelo de ejecución no lo está: `parser.py` aún construye el modelo legacy, `ir_parser.py` realiza el puente y `styles.py` conserva una ruta legacy. La exportación XMind permanece deliberadamente parcial; sus límites se describen en `xmind-adapter.md`. El modelo IR puede representar entidades que el parser no genera o que el adaptador no exporta.
+La migración de adaptadores y CLI al IR está completada. En la rama de trabajo `architecture/pmd-ir-roadmap`, el parsing se ha migrado también: `parser.py` produce AST sintáctico, `ir_builder.py` construye directamente el IR e `ir_parser.py` es una fachada. `legacy_adapter.py` proyecta el AST al modelo antiguo únicamente para las funciones `parse_markdown()` / `parse_file()`. La consolidación total sigue en curso porque `styles.py` conserva una ruta legacy. La exportación XMind permanece deliberadamente parcial; sus límites se describen en `xmind-adapter.md`. El modelo IR puede representar entidades que el parser no genera o que el adaptador no exporta.
 
 ## 6. Fuera de alcance de esta migración
 

@@ -1,4 +1,4 @@
-"""Pruebas del adaptador XMind moderno con entidades IR 1.0.0."""
+"""Pruebas del adaptador XMind moderno con entidades IR 1.x."""
 
 import json
 import uuid
@@ -411,4 +411,27 @@ def test_inline_images_are_rejected_instead_of_being_dropped():
     mind_map = parse_markdown_ir("# Raíz\nTexto ![Escudo](assets/escudo.png)\n")
 
     with pytest.raises(XMindAdapterError, match="imágenes en línea"):
+        build_xmind_content(mind_map)
+
+
+def test_ir_1_1_semantic_role_is_rejected_until_xmind_mapping_exists():
+    mind_map = make_map()
+    mind_map.ir_version = "1.1.0"
+    mind_map.sheet.root_topic.semantic_role = "legal.article"
+
+    with pytest.raises(XMindAdapterError, match="rol semántico"):
+        build_xmind_content(mind_map)
+
+
+def test_ir_1_1_tree_table_is_rejected_until_xmind_mapping_exists():
+    from xmind_md.ir import TopicStructure, TreeTableCell, TreeTableRow
+
+    mind_map = make_map()
+    mind_map.ir_version = "1.1.0"
+    mind_map.sheet.root_topic.structure = TopicStructure(
+        "tree_table",
+        [TreeTableRow([TreeTableCell("topic_child")])],
+    )
+
+    with pytest.raises(XMindAdapterError, match="estructura compuesta"):
         build_xmind_content(mind_map)

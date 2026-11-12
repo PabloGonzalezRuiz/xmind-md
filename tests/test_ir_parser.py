@@ -7,6 +7,7 @@ import pytest
 from xmind_md.ir import validate_mind_map
 from xmind_md.ir.validation import IRValidationError
 from xmind_md.ir_parser import parse_file_ir, parse_markdown_ir
+from xmind_md.parser import parse_markdown
 
 
 def test_parser_builds_one_sheet_and_one_root_topic():
@@ -288,3 +289,58 @@ def test_characterization_fixture_preserves_the_complete_ir_contract():
     assert sheet.boundaries[0].title == "Ámbito normativo"
     assert sheet.summaries[0].topic_ids == ["articulo_1"]
     assert sheet.summaries[0].title == "Resumen del artículo"
+
+
+def test_legacy_and_ir_parsers_preserve_the_same_topic_identity_and_structure():
+    root = Path(__file__).resolve().parents[1]
+    fixture = root / "tests" / "fixtures" / "ir-characterization.md"
+    source = fixture.read_text(encoding="utf-8")
+    source_path = "tests/fixtures/ir-characterization.md"
+    legacy = parse_markdown(source, source_path=source_path)
+    canonical = parse_markdown_ir(source, source_path=source_path)
+
+    def compare_topics(old_topic, ir_topic):
+        assert old_topic.id == ir_topic.id
+        assert old_topic.title == ir_topic.title
+        assert old_topic.kind == ir_topic.kind
+        assert old_topic.source == ir_topic.source
+        assert old_topic.style_set == ir_topic.style.style_set
+        assert old_topic.style_ref == ir_topic.style.ref
+        assert old_topic.style_overrides == ir_topic.style.overrides
+        assert [block["type"] for block in old_topic.content_blocks] == [
+            block.type for block in ir_topic.content
+        ]
+        assert [item["text"] for item in old_topic.annotations.get("labels", [])] == [
+            item.text for item in ir_topic.annotations.labels
+        ] if old_topic.annotations.get("labels") and isinstance(
+            old_topic.annotations["labels"][0], dict
+        ) else [
+            item for item in old_topic.annotations.get("labels", [])
+        ] == [item.text for item in ir_topic.annotations.labels]
+        assert [item.get("group") for item in old_topic.annotations.get("markers", [])] == [
+            item.group for item in ir_topic.annotations.markers
+        ]
+        assert old_topic.annotations.get("task") == ir_topic.annotations.task
+        assert len(old_topic.resources) == len(ir_topic.resources.images)
+        assert [link["kind"] for link in old_topic.links] == [
+            link["kind"] for link in ir_topic.links
+        ]
+        assert [link["target"] for link in old_topic.links] == [
+            link["target"] for link in ir_topic.links
+        ]
+        assert len(old_topic.children) == len(ir_topic.children)
+        for old_child, ir_child in zip(old_topic.children, ir_topic.children):
+            compare_topics(old_child, ir_child)
+
+    assert legacy.id == canonical.id
+    assert legacy.title == canonical.title
+    compare_topics(legacy.topics[0], canonical.sheet.root_topic)
+    assert [item["id"] for item in legacy.relationships] == [
+        item.id for item in canonical.sheet.relationships
+    ]
+    assert [item["topics"] for item in legacy.boundaries] == [
+        item.topic_ids for item in canonical.sheet.boundaries
+    ]
+    assert [item["topics"] for item in legacy.summaries] == [
+        item.topic_ids for item in canonical.sheet.summaries
+    ]

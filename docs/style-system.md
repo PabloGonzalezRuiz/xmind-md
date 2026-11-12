@@ -415,35 +415,51 @@ Se resuelven estilos de temas, notas, relaciones, boundaries y summaries. La rut
 La matriz de traducción vigente se mantiene en [xmind-adapter.md](xmind-adapter.md). Las pruebas de precedencia, herencia, fusión y errores están en `tests/test_styles.py` y en las pruebas IR correspondientes.
 
 
-## 16. Evolución prevista: catálogo semántico y reglas para PMD
+## 16. Catálogo semántico PMD: diseño aprobado en Fase 3
 
-Esta sección describe el diseño objetivo, **no funciones implementadas en el resolutor IR 1.x**. La ejecución actual sigue siendo la descrita en las secciones 3.1, 8 y 15.
+El catálogo de autoría PMD se especifica separadamente del YAML runtime de IR 1.x. La definición versionada está en [`catalog/style-catalog.json`](../catalog/style-catalog.json), su contrato en [`style-catalog.schema.json`](style-catalog.schema.json) y la guía para personas/IA en [`style-catalog.md`](style-catalog.md).
 
-Los estilos deberán residir en una biblioteca reutilizable separada del contenido. Cada entrada tendrá identificador estable, descripción semántica, destinatarios, propiedades visuales, restricciones y ejemplos. El catálogo estructurado debe poder ser leído por el motor y suministrado a la IA; la documentación descriptiva debe ser coherente con él. YAML/JSON y Markdown son candidatos, pero el esquema final está pendiente.
+El contrato del catálogo es 1.0.0 y contiene:
+- roles semánticos abiertos con significado, destinatarios, criterios positivos/negativos y estilo recomendado;
+- estilos visuales neutrales separados de los roles;
+- reglas semánticas y estructurales;
+- defaults y política explícita de herencia por primer hijo.
 
-Las reglas de aplicación combinarán:
-- **Semánticas:** significado/rol (artículo, apartado, excepción, definición, cabecera, celda).
-- **Estructurales:** tipo de estructura, padre, posición entre hermanos, nivel o tipo de celda.
+Los roles de referencia cubren jerarquía normativa, funciones jurídicas, celdas de tabla y notas editoriales. No constituyen un enum cerrado de IR. Los identificadores de roles y estilos son referencias estables y no deben inferirse a partir de color, forma, nivel Markdown o texto aislado.
 
-La semántica será el criterio principal y la estructura será complementaria. Los conflictos deberán resolverse explícitamente y de forma determinista.
+## 17. Resolución PMD: precedencia y herencia
 
-Se conserva el principio de herencia por referencia al primer hijo: puede establecer el formato predeterminado para sus hermanos; los hijos pueden declarar excepciones; la regla se aplica recursivamente. Queda pendiente precisar fallback si el primer hijo carece de estilo, fusión por propiedad y precedencia frente a reglas semánticas y overrides.
+La especificación completa está en [`style-catalog.md`](style-catalog.md). El orden de resolución PMD por propiedad, de menor a mayor prioridad, queda fijado así:
 
-La IA debe seleccionar roles y referencias existentes; el motor valida y resuelve. No confundir este diseño con la cascada actual de conjuntos por rama. Ver [pmd-design.md](pmd-design.md) y [roadmap.md](roadmap.md).
+1. Defaults generales del catálogo.
+2. Regla estructural aplicable.
+3. Herencia desde el primer hijo del grupo, solo para propiedades todavía ausentes.
+4. Regla semántica aplicable.
+5. Estilo explícito referenciado por el elemento.
+6. Override local explícito.
 
+La prioridad numérica solo ordena reglas dentro de una misma familia. Una regla semántica coincidente siempre prevalece sobre una regla estructural. Empates con valores incompatibles generan error; el orden de declaración no desempata.
 
-## 17. Distinciones derivadas de la referencia Tema1
+La herencia por primer hijo:
+- opera entre hijos directos del mismo padre;
+- en `tree_table`, opera por separado dentro de cada fila;
+- toma como fuente el estilo efectivo del primer hijo, resuelto sin heredar de sus hermanos;
+- copia propiedades ausentes, sin sobrescribir roles semánticos ni excepciones explícitas del hermano;
+- se resuelve top-down y recursivamente, sin ciclos;
+- funciona aunque el primer hijo no tenga estilo escrito, porque se toma su resultado efectivo tras defaults y reglas.
 
-El análisis de [Tema1](reference-analysis-tema1.md) confirma que el diseño PMD debe distinguir al menos estas fuentes de presentación:
+Esta política PMD no es la herencia de `style_set` IR 1.x ni el comportamiento nativo demostrado de XMind. Tema1 muestra estilos explícitos distintos en `Cabecera` y `cuerpo`; no prueba herencia automática del primer hijo.
 
-1. **Perfil general del tema XMind:** valores de `theme` para mapa, tema central, temas principales/secundarios y otros elementos.
-2. **Estilo explícito del elemento:** objeto `style` asociado al tema concreto.
-3. **Propiedad ausente:** no se ha declarado un valor en ese objeto.
-4. **Valor explícito especial `inherited`:** la propiedad está presente y solicita herencia según la semántica del formato de origen.
-5. **Regla de autoría PMD:** estilo semántico, regla contextual o herencia por referencia al primer hijo.
+## 18. Compatibilidad y estado de implementación
 
-Estas fuentes no son intercambiables. En particular, la regla PMD de tomar el formato del primer hijo como referencia de sus hermanos no describe el comportamiento nativo demostrado por Tema1: las celdas `Cabecera` y `cuerpo` contienen estilos propios y distintos. La regla PMD es una comodidad declarativa futura para reducir anotaciones, no una afirmación sobre cómo XMind creó esa referencia.
+La Fase 3 entrega diseño, catálogo de referencia, esquema y vectores conceptuales. **No implementa** loader, validador de catálogo en Python, nueva cascada, parser PMD ni mapeo XMind.
 
-El catálogo PMD deberá almacenar propiedades neutrales y metadatos de uso para IA. Los valores técnicos como `fo:font-size`, `svg:fill`, `shape-class` o `org.xmind.internal.topicShape.treeTableCell` pertenecen a la traducción del formato XMind, no al vocabulario semántico que la IA debe escribir.
+El runtime actual mantiene sin cambios:
+- `config/styles.yaml`;
+- `style_sets` y `styles`;
+- `resolve_ir_styles()` y su precedencia vigente;
+- los contratos IR 1.0.0 y 1.1.0.
 
-La procedencia de cada propiedad efectiva debe poder explicarse: perfil/base, regla semántica, regla estructural, herencia, estilo explícito o excepción local. La cascada de estilos IR 1.x descrita en la sección 8 ya está implementada. Lo pendiente para la Fase 3 es definir cómo se integra esa cascada con las reglas semánticas y estructurales de PMD, la herencia por referencia al primer hijo, los valores por defecto y las excepciones, así como la procedencia por propiedad.
+La transición entre catálogo PMD y el YAML runtime se diseñará en fases posteriores. No se deben mezclar sus esquemas ni afirmar que el catálogo nuevo se carga en ejecución.
+
+Los casos deterministas de referencia están en [`style-resolution-cases.md`](style-resolution-cases.md). Son especificación de comportamiento esperado, no pruebas ejecutadas del runtime actual.

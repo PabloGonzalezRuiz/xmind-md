@@ -1,0 +1,375 @@
+{
+  "ir_version": "1.1.0",
+  "id": "map_constitucion",
+  "title": "Constitución Española",
+  "metadata": {
+    "author": null,
+    "description": "Ejemplo de IR con contenido estructurado y elementos visuales.",
+    "source_file": "constitucion.md"
+  },
+  "styles": {
+    "concepto_importante": {
+      "topic": {
+        "text": {
+          "color": "#C62828",
+          "bold": true
+        },
+        "border": {
+          "color": "#C62828",
+          "width": 2
+        }
+      }
+    },
+    "relacion_default": {
+      "relationship": {
+        "line": {
+          "color": "#607D8B",
+          "width": 1.5,
+          "pattern": "solid"
+        }
+      }
+    }
+  },
+  "style_sets": {
+    "estudio": {
+      "topic": {
+        "background": {
+          "color": "#E8F0FE"
+        },
+        "typography": {
+          "font_family": "Arial",
+          "font_size": 14
+        }
+      },
+      "styles": {
+        "concepto_importante": {
+          "topic": {
+            "text": {
+              "color": "#C62828",
+              "bold": true
+            }
+          }
+        }
+      }
+    }
+  },
+  "assets": {
+    "asset_escudo": {
+      "kind": "image",
+      "path": "assets/escudo.svg",
+      "name": "Escudo ilustrativo",
+      "mime_type": "image/svg+xml",
+      "size": null,
+      "sha256": null,
+      "metadata": {}
+    }
+  },
+  "sheet": {
+    "id": "sheet_principal",
+    "title": "Constitución Española",
+    "metadata": {},
+    "layout": {
+      "structure": "mind_map",
+      "direction": "balanced"
+    },
+    "root_topic": {
+      "id": "topic_constitucion",
+      "title": "Constitución Española",
+      "kind": "attached",
+      "content": [
+        {
+          "id": "block_intro",
+          "type": "paragraph",
+          "text": "Norma suprema del ordenamiento jurídico español."
+        }
+      ],
+      "annotations": {
+        "notes": [],
+        "labels": [
+          {
+            "id": "label_tai",
+            "text": "TAI"
+          }
+        ],
+        "markers": [
+          {
+            "id": "marker_star",
+            "group": "priority",
+            "value": 1
+          }
+        ],
+        "task": null
+      },
+      "resources": {
+        "images": [
+          "asset_escudo"
+        ],
+        "attachments": [],
+        "audio": []
+      },
+      "links": [
+        {
+          "id": "link_boE",
+          "kind": "web",
+          "target": "https://www.boe.es/",
+          "title": "Boletín Oficial del Estado"
+        }
+      ],
+      "style": {
+        "ref": null,
+        "overrides": {},
+        "resolved": {
+          "typography": {
+            "font_family": "Arial",
+            "font_size": 16
+          }
+        }
+      },
+      "layout": {
+        "folded": false,
+        "width": null
+      },
+      "extensions": {},
+      "source": {
+        "file": "constitucion.md",
+        "line_start": 1,
+        "line_end": 1,
+        "markdown_heading": "Constitución Española"
+      },
+      "children": [
+        {
+          "id": "topic_titulo_preliminar",
+          "title": "Título preliminar",
+          "kind": "attached",
+          "content": [],
+          "annotations": {
+            "notes": [],
+            "labels": [],
+            "markers": [],
+            "task": null
+          },
+          "resources": {
+            "images": [],
+            "attachments": [],
+            "audio": []
+          },
+          "links": [],
+          "style": {
+            "ref": null,
+            "overrides": {},
+            "resolved": {}
+          },
+          "layout": {
+            "folded": false,
+            "width": null
+          },
+          "extensions": {},
+          "source": {
+            "file": "constitucion.md",
+            "line_start": 3,
+            "line_end": 3,
+            "markdown_heading": "Título preliminar"
+          },
+          "children": [
+            {
+              "id": "topic_articulo_14",
+              "title": "Artículo 14",
+              "kind": "attached",
+              "content": [
+                {
+                  "id": "block_art14_p1",
+                  "type": "paragraph",
+                  "text": "Los españoles son iguales ante la ley.",
+                  "runs": [
+                    {
+                      "text": "iguales ante la ley",
+                      "style": {
+                        "bold": true
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "block_art14_list",
+                  "type": "list",
+                  "ordered": false,
+                  "items": [
+                    {
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "text": "No puede prevalecer discriminación alguna."
+                        }
+                      ],
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "block_art14_code",
+                  "type": "code",
+                  "language": "text",
+                  "code": "Artículo 14",
+                  "caption": "Referencia normativa"
+                }
+              ],
+              "annotations": {
+                "notes": [
+                  {
+                    "id": "note_art14",
+                    "content": [
+                      {
+                        "type": "paragraph",
+                        "text": "Este artículo reconoce el principio de igualdad."
+                      }
+                    ]
+                  }
+                ],
+                "labels": [
+                  {
+                    "id": "label_importante",
+                    "text": "IMPORTANTE"
+                  }
+                ],
+                "markers": [
+                  {
+                    "id": "marker_priority_1",
+                    "group": "priority",
+                    "value": 1
+                  }
+                ],
+                "task": {
+                  "status": "in_progress",
+                  "progress": 50,
+                  "start_date": null,
+                  "due_date": null,
+                  "assignee": null
+                }
+              },
+              "resources": {
+                "images": [],
+                "attachments": [],
+                "audio": []
+              },
+              "links": [
+                {
+                  "id": "link_articulo_1",
+                  "kind": "topic",
+                  "target": "topic_constitucion",
+                  "title": "Volver al tema raíz"
+                }
+              ],
+              "style": {
+                "ref": "concepto_importante",
+                "overrides": {
+                  "text": {
+                    "italic": true
+                  }
+                },
+                "resolved": {
+                  "background": {
+                    "color": "#E8F0FE"
+                  },
+                  "typography": {
+                    "font_family": "Arial",
+                    "font_size": 14
+                  },
+                  "text": {
+                    "color": "#C62828",
+                    "bold": true,
+                    "italic": true
+                  },
+                  "border": {
+                    "color": "#C62828",
+                    "width": 2
+                  }
+                }
+              },
+              "layout": {
+                "folded": false,
+                "width": 220
+              },
+              "extensions": {
+                "xmind": {
+                  "example_property": "preserved"
+                }
+              },
+              "source": {
+                "file": "constitucion.md",
+                "line_start": 5,
+                "line_end": 8,
+                "markdown_heading": "Artículo 14"
+              },
+              "children": [],
+              "semantic_role": "table.body_cell"
+            }
+          ],
+          "semantic_role": "legal.title",
+          "structure": {
+            "type": "tree_table",
+            "rows": [
+              {
+                "cells": [
+                  {
+                    "topic_id": "topic_articulo_14"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "semantic_role": "legal.constitution"
+    },
+    "relationships": [
+      {
+        "id": "relationship_igualdad",
+        "source_topic": "topic_articulo_14",
+        "target_topic": "topic_constitucion",
+        "title": "Principio constitucional",
+        "style": {
+          "ref": "relacion_default",
+          "overrides": {},
+          "resolved": {
+            "line": {
+              "color": "#607D8B",
+              "width": 1.5,
+              "pattern": "solid"
+            }
+          }
+        },
+        "extensions": {}
+      }
+    ],
+    "boundaries": [
+      {
+        "id": "boundary_derechos",
+        "topic_ids": [
+          "topic_articulo_14"
+        ],
+        "title": "Derechos y principios",
+        "style": {
+          "ref": null,
+          "overrides": {},
+          "resolved": {}
+        },
+        "extensions": {}
+      }
+    ],
+    "summaries": [
+      {
+        "id": "summary_igualdad",
+        "topic_ids": [
+          "topic_articulo_14"
+        ],
+        "title": "Principio de igualdad",
+        "style": {
+          "ref": null,
+          "overrides": {},
+          "resolved": {}
+        },
+        "extensions": {}
+      }
+    ]
+  }
+}

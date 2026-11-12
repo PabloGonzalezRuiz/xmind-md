@@ -188,6 +188,77 @@ def _catalog_indexes(
     return role_ids, style_ids
 
 
+def _merge_property_shape(target: dict[str, Any], source: Any) -> None:
+    if not isinstance(source, dict):
+        return
+    for key, value in source.items():
+        if isinstance(value, dict):
+            nested = target.setdefault(key, {})
+            if isinstance(nested, dict):
+                _merge_property_shape(nested, value)
+        else:
+            types = target.setdefault(key, set())
+            if not isinstance(types, set):
+                continue
+            if isinstance(value, bool):
+                types.add(bool)
+            elif isinstance(value, (int, float)):
+                types.update({int, float})
+            elif isinstance(value, str):
+                types.add(str)
+            elif isinstance(value, list):
+                types.add(list)
+
+
+def _validate_override_mapping(
+    value: Any, shape: dict[str, Any], path: str
+) -> None:
+    if not isinstance(value, dict):
+        raise PMDParseError(f"{path} debe ser un objeto")
+    for key, item in value.items():
+        if key not in shape:
+            raise PMDParseError(f"Propiedad visual no definida por el catálogo: {path}.{key}")
+        expected = shape[key]
+        current_path = f"{path}.{key}"
+        if item is None:
+            continue
+        if isinstance(expected, dict):
+            _validate_override_mapping(item, expected, current_path)
+        elif not isinstance(item, tuple(expected)):
+            raise PMDParseError(
+                f"Tipo no válido para {current_path}: se esperaba "
+                f"{', '.join(kind.__name__ for kind in expected)}"
+            )
+
+
+def _validate_style_overrides(
+    overrides: Any,
+    metadata: dict[str, Any],
+    catalog: Mapping[str, Any] | None,
+) -> None:
+    if not isinstance(overrides, dict) or set(overrides) - {"topic"}:
+        raise PMDParseError("style_overrides solo admite el grupo topic")
+    topic_values = overrides.get("topic", {})
+    if not isinstance(topic_values, dict):
+        raise PMDParseError("style_overrides.topic debe ser un objeto")
+    if metadata.get("catalog") is None:
+        if _contains_inherited(topic_values):
+            raise PMDParseError("El literal 'inherited' no es un valor visual válido en PMD")
+        return
+    data = _catalog_data(catalog)
+    shape: dict[str, Any] = {}
+    defaults = data.get("defaults", {})
+    if isinstance(defaults, dict):
+        _merge_property_shape(shape, defaults.get("topic", {}))
+    for style in data.get("styles", []):
+        if isinstance(style, dict):
+            properties = style.get("properties", {})
+            if isinstance(properties, dict):
+                _merge_property_shape(shape, properties.get("topic", {}))
+    if topic_values:
+        _validate_override_mapping(topic_values, shape, "style_overrides.topic")
+
+
 def _contains_inherited(value: Any) -> bool:
     if isinstance(value, str) and value == "inherited":
         return True
@@ -278,6 +349,12 @@ def _transform_document(
                 if "style_overrides" in props:
                     if not isinstance(props["style_overrides"], dict):
                         raise PMDParseError(f"style_overrides debe ser un objeto (línea {i + 1})")
+                    if set(props["style_overrides"]) - {"topic"}:
+                        raise PMDParseError("style_overrides solo admite el grupo topic")
+                    if "topic" in props["style_overrides"] and not isinstance(
+                        props["style_overrides"]["topic"], dict
+                    ):
+                        raise PMDParseError("style_overrides.topic debe ser un objeto")
                     if _contains_inherited(props["style_overrides"]):
                         raise PMDParseError(
                             f"El literal 'inherited' no es un valor visual válido en PMD (línea {i + 1})"
@@ -517,6 +594,8 @@ def parse_pmd_markdown(
             raise PMDParseError(f"Rol semántico inexistente en el catálogo: {role!r}")
         if style_ref is not None and (not isinstance(style_ref, str) or style_ref not in style_ids):
             raise PMDParseError(f"Referencia visual inexistente en el catálogo: {style_ref!r}")
+        if "style_overrides" in props:
+            _validate_style_overrides(props["style_overrides"], metadata, catalog)
         if "structure" in props:
             descriptor = props["structure"]
             if set(descriptor) != {"type", "rows"} or descriptor.get("type") != "tree_table":

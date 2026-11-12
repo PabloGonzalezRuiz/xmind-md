@@ -36,13 +36,16 @@ La CLI usa `parse_file_ir()`. La salida JSON serializa el IR. La salida XMind re
 
 ### 3.1 Entrada y parser
 
-**Estado actual:**
+**Estado implementado:**
 
-- `src/xmind_md/parser.py`: analiza el subconjunto documentado de Markdown enriquecido y construye el modelo legacy.
-- `src/xmind_md/ir_parser.py`: convierte ese resultado al contrato IR 1.0.0.
+- `src/xmind_md/parser.py`: reconoce la gramática y produce un AST temporal (`DocumentSyntax` / `TopicSyntax`), sin construir entidades de dominio legacy.
+- `src/xmind_md/syntax.py`: define los tipos AST sintácticos.
+- `src/xmind_md/ir_builder.py`: construye directamente las entidades IR desde el AST y valida el documento.
+- `src/xmind_md/ir_parser.py`: fachada pública `parse_markdown_ir()` / `parse_file_ir()`.
+- `src/xmind_md/legacy_adapter.py`: proyecta el AST al modelo antiguo solo para las API legacy.
 - La gramática implementada no equivale a CommonMark ni GFM completos. Su matriz y restricciones están en [grammar.md](grammar.md).
 
-**Dirección aprobada, aún no implementada:** separar AST sintáctico temporal, constructor IR y adaptador inverso legacy. La ruta canónica deberá construir IR directamente; las funciones legacy delegarán en ella. El diseño y los criterios de aceptación están en [ir-parser-design.md](ir-parser-design.md).
+El diseño, la secuencia de migración y la evidencia están en [ir-parser-design.md](ir-parser-design.md) y [ir-consolidation-audit.md](ir-consolidation-audit.md).
 
 El parser no genera archivos XMind ni conoce estructuras privadas del formato de salida.
 
@@ -52,7 +55,7 @@ Directorio: `src/xmind_md/ir/`.
 
 El contrato neutral incluye `MindMap`, `Sheet`, `Topic`, `ContentBlock`, anotaciones, recursos, relaciones, límites, resúmenes y estados de estilo. El esquema JSON Draft 2020-12 y el ejemplo canónico están en `docs/ir-schema.json` y `examples/ir/constitucion.json`.
 
-`src/xmind_md/model.py` mantiene el modelo legacy para consumidores de la API antigua y la ruta de compatibilidad de estilos. La ruta canónica de parsing y los adaptadores no lo utilizan. Su retirada dependerá de la migración de estilos y de la política de compatibilidad.
+`src/xmind_md/model.py` se conserva para consumidores de la API antigua. La ruta canónica de parsing, resolución IR, CLI y adaptadores no lo utilizan. Las únicas dependencias runtime están aisladas en `legacy_adapter.py` y `legacy_styles.py`; no se elimina mientras no se conozcan consumidores externos.
 
 ### 3.3 Resolución de estilos
 
@@ -102,7 +105,7 @@ El comando instalado es `xmind-md`; también está disponible `python -m xmind_m
 - `scripts/verify_distributions.py`: comprueba que wheel/sdist contienen metadatos, LICENSE y módulos esenciales.
 - `pyproject.toml`: metadatos de paquete, dependencias, entry point y configuración de herramientas.
 
-La CI [43009510391](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43009510391), commit `69a583350a794ec0a567ff8e5e3770acd81f0110`, completó los cuatro jobs: Ruff y 161 pruebas en cada versión Python 3.10/3.11/3.12; smoke XMind en cada versión; build y verificación de wheel/sdist; instalación limpia de ambas distribuciones y conversiones CLI JSON/XMind con validación estructural ZIP/MIME/JSON. La evidencia detallada se mantiene en [development-status.md](development-status.md) y [release-audit.md](release-audit.md).
+La CI final de la consolidación [43227325673](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43227325673), commit `0361f290a490c61e108ee0aa8a9d212c7f7b73c3`, completó los cuatro jobs: 166 pruebas en Python 3.10/3.11/3.12, Ruff y build/install wheel/sdist. La CI histórica [43009510391](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43009510391), commit `69a583350a794ec0a567ff8e5e3770acd81f0110`, completó los cuatro jobs: Ruff y 161 pruebas en cada versión Python 3.10/3.11/3.12; smoke XMind en cada versión; build y verificación de wheel/sdist; instalación limpia de ambas distribuciones y conversiones CLI JSON/XMind con validación estructural ZIP/MIME/JSON. La evidencia detallada se mantiene en [development-status.md](development-status.md) y [release-audit.md](release-audit.md).
 
 ## 4. Contratos e invariantes
 

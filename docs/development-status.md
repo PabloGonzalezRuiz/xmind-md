@@ -1209,8 +1209,8 @@ Se añadió el fixture `tests/fixtures/ir-characterization.md` y una prueba que 
 - Encabezados ATX H1–H6 como única sintaxis que crea temas; listas y tablas Markdown son contenido.
 - Directiva `:::pmd` YAML previa al encabezado para declarar ID, kind, rol, referencia visual, overrides, estructura, anotaciones y layout.
 - Separación estricta entre `role` semántico y `style_ref` visual.
-- `tree_table` declarada en el tema contenedor, con filas/celdas ordenadas que referencian IDs de hijos directos; no duplica contenido ni crea temas.
-- Referencias adelantadas resueltas tras construir el árbol.
+- `tree_table` declarada en el tema contenedor, con filas/celdas ordenadas que referencian IDs de hijos directos; la sintaxis abreviada de IDs se normaliza a `TreeTableCell.topic_id`; no duplica contenido ni crea temas.
+- Referencias adelantadas resueltas tras construir el árbol; `parent` permite reubicar explícitamente temas para superar el límite de seis niveles Markdown, conservando el orden de fuente entre hermanos.
 - Herencia por primer hijo controlada por catálogo y desactivable en el documento; excepciones locales por propiedad.
 - Ausencia, valor explícito y `null` diferenciados; el literal `inherited` no es directiva PMD.
 - Directivas `:::pmd-note`, `:::pmd-relationship`, `:::pmd-boundary` y `:::pmd-summary`; no se reinterpretan silenciosamente directivas legacy `:::xmind`.

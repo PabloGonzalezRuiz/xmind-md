@@ -16,6 +16,9 @@ from xmind_md.ir import (
     StyleState,
     Summary,
     Topic,
+    TopicStructure,
+    TreeTableCell,
+    TreeTableRow,
     validate_mind_map,
 )
 from xmind_md.styles import StyleError, resolve_styles
@@ -204,3 +207,146 @@ def test_asset_size_must_be_an_integer_not_boolean():
 
     with pytest.raises(IRValidationError, match="entero no negativo"):
         validate_mind_map(mind_map)
+
+
+def test_ir_1_1_tree_table_serializes_roles_and_order_without_duplicate_content():
+    header = Topic(id="topic_header", title="Cabecera", semantic_role="table.header_cell")
+    body = Topic(
+        id="topic_body",
+        title="Cuerpo",
+        semantic_role="table.body_cell",
+        content=[ContentBlock("paragraph", {"text": "Texto de la celda"})],
+    )
+    root = Topic(
+        id="topic_article",
+        title="Artículo",
+        semantic_role="legal.article",
+        children=[header, body],
+        structure=TopicStructure(
+            "tree_table",
+            [TreeTableRow([TreeTableCell("topic_header"), TreeTableCell("topic_body")])],
+        ),
+    )
+    mind_map = MindMap(
+        id="map_1_1",
+        title="Mapa",
+        sheet=Sheet(id="sheet_1_1", title="Hoja", root_topic=root),
+        ir_version="1.1.0",
+    )
+
+    validate_mind_map(mind_map)
+    result = mind_map.to_dict()["sheet"]["root_topic"]
+
+    assert result["semantic_role"] == "legal.article"
+    assert result["structure"] == {
+        "type": "tree_table",
+        "rows": [{"cells": [{"topic_id": "topic_header"}, {"topic_id": "topic_body"}]}],
+    }
+    assert result["children"][1]["semantic_role"] == "table.body_cell"
+    assert result["children"][1]["content"][0]["text"] == "Texto de la celda"
+    assert "content" not in result["structure"]["rows"][0]["cells"][1]
+
+
+def test_ir_1_0_rejects_semantic_roles_and_structures():
+    mind_map = make_map()
+    mind_map.sheet.root_topic.semantic_role = "legal.article"
+
+    with pytest.raises(IRValidationError, match="requiere ir_version 1.1.0"):
+        validate_mind_map(mind_map)
+
+
+def test_tree_table_requires_each_direct_child_exactly_once():
+    mind_map = make_map()
+    root = mind_map.sheet.root_topic
+    root.structure = TopicStructure(
+        "tree_table",
+        [TreeTableRow([TreeTableCell(root.children[0].id)])],
+    )
+    mind_map.ir_version = "1.1.0"
+
+    with pytest.raises(IRValidationError, match="todos los hijos deben aparecer"):
+        validate_mind_map(mind_map)
+
+
+def test_tree_table_rejects_duplicate_cell_references():
+    mind_map = make_map()
+    root = mind_map.sheet.root_topic
+    root.structure = TopicStructure(
+        "tree_table",
+        [TreeTableRow([TreeTableCell("topic_child"), TreeTableCell("topic_child")])],
+    )
+    mind_map.ir_version = "1.1.0"
+
+    with pytest.raises(IRValidationError, match="no puede repetirse"):
+        validate_mind_map(mind_map)
+
+
+def test_tree_table_rejects_non_direct_child_references():
+    mind_map = make_map()
+    root = mind_map.sheet.root_topic
+    nested = Topic(id="topic_nested", title="Nieto")
+    root.children[0].children.append(nested)
+    root.structure = TopicStructure(
+        "tree_table",
+        [TreeTableRow([TreeTableCell("topic_nested")])],
+    )
+    mind_map.ir_version = "1.1.0"
+
+    with pytest.raises(IRValidationError, match="hijo directo"):
+        validate_mind_map(mind_map)
+
+
+def test_tree_table_supports_nested_structures_on_cell_topics():
+    nested_cell = Topic(id="topic_nested_cell", title="Subcelda", semantic_role="table.body_cell")
+    nested_container = Topic(
+        id="topic_nested_container",
+        title="Celda compuesta",
+        semantic_role="table.body_cell",
+        children=[nested_cell],
+        structure=TopicStructure(
+            "tree_table",
+            [TreeTableRow([TreeTableCell("topic_nested_cell")])],
+        ),
+    )
+    root = Topic(
+        id="topic_root",
+        title="Raíz",
+        children=[nested_container],
+        structure=TopicStructure(
+            "tree_table",
+            [TreeTableRow([TreeTableCell("topic_nested_container")])],
+        ),
+    )
+    mind_map = MindMap(
+        id="map_nested",
+        title="Mapa",
+        sheet=Sheet(id="sheet_nested", title="Hoja", root_topic=root),
+        ir_version="1.1.0",
+    )
+
+    assert validate_mind_map(mind_map) is mind_map
+
+
+def test_ir_1_1_rejects_xmind_structure_class_in_layout():
+    mind_map = make_map()
+    mind_map.ir_version = "1.1.0"
+    mind_map.sheet.root_topic.layout["structure_class"] = "org.xmind.ui.treetable.toptitle"
+
+    with pytest.raises(IRValidationError, match="layout.structure_class"):
+        validate_mind_map(mind_map)
+
+
+def test_literal_inherited_is_preserved_as_an_explicit_style_value():
+    mind_map = make_map()
+    mind_map.sheet.root_topic.style.overrides = {
+        "border": {"color": "inherited", "width": None}
+    }
+    defaults = {"topic": {"border": {"color": "#000000", "width": 2, "pattern": "solid"}}}
+
+    resolve_styles(mind_map, defaults=defaults)
+
+    assert mind_map.sheet.root_topic.style.resolved["border"] == {
+        "color": "inherited",
+        "width": None,
+        "pattern": "solid",
+    }

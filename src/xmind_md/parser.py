@@ -6,12 +6,15 @@ import math
 import re
 from datetime import date, datetime
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from uuid import NAMESPACE_URL, uuid5
 
 import yaml
 
 from .syntax import DocumentSyntax, TopicSyntax
+
+if TYPE_CHECKING:
+    from .model import MindMap
 
 
 class MarkdownParseError(ValueError):
@@ -689,14 +692,14 @@ def parse_markdown_syntax(text: str, source_path: str = "<string>") -> DocumentS
     )
 
 
-def parse_markdown(text: str, source_path: str = "<string>"):
+def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
     """API legacy: adapta el AST al modelo anterior solo bajo demanda."""
     from .legacy_adapter import to_legacy_mind_map
 
     return to_legacy_mind_map(parse_markdown_syntax(text, source_path=source_path))
 
 
-def parse_file(path: str | Path):
+def parse_file(path: str | Path) -> MindMap:
     """API legacy de archivo, conservada mediante el adaptador de compatibilidad."""
     source = Path(path)
     return parse_markdown(source.read_text(encoding="utf-8"), source_path=source.as_posix())

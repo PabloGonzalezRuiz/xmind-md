@@ -852,7 +852,7 @@ La hoja de ruta vigente está en `docs/roadmap.md`; las decisiones obligatorias,
 
 No cambiar el contrato IR 1.0.0 silenciosamente. La versión vigente ampliada es 1.1.0; su diseño está en `docs/ir-1.1-design.md` y ADR-002. Distinguir ausencia de propiedad, valor explícito y literal `inherited`; no confundir herencia de style_set con la futura herencia PMD por referencia al primer hijo. El SVG debe buscar fidelidad visual, no identidad XML.
 
-Rama de trabajo de esta evolución: `architecture/pmd-ir-roadmap`, creada desde `05efc482c333b266bf1a2bd5fbf2f3fdee129de7`. Antes de cualquier cambio, verificar HEAD y CI de la rama. Fases 0–4 están cerradas en sus respectivos alcances. La Fase 3 entrega catálogo y documentación, sin loader/runtime; la Fase 4 entrega la especificación PMD 1.0.0 y ejemplos, sin parser/runtime. La Fase 5 (parser y conversión PMD→IR) requiere autorización expresa.
+Rama de trabajo de esta evolución: `architecture/pmd-ir-roadmap`, creada desde `05efc482c333b266bf1a2bd5fbf2f3fdee129de7`. Antes de cualquier cambio, verificar HEAD y CI de la rama. Fases 0–4 están cerradas en sus respectivos alcances. La Fase 3 entrega catálogo y documentación, sin loader/runtime; la Fase 4 entrega la especificación PMD 1.0.0 y ejemplos, sin parser/runtime. La Fase 5 (parser PMD y conversión PMD→IR) está completada y verificada; la Fase 6 (conversión asistida por IA) requiere autorización expresa.
 
 
 ---
@@ -872,3 +872,14 @@ Este bloque prevalece sobre notas históricas que indiquen que la sintaxis PMD e
 - Ejemplos normativos: `examples/pmd/constitucion-estructura.pmd.md` y `examples/pmd/tabla-arbol-tema1.pmd.md`.
 - Fase 4 completada en especificación/documentación. Fase 5 (parser PMD, validador y conversión PMD→IR) pendiente de autorización expresa.
 - Rama activa: `architecture/pmd-ir-roadmap`. No integrar en `main`, crear tags ni publicar releases sin autorización expresa.
+
+
+---
+
+## Continuidad operativa PMD — Fase 5 completada (2026-11-12)
+
+La Fase 5 está implementada en la rama architecture/pmd-ir-roadmap. La API pública es parse_pmd_markdown(text, source_path, catalog=None) y parse_pmd_file(path, catalog=None), reexportadas desde xmind_md.ir_parser. Ambas devuelven IR 1.1.0 validado. El catálogo xmind-md.study@1.0.0 se incluye en src/xmind_md/data/style-catalog.json y el wheel/sdist han sido verificados.
+
+El parser valida YAML estricto, directivas PMD, roles, estilos, overrides, IDs, referencias parent, tree_table, anotaciones y referencias globales. El parser Markdown clásico y sus API mantienen su salida IR 1.0.0. CI de cierre: 43259224463, commit 71c1875a2697f2fa83749b7183965fd38bdbde44: 207 pruebas por Python 3.10, 3.11 y 3.12; Ruff, smoke XMind y build/install wheel/sdist correctos.
+
+La guía de uso es docs/pmd-parser.md; la gramática normativa sigue en docs/pmd-language-spec.md. Límites: no hay CLI PMD; no se ejecuta aún la cascada completa del catálogo; no se adapta IR 1.1.0 al exportador XMind. Fases 6 y 7 cubren esos trabajos respectivos. No integrar en main, crear tags ni publicar releases sin autorización expresa.

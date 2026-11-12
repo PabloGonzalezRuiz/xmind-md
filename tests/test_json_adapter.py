@@ -5,7 +5,15 @@ import json
 import pytest
 
 from xmind_md.adapters.json_adapter import write_json
-from xmind_md.ir import ContentBlock, MindMap, Sheet, Topic
+from xmind_md.ir import (
+    ContentBlock,
+    MindMap,
+    Sheet,
+    Topic,
+    TopicStructure,
+    TreeTableCell,
+    TreeTableRow,
+)
 
 
 def make_map() -> MindMap:
@@ -57,3 +65,25 @@ def test_write_json_rejects_non_finite_numbers():
 
     with pytest.raises(ValueError, match="Out of range float values"):
         write_json(mind_map, "unused.json")
+
+
+def test_write_json_serializes_ir_1_1_semantic_structure(tmp_path):
+    mind_map = make_map()
+    mind_map.ir_version = "1.1.0"
+    root = mind_map.sheet.root_topic
+    root.semantic_role = "legal.article"
+    root.children[0].semantic_role = "table.body_cell"
+    root.structure = TopicStructure(
+        "tree_table",
+        [TreeTableRow([TreeTableCell("child-1")])],
+    )
+    destination = tmp_path / "map-1.1.json"
+
+    write_json(mind_map, destination)
+
+    result = json.loads(destination.read_text(encoding="utf-8"))
+    assert result["ir_version"] == "1.1.0"
+    assert result["sheet"]["root_topic"]["semantic_role"] == "legal.article"
+    assert result["sheet"]["root_topic"]["structure"]["rows"][0]["cells"] == [
+        {"topic_id": "child-1"}
+    ]

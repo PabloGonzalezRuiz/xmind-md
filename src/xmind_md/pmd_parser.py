@@ -291,6 +291,20 @@ def _transform_document(
                     raise PMDParseError(f"role debe ser un texto no vacío (línea {i + 1})")
                 if "structure" in props and not isinstance(props["structure"], dict):
                     raise PMDParseError(f"structure debe ser un objeto YAML (línea {i + 1})")
+                if "markers" in props:
+                    markers = props["markers"]
+                    if not isinstance(markers, list) or any(
+                        not isinstance(marker, dict)
+                        or set(marker) - {"id", "group", "value"}
+                        or ("id" in marker and (
+                            not isinstance(marker["id"], str)
+                            or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]*", marker["id"])
+                        ))
+                        for marker in markers
+                    ):
+                        raise PMDParseError(
+                            f"markers debe ser una lista de objetos con group, value e id opcional (línea {i + 1})"
+                        )
                 pending = props
                 legacy = {
                     key: value

@@ -139,6 +139,9 @@ Las capacidades del parser, del IR y del adaptador son distintas. Que el IR pued
 - [Especificación IR](ir-specification.md).
 - [Sistema de estilos](style-system.md).
 - [Matriz del adaptador XMind](xmind-adapter.md).
+- [Intercambio Markdown ↔ XMind](xmind-markdown-behavior.md): observaciones verificadas y límites del Markdown exportado por XMind.
+- [Formato JSON XMind](xmind-json-format.md): contenedor, estructura, estilos y traducciones del adaptador.
+- [Análisis Tema1](reference-analysis-tema1.md): fixture de referencia que correlaciona JSON, SVG y Markdown.
 
 ## 8. Criterios para aceptar cambios
 

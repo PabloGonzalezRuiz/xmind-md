@@ -124,3 +124,11 @@ Sintaxis PMD; extensión; esquema y estructura de archivos del catálogo; vocabu
 - [Gramática actual](grammar.md)
 - [Prompt maestro](ai-reconstruction-prompt.md)
 - [Referencia Tema1](../themes/Tema1/README.md)
+
+## 11. Contrato del catálogo aprobado en Fase 3
+
+El catálogo PMD 1.0.0 está definido en [`catalog/style-catalog.json`](../catalog/style-catalog.json), con esquema [`style-catalog.schema.json`](style-catalog.schema.json), guía [`style-catalog.md`](style-catalog.md) y casos [`style-resolution-cases.md`](style-resolution-cases.md).
+
+Se mantienen separados rol semántico, estructura, estilo visual y anotación. La prioridad de reglas semánticas es superior a la de reglas estructurales; estas últimas son complementarias y sirven de fallback. La herencia por primer hijo copia propiedades efectivas ausentes, con grupos separados por fila en `tree_table`, resolución recursiva top-down y excepciones por propiedad.
+
+Este catálogo es una especificación de autoría y no sustituye ni modifica `config/styles.yaml` o el resolutor IR 1.x. Su implementación queda fuera de la Fase 3.

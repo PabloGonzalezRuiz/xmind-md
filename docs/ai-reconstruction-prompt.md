@@ -21,7 +21,7 @@ Este prompt debe bastar para comprender el propósito, la arquitectura, las deci
 
 Este bloque y `docs/pmd-design.md`/`docs/roadmap.md` prevalecen sobre notas históricas que indiquen que no existe una Release o que la publicación está pendiente.
 
-- Repositorio `PabloGonzalezRuiz/xmind-md`, rama `main`, commit auditado `2c206dbc679ca6b77dded1f108192efff5ed442d`.
+- Repositorio `PabloGonzalezRuiz/xmind-md`, rama `main`; verificar siempre el HEAD real antes de actuar.
 - Release `v0.1.0` publicada el 2026-11-11 como Alpha/prerelease, con wheel, sdist y `SHA256SUMS.txt`.
 - CI del commit auditado: [43206029166](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43206029166), cuatro jobs `success`.
 - Ruta implementada: Markdown → IR 1.0.0 → JSON/XMind. El adaptador XMind sigue siendo parcial.
@@ -29,7 +29,7 @@ Este bloque y `docs/pmd-design.md`/`docs/roadmap.md` prevalecen sobre notas hist
 - Estilos: biblioteca reutilizable con descripciones semánticas, destinatarios, propiedades, restricciones y ejemplos; reglas semánticas prioritarias y estructurales complementarias; herencia por referencia al primer hijo, con excepciones explícitas y recursividad. El algoritmo exacto está pendiente.
 - La IA debe seleccionar roles y referencias existentes, no inventar propiedades visuales; el motor valida y resuelve.
 - El SVG debe ser lo más fiel posible a la apariencia original de XMind; no se exige identidad de XML, atributos o IDs internos.
-- Tema1: `content.json`, `Tema1.svg` y `Tema1.md` disponibles; 10 temas; `Articulo` es tabla de árbol y `Cabecera`/`cuerpo` son celdas con estilos diferentes. No hay `.xmind` original versionado.
+- Tema1: Fase 1 completada para `content.json`, `Tema1.svg` y `Tema1.md`; informe completo en `docs/reference-analysis-tema1.md`. Son 10 temas; nueve con estilo explícito; `Articulo` es el título superior de una tabla de árbol y `Cabecera`/`cuerpo` son celdas con estilos distintos. El SVG enlaza los 10 títulos con IDs JSON mediante `data-view-id`. No hay `.xmind` original versionado. La herencia PMD por primer hijo no queda demostrada como comportamiento nativo de XMind.
 - Fase 1 (análisis de Tema1) completada para los archivos versionados; informe: `docs/reference-analysis-tema1.md`. Siguiente paso: Fase 2, especificar biblioteca de estilos, reglas semánticas/estructurales y herencia. Esta fase requiere autorización expresa antes de iniciarse. No implementar parser PMD ni catálogo runtime por anticipado.
 
 Fuentes normativas de continuidad: `docs/pmd-design.md`, `docs/roadmap.md`, `docs/development-status.md`, `docs/style-system.md` y el análisis de referencia `docs/reference-analysis-tema1.md`. Distinguir siempre implementado, decidido y pendiente; auditar GitHub antes de modificar y pedir autorización antes de iniciar una fase nueva.

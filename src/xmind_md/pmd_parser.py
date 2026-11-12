@@ -176,7 +176,7 @@ def _transform_document(
             left = raw.lstrip()
             marker_len = len(left) - len(left.lstrip(chr(96)))
             fence_match = None
-            marker_char, marker_len = chr(96), marker_len
+            marker_char = chr(96)
         elif fence_match:
             marker_char, marker_len = "~", len(fence_match.group(1))
         else:

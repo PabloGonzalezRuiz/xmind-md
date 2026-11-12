@@ -28,7 +28,10 @@ Este documento identifica los principales archivos versionados y la responsabili
 | `styles.py` | Carga YAML y resuelve estilos IR; fachada de compatibilidad para objetos antiguos. |
 | `legacy_styles.py` | Resolución de estilos del modelo legacy, aislada de la ruta IR. |
 | `cli.py` | Coordina parsing, resolución de estilos y exportación JSON/XMind. |
-| `ir/` | Entidades, serialización y validación de los contratos neutrales IR 1.0.0/1.1.0. |
+| `ir/` | Entidades, serialización, validación y migración de los contratos neutrales IR 1.0.0/1.1.0. |
+| `ir/entities.py` | Entidades canónicas, roles semánticos y descriptores tree_table. |
+| `ir/validation.py` | Validación estructural y semántica de IR 1.0.0/1.1.0. |
+| `ir/migrations.py` | Migración explícita de documentos IR 1.0.0 a 1.1.0.
 | `adapters/json_adapter.py` | Serializa el modelo IR a JSON. |
 | `adapters/xmind_adapter.py` | Genera libros XMind modernos ZIP + JSON desde IR y valida el perfil soportado. |
 

@@ -313,3 +313,9 @@ Por tanto, estos repositorios son fuentes oficiales de implementación, pero sus
 ### 14.3 Precaución: esquemas históricos y código runtime
 
 Los esquemas de xmind-model no siempre coinciden con sus interfaces y métodos runtime. Por ejemplo, topic.json declara labels como string, mientras que Topic manipula etiquetas como colección; el esquema declara customWidth, mientras que TopicData y el código utilizan width. Por tanto, el JSON Schema histórico no debe utilizarse aisladamente como validador de conformidad del formato actual. Contrastar siempre esquema, interfaces, implementación, fixtures Desktop y versión objetivo. El informe [xmind-official-sdk-research.md](xmind-official-sdk-research.md) detalla estas discrepancias.
+
+### 14.4 XMindMark y CLI oficial
+
+[XMindMark](https://github.com/xmindltd/xmindmark) es un lenguaje TypeScript/MIT de XMind inspirado en Markdown. Su implementación crea content.json con una hoja, rootTopic, hijos attached, relaciones, rangos de boundary/summary y un Theme predefinido. El helper makeKeyValueTable utiliza structureClass org.xmind.ui.spreadsheet y una extensión; no demuestra la serialización de la tabla de árbol de Tema1. Su ZIP histórico tampoco incluye mimetype ni thumbnail. El conversor inverso solo reconstruye una parte de la información.
+
+El repositorio [xmind-cli](https://github.com/xmindltd/xmind-cli) aporta el Skill oficial actual para generación, lectura, edición y validación asistidas por agentes. El CLI se distribuye por separado; ese repositorio no expone su serializador ni constituye una especificación de content.json. Detalles y límites en [xmind-official-sdk-research.md](xmind-official-sdk-research.md).

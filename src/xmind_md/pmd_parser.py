@@ -296,10 +296,15 @@ def _transform_document(
                     if not isinstance(markers, list) or any(
                         not isinstance(marker, dict)
                         or set(marker) - {"id", "group", "value"}
-                        or ("id" in marker and (
-                            not isinstance(marker["id"], str)
-                            or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]*", marker["id"])
-                        ))
+                        or (
+                            "id" in marker
+                            and (
+                                not isinstance(marker["id"], str)
+                                or not re.fullmatch(
+                                    r"[A-Za-z0-9][A-Za-z0-9._:-]*", marker["id"]
+                                )
+                            )
+                        )
                         for marker in markers
                     ):
                         raise PMDParseError(

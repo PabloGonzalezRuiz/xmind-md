@@ -36,9 +36,13 @@ La CLI usa `parse_file_ir()`. La salida JSON serializa el IR. La salida XMind re
 
 ### 3.1 Entrada y parser
 
-- `src/xmind_md/parser.py`: analiza el subconjunto documentado de Markdown enriquecido y conserva una API/modelo legacy.
-- `src/xmind_md/ir_parser.py`: convierte el resultado al contrato IR 1.0.0, incluyendo temas, bloques, anotaciones, recursos, estilos, enlaces y entidades de hoja.
+**Estado actual:**
+
+- `src/xmind_md/parser.py`: analiza el subconjunto documentado de Markdown enriquecido y construye el modelo legacy.
+- `src/xmind_md/ir_parser.py`: convierte ese resultado al contrato IR 1.0.0.
 - La gramática implementada no equivale a CommonMark ni GFM completos. Su matriz y restricciones están en [grammar.md](grammar.md).
+
+**Dirección aprobada, aún no implementada:** separar AST sintáctico temporal, constructor IR y adaptador inverso legacy. La ruta canónica deberá construir IR directamente; las funciones legacy delegarán en ella. El diseño y los criterios de aceptación están en [ir-parser-design.md](ir-parser-design.md).
 
 El parser no genera archivos XMind ni conoce estructuras privadas del formato de salida.
 
@@ -48,7 +52,7 @@ Directorio: `src/xmind_md/ir/`.
 
 El contrato neutral incluye `MindMap`, `Sheet`, `Topic`, `ContentBlock`, anotaciones, recursos, relaciones, límites, resúmenes y estados de estilo. El esquema JSON Draft 2020-12 y el ejemplo canónico están en `docs/ir-schema.json` y `examples/ir/constitucion.json`.
 
-`src/xmind_md/model.py` mantiene el modelo legacy requerido por el parser y consumidores anteriores. No es el contrato que reciben los adaptadores.
+`src/xmind_md/model.py` mantiene el modelo legacy requerido por el parser y consumidores anteriores. No es el contrato que reciben los adaptadores. Su retirada dependerá de la migración de estilos y de la política de compatibilidad.
 
 ### 3.3 Resolución de estilos
 

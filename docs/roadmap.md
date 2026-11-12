@@ -55,6 +55,7 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 - [x] Aislar la resolución legacy en legacy_styles.py. styles.py conserva solo la fachada que deriva objetos antiguos al módulo de compatibilidad y no importa model.py.
 - [x] Decidir conservar model.py y las API antiguas por compatibilidad mientras no se conozcan consumidores externos; parse_markdown()/parse_file() usan AST → legacy_adapter y resolve_styles() mantiene un despacho explícito a legacy_styles.py. No se retira ni depreca ahora.
 - [x] Mantener la CLI y los adaptadores sin cambios de comportamiento; suite completa y distribución verificadas.
+- [x] CI final con parsing directo y resolver legacy aislado: [run 43227325673](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43227325673), 166 pruebas en Python 3.10–3.12, Ruff y build/install correctos.
 
 **Criterios de cierre de Fase 1**
 - La ruta canónica de parsing construye IR directamente desde AST.
@@ -157,4 +158,4 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 
 ## Ejecución activa
 
-La Fase 0 queda documentada en ADR-001. La Fase 1 está iniciada: el mapa inicial de consumidores está en [ir-consolidation-audit.md](ir-consolidation-audit.md). Caracterización inicial y comparación legacy/IR completadas; CI [43221440866](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43221440866) verde con 163 pruebas por Python 3.10–3.12 y build/install correctos. El repositorio no permite conocer consumidores externos; por prudencia se conservarán las funciones legacy como wrappers/adaptadores durante la migración. Siguiente tarea: implementar por pasos el diseño de [ir-parser-design.md](ir-parser-design.md), comenzando por AST sintáctico y builder IR.
+La Fase 0 y la Fase 1 están completadas en la rama de trabajo. El mapa de consumidores, la caracterización y el resultado de la migración están en [ir-consolidation-audit.md](ir-consolidation-audit.md); el diseño de parsing en [ir-parser-design.md](ir-parser-design.md). La ruta canónica ya construye IR desde AST y la resolución legacy está aislada en legacy_styles.py. Se conserva model.py y las API legacy por no conocerse consumidores externos; no se han integrado cambios en main ni publicado una nueva release. CI final: [run 43227325673](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43227325673), 166 pruebas por Python 3.10–3.12, Ruff, build e instalación de wheel/sdist correctos. **Siguiente paso: Fase 2 — evolución semántica y estructural del IR. Está pendiente de autorización expresa; no comenzar hasta recibirla.**

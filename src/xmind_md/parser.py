@@ -576,9 +576,9 @@ def parse_markdown_syntax(text: str, source_path: str = "<string>") -> DocumentS
     if len(roots) != 1:
         raise MarkdownParseError("El documento debe contener un único tema raíz (un H1)")
 
-    topic_index: dict[str, Topic] = {}
+    topic_index: dict[str, TopicSyntax] = {}
 
-    def index_topic(topic: Topic) -> None:
+    def index_topic(topic: TopicSyntax) -> None:
         if not topic.id or topic.id in topic_index:
             raise MarkdownParseError(f"ID de tema vacío o duplicado: {topic.id!r}")
         topic_index[topic.id] = topic

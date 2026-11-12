@@ -310,13 +310,9 @@ def test_legacy_and_ir_parsers_preserve_the_same_topic_identity_and_structure():
         assert [block["type"] for block in old_topic.content_blocks] == [
             block.type for block in ir_topic.content
         ]
-        assert [item["text"] for item in old_topic.annotations.get("labels", [])] == [
+        assert old_topic.annotations.get("labels", []) == [
             item.text for item in ir_topic.annotations.labels
-        ] if old_topic.annotations.get("labels") and isinstance(
-            old_topic.annotations["labels"][0], dict
-        ) else [
-            item for item in old_topic.annotations.get("labels", [])
-        ] == [item.text for item in ir_topic.annotations.labels]
+        ]
         assert [item.get("group") for item in old_topic.annotations.get("markers", [])] == [
             item.group for item in ir_topic.annotations.markers
         ]

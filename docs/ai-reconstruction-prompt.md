@@ -820,3 +820,18 @@ El usuario ha confirmado que el fixture corregido se abre, guarda, cierra y reab
 - Versión: 0.1.0 Alpha/pre-1.0. No tag ni GitHub Release existen todavía.
 
 **Paso pendiente:** el usuario debe abrir [el workflow de publicación](https://github.com/PabloGonzalezRuiz/xmind-md/actions/workflows/release.yml), pulsar Run workflow, seleccionar rama `main` y elegir `desktop_smoke_verified=yes). El workflow verifica CI exitosa para el SHA exacto y crea tag `v0.1.0), GitHub prerelease, wheel, sdist y `SHA256SUMS.txt`. La conexión GitHub de esta sesión no dispone de una acción de workflow_dispatch ni de creación de releases/tags, así que no afirmar que se ha lanzado hasta que GitHub confirme. Después, comprobar ejecución, tag, Release y assets. Mantener la tarea abierta si el workflow falla; consultar logs, corregir y repetir con una CI verde para el SHA final.
+
+
+## Investigación de implementación oficial XMind (2026-11-12)
+
+Antes de cambiar el adaptador o definir el contrato de importación, consulta [docs/xmind-official-sdk-research.md](xmind-official-sdk-research.md). Se estudiaron tres repositorios oficiales TypeScript/MIT:
+
+- [xmind-sdk-js](https://github.com/xmindltd/xmind-sdk-js): SDK oficial y API de componentes Workbook/Sheet/Topic/Marker/Note/Theme/Zipper.
+- [xmind-model](https://github.com/xmindltd/xmind-model): modelo y JSON Schema Draft-07; incluye hojas, temas, familias de estilo, propiedades locales, hijos por tipo, relaciones, límites, resúmenes, notas, imágenes y extensiones. Su README recomienda usarlo a través de xmind-sdk-js, no directamente.
+- [xmind-generator](https://github.com/xmindltd/xmind-generator): generador oficial TypeScript/MIT con serializador propio; produce un perfil ZIP + JSON con dataStructureVersion 2, manifest y recursos.
+
+No se ha localizado una especificación pública normativa, completa y versionada del formato moderno. Los repositorios son evidencia de implementaciones oficiales concretas, no una garantía universal de compatibilidad. Sus perfiles ZIP difieren entre sí y del adaptador actual del proyecto (dataStructureVersion 3, layoutEngineVersion 5, mimetype y thumbnail); no mezclar sus entradas o versiones sin fixtures y validación en XMind Desktop.
+
+Mantener separados class (familias de estilo), structureClass (estructura) y style.properties (propiedades visuales locales). Preservar las colecciones children por tipo (attached/detached/summary/callout), las entidades auxiliares y los datos desconocidos al diseñar el futuro lector. La herencia visual nativa completa no queda especificada por estos repositorios. La herencia PMD por primer hijo sigue siendo una regla propia pendiente de especificación, no una característica nativa demostrada.
+
+La investigación no autoriza por sí misma iniciar la Fase 2 ni implementar cambios. La hoja de ruta y la autorización expresa siguen siendo obligatorias.

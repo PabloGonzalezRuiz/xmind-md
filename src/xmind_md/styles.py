@@ -12,6 +12,7 @@ from typing import Any
 
 import yaml
 
+
 class _UniqueKeyLoader(yaml.SafeLoader):
     """Loader YAML seguro que rechaza claves duplicadas."""
 

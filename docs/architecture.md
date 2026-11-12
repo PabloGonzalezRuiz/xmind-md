@@ -179,3 +179,8 @@ Ver [pmd-design.md](pmd-design.md) y [roadmap.md](roadmap.md). La ruta actual Ma
 Se han investigado tres repositorios oficiales TypeScript/MIT: [xmind-sdk-js](https://github.com/xmindltd/xmind-sdk-js), [xmind-model](https://github.com/xmindltd/xmind-model) y [xmind-generator](https://github.com/xmindltd/xmind-generator). El análisis técnico, sus esquemas, diferencias de empaquetado y límites se documentan en [xmind-official-sdk-research.md](xmind-official-sdk-research.md).
 
 Conclusión arquitectónica: se utilizan como referencias y fuentes de fixtures, no como dependencias runtime ni como contrato neutral del proyecto. xmind-model evidencia entidades y familias de estilo adicionales; xmind-generator evidencia una segunda ruta oficial de serialización, con dataStructureVersion 2. Sus ZIP difieren del perfil actual del adaptador XMind MD (dataStructureVersion 3, layoutEngineVersion 5, mimetype y thumbnail). No se deben mezclar fragmentos de estos perfiles sin pruebas de apertura/guardado en la versión objetivo de XMind Desktop.
+
+
+### Referencias oficiales de autoría y agentes
+
+Además de los SDKs y serializadores, se ha estudiado [XMindMark](https://github.com/xmindltd/xmindmark), un lenguaje oficial de marcado para mapas mentales inspirado en Markdown (TypeScript/MIT), y el [XMind CLI Skill](https://github.com/xmindltd/xmind-cli), guía oficial para generación/edición asistida por agentes. XMindMark confirma un precedente de sintaxis textual ligera con relaciones, límites y resúmenes, pero no cubre tabla de árbol ni estilos semánticos por nodo. El repositorio público del CLI distribuye el Skill; el paquete CLI se publica por separado y no se ha inspeccionado su serializador. Ver [xmind-official-sdk-research.md](xmind-official-sdk-research.md).

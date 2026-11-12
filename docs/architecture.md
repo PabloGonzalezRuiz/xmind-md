@@ -18,7 +18,7 @@ Markdown + front matter/directivas YAML
           ir_builder.py
                   |
                   v
-             IR 1.1.0
+             IR 1.x
               /      \
              v        v
      resolve_styles   json_adapter

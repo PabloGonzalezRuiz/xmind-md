@@ -3,8 +3,8 @@
 > **Documento de seguimiento operativo.** El estado vigente y la hoja de ruta futura se actualizan al cerrar tareas o cambiar decisiones. El histórico Alpha se conserva como registro; el plan activo está en [roadmap.md](roadmap.md).
 
 - **Última actualización:** 2026-11-12
-- **Rama:** `main`
-- **Commit base de auditoría PMD:** `d96cc74cb144e0de851f5ab75b45d9d1030a82aa` (informe Tema1 añadido; verificar HEAD para el estado posterior).
+- **Rama:** `architecture/pmd-ir-roadmap` (trabajo arquitectónico)
+- **Commit base de esta evolución:** `05efc482c333b266bf1a2bd5fbf2f3fdee129de7`; rama de trabajo `architecture/pmd-ir-roadmap`.
 - **Release:** `v0.1.0` publicada el 2026-11-11 como Alpha/prerelease; incluye wheel, sdist y `SHA256SUMS.txt`.
 - **CI de auditoría documental:** [run 43210510024](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43210510024), commit `9f4d9b5d4eb6abad62005ac109ac860adc937040`; cuatro jobs en `success`.
 - **Última prueba manual XMind Desktop registrada:** Windows, XMind 26.05.01107; fixture abierto, guardado y reabierto.
@@ -12,7 +12,7 @@
 - **Implementado:** ruta Markdown → IR → JSON/XMind, CLI, resolutor de estilos, pruebas y publicación Alpha. El adaptador XMind sigue siendo parcial.
 - **Dirección de producto:** PMD como lenguaje de autoría enriquecido, con conversión asistida por IA desde Markdown ordinario. Ver [pmd-design.md](pmd-design.md).
 - **Fase 1:** análisis de la referencia Tema1 completado y documentado en [reference-analysis-tema1.md](reference-analysis-tema1.md).
-- **Siguiente trabajo:** Fase 2, especificación de biblioteca de estilos, reglas y herencia; requiere autorización expresa. Ver [roadmap.md](roadmap.md).
+- **Trabajo activo:** Fase 1, consolidación del modelo de ejecución. ADR-001 y hoja de ruta actualizada; inventario inicial de consumidores en [ir-consolidation-audit.md](ir-consolidation-audit.md).
 - **Regla:** distinguir implementado, decidido y pendiente; no iniciar una fase nueva sin autorización expresa.
 
 ## 1. Para qué sirve este documento
@@ -54,7 +54,7 @@ Prioridad: contrato IR aprobado para la estructura objetivo; código y pruebas p
 
 **Estado: modelo IR, parser, resolutor y adaptadores canónicos integrados; validación formal del esquema completada.**
 
-`src/xmind_md/ir/` contiene las entidades canónicas IR 1.0.0, serialización y validación semántica. `src/xmind_md/model.py` se conserva como API legacy por compatibilidad; los adaptadores JSON/XMind y el flujo actual de CLI/smoke consumen el IR canónico.
+`src/xmind_md/ir/` contiene las entidades canónicas IR 1.0.0, serialización y validación semántica. Los adaptadores y la CLI consumen el IR, pero `parser.py` todavía construye `src/xmind_md/model.py` y `ir_parser.py` lo convierte al IR. `styles.py` mantiene una ruta legacy. Por tanto, la consolidación del parser y del resolutor sigue pendiente.
 
 El modelo legacy `src/xmind_md/model.py` todavía presenta estas diferencias:
 
@@ -1140,3 +1140,10 @@ No se ha localizado una especificación pública normativa, completa y versionad
 - Añadir matriz de compatibilidad por versión y perfil.
 
 La Fase 2 de PMD sigue pendiente de autorización expresa; esta investigación no la inicia.
+
+
+## 10. Evolución PMD/IR autorizada (2026-11-12)
+
+Se ha creado la rama `architecture/pmd-ir-roadmap` desde `05efc482c333b266bf1a2bd5fbf2f3fdee129de7`. ADR-001 fija PMD como lenguaje de autoría separado del IR, IR como modelo de dominio único, roles semánticos y estructuras neutrales, catálogo de estilos separado en capa semántica/visual, resolución determinista y adaptador XMind independiente. La hoja de ruta se reorganizó en fases 0–8; ver `roadmap.md`.
+
+La Fase 0 está documentada. La Fase 1 está en curso. La inspección inicial de consumidores se documenta en `ir-consolidation-audit.md`. No se han modificado módulos Python ni se ha ejecutado una suite de pruebas en esta tarea. Próximo paso: completar pruebas de caracterización antes de cambiar el parser.

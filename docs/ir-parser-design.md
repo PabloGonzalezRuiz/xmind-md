@@ -130,8 +130,8 @@ La adaptación IR → legacy puede reconstruir los campos legacy derivados cuand
 4. Cambiar parse_markdown_ir() para consumir AST directamente y retirar _convert() / _topic() del camino canónico.
 5. Implementar el adaptador AST → legacy y hacer que las funciones antiguas reutilicen el análisis sintáctico común.
 6. Añadir pruebas de equivalencia de ida y vuelta para el contrato legacy observable y pruebas de que la ruta IR no instancia model.MindMap ni model.Topic.
-7. Migrar el resolutor legacy de estilos o encapsularlo detrás del adaptador; retirar dependencias internas de model.py cuando las pruebas lo permitan.
-8. Ejecutar suite completa, Ruff, build/install y CI en Python 3.10–3.12.
+7. Encapsular la resolución legacy en legacy_styles.py; conservar model.py como compatibilidad mientras no se conozcan consumidores externos.
+8. Ejecutar suite completa, Ruff, build/install y CI en Python 3.10–3.12. **Completado:** run 43227325673, 166 pruebas y distribuciones correctas.
 
 Cada paso se realizará en commits pequeños. No se retirará model.py ni se cambiará una API pública sin evidencia de compatibilidad y actualización de documentación.
 
@@ -158,4 +158,4 @@ Cada paso se realizará en commits pequeños. No se retirará model.py ni se cam
 
 ## 10. Estado
 
-Implementación observada en la rama: parser.py produce DocumentSyntax/TopicSyntax; ir_builder.py construye directamente MindMap IR; ir_parser.py es una fachada fina; legacy_adapter.py proyecta el AST al modelo antiguo solo para las API legacy. Las pruebas verifican que parse_markdown_ir() no instancia model.MindMap ni model.Topic y que la API antigua conserva niveles de encabezado y texto Markdown. La resolución legacy de estilos sigue pendiente. La auditoría de hechos y la evidencia CI están en ir-consolidation-audit.md y roadmap.md.
+Implementación observada en la rama: parser.py produce DocumentSyntax/TopicSyntax; ir_builder.py construye directamente MindMap IR; ir_parser.py es una fachada fina; legacy_adapter.py proyecta el AST al modelo antiguo solo para las API legacy. Las pruebas verifican que parse_markdown_ir() no instancia model.MindMap ni model.Topic y que la API antigua conserva niveles de encabezado y texto Markdown. La resolución legacy de estilos está aislada en legacy_styles.py; model.py se conserva solo para compatibilidad. Fase 1 queda completada en la rama de trabajo. La auditoría de hechos y la evidencia CI están en ir-consolidation-audit.md y roadmap.md.

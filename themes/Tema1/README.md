@@ -80,4 +80,4 @@ La referencia confirma que `Cabecera` y `cuerpo` son celdas con estilos explíci
 - La regla se aplica recursivamente.
 - La IA utilizará estilos semánticos y reglas estructurales del catálogo, no valores XMind internos repetidos en cada nodo.
 
-Son decisiones de diseño aprobadas en Fase 3; el catálogo no está implementado en runtime. La sintaxis PMD continúa pendiente. Fuente normativa: [docs/pmd-design.md](../../docs/pmd-design.md) y [docs/pmd-language-spec.md](../../docs/pmd-language-spec.md).
+Son decisiones de diseño aprobadas en Fase 3; el catálogo no está implementado en runtime. La sintaxis PMD 1.0.0 está especificada en Fase 4, pero todavía no hay parser PMD. Fuentes normativas: [docs/pmd-design.md](../../docs/pmd-design.md) y [docs/pmd-language-spec.md](../../docs/pmd-language-spec.md).

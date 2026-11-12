@@ -172,3 +172,10 @@ Markdown de origen → IA → PMD → parser/validador PMD
 - El SVG debe ser lo más fiel posible a la apariencia original de XMind, sin exigir identidad de XML, atributos o IDs.
 
 Ver [pmd-design.md](pmd-design.md) y [roadmap.md](roadmap.md). La ruta actual Markdown → IR → XMind debe seguir operativa durante la transición.
+
+
+## 10. Referencias de implementación oficial XMind
+
+Se han investigado tres repositorios oficiales TypeScript/MIT: [xmind-sdk-js](https://github.com/xmindltd/xmind-sdk-js), [xmind-model](https://github.com/xmindltd/xmind-model) y [xmind-generator](https://github.com/xmindltd/xmind-generator). El análisis técnico, sus esquemas, diferencias de empaquetado y límites se documentan en [xmind-official-sdk-research.md](xmind-official-sdk-research.md).
+
+Conclusión arquitectónica: se utilizan como referencias y fuentes de fixtures, no como dependencias runtime ni como contrato neutral del proyecto. xmind-model evidencia entidades y familias de estilo adicionales; xmind-generator evidencia una segunda ruta oficial de serialización, con dataStructureVersion 2. Sus ZIP difieren del perfil actual del adaptador XMind MD (dataStructureVersion 3, layoutEngineVersion 5, mimetype y thumbnail). No se deben mezclar fragmentos de estos perfiles sin pruebas de apertura/guardado en la versión objetivo de XMind Desktop.

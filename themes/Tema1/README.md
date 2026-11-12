@@ -1,6 +1,6 @@
 # Tema1 — referencia de estructura y estilos XMind
 
-**Estado:** exportaciones incorporadas; análisis inicial realizado; análisis completo pendiente.  
+**Estado:** análisis de referencia completado el 2026-11-12; ver [informe detallado](../../docs/reference-analysis-tema1.md).  
 **Objetivo:** utilizar este mapa para diseñar PMD y comprobar qué información pierde la importación nativa de Markdown.
 
 ## Archivos disponibles
@@ -60,14 +60,18 @@ La exportación tiene aproximadamente 857 kB y utiliza `foreignObject` para tít
 
 Esta estructura ayuda a comprender el resultado visual, pero la decisión vigente es priorizar la fidelidad visual y mantener sencilla la implementación. No se exige reproducir exactamente XML, atributos, IDs ni recursos internos de XMind.
 
-## Trabajo pendiente
+## Resultado del análisis
 
-- [ ] Documentar propiedades de estilo de cada nodo y distinguir explícitas/heredadas.
-- [ ] Analizar reglas de herencia y formatos por defecto en grupos de hermanos.
-- [ ] Describir con precisión la tabla de árbol y sus celdas.
-- [ ] Relacionar nodos del JSON con elementos visuales del SVG.
-- [ ] Derivar requisitos semánticos y estructurales para el catálogo.
-- [ ] Derivar un ejemplo PMD cuando la sintaxis esté aprobada.
+La inspección detallada ha documentado los 10 nodos, los estilos explícitos, los valores `inherited`, los marcadores y la correspondencia entre los IDs de temas del JSON y los títulos del SVG. El informe completo está en [reference-analysis-tema1.md](../../docs/reference-analysis-tema1.md).
+
+La referencia confirma que `Cabecera` y `cuerpo` son celdas con estilos explícitos diferentes. No demuestra que XMind aplique a la segunda celda el formato de la primera; la herencia por primer hijo es una regla futura de PMD.
+
+## Trabajo posterior
+
+- [ ] Analizar otras variantes reales de tablas de árbol y estructuras de legislación.
+- [ ] Especificar el catálogo semántico y las reglas de aplicación en la Fase 2.
+- [ ] Definir precedencia entre defaults, estilos semánticos, contexto estructural, herencia y excepciones.
+- [ ] Diseñar ejemplos PMD cuando la sintaxis esté aprobada.
 
 ## Decisiones PMD relacionadas
 

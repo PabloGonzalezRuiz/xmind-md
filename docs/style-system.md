@@ -1,7 +1,7 @@
 # Sistema de estilos de XMind MD
 
 **Versión de diseño:** 1.0-draft  
-**Contrato IR objetivo:** 1.0.0  
+**Contrato IR objetivo:** 1.1.0  
 **Estado:** resolución implementada y compatible con IR 1.0.0/1.1.0 y ruta legacy. Los roles semánticos existen en el modelo, pero su catálogo y reglas de aplicación pertenecen a la Fase 3. Las secciones de diseño general describen vocabulario neutral objetivo; el esquema YAML ejecutable y la cascada efectiva se especifican en las secciones 3.1 y 15.
 
 ## 1. Objetivo
@@ -446,4 +446,4 @@ Estas fuentes no son intercambiables. En particular, la regla PMD de tomar el fo
 
 El catálogo PMD deberá almacenar propiedades neutrales y metadatos de uso para IA. Los valores técnicos como `fo:font-size`, `svg:fill`, `shape-class` o `org.xmind.internal.topicShape.treeTableCell` pertenecen a la traducción del formato XMind, no al vocabulario semántico que la IA debe escribir.
 
-La procedencia de cada propiedad efectiva debe poder explicarse: perfil/base, regla semántica, regla estructural, herencia, estilo explícito o excepción local. El orden definitivo de precedencia queda pendiente de especificación en la Fase 2.
+La procedencia de cada propiedad efectiva debe poder explicarse: perfil/base, regla semántica, regla estructural, herencia, estilo explícito o excepción local. La cascada de estilos IR 1.x descrita en la sección 8 ya está implementada. Lo pendiente para la Fase 3 es definir cómo se integra esa cascada con las reglas semánticas y estructurales de PMD, la herencia por referencia al primer hijo, los valores por defecto y las excepciones, así como la procedencia por propiedad.

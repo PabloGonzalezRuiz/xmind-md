@@ -1109,6 +1109,64 @@
         }
       },
       "additionalProperties": false
+    },
+    "topic10": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/topic"
+        },
+        {
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "semantic_role"
+                ]
+              },
+              {
+                "required": [
+                  "structure"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "children": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/topic10"
+              }
+            }
+          }
+        }
+      ]
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "ir_version": {
+            "const": "1.0.0"
+          }
+        },
+        "required": [
+          "ir_version"
+        ]
+      },
+      "then": {
+        "properties": {
+          "sheet": {
+            "properties": {
+              "root_topic": {
+                "$ref": "#/$defs/topic10"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }

@@ -131,7 +131,9 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 
 ### Fase 6 — Conversión asistida por IA Markdown → PMD
 
-- [ ] Crear prompt/protocolo de transformación basado en catálogo y reglas.
+**Estado: EN CURSO.** Primer entregable: [protocolo conservador IA → PMD](ai-markdown-to-pmd-protocol.md). No se ha implementado ni evaluado todavía un conversor automático.
+
+- [x] Crear prompt/protocolo de transformación basado en catálogo y reglas.
 - [ ] Construir corpus de Markdown fuente y PMD esperado, especialmente legislación.
 - [ ] Definir cómo señalar ambigüedades y evitar invención.
 - [ ] Medir precisión semántica, validez PMD y cantidad de anotación manual.

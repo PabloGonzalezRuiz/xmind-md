@@ -86,3 +86,20 @@ La caracterización inicial está completada. El siguiente trabajo es diseñar u
 ## 8. Límites de esta auditoría
 
 Esta tarea comenzó como inspección estática y se amplió con dos pruebas de caracterización en CI. No se ha ejecutado pytest localmente, no se ha cambiado el parser ni se ha retirado el modelo legacy. La CI de la rama ha validado las pruebas en Python 3.10, 3.11 y 3.12 y la construcción/instalación de distribuciones. La migración del parser solo se considerará completada cuando la ruta canónica construya IR directamente y las pruebas de regresión sigan verdes.
+
+
+## 9. Diseño de la ruta directa al IR
+
+La inspección detallada de parser.py, ir_parser.py, model.py, ir/entities.py y las pruebas confirma que el problema no se resuelve simplemente moviendo _convert(): el parser actual mezcla reconocimiento sintáctico con campos y colecciones específicos del modelo legacy. También genera contenido duplicado (texto plano y bloques) para satisfacer consumidores antiguos.
+
+Se ha documentado el diseño objetivo en [ir-parser-design.md](ir-parser-design.md):
+
+- AST temporal y exclusivamente sintáctico.
+- Constructor IR separado, responsable de crear entidades, IDs derivados, assets y entidades de hoja.
+- IR como única ruta canónica de ejecución.
+- Adaptador inverso IR → legacy para mantener temporalmente parse_markdown() y parse_file().
+- Resolución legacy de estilos aislada como trabajo relacionado, sin bloquear el primer corte del parser.
+
+La decisión es conservar IR 1.0.0 y la gramática actual durante esta migración. El AST no será API pública ni una segunda representación de dominio. El diseño está documentado, pero no se ha implementado aún; el estado de Fase 1.2 permanece en curso.
+
+**Siguiente paso:** implementar AST y builder por incrementos, con pruebas que demuestren que parse_markdown_ir() no instancia model.MindMap ni model.Topic y que el adaptador inverso mantiene el contrato legacy observable.

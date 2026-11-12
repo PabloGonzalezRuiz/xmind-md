@@ -36,7 +36,7 @@
       "when_not_to_use": [
         "Título de una división interna o de un artículo."
       ],
-      "style_ref": "legal.document-title",
+      "style_ref": "visual.legal.document-title",
       "examples": {
         "positive": [
           "Ley 39/2015, de 1 de octubre"
@@ -59,7 +59,7 @@
       "when_not_to_use": [
         "Títulos, capítulos o artículos."
       ],
-      "style_ref": "legal.hierarchy"
+      "style_ref": "visual.legal.hierarchy"
     },
     {
       "id": "legal.part",
@@ -74,7 +74,7 @@
       "when_not_to_use": [
         "Un bloque editorial añadido para organizar apuntes."
       ],
-      "style_ref": "legal.hierarchy"
+      "style_ref": "visual.legal.hierarchy"
     },
     {
       "id": "legal.title",
@@ -89,7 +89,7 @@
       "when_not_to_use": [
         "El título informal de un tema o documento."
       ],
-      "style_ref": "legal.hierarchy"
+      "style_ref": "visual.legal.hierarchy"
     },
     {
       "id": "legal.chapter",
@@ -104,7 +104,7 @@
       "when_not_to_use": [
         "Un grupo de apuntes sin correspondencia normativa."
       ],
-      "style_ref": "legal.hierarchy"
+      "style_ref": "visual.legal.hierarchy"
     },
     {
       "id": "legal.section",
@@ -119,7 +119,7 @@
       "when_not_to_use": [
         "Un apartado o párrafo numerado."
       ],
-      "style_ref": "legal.hierarchy"
+      "style_ref": "visual.legal.hierarchy"
     },
     {
       "id": "legal.article",
@@ -134,7 +134,7 @@
       "when_not_to_use": [
         "Una explicación o resumen propio sobre el artículo."
       ],
-      "style_ref": "legal.article"
+      "style_ref": "visual.legal.article"
     },
     {
       "id": "legal.paragraph",
@@ -149,7 +149,7 @@
       "when_not_to_use": [
         "Una frase o párrafo sin identidad estructural independiente."
       ],
-      "style_ref": "legal.body"
+      "style_ref": "visual.legal.body"
     },
     {
       "id": "legal.definition",
@@ -164,7 +164,7 @@
       "when_not_to_use": [
         "Una explicación contextual que no define."
       ],
-      "style_ref": "legal.definition"
+      "style_ref": "visual.legal.definition"
     },
     {
       "id": "legal.exception",
@@ -179,7 +179,7 @@
       "when_not_to_use": [
         "Una condición ordinaria que forma parte de la regla general."
       ],
-      "style_ref": "legal.exception"
+      "style_ref": "visual.legal.exception"
     },
     {
       "id": "legal.obligation",
@@ -194,7 +194,7 @@
       "when_not_to_use": [
         "Una recomendación o facultad."
       ],
-      "style_ref": "legal.obligation"
+      "style_ref": "visual.legal.obligation"
     },
     {
       "id": "legal.prohibition",
@@ -209,7 +209,7 @@
       "when_not_to_use": [
         "Una obligación positiva."
       ],
-      "style_ref": "legal.prohibition"
+      "style_ref": "visual.legal.prohibition"
     },
     {
       "id": "legal.deadline",
@@ -224,7 +224,7 @@
       "when_not_to_use": [
         "Una duración inferida o calculada sin respaldo."
       ],
-      "style_ref": "legal.deadline"
+      "style_ref": "visual.legal.deadline"
     },
     {
       "id": "legal.reference",
@@ -239,7 +239,7 @@
       "when_not_to_use": [
         "Una mención incidental sin función de remisión."
       ],
-      "style_ref": "legal.reference"
+      "style_ref": "visual.legal.reference"
     },
     {
       "id": "table.header_cell",
@@ -254,7 +254,7 @@
       "when_not_to_use": [
         "Una celda de datos destacada solo por su apariencia."
       ],
-      "style_ref": "table.header-cell"
+      "style_ref": "visual.table.header-cell"
     },
     {
       "id": "table.body_cell",
@@ -269,7 +269,7 @@
       "when_not_to_use": [
         "Una cabecera o rótulo estructural."
       ],
-      "style_ref": "table.body-cell"
+      "style_ref": "visual.table.body-cell"
     },
     {
       "id": "study.note",
@@ -284,12 +284,12 @@
       "when_not_to_use": [
         "Texto literal de la norma."
       ],
-      "style_ref": "study.note"
+      "style_ref": "visual.study.note"
     }
   ],
   "styles": [
     {
-      "id": "legal.document-title",
+      "id": "visual.legal.document-title",
       "label": "Título principal de norma",
       "description": "Jerarquía visual del título del documento.",
       "applies_to": [
@@ -314,7 +314,7 @@
       }
     },
     {
-      "id": "legal.hierarchy",
+      "id": "visual.legal.hierarchy",
       "label": "División normativa",
       "description": "Estilo común para libros, partes, títulos, capítulos y secciones.",
       "applies_to": [
@@ -338,7 +338,7 @@
       }
     },
     {
-      "id": "legal.article",
+      "id": "visual.legal.article",
       "label": "Artículo",
       "description": "Destaca el encabezado de cada artículo.",
       "applies_to": [
@@ -363,7 +363,7 @@
       }
     },
     {
-      "id": "legal.body",
+      "id": "visual.legal.body",
       "label": "Texto normativo",
       "description": "Presentación base para apartados y contenido jurídico.",
       "applies_to": [
@@ -387,7 +387,7 @@
       }
     },
     {
-      "id": "legal.definition",
+      "id": "visual.legal.definition",
       "label": "Definición",
       "description": "Destaca conceptos definidos por la norma.",
       "applies_to": [
@@ -410,7 +410,7 @@
       }
     },
     {
-      "id": "legal.exception",
+      "id": "visual.legal.exception",
       "label": "Excepción",
       "description": "Diferencia visualmente las excepciones de la regla general.",
       "applies_to": [
@@ -433,7 +433,7 @@
       }
     },
     {
-      "id": "legal.obligation",
+      "id": "visual.legal.obligation",
       "label": "Obligación",
       "description": "Resalta mandatos obligatorios.",
       "applies_to": [
@@ -456,7 +456,7 @@
       }
     },
     {
-      "id": "legal.prohibition",
+      "id": "visual.legal.prohibition",
       "label": "Prohibición",
       "description": "Resalta mandatos prohibitivos.",
       "applies_to": [
@@ -479,7 +479,7 @@
       }
     },
     {
-      "id": "legal.deadline",
+      "id": "visual.legal.deadline",
       "label": "Plazo",
       "description": "Destaca periodos y fechas límite expresos.",
       "applies_to": [
@@ -502,7 +502,7 @@
       }
     },
     {
-      "id": "legal.reference",
+      "id": "visual.legal.reference",
       "label": "Remisión normativa",
       "description": "Presenta referencias cruzadas sin confundirlas con contenido nuevo.",
       "applies_to": [
@@ -521,7 +521,7 @@
       }
     },
     {
-      "id": "table.header-cell",
+      "id": "visual.table.header-cell",
       "label": "Cabecera de tabla",
       "description": "Estilo predeterminado de celda que identifica una columna o fila.",
       "applies_to": [
@@ -545,7 +545,7 @@
       }
     },
     {
-      "id": "table.body-cell",
+      "id": "visual.table.body-cell",
       "label": "Cuerpo de tabla",
       "description": "Estilo base de las celdas de datos.",
       "applies_to": [
@@ -568,7 +568,7 @@
       }
     },
     {
-      "id": "study.note",
+      "id": "visual.study.note",
       "label": "Nota de estudio",
       "description": "Aclaración editorial diferenciada del contenido normativo.",
       "applies_to": [
@@ -599,7 +599,7 @@
       "match": {
         "semantic_role": "legal.article"
       },
-      "style_ref": "legal.article",
+      "style_ref": "visual.legal.article",
       "priority": 100,
       "description": "Aplica el estilo del rol artículo."
     },
@@ -609,7 +609,7 @@
       "match": {
         "semantic_role": "legal.exception"
       },
-      "style_ref": "legal.exception",
+      "style_ref": "visual.legal.exception",
       "priority": 100,
       "description": "Aplica el estilo del rol excepción."
     },
@@ -619,7 +619,7 @@
       "match": {
         "semantic_role": "table.header_cell"
       },
-      "style_ref": "table.header-cell",
+      "style_ref": "visual.table.header-cell",
       "priority": 100,
       "description": "Aplica el estilo de cabecera."
     },
@@ -629,7 +629,7 @@
       "match": {
         "semantic_role": "table.body_cell"
       },
-      "style_ref": "table.body-cell",
+      "style_ref": "visual.table.body-cell",
       "priority": 100,
       "description": "Aplica el estilo de celda de contenido."
     },
@@ -640,7 +640,7 @@
         "structure_type": "tree_table",
         "relation": "cell"
       },
-      "style_ref": "table.body-cell",
+      "style_ref": "visual.table.body-cell",
       "priority": 10,
       "description": "Fallback visual para una celda de tabla sin un rol semántico más específico."
     },
@@ -650,7 +650,7 @@
       "match": {
         "semantic_role": "legal.document_title"
       },
-      "style_ref": "legal.document-title",
+      "style_ref": "visual.legal.document-title",
       "priority": 100,
       "description": "Aplica el estilo recomendado para el rol legal.document_title."
     },
@@ -660,7 +660,7 @@
       "match": {
         "semantic_role": "legal.book"
       },
-      "style_ref": "legal.hierarchy",
+      "style_ref": "visual.legal.hierarchy",
       "priority": 100,
       "description": "Aplica el estilo recomendado para el rol legal.book."
     },
@@ -670,7 +670,7 @@
       "match": {
         "semantic_role": "legal.part"
       },
-      "style_ref": "legal.hierarchy",
+      "style_ref": "visual.legal.hierarchy",
       "priority": 100,
       "description": "Aplica el estilo recomendado para el rol legal.part."
     },
@@ -680,7 +680,7 @@
       "match": {
         "semantic_role": "legal.title"
       },
-      "style_ref": "legal.hierarchy",
+      "style_ref": "visual.legal.hierarchy",
       "priority": 100,
       "description": "Aplica el estilo recomendado para el rol legal.title."
     },
@@ -690,7 +690,7 @@
       "match": {
         "semantic_role": "legal.chapter"
       },
-      "style_ref": "legal.hierarchy",
+      "style_ref": "visual.legal.hierarchy",
       "priority": 100,
       "description": "Aplica el estilo recomendado para el rol legal.chapter."
     },
@@ -700,7 +700,7 @@
       "match": {
         "semantic_role": "legal.section"
       },
-      "style_ref": "legal.hierarchy",
+      "style_ref": "visual.legal.hierarchy",
       "priority": 100,
       "description": "Aplica el estilo recomendado para el rol legal.section."
     },
@@ -710,7 +710,7 @@
       "match": {
         "semantic_role": "legal.paragraph"
       },
-      "style_ref": "legal.body",
+      "style_ref": "visual.legal.body",
       "priority": 100,
       "description": "Aplica el estilo recomendado para el rol legal.paragraph."
     },
@@ -720,7 +720,7 @@
       "match": {
         "semantic_role": "legal.definition"
       },
-      "style_ref": "legal.definition",
+      "style_ref": "visual.legal.definition",
       "priority": 100,
       "description": "Aplica el estilo recomendado para el rol legal.definition."
     },
@@ -730,7 +730,7 @@
       "match": {
         "semantic_role": "legal.obligation"
       },
-      "style_ref": "legal.obligation",
+      "style_ref": "visual.legal.obligation",
       "priority": 100,
       "description": "Aplica el estilo recomendado para el rol legal.obligation."
     },
@@ -740,7 +740,7 @@
       "match": {
         "semantic_role": "legal.prohibition"
       },
-      "style_ref": "legal.prohibition",
+      "style_ref": "visual.legal.prohibition",
       "priority": 100,
       "description": "Aplica el estilo recomendado para el rol legal.prohibition."
     },
@@ -750,7 +750,7 @@
       "match": {
         "semantic_role": "legal.deadline"
       },
-      "style_ref": "legal.deadline",
+      "style_ref": "visual.legal.deadline",
       "priority": 100,
       "description": "Aplica el estilo recomendado para el rol legal.deadline."
     },
@@ -760,7 +760,7 @@
       "match": {
         "semantic_role": "legal.reference"
       },
-      "style_ref": "legal.reference",
+      "style_ref": "visual.legal.reference",
       "priority": 100,
       "description": "Aplica el estilo recomendado para el rol legal.reference."
     },
@@ -770,7 +770,7 @@
       "match": {
         "semantic_role": "study.note"
       },
-      "style_ref": "study.note",
+      "style_ref": "visual.study.note",
       "priority": 100,
       "description": "Aplica el estilo recomendado para el rol study.note."
     }

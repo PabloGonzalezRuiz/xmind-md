@@ -19,9 +19,7 @@ def migrate_ir_1_0_to_1_1(mind_map: MindMap) -> MindMap:
     if not isinstance(mind_map, MindMap):
         raise TypeError("La migración requiere un MindMap IR.")
     if mind_map.ir_version != "1.0.0":
-        raise IRValidationError(
-            f"Solo se puede migrar IR 1.0.0; recibido {mind_map.ir_version!r}"
-        )
+        raise IRValidationError(f"Solo se puede migrar IR 1.0.0; recibido {mind_map.ir_version!r}")
     validate_mind_map(mind_map)
     migrated = deepcopy(mind_map)
     migrated.ir_version = "1.1.0"
@@ -33,8 +31,7 @@ def migrate_ir_1_0_to_1_1(mind_map: MindMap) -> MindMap:
             xmind_extension = topic.extensions.setdefault("xmind", {})
             if not isinstance(xmind_extension, dict):
                 raise IRValidationError(
-                    f"{path}.extensions.xmind: debe ser un objeto para preservar "
-                    "structure_class"
+                    f"{path}.extensions.xmind: debe ser un objeto para preservar structure_class"
                 )
             if "legacy_structure_class" in xmind_extension:
                 raise IRValidationError(

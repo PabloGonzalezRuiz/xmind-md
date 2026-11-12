@@ -111,7 +111,7 @@ La CI final de la consolidación [43227325673](https://github.com/PabloGonzalezR
 
 1. El parser produce una representación neutral, no un archivo XMind.
 2. El IR no importa librerías de exportación.
-3. Los adaptadores consumen IR 1.0.0, no el modelo legacy.
+3. Los adaptadores consumen entidades IR 1.x, no el modelo legacy; cada adaptador declara explícitamente las capacidades que exporta.
 4. El orden de temas, bloques y colecciones significativas se conserva.
 5. Las referencias de estilo son simbólicas; las propiedades resueltas se almacenan separadamente.
 6. El adaptador no interpreta Markdown ni resuelve estilos.
@@ -125,7 +125,7 @@ La CI final de la consolidación [43227325673](https://github.com/PabloGonzalezR
 - Paquete con diseño `src/`.
 - PyYAML como dependencia de ejecución.
 - pytest, Ruff y jsonschema como dependencias de desarrollo.
-- IR 1.0.0 como contrato canónico.
+- IR 1.1.0 como contrato vigente; IR 1.0.0 continúa siendo legible mediante compatibilidad y migración explícita.
 - JSON como formato de inspección.
 - XMind moderno ZIP + JSON como formato de salida.
 - Serialización XMind mediante biblioteca estándar de Python; los SDK externos son referencias técnicas, no dependencias obligatorias.
@@ -195,6 +195,6 @@ Además de los SDKs y serializadores, se ha estudiado [XMindMark](https://github
 
 ## 11. Decisión arquitectónica vigente
 
-La evolución PMD/IR se rige por [ADR-001](decisions/ADR-001-pmd-ir-architecture.md) y por [roadmap.md](roadmap.md). La dirección aprobada es consolidar el IR como único modelo de dominio de ejecución, añadir roles semánticos y estructuras neutrales (incluida `tree_table`), diseñar un catálogo de estilos semántico/visual y mantener los adaptadores desacoplados.
+La evolución PMD/IR se rige por [ADR-001](decisions/ADR-001-pmd-ir-architecture.md), [ADR-002](decisions/ADR-002-ir-semantic-structures.md) y [roadmap.md](roadmap.md). La dirección aprobada es consolidar el IR como único modelo de dominio de ejecución, añadir roles semánticos y estructuras neutrales (incluida `tree_table`), diseñar un catálogo de estilos semántico/visual y mantener los adaptadores desacoplados.
 
-**Estado real importante:** el parser todavía construye el modelo legacy de `model.py` y `ir_parser.py` lo convierte al IR; `styles.py` conserva resolución legacy. La migración de adaptadores/CLI no equivale a retirar esa duplicidad. El inventario y el estado de la migración están en [ir-consolidation-audit.md](ir-consolidation-audit.md) y el diseño técnico en [ir-parser-design.md](ir-parser-design.md). El parser ahora construye IR desde AST; la ruta legacy está aislada, pero `styles.py` aún conserva compatibilidad con `model.py`.
+**Estado real:** la ruta canónica construye IR desde AST y no depende de `model.py`; las API antiguas se mantienen aisladas mediante adaptadores. El contrato 1.1.0 añade roles semánticos y `tree_table`. El adaptador XMind rechaza estas dos capacidades hasta la Fase 7. La especificación de 1.1.0 está en [ir-specification.md](ir-specification.md), el diseño en [ir-1.1-design.md](ir-1.1-design.md) y la decisión en [ADR-002](decisions/ADR-002-ir-semantic-structures.md).

@@ -34,7 +34,7 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 
 ### Fase 1 — Consolidación del modelo de ejecución
 
-**Estado: EN CURSO.** La tarea 1.1 (inventario y caracterización inicial) está completada y documentada en [ir-consolidation-audit.md](ir-consolidation-audit.md). Los consumidores externos no pueden inferirse del repositorio; por ello se conservarán las API legacy como wrappers/adaptadores durante la transición. Objetivo: que el IR sea el único modelo de dominio de ejecución. El AST/syntax tree temporal es admisible; un segundo modelo de dominio persistente no.
+**Estado: EN CURSO.** Las tareas 1.1 (inventario/caracterización) y 1.2 (parsing directo a IR) están implementadas. La tarea 1.3 (resolutor/API legacy) sigue pendiente. El AST es temporal; la ruta IR ya no construye el modelo legacy. Las API antiguas se mantienen aisladas mediante un adaptador AST → legacy.
 
 #### 1.1 Caracterización y mapa de consumidores
 - [x] Inventariar las llamadas internas a `parse_markdown()`, `parse_file()`, `parse_markdown_ir()` y `parse_file_ir()`.
@@ -43,11 +43,12 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 - [x] Añadir fixture Markdown, prueba de caracterización IR y comparación de identidad/estructura entre parser legacy e IR; CI [43221440866](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43221440866), 163 pruebas por Python 3.10–3.12 y build/install correctos.
 
 #### 1.2 Parser con salida IR directa
-- [x] Inspeccionar las rutas actuales y documentar el diseño AST sintáctico → constructor IR → adaptador legacy en [ir-parser-design.md](ir-parser-design.md). Diseño aprobado como base de implementación; todavía no está implementado.
-- [ ] Separar la sintaxis temporal del modelo de dominio legacy.
-- [ ] Trasladar gradualmente la construcción de entidades a fábricas/constructores IR.
-- [ ] Eliminar la conversión recursiva `_convert()` / `_topic()` de `ir_parser.py` cuando toda la información tenga una ruta directa y probada.
-- [ ] Mantener wrappers de API legacy si los consumidores externos lo requieren, implementados como adaptadores de compatibilidad y no como núcleo.
+- [x] Separar la gramática del modelo legacy mediante DocumentSyntax y TopicSyntax temporales.
+- [x] Construir entidades canónicas en ir_builder.py directamente desde el AST.
+- [x] Retirar la conversión legacy → IR; ir_parser.py es ahora una fachada fina.
+- [x] Mantener parse_markdown() y parse_file() mediante legacy_adapter.py (AST → legacy), fuera de la ruta canónica.
+- [x] Añadir pruebas de AST, preservación de la API legacy y no instanciación del modelo legacy en parse_markdown_ir().
+- [ ] Confirmar la revisión final de CI del builder separado y actualizar la evidencia.
 
 #### 1.3 Resolutor y API
 - [ ] Migrar consumidores restantes de estilos a IR.

@@ -643,6 +643,136 @@
       "style_ref": "table.body-cell",
       "priority": 10,
       "description": "Fallback visual para una celda de tabla sin un rol semántico más específico."
+    },
+    {
+      "id": "semantic.legal-document-title",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "legal.document_title"
+      },
+      "style_ref": "legal.document-title",
+      "priority": 100,
+      "description": "Aplica el estilo recomendado para el rol legal.document_title."
+    },
+    {
+      "id": "semantic.legal-book",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "legal.book"
+      },
+      "style_ref": "legal.hierarchy",
+      "priority": 100,
+      "description": "Aplica el estilo recomendado para el rol legal.book."
+    },
+    {
+      "id": "semantic.legal-part",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "legal.part"
+      },
+      "style_ref": "legal.hierarchy",
+      "priority": 100,
+      "description": "Aplica el estilo recomendado para el rol legal.part."
+    },
+    {
+      "id": "semantic.legal-title",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "legal.title"
+      },
+      "style_ref": "legal.hierarchy",
+      "priority": 100,
+      "description": "Aplica el estilo recomendado para el rol legal.title."
+    },
+    {
+      "id": "semantic.legal-chapter",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "legal.chapter"
+      },
+      "style_ref": "legal.hierarchy",
+      "priority": 100,
+      "description": "Aplica el estilo recomendado para el rol legal.chapter."
+    },
+    {
+      "id": "semantic.legal-section",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "legal.section"
+      },
+      "style_ref": "legal.hierarchy",
+      "priority": 100,
+      "description": "Aplica el estilo recomendado para el rol legal.section."
+    },
+    {
+      "id": "semantic.legal-paragraph",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "legal.paragraph"
+      },
+      "style_ref": "legal.body",
+      "priority": 100,
+      "description": "Aplica el estilo recomendado para el rol legal.paragraph."
+    },
+    {
+      "id": "semantic.legal-definition",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "legal.definition"
+      },
+      "style_ref": "legal.definition",
+      "priority": 100,
+      "description": "Aplica el estilo recomendado para el rol legal.definition."
+    },
+    {
+      "id": "semantic.legal-obligation",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "legal.obligation"
+      },
+      "style_ref": "legal.obligation",
+      "priority": 100,
+      "description": "Aplica el estilo recomendado para el rol legal.obligation."
+    },
+    {
+      "id": "semantic.legal-prohibition",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "legal.prohibition"
+      },
+      "style_ref": "legal.prohibition",
+      "priority": 100,
+      "description": "Aplica el estilo recomendado para el rol legal.prohibition."
+    },
+    {
+      "id": "semantic.legal-deadline",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "legal.deadline"
+      },
+      "style_ref": "legal.deadline",
+      "priority": 100,
+      "description": "Aplica el estilo recomendado para el rol legal.deadline."
+    },
+    {
+      "id": "semantic.legal-reference",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "legal.reference"
+      },
+      "style_ref": "legal.reference",
+      "priority": 100,
+      "description": "Aplica el estilo recomendado para el rol legal.reference."
+    },
+    {
+      "id": "semantic.study-note",
+      "kind": "semantic",
+      "match": {
+        "semantic_role": "study.note"
+      },
+      "style_ref": "study.note",
+      "priority": 100,
+      "description": "Aplica el estilo recomendado para el rol study.note."
     }
   ],
   "inheritance": {

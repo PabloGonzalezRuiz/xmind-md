@@ -7,11 +7,11 @@ from pathlib import Path
 from .ir import MindMap
 from .ir_builder import build_ir
 from .parser import parse_markdown_syntax
-from .pmd_parser import (
-    PMDParseError as PMDParseError,
-    parse_pmd_file as parse_pmd_file,
-    parse_pmd_markdown as parse_pmd_markdown,
-)
+from . import pmd_parser as _pmd_parser
+
+PMDParseError = _pmd_parser.PMDParseError
+parse_pmd_file = _pmd_parser.parse_pmd_file
+parse_pmd_markdown = _pmd_parser.parse_pmd_markdown
 
 
 def parse_markdown_ir(text: str, source_path: str = "<string>") -> MindMap:

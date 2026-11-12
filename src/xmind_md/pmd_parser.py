@@ -411,7 +411,6 @@ def parse_pmd_markdown(
     if has_catalog_feature and metadata.get("catalog") is None:
         raise PMDParseError("catalog es obligatorio cuando se utiliza role o style_ref")
     role_ids, style_ids = _catalog_indexes(metadata, catalog)
-    used_catalog_feature = False
     for topic in _walk_syntax(syntax.root):
         props = props_by_id.get(topic.id, {})
         role, style_ref = props.get("role"), props.get("style_ref")

@@ -12,7 +12,8 @@
 - **Implementado:** ruta Markdown → IR → JSON/XMind, CLI, resolutor de estilos, pruebas y publicación Alpha. El adaptador XMind sigue siendo parcial.
 - **Dirección de producto:** PMD como lenguaje de autoría enriquecido, con conversión asistida por IA desde Markdown ordinario. Ver [pmd-design.md](pmd-design.md).
 - **Fase 1:** análisis de la referencia Tema1 completado y documentado en [reference-analysis-tema1.md](reference-analysis-tema1.md).
-- **Trabajo activo:** Fase 1, consolidación del modelo de ejecución. Tareas 1.1 y 1.2 completadas; parsing directo a IR implementado con AST temporal, builder y adaptador legacy. Siguiente: tarea 1.3, aislar la ruta legacy del resolutor de estilos.
+- **Fase 1:** consolidación del modelo de ejecución completada en `architecture/pmd-ir-roadmap`.
+- **Siguiente paso:** Fase 2, evolución semántica y estructural del IR; pendiente de autorización expresa. No iniciar hasta recibirla.
 - **Regla:** distinguir implementado, decidido y pendiente; no iniciar una fase nueva sin autorización expresa.
 
 ## 1. Para qué sirve este documento
@@ -55,7 +56,7 @@ Prioridad: contrato IR aprobado para la estructura objetivo; código y pruebas p
 
 **Estado: modelo IR, parser, resolutor y adaptadores canónicos integrados; validación formal del esquema completada.**
 
-`src/xmind_md/ir/` contiene las entidades canónicas IR 1.0.0, serialización y validación semántica. `parser.py` produce AST temporal; `ir_builder.py` construye directamente las entidades IR e `ir_parser.py` expone la fachada pública. La ruta canónica no instancia el modelo legacy. `styles.py` mantiene todavía una ruta legacy, por lo que la consolidación del resolutor sigue pendiente.
+`src/xmind_md/ir/` contiene las entidades canónicas IR 1.0.0, serialización y validación semántica. `parser.py` produce AST temporal; `ir_builder.py` construye directamente las entidades IR e `ir_parser.py` expone la fachada pública. La ruta canónica no instancia el modelo legacy. La resolución antigua se ha aislado en `legacy_styles.py`; `model.py` queda reservado para las API y adaptadores de compatibilidad.
 
 El modelo legacy `src/xmind_md/model.py` todavía presenta estas diferencias:
 
@@ -79,7 +80,7 @@ El puente del parser y el resolutor disponen de rutas canónicas IR. Los adaptad
 
 **Estado: resolutor IR 1.0.0 implementado y probado; ruta legacy conservada.**
 
-`resolve_styles()` despacha el modelo canónico a `resolve_ir_styles()` y deriva los objetos legacy a `legacy_styles.py`. `styles.py` ya no importa `model.py`; el resolver antiguo queda aislado como compatibilidad. La cascada IR aplica valores predeterminados del sistema, `metadata.style_defaults`, conjunto aplicable, estilo nombrado y overrides locales, mediante fusión recursiva por propiedad. Los conjuntos se seleccionan globalmente con `metadata.style_set` o por tema con `Topic.style.style_set`; se heredan por rama y pueden sustituirse en descendientes. Se resuelven temas, notas, relaciones, límites y resúmenes. Las definiciones originales no se mutan.
+`resolve_styles()` despacha el modelo canónico a `resolve_ir_styles()` y deriva los objetos legacy a `legacy_styles.py`. `styles.py` ya no importa `model.py`; el resolver antiguo queda aislado como compatibilidad. No se deprecan ni eliminan las API legacy mientras se desconozcan sus consumidores externos. La cascada IR aplica valores predeterminados del sistema, `metadata.style_defaults`, conjunto aplicable, estilo nombrado y overrides locales, mediante fusión recursiva por propiedad. Los conjuntos se seleccionan globalmente con `metadata.style_set` o por tema con `Topic.style.style_set`; se heredan por rama y pueden sustituirse en descendientes. Se resuelven temas, notas, relaciones, límites y resúmenes. Las definiciones originales no se mutan.
 
 ### 3.4 Adaptadores y exportación
 
@@ -107,7 +108,8 @@ La prueba manual acredita el fixture y los elementos comprobados, no compatibili
 - Artefactos del run #42990299861: `python-distributions` ID `13841446896`, 73.390 bytes, SHA-256 del ZIP `38a138fcae1d115499ff11cf1d0db6cddf13c6a88db0316e732b66933373b912`; `xmind-desktop-smoke-test` ID `13841477803`, 1.331 bytes, SHA-256 del ZIP `5a579a93abc118feb3091a579567b59b65f72dd0dc5a0c04abdbd4c5b5bfffbf`.
 - El smoke XMind desde distribuciones valida ZIP, MIME, posición y compresión de `mimetype`, `content.json`, tema raíz e integridad. No sustituye la inspección visual manual en XMind Desktop.
 - La CI no prueba todavía Python 3.10/3.11 ni Windows. El log de Actions muestra aviso de deprecación Node.js 20 en las versiones de actions actualmente utilizadas; se mantiene como tarea de mejora.
-- Run [43226219111](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43226219111), commit `5d082a9c09bb41f667fbd5fbf07aa483a5076975`: tres jobs de pruebas y build/install en success; Ruff lint/format correctos; **166 passed** por Python 3.10, 3.11 y 3.12; wheel y sdist instalados y probados en entornos limpios.
+- Run [43226219111](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43226219111), commit `5d082a9c09bb41f667fbd5fbf07aa483a5076975`: parsing directo, tres jobs de pruebas y build/install en success; Ruff lint/format correctos; **166 passed** por Python 3.10, 3.11 y 3.12; wheel y sdist instalados y probados en entornos limpios.
+- Run [43227325673](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43227325673), commit `0361f290a490c61e108ee0aa8a9d212c7f7b73c3`: además valida el aislamiento de `legacy_styles.py`; tres jobs de pruebas y build/install en success; Ruff lint/format correctos; **166 passed** por Python 3.10, 3.11 y 3.12.
 - El usuario no desea instalar ni ejecutar Python localmente; las validaciones se realizan en GitHub Actions.
 
 

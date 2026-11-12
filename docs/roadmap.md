@@ -101,14 +101,18 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 
 ### Fase 4 — Especificación del lenguaje PMD
 
-- [ ] Definir el modelo de documento, front matter y relación con Markdown ordinario.
-- [ ] Definir sintaxis compacta para roles, estructuras, estilos y excepciones.
-- [ ] Resolver explícitamente semántica de encabezados y listas.
-- [ ] Definir referencias/IDs, escapes, errores y compatibilidad.
-- [ ] Diseñar ejemplos legislativos y tablas de árbol con anotación mínima.
-- [ ] Verificar que la sintaxis puede representar el IR aprobado sin detalles XMind.
+**Estado: COMPLETADA en especificación y documentación.** PMD 1.0.0 está especificado; no se ha implementado parser ni runtime.
 
-**Criterio de cierre:** gramática inequívoca, ejemplos de referencia y especificación validada antes de programar parser.
+- [x] Definir el modelo de documento, front matter y relación con Markdown ordinario.
+- [x] Definir sintaxis compacta para roles, estructuras, estilos y excepciones.
+- [x] Resolver explícitamente semántica de encabezados y listas: solo encabezados crean temas; listas y tablas Markdown son contenido.
+- [x] Definir referencias/IDs, escapes, errores y compatibilidad.
+- [x] Diseñar ejemplos legislativos y tablas de árbol con anotación mínima.
+- [x] Verificar que la sintaxis representa IR 1.1.0 sin detalles XMind.
+
+**Artefactos:** [especificación PMD 1.0.0](pmd-language-spec.md), [ejemplo legislativo](../examples/pmd/constitucion-estructura.pmd.md) y [ejemplo tree_table](../examples/pmd/tabla-arbol-tema1.pmd.md).
+
+**Criterio de cierre:** CUMPLIDO para la especificación. La validación de parser y la ejecución del contrato quedan para la Fase 5.
 
 ### Fase 5 — Parser, validador y conversión PMD → IR
 
@@ -165,4 +169,4 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 
 ## Ejecución activa
 
-Las Fases 0, 1 y 2 están completadas en la rama de trabajo. IR 1.1.0 y ADR-002 están documentados e implementados. El mapa de consumidores, la caracterización y el resultado de la migración están en [ir-consolidation-audit.md](ir-consolidation-audit.md); el diseño de parsing en [ir-parser-design.md](ir-parser-design.md). La ruta canónica ya construye IR desde AST y la resolución legacy está aislada en legacy_styles.py. Se conserva model.py y las API legacy por no conocerse consumidores externos; no se han integrado cambios en main ni publicado una nueva release. CI final de Fase 2: [run 43247569102](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43247569102), 189 pruebas por Python 3.10–3.12, Ruff, smoke XMind, build e instalación de wheel/sdist correctos. **Fase 2 completada:** IR 1.1.0 está implementado y validado. **Fase 3 completada en diseño/documentación. Siguiente: Fase 4 — especificación del lenguaje PMD; pendiente de autorización expresa.**
+Las Fases 0–4 están completadas en sus respectivos alcances. IR 1.1.0 está implementado y validado; el catálogo 1.0.0 y PMD 1.0.0 están especificados, pero el catálogo PMD no está conectado al resolutor y PMD aún no tiene parser. La especificación normativa está en [pmd-language-spec.md](pmd-language-spec.md), con ejemplos legislativo y tree_table en `examples/pmd/`. No se han integrado cambios en `main` ni publicado una nueva release. **Siguiente: Fase 5 — parser, validador y conversión PMD → IR; pendiente de autorización expresa.**

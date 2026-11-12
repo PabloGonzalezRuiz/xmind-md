@@ -210,9 +210,7 @@ def _merge_property_shape(target: dict[str, Any], source: Any) -> None:
                 types.add(list)
 
 
-def _validate_override_mapping(
-    value: Any, shape: dict[str, Any], path: str
-) -> None:
+def _validate_override_mapping(value: Any, shape: dict[str, Any], path: str) -> None:
     if not isinstance(value, dict):
         raise PMDParseError(f"{path} debe ser un objeto")
     for key, item in value.items():

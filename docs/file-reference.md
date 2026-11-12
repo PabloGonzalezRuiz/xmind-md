@@ -31,7 +31,7 @@ Este documento identifica los principales archivos versionados y la responsabili
 | `ir/` | Entidades, serialización, validación y migración de los contratos neutrales IR 1.0.0/1.1.0. |
 | `ir/entities.py` | Entidades canónicas, roles semánticos y descriptores tree_table. |
 | `ir/validation.py` | Validación estructural y semántica de IR 1.0.0/1.1.0. |
-| `ir/migrations.py` | Migración explícita de documentos IR 1.0.0 a 1.1.0.
+| `ir/migrations.py` | Migración explícita de documentos IR 1.0.0 a 1.1.0. |
 | `adapters/json_adapter.py` | Serializa el modelo IR a JSON. |
 | `adapters/xmind_adapter.py` | Genera libros XMind modernos ZIP + JSON desde IR y valida el perfil soportado. |
 
@@ -93,6 +93,9 @@ Este documento identifica los principales archivos versionados y la responsabili
 | Ruta | Función |
 |---|---|
 | `tests/test_parser.py` | Gramática, directivas, bloques y errores de parsing. |
+| `tests/test_ir_model.py` | Entidades IR, serialización y reglas semánticas de roles/estructuras. |
+| `tests/test_ir_migrations.py` | Migración explícita IR 1.0.0 → 1.1.0. |
+| `tests/test_ir_schema.py` | Validación de esquema JSON y ejemplos IR. |
 | `tests/test_styles.py` | Carga, precedencia, herencia y resolución de estilos. |
 | `tests/test_xmind_adapter.py` | Traducción del IR, validación de capacidades y paquete ZIP/JSON. |
 | `tests/test_xmind_integration.py` | Contraste estructural con fixture XMind externo. |

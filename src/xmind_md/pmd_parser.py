@@ -419,7 +419,7 @@ def _transform_document(
                 end = next((j for j in range(i + 1, len(lines)) if lines[j].strip() == ":::"), None)
                 if end is None:
                     raise PMDParseError(f"Directiva {name!r} sin cierre (línea {i + 1})")
-                _strict_yaml_mapping("\\n".join(lines[i + 1 : end]), i + 2, f":::{name}")
+                _strict_yaml_mapping("\n".join(lines[i + 1 : end]), i + 2, f":::{name}")
                 output.append(":::" + _GLOBAL_DIRECTIVES[name])
                 line_map.append(i + 1)
                 i += 1

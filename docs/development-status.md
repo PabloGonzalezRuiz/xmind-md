@@ -1186,7 +1186,7 @@ Se añadió el fixture `tests/fixtures/ir-characterization.md` y una prueba que 
 - `config/styles.yaml` y `resolve_ir_styles()` permanecen intactos y compatibles.
 
 ### Verificación y límites
-- Se comprobó que el catálogo y el esquema son JSON sintácticamente válidos y que los identificadores con punto, guion y guion bajo están contemplados por el patrón de ID.
+- Se comprobó la sintaxis JSON, unicidad de IDs, referencias de estilos, cobertura de reglas semánticas para los 17 roles, propiedades neutrales y ausencia de claves privadas XMind. El esquema permite los reinicios explícitos `null` y los identificadores con punto, guion y guion bajo.
 - Los casos de resolución son vectores de especificación, no pruebas del motor.
 - No se ha ejecutado CI en esta fase ni se ha validado el esquema con un validador JSON Schema independiente; queda como comprobación técnica antes de declarar verificado el artefacto de esquema.
 - No se ha modificado código Python, IR, parser, adaptador XMind, `main` ni releases.

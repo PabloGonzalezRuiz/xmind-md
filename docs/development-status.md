@@ -1253,7 +1253,7 @@ Se añadió el fixture `tests/fixtures/ir-characterization.md` y una prueba que 
 
 ### Verificación CI
 - Run: https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43260491163
-- Commit probado: 71c1875a2697f2fa83749b7183965fd38bdbde44.
+- Commit probado: 094ac3e40e7ef92a79518fa0fe0bab51e4edd2bd.
 - Python 3.10, 3.11 y 3.12: 207 pruebas superadas en cada versión.
 - Ruff lint y format: correctos.
 - Smoke test XMind existente: correcto.

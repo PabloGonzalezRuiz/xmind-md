@@ -1193,3 +1193,35 @@ Se añadió el fixture `tests/fixtures/ir-characterization.md` y una prueba que 
 - La herencia por primer hijo sigue siendo una regla de autoría PMD diseñada, no un comportamiento nativo probado de XMind.
 
 **Siguiente fase:** Fase 4 — especificación del lenguaje PMD. Pendiente de autorización expresa.
+
+
+## 36. Especificación del lenguaje PMD — Fase 4 (2026-11-12)
+
+**Estado: COMPLETADA en diseño y documentación.** El usuario autorizó expresamente la Fase 4. Se ha definido PMD 1.0.0 como lenguaje de autoría basado en Markdown enriquecido, con IR 1.1.0 como contrato de salida. No se ha implementado parser, validador runtime ni resolución PMD.
+
+### Artefactos creados
+- `docs/pmd-language-spec.md`: especificación normativa PMD 1.0.0.
+- `examples/pmd/constitucion-estructura.pmd.md`: ejemplo legislativo con roles y tabla de árbol.
+- `examples/pmd/tabla-arbol-tema1.pmd.md`: ejemplo del patrón de tabla de árbol de Tema1.
+
+### Decisiones cerradas
+- Front matter obligatorio con `pmd_version: "1.0.0"` y referencia versionada al catálogo cuando se utilicen roles o estilos.
+- Encabezados ATX H1–H6 como única sintaxis que crea temas; listas y tablas Markdown son contenido.
+- Directiva `:::pmd` YAML previa al encabezado para declarar ID, kind, rol, referencia visual, overrides, estructura, anotaciones y layout.
+- Separación estricta entre `role` semántico y `style_ref` visual.
+- `tree_table` declarada en el tema contenedor, con filas/celdas ordenadas que referencian IDs de hijos directos; no duplica contenido ni crea temas.
+- Referencias adelantadas resueltas tras construir el árbol.
+- Herencia por primer hijo controlada por catálogo y desactivable en el documento; excepciones locales por propiedad.
+- Ausencia, valor explícito y `null` diferenciados; el literal `inherited` no es directiva PMD.
+- Directivas `:::pmd-note`, `:::pmd-relationship`, `:::pmd-boundary` y `:::pmd-summary`; no se reinterpretan silenciosamente directivas legacy `:::xmind`.
+- IDs explícitos recomendados para referencias; algoritmo determinista especificado para IDs automáticos.
+- PMD 1.0.0 genera siempre IR 1.1.0. Las referencias de catálogo se preservan como referencias de autoría; no se afirma que el resolutor IR 1.x ya ejecute el catálogo PMD.
+- Gramática, escapes, errores, compatibilidad y etapas de análisis documentados.
+
+### Verificación y límites
+- Se revisaron los contratos IR 1.1.0, el catálogo y su esquema, los vectores de resolución, la gramática Markdown existente y la referencia Tema1.
+- Se realizó revisión documental de consistencia entre PMD, catálogo e IR. Los ejemplos son fixtures de especificación, no pruebas de parser.
+- No se ejecutó CI por tratarse de documentación y ejemplos aún no consumidos por código; no se declara validación runtime.
+- No se modificaron módulos Python, IR, parser Markdown existente, adaptador XMind, `main` ni releases.
+
+**Siguiente fase:** Fase 5 — parser, validador y conversión PMD → IR. Pendiente de autorización expresa.

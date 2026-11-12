@@ -7,7 +7,7 @@ import re
 import unicodedata
 from collections.abc import Mapping
 from importlib.resources import files
-from pathlib import PurePosixPath
+from pathlib import Path
 from typing import Any
 
 import yaml
@@ -217,7 +217,10 @@ def _transform_document(
                         raise PMDParseError(
                             f"El literal 'inherited' no es un valor visual válido en PMD (línea {i + 1})"
                         )
-                if "parent" in props and (not isinstance(props["parent"], str) or not props["parent"]):
+                if "parent" in props and (
+                    not isinstance(props["parent"], str)
+                    or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]*", props["parent"])
+                ):
                     raise PMDParseError(f"parent debe ser un ID textual no vacío (línea {i + 1})")
                 if "role" in props and (not isinstance(props["role"], str) or not props["role"]):
                     raise PMDParseError(f"role debe ser un texto no vacío (línea {i + 1})")
@@ -412,11 +415,11 @@ def parse_pmd_markdown(
     for topic in _walk_syntax(syntax.root):
         props = props_by_id.get(topic.id, {})
         role, style_ref = props.get("role"), props.get("style_ref")
-        if role is not None or style_ref is not None:
-            used_catalog_feature = True
         if role is not None and role not in role_ids:
             raise PMDParseError(f"Rol semántico inexistente en el catálogo: {role!r}")
-        if style_ref is not None and style_ref not in style_ids:
+        if style_ref is not None and (
+            not isinstance(style_ref, str) or style_ref not in style_ids
+        ):
             raise PMDParseError(f"Referencia visual inexistente en el catálogo: {style_ref!r}")
         if "structure" in props:
             descriptor = props["structure"]
@@ -431,7 +434,9 @@ def parse_pmd_markdown(
                     raise PMDParseError(f"structure.rows[{row_index}] debe contener cells")
                 cells = row["cells"]
                 if not isinstance(cells, list) or not cells or any(
-                    not isinstance(cell, str) or not cell for cell in cells
+                    not isinstance(cell, str)
+                    or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]*", cell)
+                    for cell in cells
                 ):
                     raise PMDParseError(f"structure.rows[{row_index}].cells debe contener IDs")
                 referenced.extend(cells)
@@ -477,9 +482,8 @@ def _walk_ir_topics(mind_map: MindMap):
     yield from visit(mind_map.sheet.root_topic)
 
 
-def parse_pmd_file(path: str, *, catalog: Mapping[str, Any] | None = None) -> MindMap:
+def parse_pmd_file(path: str | Path, *, catalog: Mapping[str, Any] | None = None) -> MindMap:
     """Lee un archivo PMD UTF-8 y devuelve IR 1.1.0 validado."""
-    from pathlib import Path
     source = Path(path)
     return parse_pmd_markdown(
         source.read_text(encoding="utf-8"), source_path=source.as_posix(), catalog=catalog

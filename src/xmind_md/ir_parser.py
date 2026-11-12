@@ -1,8 +1,7 @@
-"""Puente de migración: convierte el resultado del parser legacy a IR 1.0.0.
+"""Construcción del modelo canónico IR 1.0.0 desde el AST sintáctico.
 
-La API legacy se mantiene temporalmente para que el resolutor de estilos y los
-adaptadores aún no migrados sigan funcionando. Las nuevas integraciones deben
-utilizar parse_markdown_ir() o parse_file_ir().
+Esta ruta no instancia el modelo legacy. parse_markdown_ir() y parse_file_ir()
+son las entradas canónicas utilizadas por la CLI y los adaptadores.
 """
 
 from __future__ import annotations

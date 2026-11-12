@@ -1,5 +1,7 @@
 """Pruebas de migración explícita del contrato IR."""
 
+import warnings
+
 import pytest
 
 from xmind_md.ir import (
@@ -51,7 +53,8 @@ def test_migration_without_legacy_fields_does_not_warn():
     original = make_map()
     original.sheet.root_topic.layout.clear()
 
-    with pytest.warns(None) as recorded:
+    with warnings.catch_warnings(record=True) as recorded:
+        warnings.simplefilter("always")
         migrated = migrate_ir_1_0_to_1_1(original)
 
     assert not recorded

@@ -99,3 +99,19 @@ Estos documentos separan evidencia de Tema1, comportamiento verificado en códig
 - [ ] Verificar mediante pruebas controladas qué construcciones Markdown acepta el importador nativo de XMind.
 - [ ] Documentar diferencias entre variantes/versiones del formato JSON y el perfil de nuestro generador.
 - [ ] Diseñar, en una fase futura autorizada, un lector XMind → IR/PMD con política de preservación de datos desconocidos.
+
+
+## Investigación oficial XMind — repositorios y esquema (2026-11-12)
+
+**Estado: investigación documental realizada y registrada.** Se han estudiado xmind-sdk-js, xmind-model y xmind-generator, todos publicados por la organización xmindltd y con licencia MIT. El informe [xmind-official-sdk-research.md](xmind-official-sdk-research.md) recoge esquemas, clases, serialización, estructura de componentes, estilos y diferencias entre perfiles ZIP.
+
+Hallazgo principal: no se ha localizado una especificación pública normativa y exhaustiva del formato moderno. Los repositorios aportan esquemas e implementaciones oficiales, pero corresponden a perfiles/versiones concretos. xmind-generator declara dataStructureVersion 2; el adaptador actual del proyecto declara 3 y layoutEngineVersion 5. No deben mezclarse sin fixtures y pruebas en XMind Desktop.
+
+### Investigación pendiente
+
+- [ ] Generar/obtener fixtures mediante xmind-generator y xmind-sdk-js y abrirlos/guardarlos con XMind Desktop objetivo.
+- [ ] Comparar los archivos antes/después del guardado y documentar normalizaciones.
+- [ ] Investigar específicamente estructura de tabla de árbol y herencia visual; los repositorios consultados no bastan para especificarlas.
+- [ ] Crear matriz de compatibilidad por versión de Desktop y perfil generador.
+
+Esta investigación no inicia la Fase 2 de biblioteca de estilos ni autoriza cambios de implementación.

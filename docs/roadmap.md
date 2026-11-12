@@ -40,7 +40,7 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 - [x] Inventariar las llamadas internas a `parse_markdown()`, `parse_file()`, `parse_markdown_ir()` y `parse_file_ir()`.
 - [x] Inventariar importaciones y consumidores internos de `model.py`, `Topic`, `MindMap` y la ruta legacy de `styles.py`.
 - [x] Registrar contratos observables mediante suites existentes y fixture de caracterización: IDs, procedencia, errores, directivas, contenido, anotaciones, recursos, relaciones, límites y resúmenes.
-- [x] Añadir fixture Markdown y prueba de caracterización del IR actual; CI 43221134964 correcta en Python 3.10–3.12.
+- [x] Añadir fixture Markdown, prueba de caracterización IR y comparación de identidad/estructura entre parser legacy e IR; CI [43221440866](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43221440866), 163 pruebas por Python 3.10–3.12 y build/install correctos.
 
 #### 1.2 Parser con salida IR directa
 - [ ] Separar la sintaxis temporal del modelo de dominio legacy.
@@ -154,4 +154,4 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 
 ## Ejecución activa
 
-La Fase 0 queda documentada en ADR-001. La Fase 1 está iniciada: el mapa inicial de consumidores está en [ir-consolidation-audit.md](ir-consolidation-audit.md). Caracterización inicial completada con 162 pruebas por versión Python y build/install correcto (CI [43221134964](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43221134964)). Sigue pendiente comparar de forma explícita la salida legacy y la salida IR para los casos equivalentes y cerrar la política de compatibilidad externa. No se modificará el parser ni se retirará código legacy hasta cerrar esa comparación.
+La Fase 0 queda documentada en ADR-001. La Fase 1 está iniciada: el mapa inicial de consumidores está en [ir-consolidation-audit.md](ir-consolidation-audit.md). Caracterización inicial y comparación legacy/IR completadas; CI [43221440866](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43221440866) verde con 163 pruebas por Python 3.10–3.12 y build/install correctos. El repositorio no permite conocer consumidores externos; por prudencia se conservarán las funciones legacy como wrappers/adaptadores durante la migración. Siguiente tarea: diseñar la capa sintáctica temporal que permita construir IR directamente sin un segundo modelo de dominio.

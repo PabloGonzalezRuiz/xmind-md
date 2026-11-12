@@ -7,7 +7,7 @@
 Actúa como arquitecto de software y desarrollador Python senior. Vas a auditar, reconstruir, mantener y ampliar **XMind MD**:
 
 - Repositorio: https://github.com/PabloGonzalezRuiz/xmind-md
-- Rama de referencia: `main`
+- Rama principal de integración: `main`; rama activa de trabajo: `architecture/pmd-ir-roadmap`. No integrar en `main` sin autorización.
 - Objetivo: convertir Markdown enriquecido en mapas mentales mediante un modelo intermedio neutral (IR), con exportación JSON y XMind moderno.
 - Entorno objetivo: Python >= 3.10; Windows y Linux; GitHub Actions.
 - Idioma de código y documentación: español, manteniendo nombres técnicos/API en inglés cuando corresponda.
@@ -21,16 +21,16 @@ Este prompt debe bastar para comprender el propósito, la arquitectura, las deci
 
 Este bloque y `docs/pmd-design.md`/`docs/roadmap.md` prevalecen sobre notas históricas que indiquen que no existe una Release o que la publicación está pendiente.
 
-- Repositorio `PabloGonzalezRuiz/xmind-md`, rama `main`; verificar siempre el HEAD real antes de actuar.
+- Repositorio `PabloGonzalezRuiz/xmind-md`; `main` es la rama de integración y `architecture/pmd-ir-roadmap` es la rama activa de esta evolución. Verificar siempre el HEAD real antes de actuar y no integrar ni publicar sin autorización.
 - Release `v0.1.0` publicada el 2026-11-11 como Alpha/prerelease, con wheel, sdist y `SHA256SUMS.txt`.
-- CI del commit auditado: [43206029166](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43206029166), cuatro jobs `success`.
-- Ruta implementada: Markdown → IR 1.0.0 → JSON/XMind. El adaptador XMind sigue siendo parcial.
+- CI de la tarea de parsing directo: [43226219111](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43226219111), cuatro jobs `success`; 166 pruebas por Python 3.10, 3.11 y 3.12; Ruff, wheel/sdist, instalación y CLI correctos.
+- Ruta canónica implementada: Markdown → parser.py / AST temporal → ir_builder.py → IR 1.0.0 → JSON/XMind. ir_parser.py es una fachada fina. La API legacy usa legacy_adapter.py (AST → model.MindMap/model.Topic), aislada de la ruta canónica. El adaptador XMind sigue siendo parcial.
 - Dirección futura: PMD (Pableras Markdown) como lenguaje de autoría legible y apto para IA. Flujo objetivo: Markdown ordinario → IA → PMD → parser/validador → IR → resolución determinista → XMind. PMD no es el IR.
 - Estilos: biblioteca reutilizable con descripciones semánticas, destinatarios, propiedades, restricciones y ejemplos; reglas semánticas prioritarias y estructurales complementarias; herencia por referencia al primer hijo, con excepciones explícitas y recursividad. El algoritmo exacto está pendiente.
 - La IA debe seleccionar roles y referencias existentes, no inventar propiedades visuales; el motor valida y resuelve.
 - El SVG debe ser lo más fiel posible a la apariencia original de XMind; no se exige identidad de XML, atributos o IDs internos.
 - Tema1: Fase 1 completada para `content.json`, `Tema1.svg` y `Tema1.md`; informe completo en `docs/reference-analysis-tema1.md`, `docs/xmind-markdown-behavior.md` y `docs/xmind-json-format.md`. Son 10 temas; nueve con estilo explícito; `Articulo` es el título superior de una tabla de árbol y `Cabecera`/`cuerpo` son celdas con estilos distintos. El SVG enlaza los 10 títulos con IDs JSON mediante `data-view-id`. No hay `.xmind` original versionado. La herencia PMD por primer hijo no queda demostrada como comportamiento nativo de XMind.
-- Fase 1 (análisis de Tema1) completada para los archivos versionados; informe: `docs/reference-analysis-tema1.md`. Siguiente paso: Fase 2, especificar biblioteca de estilos, reglas semánticas/estructurales y herencia. Esta fase requiere autorización expresa antes de iniciarse. No implementar parser PMD ni catálogo runtime por anticipado.
+- El roadmap vigente fue reordenado: Fase 1 = consolidación del modelo de ejecución. Tareas 1.1 (caracterización) y 1.2 (parser directo a IR) están completadas; Fase 1 sigue en curso porque falta 1.3 (aislar la resolución legacy de estilos y decidir la retirada de model.py). La siguiente tarea autorizada es 1.3. No iniciar Fase 2 ni implementar catálogo runtime/parser PMD hasta solicitar y recibir autorización expresa.
 
 Fuentes normativas de continuidad: `docs/pmd-design.md`, `docs/roadmap.md`, `docs/development-status.md`, `docs/style-system.md` y el análisis de referencia `docs/reference-analysis-tema1.md`. Distinguir siempre implementado, decidido y pendiente; auditar GitHub antes de modificar y pedir autorización antes de iniciar una fase nueva.
 
@@ -73,13 +73,13 @@ Flujo principal:
 Markdown enriquecido
        |
        v
-src/xmind_md/parser.py
+parser.py → AST temporal (syntax.py)
        |
        v
-src/xmind_md/ir_parser.py
+ir_builder.py
        |
        v
-Modelo canónico IR 1.0.0
+IR 1.0.0 (fachada: ir_parser.py)
        |
        +------> src/xmind_md/styles.py (resolución de estilos)
        |
@@ -94,12 +94,13 @@ CLI / scripts / GitHub Actions
 Capas y responsabilidades:
 
 1. **Fuente:** Markdown y configuración YAML.
-2. **Parser:** reconoce la gramática y produce el modelo de parsing legacy/transitorio.
-3. **Puente IR:** transforma el resultado en entidades canónicas IR y ejecuta validación semántica.
-4. **IR:** contrato independiente del parser y de los motores de salida.
-5. **Resolutor:** carga configuración y materializa estilos en `StyleState.resolved`.
-6. **Adaptadores:** serializan el IR sin interpretar Markdown ni resolver estilos.
-7. **CLI/automatización:** orquestan las capas y gestionan códigos de salida.
+2. **Parser:** reconoce la gramática y produce DocumentSyntax / TopicSyntax temporales, sin construir entidades de dominio.
+3. **Constructor IR:** transforma el AST en entidades canónicas IR y ejecuta validación semántica.
+4. **Compatibilidad legacy:** legacy_adapter.py proyecta el AST al modelo antiguo solo para parse_markdown() / parse_file().
+5. **IR:** contrato independiente del parser y de los motores de salida.
+6. **Resolutor:** carga configuración y materializa estilos en `StyleState.resolved`.
+7. **Adaptadores:** serializan el IR sin interpretar Markdown ni resolver estilos.
+8. **CLI/automatización:** orquestan las capas y gestionan códigos de salida.
 
 Invariantes:
 - El parser no genera archivos XMind ni importa el adaptador.
@@ -156,6 +157,9 @@ El modelo anterior `src/xmind_md/model.py` se conserva como API legacy. No lo el
 
 Archivos:
 - `src/xmind_md/parser.py`
+- `src/xmind_md/syntax.py`
+- `src/xmind_md/ir_builder.py`
+- `src/xmind_md/legacy_adapter.py`
 - `src/xmind_md/ir_parser.py`
 - `docs/grammar.md`
 - `tests/test_parser.py`
@@ -169,7 +173,7 @@ API legacy conservada:
 - `parse_markdown()`
 - `parse_file()`
 
-La gramática implementada incluye encabezados de nivel 1–6 para jerarquía, front matter YAML y directivas documentadas, bloques de contenido, listas anidadas, tablas, código cercado, citas, separadores, formato inline (negrita, cursiva, tachado y código), enlaces internos `topic:ID`, IDs explícitos y procedencia/rangos de origen para los bloques cubiertos. Los detalles exactos y las restricciones están en `docs/grammar.md`; **ese documento es la referencia normativa para sintaxis**, no este resumen.
+La gramática implementada incluye encabezados de nivel 1–6 para jerarquía, front matter YAML y directivas documentadas, bloques de contenido, listas anidadas, tablas, código cercado, citas, separadores, formato inline (negrita, cursiva, tachado y código), enlaces internos `topic:ID`, IDs explícitos y procedencia/rangos de origen para los bloques cubiertos. El parser produce AST temporal; ir_builder construye IR directamente. Las funciones legacy reutilizan el AST y lo proyectan al modelo anterior, preservando niveles de encabezado y texto original. Los detalles exactos y las restricciones están en `docs/grammar.md`; **ese documento es la referencia normativa para sintaxis**, no este resumen.
 
 No afirmar compatibilidad completa con CommonMark/GFM. No añadir sintaxis nueva sin definir semántica, escapes, errores, casos límite y pruebas.
 

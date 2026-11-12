@@ -82,3 +82,23 @@ def test_schema_rejects_invalid_documents(
 
     validator = Draft202012Validator(schema, format_checker=FormatChecker())
     assert not validator.is_valid(invalid_document), description
+
+
+def test_schema_rejects_ir_1_1_fields_when_document_declares_1_0(
+    validator: Draft202012Validator,
+) -> None:
+    example_path = EXAMPLES_DIR / "constitucion.json"
+    document = json.loads(example_path.read_text(encoding="utf-8"))
+    document["sheet"]["root_topic"]["semantic_role"] = "legal.article"
+
+    assert not validator.is_valid(document)
+
+
+def test_schema_accepts_ir_1_1_tree_table_example(
+    validator: Draft202012Validator,
+) -> None:
+    example_path = EXAMPLES_DIR / "tree_table.json"
+    document = json.loads(example_path.read_text(encoding="utf-8"))
+
+    assert document["ir_version"] == "1.1.0"
+    assert validator.is_valid(document)

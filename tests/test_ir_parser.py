@@ -202,3 +202,79 @@ def test_constitution_example_references_a_bundled_asset():
     assert len(mind_map.assets) == 1
     asset = next(iter(mind_map.assets.values()))
     assert (source.parent / asset.path).is_file()
+
+
+def test_characterization_fixture_preserves_the_complete_ir_contract():
+    """Fija el resultado observable del parser antes de retirar el puente legacy."""
+    root = Path(__file__).resolve().parents[1]
+    fixture = root / "tests" / "fixtures" / "ir-characterization.md"
+    source = fixture.read_text(encoding="utf-8")
+    source_path = "tests/fixtures/ir-characterization.md"
+
+    result = parse_markdown_ir(source, source_path=source_path)
+    repeated = parse_markdown_ir(source, source_path=source_path)
+    assert result.to_dict() == repeated.to_dict()
+    assert validate_mind_map(result) is result
+
+    assert result.to_dict()["ir_version"] == "1.0.0"
+    assert result.id == "mapa_caracterizacion"
+    assert result.title == "Mapa de caracterización"
+    assert result.metadata == {
+        "author": "Equipo de pruebas",
+        "description": "Fixture estable para proteger la conversión Markdown a IR.",
+        "style_set": "LEGISLACION",
+        "extensions": {"vendor": {"source": "fixture"}},
+        "source_file": source_path,
+    }
+    assert result.styles["destacado"]["topic"]["text"]["bold"] is True
+    assert result.style_sets["LEGISLACION"]["topic"]["text"]["color"] == "#123456"
+
+    sheet = result.sheet
+    assert sheet.id == "sheet_32dd1dd1f07a5ba5"
+    assert sheet.layout.structure == "mind_map"
+    assert sheet.layout.direction == "balanced"
+    root_topic = sheet.root_topic
+    assert root_topic.id == "topic_7c08e4afc0d151cc"
+    assert root_topic.source == {
+        "file": source_path,
+        "line_start": 22,
+        "line_end": 22,
+        "markdown_heading": "Mapa",
+    }
+    assert root_topic.style.style_set == "LEGISLACION"
+    assert root_topic.content[0].type == "paragraph"
+    assert root_topic.content[0].data["runs"][1]["style"] == {"bold": True}
+    assert root_topic.content[0].data["runs"][3]["link"] == {
+        "kind": "topic",
+        "target": "articulo_1",
+    }
+
+    article = root_topic.children[0]
+    assert article.id == "articulo_1"
+    assert article.source["markdown_heading"] == "Artículo 1"
+    assert article.style.ref == "destacado"
+    assert article.annotations.labels[0].text == "IMPORTANTE"
+    assert article.annotations.markers[0].to_dict()["group"] == "priority"
+    assert article.annotations.task == {"status": "in_progress", "progress": 50}
+    assert article.links[0]["target"] == "https://www.boe.es/"
+    assert [block.type for block in article.content] == [
+        "paragraph", "list", "table", "quote", "divider", "image", "code"
+    ]
+    assert article.content[0].data["runs"][1]["style"] == {"bold": True}
+    assert article.content[1].data["items"][0]["children"][0]["content"][0]["text"] == "Excepción"
+    assert article.content[2].data["rows"][0]["header"] is True
+    assert article.content[2].data["rows"][1]["cells"][0]["content"][0]["text"] == "Ámbito"
+    assert article.content[3].data["text"] == "Cita normativa"
+    assert article.content[5].data["alt"] == "Escudo"
+    assert article.content[6].data["code"] == 'print("ok")'
+    assert article.annotations.notes[0].content[0].data["runs"][1]["style"] == {"bold": True}
+
+    assert len(result.assets) == 1
+    asset_id = next(iter(result.assets))
+    assert asset_id == "asset_2e5abc6ad3655869"
+    assert result.assets[asset_id].path == "assets/escudo.svg"
+    assert article.resources.images == [asset_id]
+    assert article.content[5].data["asset_id"] == asset_id
+    assert sheet.relationships[0].id == "rel_articulo"
+    assert sheet.relationships[0].source_topic == "articulo_1"
+    assert sheet.relationships[0].target_topic == "articulo_1"

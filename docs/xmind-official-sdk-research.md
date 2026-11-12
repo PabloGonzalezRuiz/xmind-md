@@ -190,6 +190,16 @@ El modelo oficial contempla entidades diferenciadas para:
 
 Esto es útil para el diseño futuro del lector XMind → IR: no debemos reducir todo a temas y texto. Conviene conservar las entidades auxiliares y los datos desconocidos.
 
+### 3.7 Discrepancias entre esquema y código del modelo
+
+Los esquemas deben leerse junto con las interfaces y la implementación, no de forma aislada. En los archivos consultados aparecen diferencias concretas:
+
+- topic.json declara labels como string, mientras que los métodos de Topic devuelven y manipulan etiquetas como una colección de strings.
+- topic.json declara customWidth, mientras que TopicData y las constantes del modelo utilizan width.
+- Hay diferencias entre la forma declarada por algunos esquemas y la forma que el código produce/modifica.
+
+Esto significa que el JSON Schema de xmind-model es una referencia histórica útil, pero no debe convertirse sin auditoría en nuestro validador de conformidad. Para cada propiedad hay que contrastar esquema, interfaz, código runtime, fixtures reales de Desktop y versión objetivo. La política del lector futuro debe tolerar variantes y preservar propiedades desconocidas en lugar de rechazar o eliminar datos por una discrepancia del esquema antiguo.
+
 ## 4. Cómo construye y empaqueta XMind el SDK xmind-sdk-js
 
 ### 4.1 Modelo de construcción

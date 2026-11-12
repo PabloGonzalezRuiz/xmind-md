@@ -197,7 +197,8 @@ def _topic(syntax: Any, assets: dict[str, Asset]) -> Topic:
     ]
     markers = [
         Marker(
-            _id("marker", f"{syntax.id}|{index}|{marker.get('group')}|{marker.get('value')}"),
+            marker.get("id")
+            or _id("marker", f"{syntax.id}|{index}|{marker.get('group')}|{marker.get('value')}"),
             marker["group"],
             marker["value"],
         )

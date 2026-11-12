@@ -7,7 +7,7 @@
 
 ## Contexto
 
-La ruta actual Markdown → modelo legacy → IR 1.0.0 → resolución/adaptadores funciona, pero mantiene dos modelos de dominio. El parser construye `MindMap`/`Topic` de `src/xmind_md/model.py`; `ir_parser.py` los convierte después al IR. El IR es el contrato de los adaptadores, pero no es todavía el único modelo utilizado durante la ejecución.
+La situación inicial era Markdown → modelo legacy → IR 1.0.0. En la rama de trabajo, esa duplicidad ya se ha eliminado de la ruta canónica: parser.py produce AST temporal, ir_builder.py construye directamente el IR e ir_parser.py es una fachada. Las API antiguas y la resolución legacy se mantienen aisladas en módulos de compatibilidad porque no se conocen consumidores externos.
 
 Además, el IR actual no expresa explícitamente roles semánticos de los temas ni estructuras compuestas como la tabla de árbol observada en `themes/Tema1/`. La tabla Markdown existente no representa esa estructura. El catálogo de estilos actual resuelve propiedades visuales, pero todavía no constituye una biblioteca semántica diseñada para que una IA seleccione estilos y reglas.
 
@@ -21,7 +21,7 @@ La IA podrá convertir documentos ordinarios a PMD consultando catálogo, reglas
 
 ### D2. El IR será el único modelo de dominio de ejecución
 
-El parser podrá utilizar nodos sintácticos/AST temporales, pero no construirá un segundo modelo de dominio que después haya que convertir al IR. La migración será gradual: primero se caracterizará el comportamiento público, después se trasladará la construcción de entidades al IR y finalmente se retirarán las rutas legacy. Las API públicas existentes se conservarán durante la transición cuando sea viable.
+El parser podrá utilizar nodos sintácticos/AST temporales, pero no construirá un segundo modelo de dominio que después haya que convertir al IR. La migración será gradual: se caracterizará el comportamiento público, se construirá IR directamente desde AST y las rutas antiguas se aislarán como adaptadores. No se retirará model.py ni se romperán las API legacy hasta contar con una política de compatibilidad y evidencia sobre consumidores externos.
 
 ### D3. El IR será neutral y tendrá semántica explícita
 
@@ -68,6 +68,12 @@ IR 1.0.0 no se modificará silenciosamente. Los cambios compatibles se evaluará
 ### D9. SVG orientado a fidelidad visual
 
 El SVG generado debe ser lo más fiel posible a la apariencia de referencia XMind. No se exige identidad XML, IDs internos ni igualdad de atributos. Las comparaciones visuales/estructurales son herramientas de validación, no contratos de identidad.
+
+### D10. Compatibilidad legacy aislada
+
+Las funciones parse_markdown() / parse_file() conservan su resultado antiguo mediante legacy_adapter.py, que proyecta el AST sintáctico al modelo legacy. Se elige AST → legacy en vez de IR → legacy porque el modelo antiguo expone datos de autoría que el IR no conserva como contrato (por ejemplo, nivel exacto de encabezado y texto Markdown original).
+
+La resolución de estilos para objetos legacy se encapsula en legacy_styles.py. styles.py es la fachada pública: la ruta IR usa resolve_ir_styles(); solo los objetos antiguos se derivan al módulo de compatibilidad. model.py se conserva por ahora, sin prometer retirada ni deprecación, porque no se conocen consumidores externos. Ningún componente de la ruta canónica parser → builder → IR → CLI/adaptadores depende de model.py.
 
 ## Consecuencias
 

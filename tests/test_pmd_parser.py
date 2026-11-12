@@ -159,13 +159,13 @@ def test_explicit_marker_ids_are_preserved() -> None:
 
 def test_style_override_paths_and_types_are_checked_against_catalog() -> None:
     unknown = _document(
-        ":::pmd\\nid: raiz\\nstyle_overrides:\\n  topic:\\n    fill:\\n      unknown: true\\n:::\\n# Raíz\\n"
+        ":::pmd\nid: raiz\nstyle_overrides:\n  topic:\n    fill:\n      unknown: true\n:::\n# Raíz\n"
     )
     with pytest.raises(PMDParseError, match="Propiedad visual no definida"):
         parse_pmd_markdown(unknown)
 
     wrong_type = _document(
-        ":::pmd\\nid: raiz\\nstyle_overrides:\\n  topic:\\n    fill:\\n      color: 42\\n:::\\n# Raíz\\n"
+        ":::pmd\nid: raiz\nstyle_overrides:\n  topic:\n    fill:\n      color: 42\n:::\n# Raíz\n"
     )
     with pytest.raises(PMDParseError, match="Tipo no válido"):
         parse_pmd_markdown(wrong_type)

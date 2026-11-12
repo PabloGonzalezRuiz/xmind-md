@@ -60,6 +60,7 @@ Este documento identifica los principales archivos versionados y la responsabili
 | `development-status.md` | Registro operativo, estado y evidencias. |
 | `roadmap.md` | Hoja de ruta vigente de PMD y conversión asistida por IA. |
 | `pmd-design.md` | Dirección de producto, decisiones PMD y diseño objetivo de estilos/IA. |
+| `pmd-language-spec.md` | Especificación normativa del lenguaje PMD 1.0.0: sintaxis, semántica, errores y correspondencia IR. |
 | `reference-analysis-tema1.md` | Análisis contrastado de estructura JSON, estilos, marcadores, SVG y pérdidas de Markdown en la referencia Tema1. |
 | `architecture.md` | Capas, flujo de datos e invariantes vigentes. |
 | `development.md` | Instalación, CLI, pruebas y ciclo de contribución. |
@@ -96,6 +97,8 @@ Este documento identifica los principales archivos versionados y la responsabili
 | `examples/assets/escudo.svg` | Recurso SVG ilustrativo original utilizado por el ejemplo de Constitución. |
 | `examples/ir/constitucion.json` | Ejemplo histórico IR 1.0.0. |
 | `examples/ir/tree_table.json` | Ejemplo IR 1.1.0 con roles y estructura tree_table. |
+| `examples/pmd/constitucion-estructura.pmd.md` | Ejemplo PMD legislativo con jerarquía, roles y estructura tree_table. |
+| `examples/pmd/tabla-arbol-tema1.pmd.md` | Ejemplo PMD que reproduce conceptualmente el patrón de tabla de árbol de Tema1. |
 
 ## Pruebas y scripts
 

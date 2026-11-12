@@ -250,7 +250,8 @@ def test_characterization_fixture_preserves_the_complete_ir_contract():
 
     article = root_topic.children[0]
     assert article.id == "articulo_1"
-    assert article.source["markdown_heading"] == "Artículo 1"
+    assert article.source["line_start"] == 43
+    assert article.source["line_end"] == 43
     assert article.style.ref == "destacado"
     assert article.annotations.labels[0].text == "IMPORTANTE"
     assert article.annotations.markers[0].group == "priority"

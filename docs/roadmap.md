@@ -48,7 +48,7 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 - [x] Retirar la conversión legacy → IR; ir_parser.py es ahora una fachada fina.
 - [x] Mantener parse_markdown() y parse_file() mediante legacy_adapter.py (AST → legacy), fuera de la ruta canónica.
 - [x] Añadir pruebas de AST, preservación de la API legacy y no instanciación del modelo legacy en parse_markdown_ir().
-- [ ] Confirmar la revisión final de CI del builder separado y actualizar la evidencia.
+- [x] CI final del builder separado: [run 43226219111](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43226219111), 166 pruebas por Python 3.10–3.12 y build/install wheel/sdist correctos.
 
 #### 1.3 Resolutor y API
 - [ ] Migrar consumidores restantes de estilos a IR.

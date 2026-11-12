@@ -1,4 +1,5 @@
 """Fachada pública de parsing hacia el modelo canónico IR 1.0.0."""
+
 from __future__ import annotations
 
 from pathlib import Path

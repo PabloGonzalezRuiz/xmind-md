@@ -112,7 +112,7 @@ El modelo Python, el esquema JSON y la validación semántica soportan IR 1.0.0 
 
 ## 8. Evolución IR 1.1.0
 
-La Fase 2 añade roles semánticos y estructuras compuestas. CI final [43246986236](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43246986236): 189 pruebas por Python 3.10–3.12, Ruff y build/install wheel/sdist correctos. La especificación vigente está en [ir-specification.md](ir-specification.md), el diseño detallado en [ir-1.1-design.md](ir-1.1-design.md) y la decisión en [ADR-002](decisions/ADR-002-ir-semantic-structures.md).
+La Fase 2 añade roles semánticos y estructuras compuestas. CI final [43247569102](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43247569102): 189 pruebas por Python 3.10–3.12, Ruff y build/install wheel/sdist correctos. La especificación vigente está en [ir-specification.md](ir-specification.md), el diseño detallado en [ir-1.1-design.md](ir-1.1-design.md) y la decisión en [ADR-002](decisions/ADR-002-ir-semantic-structures.md).
 
 - `Topic.kind` conserva el tipo de representación del tema.
 - `Topic.semantic_role` describe su significado documental o funcional.

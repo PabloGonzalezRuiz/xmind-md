@@ -81,3 +81,21 @@ Integrar PMD sin romper Markdown→IR; pruebas unitarias/integración/regresión
 ## Siguiente paso
 
 La Fase 1 está cerrada para la referencia Tema1. El siguiente trabajo es la **Fase 2: especificación de la biblioteca de estilos, reglas semánticas/estructurales y herencia**. Antes de diseñar la sintaxis PMD, hay que concretar el esquema que la IA consultará, los metadatos de cada estilo y la resolución determinista. Esta fase requiere autorización expresa del usuario. No implementar todavía parser PMD ni catálogo runtime.
+
+
+## Investigación de formatos XMind — documentación base creada (2026-11-12)
+
+Se han añadido dos documentos técnicos para que el trabajo futuro de conversión no dependa de recordar hallazgos dispersos:
+
+- [xmind-markdown-behavior.md](xmind-markdown-behavior.md): exportación Markdown real de XMind, pérdida de información, distinción frente a la gramática Markdown propia y pruebas de importación/exportación pendientes.
+- [xmind-json-format.md](xmind-json-format.md): estructura del contenedor moderno, `content.json`, árbol, clases estructurales, estilos, marcadores, SVG y perfil real del adaptador Python.
+
+Estos documentos separan evidencia de Tema1, comportamiento verificado en código y cuestiones aún no demostradas. No equivalen a una especificación completa del formato XMind ni a una certificación de compatibilidad entre versiones.
+
+### Trabajo de investigación pendiente
+
+- [ ] Obtener más fixtures XMind Desktop para tablas de árbol, relaciones, temas flotantes, imágenes, notas, marcadores y herencia.
+- [ ] Registrar versión de XMind y opciones utilizadas en cada exportación/importación de prueba.
+- [ ] Verificar mediante pruebas controladas qué construcciones Markdown acepta el importador nativo de XMind.
+- [ ] Documentar diferencias entre variantes/versiones del formato JSON y el perfil de nuestro generador.
+- [ ] Diseñar, en una fase futura autorizada, un lector XMind → IR/PMD con política de preservación de datos desconocidos.

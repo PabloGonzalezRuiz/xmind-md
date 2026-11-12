@@ -1,11 +1,11 @@
-"""Validación semántica del modelo intermedio IR 1.0.0."""
+"""Validación semántica de los contratos IR 1.x."""
 
 from __future__ import annotations
 
 import re
 from typing import Any
 
-from .entities import MindMap, Topic
+from .entities import MindMap, Topic, TopicStructure, TreeTableCell, TreeTableRow
 
 _ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]*$")
 _CONTENT_TYPES = {
@@ -45,6 +45,7 @@ def _walk_topics(
     asset_ids: set[str],
     active: set[int],
     visited: set[int],
+    ir_version: str,
 ) -> None:
     identity = id(topic)
     if identity in active:
@@ -60,6 +61,58 @@ def _walk_topics(
         raise IRValidationError(f"{path}.title: debe ser texto no vacío")
     if not isinstance(topic.kind, str) or not topic.kind:
         raise IRValidationError(f"{path}.kind: debe ser texto no vacío")
+
+    if topic.semantic_role is not None:
+        if ir_version != "1.1.0":
+            raise IRValidationError(
+                f"{path}.semantic_role: requiere ir_version 1.1.0"
+            )
+        if not isinstance(topic.semantic_role, str) or not topic.semantic_role.strip():
+            raise IRValidationError(f"{path}.semantic_role: debe ser texto no vacío")
+
+    if topic.structure is not None:
+        if ir_version != "1.1.0":
+            raise IRValidationError(f"{path}.structure: requiere ir_version 1.1.0")
+        if not isinstance(topic.structure, TopicStructure):
+            raise IRValidationError(f"{path}.structure: tipo de estructura no válido")
+        if topic.structure.type != "tree_table":
+            raise IRValidationError(
+                f"{path}.structure.type: estructura no soportada {topic.structure.type!r}"
+            )
+        if not isinstance(topic.structure.rows, list) or not topic.structure.rows:
+            raise IRValidationError(f"{path}.structure.rows: debe contener al menos una fila")
+        child_ids = {child.id for child in topic.children}
+        referenced: list[str] = []
+        for row_index, row in enumerate(topic.structure.rows):
+            row_path = f"{path}.structure.rows[{row_index}]"
+            if not isinstance(row, TreeTableRow):
+                raise IRValidationError(f"{row_path}: fila no válida")
+            if not isinstance(row.cells, list) or not row.cells:
+                raise IRValidationError(f"{row_path}.cells: debe contener al menos una celda")
+            for cell_index, cell in enumerate(row.cells):
+                cell_path = f"{row_path}.cells[{cell_index}]"
+                if not isinstance(cell, TreeTableCell):
+                    raise IRValidationError(f"{cell_path}: celda no válida")
+                if not isinstance(cell.topic_id, str) or not cell.topic_id:
+                    raise IRValidationError(f"{cell_path}.topic_id: debe ser texto no vacío")
+                if cell.topic_id not in child_ids:
+                    raise IRValidationError(
+                        f"{cell_path}.topic_id: debe referenciar un hijo directo existente"
+                    )
+                referenced.append(cell.topic_id)
+        if len(referenced) != len(set(referenced)):
+            raise IRValidationError(f"{path}.structure: una celda no puede repetirse")
+        if set(referenced) != child_ids:
+            missing = sorted(child_ids - set(referenced))
+            raise IRValidationError(
+                f"{path}.structure: todos los hijos deben aparecer exactamente una vez; "
+                f"faltan {missing}"
+            )
+        if "structure_class" in topic.layout:
+            raise IRValidationError(
+                f"{path}.layout.structure_class: no se admite en IR 1.1.0; "
+                "utiliza Topic.structure"
+            )
 
     for index, block in enumerate(topic.content):
         block_path = f"{path}.content[{index}]"
@@ -120,13 +173,14 @@ def _walk_topics(
             asset_ids,
             active,
             visited,
+            ir_version,
         )
     active.remove(identity)
 
 
 def validate_mind_map(mind_map: MindMap) -> MindMap:
     """Comprueba IDs, árbol y referencias; devuelve el mismo documento validado."""
-    if mind_map.ir_version != "1.0.0":
+    if mind_map.ir_version not in {"1.0.0", "1.1.0"}:
         raise IRValidationError(f"ir_version no soportada: {mind_map.ir_version!r}")
     if not isinstance(mind_map.title, str) or not mind_map.title.strip():
         raise IRValidationError("title: debe ser texto no vacío")
@@ -158,6 +212,7 @@ def validate_mind_map(mind_map: MindMap) -> MindMap:
         asset_ids,
         set(),
         set(),
+        mind_map.ir_version,
     )
 
     def validate_inline_targets(value: Any, path: str) -> None:

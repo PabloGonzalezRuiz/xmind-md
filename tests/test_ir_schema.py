@@ -107,7 +107,9 @@ def test_schema_accepts_ir_1_1_tree_table_example(
 @pytest.mark.parametrize(
     "mutate",
     [
-        lambda document: document["sheet"]["root_topic"]["structure"].update(type="xmind_tree_table"),
+        lambda document: document["sheet"]["root_topic"]["structure"].update(
+            type="xmind_tree_table"
+        ),
         lambda document: document["sheet"]["root_topic"]["structure"].update(rows=[]),
         lambda document: document["sheet"]["root_topic"]["structure"]["rows"][0]["cells"][0].update(
             xmind_shape_class="org.xmind.internal.topicShape.treeTableCell"

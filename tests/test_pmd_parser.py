@@ -171,7 +171,7 @@ def test_style_override_paths_and_types_are_checked_against_catalog() -> None:
         parse_pmd_markdown(wrong_type)
 
     boolean_as_number = _document(
-        ":::pmd\\nid: raiz\\nstyle_overrides:\\n  topic:\\n    fill:\\n      opacity: true\\n:::\\n# Raíz\\n"
+        ":::pmd\nid: raiz\nstyle_overrides:\n  topic:\n    fill:\n      opacity: true\n:::\n# Raíz\n"
     )
     with pytest.raises(PMDParseError, match="Tipo no válido"):
         parse_pmd_markdown(boolean_as_number)
@@ -179,7 +179,7 @@ def test_style_override_paths_and_types_are_checked_against_catalog() -> None:
 
 def test_global_pmd_directives_use_strict_yaml_validation() -> None:
     source = _document(
-        "# Raíz\\n:::pmd-boundary\\ntitle: &name Uno\\ntopics: *name\\n:::\\n"
+        "# Raíz\n:::pmd-boundary\ntitle: &name Uno\ntopics: *name\n:::\n"
     )
     with pytest.raises(PMDParseError, match="alias YAML"):
         parse_pmd_markdown(source)

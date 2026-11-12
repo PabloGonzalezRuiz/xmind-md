@@ -13,7 +13,7 @@
 - **Dirección de producto:** PMD como lenguaje de autoría enriquecido, con conversión asistida por IA desde Markdown ordinario. Ver [pmd-design.md](pmd-design.md).
 - **Análisis de referencia Tema1:** completado y documentado en [reference-analysis-tema1.md](reference-analysis-tema1.md).
 - **Fase 1:** consolidación del modelo de ejecución completada en `architecture/pmd-ir-roadmap`.
-- **Fase 2:** autorizada y en implementación; diseño y entidades base IR 1.1.0 ya incorporados. Pendiente completar pruebas, documentación y CI.
+- **Fase 2:** completada en `architecture/pmd-ir-roadmap`; IR 1.1.0, validación, esquema, migración, ejemplos y documentación verificados.
 - **Regla:** distinguir implementado, decidido y pendiente; no iniciar una fase nueva sin autorización expresa.
 
 ## 1. Para qué sirve este documento
@@ -35,7 +35,7 @@ No sustituye a las especificaciones. Cuando haya discrepancias, consultar los do
 
 | Área | Documento o ubicación |
 |---|---|
-| Contrato del modelo intermedio | [Especificación IR 1.1.0 / compatibilidad 1.0.0](ir-specification.md) |
+| Contrato del modelo intermedio | [Especificación IR 1.1.0 / compatibilidad 1.0.0](ir-specification.md), [diseño 1.1](ir-1.1-design.md), [ADR-002](decisions/ADR-002-ir-semantic-structures.md) |
 | Validación estructural del IR | [JSON Schema](ir-schema.json) |
 | Ejemplos del IR | [Constitución IR 1.0.0](../examples/ir/constitucion.json), [tabla de árbol IR 1.1.0](../examples/ir/tree_table.json) |
 | Migración del modelo | [Plan de migración](ir-migration-plan.md) |
@@ -54,7 +54,7 @@ Prioridad: contrato IR aprobado para la estructura objetivo; código y pruebas p
 
 ### 3.1 Modelo intermedio
 
-**Estado: modelo IR 1.1.0 en ampliación; parser Markdown sigue produciendo IR 1.0.0; resolutor y adaptadores canónicos integrados.**
+**Estado: IR 1.1.0 implementado y validado; parser Markdown sigue produciendo IR 1.0.0; resolutor y adaptadores canónicos integrados.**
 
 `src/xmind_md/ir/` contiene las entidades canónicas IR 1.0.0/1.1.0, serialización y validación semántica. IR 1.1.0 añade `Topic.semantic_role`, `Topic.structure`, `TopicStructure`, `TreeTableRow` y `TreeTableCell`. `parser.py` produce AST temporal; `ir_builder.py` construye directamente las entidades IR e `ir_parser.py` expone la fachada pública. La ruta canónica no instancia el modelo legacy. La resolución antigua se ha aislado en `legacy_styles.py`; `model.py` queda reservado para las API y adaptadores de compatibilidad.
 
@@ -72,7 +72,7 @@ El puente del parser y el resolutor disponen de rutas canónicas IR. Los adaptad
 
 ### 3.2 Parser Markdown
 
-**Estado: parser Markdown genera IR 1.0.0; las entidades y validación 1.1.0 ya están disponibles para consumidores que construyan ese contrato explícitamente.**
+**Estado: parser Markdown genera IR 1.0.0; entidades y validación 1.1.0 están disponibles y verificadas para consumidores que construyan ese contrato explícitamente.**
 
 `parser.py` analiza Markdown y produce `DocumentSyntax` / `TopicSyntax`; `ir_builder.py` construye entidades IR, bloques, anotaciones, assets y entidades de hoja directamente desde el AST; `ir_parser.py` es una fachada fina con `parse_markdown_ir()` y `parse_file_ir()`. La API antigua `parse_markdown()` / `parse_file()` reutiliza el AST y lo adapta mediante `legacy_adapter.py`, sin participar en la ruta canónica. Una prueba impide construir `model.MindMap` o `model.Topic` durante parsing IR. La CLI JSON y el generador smoke usan la ruta IR. `docs/grammar.md` delimita expresamente las funciones no compatibles con CommonMark/GFM completo.
 
@@ -96,7 +96,7 @@ La prueba manual acredita el fixture y los elementos comprobados, no compatibili
 
 ### 3.5 CLI, pruebas, CI y distribuciones
 
-**Estado: CLI JSON/XMind integrada; CI Ubuntu con Ruff y 166 pruebas en Python 3.10, 3.11 y 3.12; wheel/sdist construidos, inspeccionados, instalados y probados con salidas JSON y XMind.**
+**Estado: CLI JSON/XMind integrada; CI Ubuntu con Ruff y 189 pruebas en Python 3.10, 3.11 y 3.12; wheel/sdist construidos, inspeccionados, instalados y probados con salidas JSON y XMind.**
 
 - La CLI genera JSON (`.json`) o libros XMind (`.xmind`) desde `parse_file_ir()`; admite `--format` explícito y deducción por extensión.
 - La exportación XMind resuelve estilos antes de invocar el adaptador. La salida JSON solo resuelve estilos si se proporciona `--styles`.
@@ -110,6 +110,7 @@ La prueba manual acredita el fixture y los elementos comprobados, no compatibili
 - La CI no prueba todavía Python 3.10/3.11 ni Windows. El log de Actions muestra aviso de deprecación Node.js 20 en las versiones de actions actualmente utilizadas; se mantiene como tarea de mejora.
 - Run [43226219111](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43226219111), commit `5d082a9c09bb41f667fbd5fbf07aa483a5076975`: parsing directo, tres jobs de pruebas y build/install en success; Ruff lint/format correctos; **166 passed** por Python 3.10, 3.11 y 3.12; wheel y sdist instalados y probados en entornos limpios.
 - Run [43227325673](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43227325673), commit `0361f290a490c61e108ee0aa8a9d212c7f7b73c3`: además valida el aislamiento de `legacy_styles.py`; tres jobs de pruebas y build/install en success; Ruff lint/format correctos; **166 passed** por Python 3.10, 3.11 y 3.12.
+- Run [43246986236](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43246986236), commit `ad1471c8027952e20ea05367777ccaeee087a806`: CI final de Fase 2; tres matrices de pruebas y build/install en success; Ruff lint/format correctos; **189 passed** en Python 3.10, 3.11 y 3.12; smoke XMind, wheel/sdist y pruebas de instalación correctos.
 - El usuario no desea instalar ni ejecutar Python localmente; las validaciones se realizan en GitHub Actions.
 
 
@@ -137,7 +138,7 @@ La hoja de ruta vigente está en [roadmap.md](roadmap.md):
 | 0 | Base técnica IR 1.0.0, CLI, CI y Release Alpha | **Completada** |
 | 0 | Decisiones y plan de migración | **Completada** |
 | 1 | Consolidar modelo de ejecución | **Completada** |
-| 2 | Evolución semántica y estructural IR 1.1.0 | **En curso** |
+| 2 | Evolución semántica y estructural IR 1.1.0 | **Completada** |
 | 3 | Catálogo semántico y visual de estilos | Pendiente |
 | 4 | Especificación del lenguaje PMD | Pendiente |
 | 5 | Parser y conversión PMD → IR | Pendiente |

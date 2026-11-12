@@ -300,9 +300,7 @@ def _transform_document(
                             "id" in marker
                             and (
                                 not isinstance(marker["id"], str)
-                                or not re.fullmatch(
-                                    r"[A-Za-z0-9][A-Za-z0-9._:-]*", marker["id"]
-                                )
+                                or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]*", marker["id"])
                             )
                         )
                         for marker in markers

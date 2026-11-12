@@ -317,6 +317,7 @@ def _walk_syntax(root: TopicSyntax) -> list[TopicSyntax]:
         result.append(topic)
         for child in topic.children:
             visit(child)
+
     visit(root)
     return result
 
@@ -377,6 +378,7 @@ def _rebuild_parent_tree(
         inferred_parent[topic.id] = parent
         for child in topic.children:
             index_parents(child, topic.id)
+
     index_parents(root)
     by_id = {topic.id: topic for topic in topics}
     desired_parent: dict[str, str | None] = {}
@@ -416,6 +418,7 @@ def _rebuild_parent_tree(
         for child in topic.children:
             check(child)
         active.remove(topic.id)
+
     check(root)
     if visited != set(by_id):
         raise PMDParseError(

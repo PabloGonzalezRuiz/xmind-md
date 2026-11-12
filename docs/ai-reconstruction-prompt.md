@@ -16,6 +16,24 @@ Este prompt debe bastar para comprender el propósito, la arquitectura, las deci
 
 ---
 
+
+## Directriz vigente de producto y continuidad — 2026-11-12 (precedencia máxima)
+
+Este bloque y `docs/pmd-design.md`/`docs/roadmap.md` prevalecen sobre notas históricas que indiquen que no existe una Release o que la publicación está pendiente.
+
+- Repositorio `PabloGonzalezRuiz/xmind-md`, rama `main`, commit auditado `2c206dbc679ca6b77dded1f108192efff5ed442d`.
+- Release `v0.1.0` publicada el 2026-11-11 como Alpha/prerelease, con wheel, sdist y `SHA256SUMS.txt`.
+- CI del commit auditado: [43206029166](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43206029166), cuatro jobs `success`.
+- Ruta implementada: Markdown → IR 1.0.0 → JSON/XMind. El adaptador XMind sigue siendo parcial.
+- Dirección futura: PMD (Pableras Markdown) como lenguaje de autoría legible y apto para IA. Flujo objetivo: Markdown ordinario → IA → PMD → parser/validador → IR → resolución determinista → XMind. PMD no es el IR.
+- Estilos: biblioteca reutilizable con descripciones semánticas, destinatarios, propiedades, restricciones y ejemplos; reglas semánticas prioritarias y estructurales complementarias; herencia por referencia al primer hijo, con excepciones explícitas y recursividad. El algoritmo exacto está pendiente.
+- La IA debe seleccionar roles y referencias existentes, no inventar propiedades visuales; el motor valida y resuelve.
+- El SVG debe ser lo más fiel posible a la apariencia original de XMind; no se exige identidad de XML, atributos o IDs internos.
+- Tema1: `content.json`, `Tema1.svg` y `Tema1.md` disponibles; 10 temas; `Articulo` es tabla de árbol y `Cabecera`/`cuerpo` son celdas con estilos diferentes. No hay `.xmind` original versionado.
+- Siguiente paso: completar análisis de referencias Tema1 (Fase 1). No implementar parser PMD ni nuevo catálogo antes de especificar y autorizar.
+
+Fuentes normativas de continuidad: `docs/pmd-design.md`, `docs/roadmap.md`, `docs/development-status.md`, `docs/style-system.md`. Distinguir siempre implementado, decidido y pendiente; auditar GitHub antes de modificar y pedir autorización antes de iniciar una fase nueva.
+
 ## 1. Objetivo funcional
 
 El usuario escribe documentos Markdown enriquecidos que representan mapas mentales. Debe poder controlar:

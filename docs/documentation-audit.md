@@ -84,3 +84,18 @@ Se han contrastado las afirmaciones documentales con el parser, el modelo IR, el
 Run [43009183421](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43009183421), commit `6cd1c937ee090bc36483be49e7d1f5c740e0926a`, finalizó `completed / success`. Python 3.10/3.11/3.12: Ruff lint/format correctos y **161 pruebas superadas por versión**. Los tres jobs generaron sus XMind smoke. El job de distribuciones construyó wheel/sdist, verificó contenido/licencia, instaló ambos en entornos limpios separados y ejecutó conversiones CLI JSON/XMind; validación ZIP/MIME/JSON correcta.
 
 Artefactos: `python-distributions` ID `13850260351` (78.103 bytes; SHA-256 del ZIP de Actions `c8109d8d722befe2a5ed1bc953af15711b0caaf9d0f2bf9928bc050796b38a0f`); smoke Python 3.10 ID `13849418602`, Python 3.11 ID `13848884276`, Python 3.12 ID `13849314179`.
+
+
+## 7. Auditoría de continuidad y dirección PMD — 2026-11-12
+
+Se contrastó de nuevo el estado de `main` y se corrigieron contradicciones de continuidad:
+
+- La Release `v0.1.0` está publicada como Alpha/prerelease, con wheel, sdist y checksum; las notas anteriores que indicaban publicación pendiente son históricas y están supersedidas.
+- La CI del commit `2c206dbc679ca6b77dded1f108192efff5ed442d` finalizó con éxito en cuatro jobs.
+- La hoja de ruta activa de publicación se sustituye por `docs/roadmap.md`.
+- La dirección PMD y las decisiones de estilos para IA se registran en `docs/pmd-design.md`.
+- Se distingue PMD (autoría), IR (contrato runtime) y la ruta actual Markdown → IR → XMind.
+- Se documenta Tema1: 10 temas, tabla de árbol en `Articulo`, celdas `Cabecera`/`cuerpo` con estilos distintos, marcadores y pérdida de información en Markdown.
+- El catálogo semántico, las reglas de aplicación y la herencia por referencia al primer hijo son decisiones de diseño, no funciones implementadas.
+
+Se actualizaron README, arquitectura, estado, prompt maestro, gramática, sistema y guía de estilos, catálogo de archivos y documentación de temas. No se modificaron código, esquema IR, parser, resolutor runtime ni pruebas.

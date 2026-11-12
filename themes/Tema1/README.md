@@ -1,34 +1,79 @@
-# Tema1
+# Tema1 — referencia de estructura y estilos XMind
 
-Directorio reservado para el primer tema XMind de PMD.
+**Estado:** exportaciones incorporadas; análisis inicial realizado; análisis completo pendiente.  
+**Objetivo:** utilizar este mapa para diseñar PMD y comprobar qué información pierde la importación nativa de Markdown.
 
-## Estado
+## Archivos disponibles
 
-- [ ] Recibir y analizar `Tema1.xmind`.
-- [ ] Documentar la jerarquía y las etiquetas con sus rutas completas.
-- [ ] Analizar estilos explícitos y comportamiento de herencia.
-- [ ] Identificar la representación de tablas de árbol y sus celdas.
-- [ ] Generar y validar los artefactos derivados cuando estén implementados los conversores.
-
-## Archivos previstos
-
-| Archivo | Función | Estado |
+| Archivo | Contenido | Estado |
 |---|---|---|
-| `Tema1.xmind` | Fuente editable del tema | Pendiente de recibir |
-| `Tema1.md` | Markdown de origen, si procede | Pendiente |
-| `Tema1.pmd` | Representación PMD generada | No generado |
-| `Tema1.yaml` | Configuración de etiquetas y estilos generada | No generado |
-| `Tema1.svg` | Vista previa del árbol de etiquetas | No generado |
+| `content.json` | Estructura de hoja, temas, clases estructurales, estilos y marcadores exportados por XMind | Incorporado |
+| `Tema1.svg` | Representación visual exportada por XMind | Incorporado |
+| `Tema1.md` | Markdown de referencia con títulos, jerarquía y énfasis | Incorporado |
+| `Tema1.xmind` | Archivo editable original | No está versionado en esta carpeta |
 
-El archivo XMind será la fuente editable de verdad. Los archivos derivados se generarán de forma coherente desde una representación intermedia común; no deben editarse manualmente.
+## Jerarquía identificada
 
-## Convenciones acordadas para PMD
+```text
+Tema1
+├── ListaBloque
+└── BloqueLey
+    └── Nombre
+        └── RESUMEN
+            └── Titulo
+                └── Capitulo
+                    └── Articulo
+                        ├── Cabecera
+                        └── cuerpo
+```
 
-- La raíz identifica el tema y no es una etiqueta.
-- Cada etiqueta se identifica mediante su ruta jerárquica completa.
-- El separador canónico de rutas es el punto (`.`).
-- Los identificadores de etiqueta deben ser únicos en toda la estructura.
-- Los nombres individuales de etiqueta no pueden contener el separador `.`.
-- La resolución de formatos por defecto seguirá una herencia recursiva descendente, con fallback ascendente al padre y prioridad para los valores explícitos. La resolución se aplicará propiedad por propiedad.
+El JSON contiene 10 temas: raíz `Tema1` y 9 descendientes.
 
-Estas convenciones describen el diseño acordado; su correspondencia exacta con los datos internos de XMind se comprobará al analizar el archivo.
+## Estructuras especiales
+
+- `Articulo` declara `structureClass: org.xmind.ui.treetable.toptitle`, correspondiente a la estructura de tabla de árbol.
+- Sus hijos `Cabecera` y `cuerpo` usan `shape-class: org.xmind.internal.topicShape.treeTableCell`.
+- Las dos celdas comparten clase estructural, pero tienen estilos distintos; por ejemplo, sus rellenos son `#EEEEEEFF` y `#f6a04d33`.
+- PMD debe poder expresar tanto la estructura de tabla como el formato diferenciado de cada celda.
+
+## Estilos y marcadores observados
+
+- Hay estilos explícitos en la raíz y en varios descendientes.
+- `Titulo` tiene el marcador `flag-red`.
+- `Articulo` tiene `flag-red` y `task-oct`.
+- Las propiedades exportadas incluyen tipografía, color de texto, relleno, patrones, bordes, formas y conexiones. Los valores internos de XMind deberán traducirse a conceptos neutrales; no deben convertirse automáticamente en sintaxis PMD propietaria.
+
+## Diferencia con Markdown
+
+`Tema1.md` representa la raíz y sus descendientes mediante encabezados/listas y conserva algunos énfasis. No expresa:
+
+- La estructura de tabla de árbol de `Articulo`.
+- La identidad de `Cabecera` y `cuerpo` como celdas.
+- Los estilos explícitos, colores, rellenos, bordes, formas y tipografías.
+- Los marcadores de `Titulo` y `Articulo`.
+
+El Markdown nativo es una referencia de texto y jerarquía, no una descripción suficiente del mapa XMind original.
+
+## Observaciones del SVG
+
+La exportación tiene aproximadamente 857 kB y utiliza `foreignObject` para títulos, además de grupos, paths, imágenes, fuentes embebidas y referencias `data-view-id`. Los títulos no aparecen como elementos SVG `text` convencionales en esta exportación.
+
+Esta estructura ayuda a comprender el resultado visual, pero la decisión vigente es priorizar la fidelidad visual y mantener sencilla la implementación. No se exige reproducir exactamente XML, atributos, IDs ni recursos internos de XMind.
+
+## Trabajo pendiente
+
+- [ ] Documentar propiedades de estilo de cada nodo y distinguir explícitas/heredadas.
+- [ ] Analizar reglas de herencia y formatos por defecto en grupos de hermanos.
+- [ ] Describir con precisión la tabla de árbol y sus celdas.
+- [ ] Relacionar nodos del JSON con elementos visuales del SVG.
+- [ ] Derivar requisitos semánticos y estructurales para el catálogo.
+- [ ] Derivar un ejemplo PMD cuando la sintaxis esté aprobada.
+
+## Decisiones PMD relacionadas
+
+- El primer hijo puede actuar como referencia de formato predeterminado para sus hermanos.
+- Los hermanos pueden declarar excepciones explícitas.
+- La regla se aplica recursivamente.
+- La IA utilizará estilos semánticos y reglas estructurales del catálogo, no valores XMind internos repetidos en cada nodo.
+
+Son decisiones de diseño; el algoritmo y la sintaxis están pendientes. Fuente normativa: [docs/pmd-design.md](../../docs/pmd-design.md).

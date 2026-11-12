@@ -6,6 +6,8 @@
 Esta guía enseña a utilizar los estilos que ya implementa XMind MD y a crear catálogos YAML propios. Separa deliberadamente las capacidades del motor de resolución de las propiedades que el adaptador XMind puede exportar.
 
 > **Importante:** que una propiedad pueda almacenarse y resolverse en el IR no garantiza que pueda representarse en un archivo `.xmind`. Antes de utilizar una propiedad, consulta la [matriz de capacidades del adaptador XMind](../xmind-adapter.md).
+>
+> Esta guía describe el resolutor YAML implementado en XMind MD 0.1.0 Alpha. El catálogo semántico, las reglas para IA y la herencia por referencia al primer hijo pertenecen al diseño futuro de PMD; todavía no son funciones ejecutables. Consulta [pmd-design.md](../pmd-design.md) y [roadmap.md](../roadmap.md).
 
 ## 1. Conceptos básicos
 

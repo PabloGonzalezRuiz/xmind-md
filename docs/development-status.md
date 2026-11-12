@@ -1,13 +1,18 @@
 # Estado de desarrollo
 
-> **Documento de seguimiento operativo del proyecto.** Debe actualizarse al terminar cada tarea de desarrollo autorizada y cuando cambie una decisión técnica relevante.
+> **Documento de seguimiento operativo.** El estado vigente y la hoja de ruta futura se actualizan al cerrar tareas o cambiar decisiones. El histórico Alpha se conserva como registro; el plan activo está en [roadmap.md](roadmap.md).
 
-- **Última actualización:** 2026-11-11 (tarea 8, preparación de Release Alpha 0.1.0; publicación bloqueada por inspección manual del smoke candidato)
-- **Rama de referencia:** `main`
-- **Última prueba manual XMind Desktop:** superada en Windows, XMind 26.05.01107.
-- **Commit de incorporación del fixture XMind permanente:** `a1cf99861c819d9f148a7c7a3d779df6a95fc394`.
-- **Contrato objetivo:** IR 1.0.0
-- **Estado global:** IR 1.0.0 integrado en parser, estilos, adaptadores y CLI; exportación JSON/XMind disponible; fixture anterior comprobado manualmente en XMind Desktop 26.05.01107; wheel y sdist construidos, verificados e instalados en CI. Versionado centralizado en `src/xmind_md/__init__.py`, metadatos PEP 621 dinámicos y CLI `--version`; acciones CI usan Node.js 24. La auditoría funcional corrigió validación/preservación de datos, referencias de estilos externos, configuración de estilos, conversión XMind de imágenes inline, serialización JSON estricta y el asset faltante del ejemplo. CI #43006735888 validó 161 pruebas por versión (Python 3.10/3.11/3.12), Ruff, smoke XMind y wheel/sdist instalados y probados. La tarea 7 está completada; consultar `docs/documentation-audit.md`. Tarea 8 en curso: changelog, notas y workflow de publicación preparados para `0.1.0` Alpha. Tag/Release aún no creados; falta inspección manual del smoke candidato en XMind Desktop y CI verde del commit definitivo.
+- **Última actualización:** 2026-11-12
+- **Rama:** `main`
+- **Commit auditado:** `2c206dbc679ca6b77dded1f108192efff5ed442d`
+- **Release:** `v0.1.0` publicada el 2026-11-11 como Alpha/prerelease; incluye wheel, sdist y `SHA256SUMS.txt`.
+- **CI de main:** [run 43206029166](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43206029166), mismo SHA que el commit auditado; cuatro jobs en `success`.
+- **Última prueba manual XMind Desktop registrada:** Windows, XMind 26.05.01107; fixture abierto, guardado y reabierto.
+- **Contrato runtime:** IR 1.0.0.
+- **Implementado:** ruta Markdown → IR → JSON/XMind, CLI, resolutor de estilos, pruebas y publicación Alpha. El adaptador XMind sigue siendo parcial.
+- **Dirección de producto:** PMD como lenguaje de autoría enriquecido, con conversión asistida por IA desde Markdown ordinario. Ver [pmd-design.md](pmd-design.md).
+- **Siguiente trabajo:** completar análisis de referencias reales Tema1. Ver [roadmap.md](roadmap.md).
+- **Regla:** distinguir implementado, decidido y pendiente; no iniciar una fase nueva sin autorización expresa.
 
 ## 1. Para qué sirve este documento
 
@@ -118,25 +123,22 @@ La prueba manual acredita el fixture y los elementos comprobados, no compatibili
 
 ## 5. Hoja de ruta y estado
 
-| N.º | Tarea | Estado | Criterio de cierre |
-|---:|---|---|---|
-| 1 | Consolidar el contrato IR 1.0.0 y preparar la migración | **Completada** | Especificación, esquema, ejemplo y plan de migración disponibles |
-| 2 | Implementar el modelo Python conforme al IR | **Completada** | Entidades canónicas, invariantes y pruebas del modelo ejecutadas con éxito |
-| 3 | Adaptar el parser al nuevo modelo | **Completada** | Parser construye el IR canónico y conserva la sintaxis probada |
-| 4 | Adaptar el resolutor de estilos | **Completada** | Cascada conforme a IR y pruebas de precedencia |
-| 5 | Adaptar los exportadores JSON y XMind | **Completada** | Consumen el modelo canónico y notifican pérdidas |
-| 6 | Validar el esquema JSON y los ejemplos | **Completada** | Draft 2020-12 validado por herramienta y ejemplos conformes |
-| 7 | Completar y probar la gramática Markdown | **Completada** | Subconjunto implementado auditado, limitaciones explícitas y suite CI verde |
-| 8 | Ampliar y probar las capacidades del adaptador XMind | **Completada** | Matriz de capacidades, conversiones adicionales y suite CI verde |
-| 9 | Integrar la exportación XMind en la CLI | **Completada** | CLI XMind y JSON probadas, errores controlados y documentación actualizada |
-| 10 | Completar las pruebas con XMind Desktop | **Completada** | Apertura, inspección, guardado y reapertura confirmados; versión y resultados registrados |
-| 11 | Auditar y verificar la ejecución en GitHub Actions | **Completada** | Workflow y último run inspeccionados; 131 pruebas y artefacto generados correctamente |
-| 12 | Completar CI, Ruff y comprobaciones automáticas | **Completada** | Workflow Ubuntu verde con Ruff, 131 pruebas y generación/publicación del artefacto XMind |
-| 13 | Sincronizar README y documentación técnica | **Completada** | README, arquitectura, gramática, IR, estilos, adaptador, evaluación del motor, guía de desarrollo y catálogo alineados con código y evidencias |
-| 14 | Auditoría final y publicación estable | **En curso** | Auditoría de terceros, compatibilidad, empaquetado, documentación, versión y CI candidato cerrados; Release reproducible |
+La hoja de ruta de las tareas iniciales (IR, parser, estilos, adaptadores, CLI, pruebas, documentación y publicación Alpha) se considera cerrada. El historial y sus evidencias se conservan en las secciones posteriores.
 
-Los estados se refieren a evidencia en el repositorio, no a intenciones ni a tareas descritas en documentos futuros.
+La hoja de ruta vigente está en [roadmap.md](roadmap.md):
 
+| Fase | Objetivo | Estado |
+|---:|---|---|
+| 0 | Base técnica IR 1.0.0, CLI, CI y Release Alpha | **Completada** |
+| 1 | Analizar referencias XMind (Tema1 JSON/SVG/MD) | **En curso** |
+| 2 | Especificar catálogo, reglas semánticas/estructurales y herencia | **Dirección aceptada; especificación pendiente** |
+| 3 | Diseñar sintaxis PMD | Pendiente |
+| 4 | Definir PMD → IR y validación | Pendiente |
+| 5 | Diseñar Markdown → PMD mediante IA | Pendiente |
+| 6 | Mejorar XMind y fidelidad visual/SVG | Pendiente |
+| 7 | Integración, CLI, pruebas y documentación | Pendiente |
+
+La antigua tarea 14 (auditoría/publicación estable) ya no es el siguiente paso: la Release Alpha `v0.1.0` está publicada.
 ## 6. Registro de tareas terminadas y actividad
 
 ### Tarea 4 — Resolutor de estilos IR 1.0.0
@@ -1012,3 +1014,34 @@ El usuario confirmó que abrió, guardó, cerró y volvió a abrir en XMind Desk
 El workflow de publicación sigue siendo `.github/workflows/release.yml`, manual (`workflow_dispatch`), solo desde `main`, con input `desktop_smoke_verified=yes`. No se ha creado tag ni GitHub Release. La versión se mantiene en 0.1.0 Alpha/pre-1.0.
 
 La conexión GitHub disponible permite consultar y modificar contenidos, pero no ofrece una acción para despachar workflows ni crear releases/tags. Por tanto, el único paso externo pendiente es que el usuario inicie el workflow desde [GitHub Actions / release.yml](https://github.com/PabloGonzalezRuiz/xmind-md/actions/workflows/release.yml), seleccione la rama `main` y confirme `yes`. El workflow debe validar el SHA exacto y crear el tag `v0.1.0), los paquetes y la prerelease. Tras el lanzamiento, verificar la Release y sus assets antes de cerrar la tarea.
+
+
+## 31. Auditoría de continuidad y dirección PMD — 2026-11-12
+
+**Estado: auditoría realizada; documentación de continuidad actualizada. No se han modificado módulos de código.**
+
+### Evidencia
+
+- Rama `main`, commit auditado `2c206dbc679ca6b77dded1f108192efff5ed442d`.
+- Release [v0.1.0](https://github.com/PabloGonzalezRuiz/xmind-md/releases/tag/v0.1.0) publicada como prerelease Alpha el 2026-11-11. Assets: wheel, sdist y `SHA256SUMS.txt`.
+- CI [43206029166](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43206029166), mismo SHA: jobs de tests Python 3.10/3.11/3.12 y build/install de distribuciones completados con `success`.
+- Análisis de mapas XMind [43058441322](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43058441322), `success` para el commit `00f05cf`.
+
+### Tema1
+
+- `content.json`: 10 temas; jerarquía `Tema1 → ListaBloque` y `Tema1 → BloqueLey → Nombre → RESUMEN → Titulo → Capitulo → Articulo → (Cabecera, cuerpo)`.
+- `Articulo`: `structureClass=org.xmind.ui.treetable.toptitle`; hijos `Cabecera` y `cuerpo`: `shape-class=org.xmind.internal.topicShape.treeTableCell`, con estilos diferentes.
+- Marcadores: `Titulo` tiene `flag-red`; `Articulo` tiene `flag-red` y `task-oct`.
+- `Tema1.svg`: aproximadamente 857 kB; 10 `foreignObject`, 61 grupos, 33 paths, 3 imágenes, 6 `@font-face` y 103 `data-view-id`. Se usa como referencia de apariencia, no como requisito de identidad XML.
+- `Tema1.md`: conserva principalmente títulos y jerarquía; pierde estructura de tabla, estilos, marcadores y formato de celdas.
+- No existe `Tema1.xmind` versionado en la carpeta; las referencias disponibles son exportaciones.
+
+### Decisiones documentadas
+
+Se creó [pmd-design.md](pmd-design.md): PMD como lenguaje de autoría distinto del IR; flujo Markdown → IA → PMD → IR → resolución → XMind; catálogo de estilos reutilizable con descripción semántica, reglas semánticas/estructurales y herencia por referencia al primer hijo; SVG visualmente fiel sin igualdad XML.
+
+Se creó [roadmap.md](roadmap.md). La Fase 1 sigue en curso; la Fase 2 tiene dirección aceptada pero especificación pendiente.
+
+### Alcance de esta auditoría
+
+Se actualizaron documentos de continuidad, arquitectura y estilos. No se modificaron código, parser, esquema IR, configuración runtime ni pruebas. Próximo paso: completar el análisis de Tema1; no implementar todavía parser PMD, catálogo nuevo ni generador SVG.

@@ -1,10 +1,16 @@
 # XMind MD
 
-**XMind MD** convierte documentos Markdown enriquecidos en mapas mentales XMind modernos (`.xmind`). El proyecto está implementado en Python y utiliza un modelo intermedio neutral (IR 1.0.0) para separar el lenguaje de entrada del formato de salida.
+**XMind MD** es un proyecto Python para transformar documentos estructurados en mapas XMind modernos (`.xmind`). La versión Alpha implementa una primera ruta Markdown → IR 1.0.0 → XMind. La dirección evoluciona hacia **PMD (Pableras Markdown)**: un lenguaje de autoría enriquecido, legible por personas y fácil de generar mediante IA, que reduzca el formateo manual posterior.
 
-> Estado: versión pre-1.0. La primera publicación preparada es `0.1.0` (Alpha); todavía no se ha creado el tag ni la GitHub Release. Consulta el [changelog](CHANGELOG.md) y las [notas de versión 0.1.0](docs/releases/v0.1.0.md). La CLI genera JSON IR y libros XMind; la CI de Ubuntu está operativa. Se ha comprobado manualmente en XMind Desktop 26.05.01107 un fixture con jerarquía, nota, etiqueta, marcador y relación. El exportador sigue siendo un perfil parcial: consulta la matriz de capacidades antes de usar construcciones avanzadas.
+> Estado: `v0.1.0` Alpha publicada como prerelease el 2026-11-11. La CI del commit auditado `2c206dbc` está verde. La exportación XMind sigue siendo un perfil parcial; consulta la matriz de capacidades. La hoja de ruta actual se centra en PMD y la conversión asistida por IA.
 
-## Qué hace
+## Dirección de producto: PMD
+
+El objetivo futuro no es depender de la importación Markdown limitada de XMind. PMD permitirá describir roles semánticos, estructuras especiales (incluidas tablas de árbol), referencias de estilo y excepciones. Una IA podrá transformar Markdown ordinario en PMD consultando una biblioteca de estilos y reglas; el conversor resolverá el formato de forma determinista.
+
+Consulta [Dirección de producto y diseño de PMD](docs/pmd-design.md) y la [hoja de ruta](docs/roadmap.md). Esta dirección es futura: no debe confundirse con las capacidades implementadas en la Alpha actual.
+
+## Qué hace hoy la versión Alpha
 
 - Convierte encabezados Markdown ATX (`#` a `######`) en una jerarquía de temas.
 - Interpreta front matter YAML y directivas `:::xmind`, `:::xmind-note` y directivas globales de relación, límite y resumen.
@@ -161,7 +167,9 @@ XMind MD se distribuye bajo la licencia [MIT](LICENSE), con el aviso de copyrigh
 
 ## Documentación
 
-- [Estado de desarrollo y hoja de ruta](docs/development-status.md)
+- [Estado de desarrollo](docs/development-status.md)
+- [Hoja de ruta vigente](docs/roadmap.md)
+- [Dirección de producto y diseño de PMD](docs/pmd-design.md)
 - [Prompt maestro de reconstrucción](docs/ai-reconstruction-prompt.md)
 - [Auditoría de empaquetado y publicación](docs/release-audit.md)
 - [Auditoría de sincronización documental](docs/documentation-audit.md)
@@ -190,4 +198,4 @@ XMind MD se distribuye bajo la licencia [MIT](LICENSE), con el aviso de copyrigh
 
 ## Versión y estado
 
-La versión del paquete tiene una única fuente de verdad: `src/xmind_md/__init__.py`. Setuptools la lee para construir los metadatos PEP 621 de `pyproject.toml`; el verificador extrae esa misma constante y la contrasta con `METADATA` del wheel y `PKG-INFO` del sdist. La CLI la muestra mediante `xmind-md --version`. Wheel y sdist se construyen, instalan y prueban en CI en entornos limpios separados. Desde ambos paquetes se ha comprobado la generación de JSON y XMind; el XMind resultante pasa verificaciones estructurales ZIP/MIME/JSON. La versión `0.1.0` está preparada como Alpha pre-1.0; todavía no se ha publicado. No se presenta como estable porque el perfil XMind es parcial y quedan limitaciones documentadas.
+La versión del paquete tiene una única fuente de verdad: `src/xmind_md/__init__.py`. Setuptools la lee para construir los metadatos PEP 621 de `pyproject.toml`; el verificador extrae esa misma constante y la contrasta con `METADATA` del wheel y `PKG-INFO` del sdist. La CLI la muestra mediante `xmind-md --version`. Wheel y sdist se construyen, instalan y prueban en CI en entornos limpios separados. Desde ambos paquetes se ha comprobado la generación de JSON y XMind; el XMind resultante pasa verificaciones estructurales ZIP/MIME/JSON. La versión `0.1.0` está publicada como Alpha/pre-1.0 en la [GitHub Release](https://github.com/PabloGonzalezRuiz/xmind-md/releases/tag/v0.1.0), con wheel, sdist y `SHA256SUMS.txt`. No se presenta como estable porque el perfil XMind es parcial y quedan limitaciones documentadas.

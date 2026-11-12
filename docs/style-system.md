@@ -413,3 +413,20 @@ Se resuelven estilos de temas, notas, relaciones, boundaries y summaries. La rut
 - No debe interpretarse la lista de capacidades de XMind como un catálogo universal de estilos disponible para cualquier destino.
 
 La matriz de traducción vigente se mantiene en [xmind-adapter.md](xmind-adapter.md). Las pruebas de precedencia, herencia, fusión y errores están en `tests/test_styles.py` y en las pruebas IR correspondientes.
+
+
+## 16. Evolución prevista: catálogo semántico y reglas para PMD
+
+Esta sección describe el diseño objetivo, **no funciones implementadas en el resolutor IR 1.0.0**. La ejecución actual sigue siendo la descrita en las secciones 3.1, 8 y 15.
+
+Los estilos deberán residir en una biblioteca reutilizable separada del contenido. Cada entrada tendrá identificador estable, descripción semántica, destinatarios, propiedades visuales, restricciones y ejemplos. El catálogo estructurado debe poder ser leído por el motor y suministrado a la IA; la documentación descriptiva debe ser coherente con él. YAML/JSON y Markdown son candidatos, pero el esquema final está pendiente.
+
+Las reglas de aplicación combinarán:
+- **Semánticas:** significado/rol (artículo, apartado, excepción, definición, cabecera, celda).
+- **Estructurales:** tipo de estructura, padre, posición entre hermanos, nivel o tipo de celda.
+
+La semántica será el criterio principal y la estructura será complementaria. Los conflictos deberán resolverse explícitamente y de forma determinista.
+
+Se conserva el principio de herencia por referencia al primer hijo: puede establecer el formato predeterminado para sus hermanos; los hijos pueden declarar excepciones; la regla se aplica recursivamente. Queda pendiente precisar fallback si el primer hijo carece de estilo, fusión por propiedad y precedencia frente a reglas semánticas y overrides.
+
+La IA debe seleccionar roles y referencias existentes; el motor valida y resuelve. No confundir este diseño con la cascada actual de conjuntos por rama. Ver [pmd-design.md](pmd-design.md) y [roadmap.md](roadmap.md).

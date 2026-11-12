@@ -462,3 +462,14 @@ El parser canónico utiliza `parse_markdown_ir()` y `parse_file_ir()`. La conver
 ### 15.4 Política de compatibilidad
 
 La gramática implementada se limita a las construcciones de la sección 15.1. Las construcciones de la sección 15.2 deben rechazarse cuando puedan confundirse con sintaxis admitida, o permanecer como texto literal cuando su interpretación sea inequívoca. No se debe anunciar compatibilidad CommonMark/GFM completa ni descartar silenciosamente contenido que el parser haya reconocido como estructura.
+
+
+## 16. PMD y conversión asistida por IA: alcance futuro
+
+La gramática de este documento es la gramática Markdown enriquecida implementada en la versión Alpha. **No es todavía la especificación de PMD.**
+
+La evolución prevista es que una IA transforme Markdown ordinario en PMD, un lenguaje de autoría más expresivo que describa roles semánticos, estructuras especiales (incluidas tablas de árbol), referencias a estilos y excepciones. PMD se analizará después a un IR neutral; no debe confundirse con IR 1.0.0.
+
+La IA consultará un catálogo de estilos con descripciones, reglas de aplicación y ejemplos. Las reglas semánticas serán prioritarias y las estructurales complementarias. El motor resolverá defaults y herencia de forma determinista, incluido el principio de referencia al primer hijo, pendiente de formalización.
+
+No añadir sintaxis PMD al parser actual hasta aprobar una especificación independiente de gramática, semántica, escapes, errores y mapeo a IR. Ver [pmd-design.md](pmd-design.md) y [roadmap.md](roadmap.md).

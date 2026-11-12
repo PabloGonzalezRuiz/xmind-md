@@ -149,3 +149,23 @@ Cada cambio debe incluir:
 - actualización de documentación y ejemplos;
 - actualización de la matriz de capacidades;
 - ejecución satisfactoria de CI antes de declarar el cambio validado.
+
+
+## 9. Dirección arquitectónica objetivo: PMD e IA
+
+Las secciones anteriores describen la implementación real de la versión Alpha. La siguiente evolución añade una capa de autoría PMD y conversión asistida por IA; no debe interpretarse como código ya implementado.
+
+```text
+Markdown de origen → IA → PMD → parser/validador PMD
+       → IR neutral → resolución determinista → XMind
+```
+
+- La IA identifica semántica y estructuras y genera PMD usando catálogo, reglas y ejemplos.
+- PMD expresa intención de autoría; IR sigue siendo el contrato neutral de ejecución. No son el mismo formato.
+- La biblioteca de estilos describe estilos reutilizables, significado, destinatarios y reglas de aplicación.
+- Las reglas semánticas son primarias y las estructurales complementarias.
+- El motor resuelve defaults y herencia de forma determinista.
+- Se contempla herencia por referencia al primer hijo, excepciones explícitas y recursividad; el algoritmo exacto está pendiente.
+- El SVG debe ser lo más fiel posible a la apariencia original de XMind, sin exigir identidad de XML, atributos o IDs.
+
+Ver [pmd-design.md](pmd-design.md) y [roadmap.md](roadmap.md). La ruta actual Markdown → IR → XMind debe seguir operativa durante la transición.

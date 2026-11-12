@@ -50,7 +50,9 @@ Este documento identifica los principales archivos versionados y la responsabili
 | `functional-audit.md` | Hallazgos, correcciones, evidencia y limitaciones de la auditoría funcional. |
 | `documentation-audit.md` | Discrepancias contrastadas y cierre de la sincronización documental de tarea 7. |
 | `releases/v0.1.0.md` | Notas de la primera publicación Alpha. |
-| `development-status.md` | Registro operativo, auditoría, hoja de ruta y evidencias. |
+| `development-status.md` | Registro operativo, estado y evidencias. |
+| `roadmap.md` | Hoja de ruta vigente de PMD y conversión asistida por IA. |
+| `pmd-design.md` | Dirección de producto, decisiones PMD y diseño objetivo de estilos/IA. |
 | `architecture.md` | Capas, flujo de datos e invariantes vigentes. |
 | `development.md` | Instalación, CLI, pruebas y ciclo de contribución. |
 | `file-reference.md` | Este catálogo. |
@@ -58,7 +60,7 @@ Este documento identifica los principales archivos versionados y la responsabili
 | `ir-specification.md` | Contrato neutral IR 1.0.0. |
 | `ir-schema.json` | JSON Schema Draft 2020-12 del IR. |
 | `ir-migration-plan.md` | Registro/plan histórico de migración al IR. |
-| `style-system.md` | Modelo de estilos, precedencia y capacidades implementadas. |
+| `style-system.md` | Modelo de estilos actual y evolución prevista del catálogo semántico y reglas. |
 | `xmind-adapter.md` | Mapeo IR→XMind y matriz de soporte/rechazo/pérdidas. |
 | `xmind-engine-evaluation.md` | Evaluación de motores y decisión de serialización Python nativa. |
 | `xmind-integration-tests.md` | Fixture de referencia, CI y prueba manual XMind Desktop. |

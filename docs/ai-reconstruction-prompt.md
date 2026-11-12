@@ -838,3 +838,14 @@ La investigación no autoriza por sí misma iniciar la Fase 2 ni implementar cam
 
 
 Ampliación de referencias oficiales (2026-11-12): consulta también [docs/xmind-official-sdk-research.md](xmind-official-sdk-research.md). Se identificó [xmindmark](https://github.com/xmindltd/xmindmark), lenguaje TypeScript/MIT de XMind inspirado en Markdown. Su gramática textual cubre central topic, listas indentadas, relaciones, boundaries y summaries; su conversor aplica un Theme fijo y genera content.json. Incluye un helper spreadsheet basado en org.xmind.ui.spreadsheet, que no debe confundirse con la tabla de árbol legislativa de Tema1. Su conversión inversa es parcial y con pérdida. También se revisó [xmind-cli](https://github.com/xmindltd/xmind-cli), repositorio MIT del Skill oficial para agentes; el CLI se distribuye por separado y el repositorio no revela su serializador. No tratar ninguna de estas fuentes como especificación normativa completa ni como autorización para iniciar la Fase 2.
+
+
+## Continuidad arquitectónica autorizada (2026-11-12)
+
+La hoja de ruta vigente está en `docs/roadmap.md`; las decisiones obligatorias, en `docs/decisions/ADR-001-pmd-ir-architecture.md`. No utilizar hojas de ruta anteriores que coloquen la especificación final de estilos/PMD antes de consolidar el modelo y definir las necesidades del IR.
+
+**Trabajo activo:** Fase 1, consolidación del modelo de ejecución. Evidencia del inventario de módulos y consumidores: `docs/ir-consolidation-audit.md`. El parser aún crea el modelo legacy de `model.py`; `ir_parser.py` realiza la conversión al IR; `styles.py` mantiene una ruta legacy. Adaptadores y CLI ya consumen IR. No declarar retirada la duplicidad hasta que el parsing construya IR directamente, las rutas legacy estén aisladas/deprecadas o eliminadas y las pruebas/CI lo acrediten.
+
+No cambiar el contrato IR 1.0.0 silenciosamente. Roles semánticos y estructuras compuestas (en particular `tree_table`) deberán definirse de forma neutral antes de implementar sintaxis PMD. Distinguir ausencia de propiedad, valor explícito y literal `inherited`; no confundir herencia de style_set con la futura herencia PMD por referencia al primer hijo. El SVG debe buscar fidelidad visual, no identidad XML.
+
+Rama de trabajo de esta evolución: `architecture/pmd-ir-roadmap`, creada desde `05efc482c333b266bf1a2bd5fbf2f3fdee129de7`. Antes de cualquier cambio, verificar HEAD y CI de la rama. La Fase 0 está documentada; la Fase 1 está en curso. No modificar parser ni retirar modelo legacy antes de disponer de pruebas de caracterización.

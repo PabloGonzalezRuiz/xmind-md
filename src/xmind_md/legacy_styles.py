@@ -1,4 +1,5 @@
 """Resolución de estilos del modelo legacy, aislada de la ruta IR."""
+
 from __future__ import annotations
 
 from copy import deepcopy

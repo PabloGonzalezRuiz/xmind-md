@@ -67,8 +67,7 @@ Este documento identifica los principales archivos versionados y la responsabili
 | `ir-migration-plan.md` | Registro histórico de la migración parcial al IR. |
 | `decisions/ADR-001-pmd-ir-architecture.md` | Decisiones arquitectónicas de PMD, IR, estilos y adaptadores. |
 | `ir-consolidation-audit.md` | Inventario de módulos, consumidores y riesgos de la consolidación del modelo. |
-| `ir-parser-design.md` | Diseño y estado del parsing directo al IR y del adaptador de compatibilidad. |
-| `ir-parser-design.md` | Diseño de AST sintáctico, constructor IR, adaptador legacy y secuencia de migración del parser. |
+| `ir-parser-design.md` | Diseño de AST sintáctico, constructor IR, adaptador legacy y estado de migración del parser. |
 | `style-system.md` | Modelo de estilos actual y evolución prevista del catálogo semántico y reglas. |
 | `xmind-adapter.md` | Mapeo IR→XMind y matriz de soporte/rechazo/pérdidas. |
 | `xmind-engine-evaluation.md` | Evaluación de motores y decisión de serialización Python nativa. |

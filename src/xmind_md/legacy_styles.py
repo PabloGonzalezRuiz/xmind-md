@@ -4,7 +4,7 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any
 
-from .model import Topic
+from .model import MindMap as LegacyMindMap, Topic
 from .styles import StyleError, _deep_merge, _mapping, _validate_definitions
 
 
@@ -13,7 +13,7 @@ def resolve_legacy_styles(
     style_config: dict[str, Any] | None = None,
 ) -> Any:
     """Mantiene la resolución histórica para objetos model.MindMap."""
-    if not hasattr(mind_map, "topics") or not hasattr(mind_map, "style_sets"):
+    if not isinstance(mind_map, LegacyMindMap):
         raise TypeError("resolve_legacy_styles requiere un MindMap legacy")
 
     config = style_config or {}
@@ -62,5 +62,3 @@ def resolve_legacy_styles(
     for root in mind_map.topics:
         visit(root, mind_map.metadata.get("style_set"))
     return mind_map
-
-

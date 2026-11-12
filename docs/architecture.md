@@ -2,7 +2,7 @@
 
 ## 1. Propósito y estado
 
-XMind MD convierte Markdown enriquecido en un modelo intermedio neutral (IR 1.0.0) y exporta ese modelo a JSON o a un libro XMind moderno (`.xmind`). La implementación principal es Python (>=3.10).
+XMind MD convierte Markdown enriquecido en un modelo intermedio neutral (IR 1.1.0) y exporta ese modelo a JSON o a un libro XMind moderno (`.xmind`). La implementación principal es Python (>=3.10).
 
 La arquitectura separa parsing, representación semántica, resolución de estilos y serialización. El adaptador XMind implementa un perfil parcial y validado; las capacidades no soportadas se rechazan explícitamente.
 
@@ -18,7 +18,7 @@ Markdown + front matter/directivas YAML
           ir_builder.py
                   |
                   v
-             IR 1.0.0
+             IR 1.1.0
               /      \
              v        v
      resolve_styles   json_adapter
@@ -53,7 +53,7 @@ El parser no genera archivos XMind ni conoce estructuras privadas del formato de
 
 Directorio: `src/xmind_md/ir/`.
 
-El contrato neutral incluye `MindMap`, `Sheet`, `Topic`, `ContentBlock`, anotaciones, recursos, relaciones, límites, resúmenes y estados de estilo. El esquema JSON Draft 2020-12 y el ejemplo canónico están en `docs/ir-schema.json` y `examples/ir/constitucion.json`.
+El contrato neutral vigente es IR 1.1.0 e incluye `MindMap`, `Sheet`, `Topic`, `ContentBlock`, anotaciones, recursos, relaciones, límites, resúmenes y estados de estilo. `Topic.semantic_role` separa el significado documental de `Topic.kind`; `Topic.structure` incorpora estructuras compuestas, inicialmente `tree_table`, con filas ordenadas y celdas que referencian temas hijos. IR 1.0.0 sigue siendo legible y dispone de migración explícita. El esquema JSON Draft 2020-12 y el ejemplo canónico están en `docs/ir-schema.json` y `examples/ir/constitucion.json`.
 
 `src/xmind_md/model.py` se conserva para consumidores de la API antigua. La ruta canónica de parsing, resolución IR, CLI y adaptadores no lo utilizan. Las únicas dependencias runtime están aisladas en `legacy_adapter.py` y `legacy_styles.py`; no se elimina mientras no se conozcan consumidores externos.
 
@@ -80,7 +80,7 @@ Directorio: `src/xmind_md/adapters/`.
 - `json_adapter.py`: serializa el documento IR mediante su representación neutral.
 - `xmind_adapter.py`: crea `content.json`, metadatos, manifiesto, miniatura y contenedor ZIP del formato XMind moderno.
 
-El adaptador XMind recibe únicamente IR 1.0.0. No analiza Markdown, no resuelve estilos y no modifica el IR. Valida el perfil soportado y lanza `XMindAdapterError` ante construcciones no exportables. La matriz detallada está en [xmind-adapter.md](xmind-adapter.md).
+El adaptador XMind recibe IR 1.0.0 y 1.1.0, pero todavía rechaza explícitamente `semantic_role` y `Topic.structure` hasta que exista su mapeo en la Fase 7. No analiza Markdown, no resuelve estilos y no modifica el IR. Valida el perfil soportado y lanza `XMindAdapterError` ante construcciones no exportables. La matriz detallada está en [xmind-adapter.md](xmind-adapter.md).
 
 ### 3.5 CLI
 

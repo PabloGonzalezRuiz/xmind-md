@@ -58,7 +58,7 @@ El contrato neutral incluye `MindMap`, `Sheet`, `Topic`, `ContentBlock`, anotaci
 
 Archivo: `src/xmind_md/styles.py`.
 
-`resolve_styles()` detecta el tipo de modelo y delega los documentos IR a `resolve_ir_styles()`; conserva también una ruta legacy. Para IR, la precedencia por propiedad es:
+`resolve_styles()` es la fachada pública: los documentos IR se delegan a `resolve_ir_styles()`; los objetos antiguos se delegan a `legacy_styles.py`, módulo de compatibilidad aislado. `styles.py` no importa `model.py`. Para IR, la precedencia por propiedad es:
 
 1. Defaults del sistema.
 2. `metadata.style_defaults` del documento.

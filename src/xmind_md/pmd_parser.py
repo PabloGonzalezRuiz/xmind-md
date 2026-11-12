@@ -171,9 +171,10 @@ def _transform_document(
         stripped = raw.strip()
         fence_match = re.match(r"^\s*(~{3,})", raw)
         if raw.lstrip().startswith(chr(96) * 3):
-            marker = chr(96) * len(raw.lstrip()) - len(raw.lstrip().lstrip(chr(96)))
+            left = raw.lstrip()
+            marker_len = len(left) - len(left.lstrip(chr(96)))
             fence_match = None
-            marker_char, marker_len = chr(96), len(marker)
+            marker_char, marker_len = chr(96), marker_len
         elif fence_match:
             marker_char, marker_len = "~", len(fence_match.group(1))
         else:
@@ -339,6 +340,8 @@ def _rebuild_parent_tree(
         if topic is root and "parent" in props:
             raise PMDParseError("El tema raíz no puede declarar parent")
         desired_parent[topic.id] = props.get("parent", inferred_parent[topic.id])
+        if props.get("parent") is not None and props["parent"] not in explicit_ids:
+            raise PMDParseError("parent debe referenciar un ID explícito de tema")
     for topic_id, parent_id in desired_parent.items():
         if parent_id is not None and parent_id not in by_id:
             raise PMDParseError(f"parent del tema {topic_id!r} referencia tema inexistente {parent_id!r}")
@@ -387,6 +390,16 @@ def parse_pmd_markdown(
     _remap_source(syntax.root, line_map)
     explicit_ids, props_by_id = _rebuild_parent_tree(syntax.root, sidecar)
     _stable_pmd_ids(syntax.root, source_path, explicit_ids)
+    props_by_id = {
+        topic.id: sidecar.get(topic.source.get("line_start"), {})
+        for topic in _walk_syntax(syntax.root)
+    }
+    has_catalog_feature = any(
+        props.get("role") is not None or props.get("style_ref") is not None
+        for props in props_by_id.values()
+    )
+    if has_catalog_feature and metadata.get("catalog") is None:
+        raise PMDParseError("catalog es obligatorio cuando se utiliza role o style_ref")
     role_ids, style_ids = _catalog_indexes(metadata, catalog)
     used_catalog_feature = False
     for topic in _walk_syntax(syntax.root):
@@ -417,14 +430,14 @@ def parse_pmd_markdown(
                 referenced.extend(cells)
             if len(referenced) != len(set(referenced)):
                 raise PMDParseError("Una celda tree_table no puede repetirse")
+            if any(cell_id not in explicit_ids for cell_id in referenced):
+                raise PMDParseError("Todas las celdas tree_table deben referenciar IDs explícitos")
             child_ids = {child.id for child in topic.children}
             if set(referenced) != child_ids:
                 raise PMDParseError(
                     "tree_table debe referenciar exactamente una vez todos los hijos directos; "
                     f"faltan {sorted(child_ids - set(referenced))}, sobran {sorted(set(referenced) - child_ids)}"
                 )
-    if used_catalog_feature and metadata.get("catalog") is None:
-        raise PMDParseError("catalog es obligatorio cuando se utiliza role o style_ref")
     mind_map = build_ir(syntax)
     mind_map.ir_version = "1.1.0"
     mind_map.metadata["pmd_version"] = metadata["pmd_version"]

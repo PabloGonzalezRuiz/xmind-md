@@ -12,6 +12,8 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+from yaml.events import AliasEvent
+from yaml.nodes import MappingNode, ScalarNode, SequenceNode
 
 from .ir import MindMap, TopicStructure, TreeTableCell, TreeTableRow, validate_mind_map
 from .ir_builder import build_ir
@@ -56,6 +58,39 @@ _GLOBAL_DIRECTIVES = {
 }
 
 
+def _strict_yaml_mapping(source: str, line: int, label: str) -> dict[str, Any]:
+    """Rechaza alias y fechas YAML implícitas antes de normalizar a JSON."""
+    try:
+        if any(isinstance(event, AliasEvent) for event in yaml.parse(source)):
+            raise PMDParseError(f"Los alias YAML no están permitidos en {label} (línea {line})")
+        root = yaml.compose(source)
+
+        def inspect(node: Any) -> None:
+            if isinstance(node, ScalarNode):
+                if node.tag == "tag:yaml.org,2002:timestamp":
+                    raise PMDParseError(
+                        f"Las fechas deben escribirse como cadenas ISO 8601 en {label} (línea {line})"
+                    )
+            elif isinstance(node, MappingNode):
+                for key_node, value_node in node.value:
+                    inspect(key_node)
+                    inspect(value_node)
+            elif isinstance(node, SequenceNode):
+                for item in node.value:
+                    inspect(item)
+
+        if root is not None:
+            inspect(root)
+    except yaml.YAMLError as exc:
+        raise PMDParseError(f"YAML inválido en {label}, línea {line}: {exc}") from exc
+    try:
+        return _yaml_mapping(source, line, label)
+    except MarkdownParseError as exc:
+        raise PMDParseError(str(exc)) from exc
+    except RecursionError as exc:
+        raise PMDParseError(f"Estructura YAML demasiado profunda en {label} (línea {line})") from exc
+
+
 def _yaml_dump(value: Mapping[str, Any]) -> str:
     return yaml.safe_dump(
         dict(value), allow_unicode=True, sort_keys=False, default_flow_style=False
@@ -68,10 +103,7 @@ def _front_matter(lines: list[str]) -> tuple[dict[str, Any], int]:
     end = next((i for i in range(1, len(lines)) if lines[i].strip() in {"---", "..."}), None)
     if end is None:
         raise PMDParseError("Front matter sin delimitador de cierre (línea 1)")
-    try:
-        metadata = _yaml_mapping("\n".join(lines[1:end]), 2, "front matter PMD")
-    except MarkdownParseError as exc:
-        raise PMDParseError(str(exc)) from exc
+    metadata = _strict_yaml_mapping("\n".join(lines[1:end]), 2, "front matter PMD")
     unknown = set(metadata) - _FRONT_MATTER_FIELDS
     if unknown:
         raise PMDParseError(f"Campos desconocidos en front matter PMD: {sorted(unknown)}")
@@ -231,10 +263,9 @@ def _transform_document(
                 end = next((j for j in range(i + 1, len(lines)) if lines[j].strip() == ":::"), None)
                 if end is None:
                     raise PMDParseError(f"Directiva :::pmd sin cierre (línea {i + 1})")
-                try:
-                    props = _yaml_mapping("\n".join(lines[i + 1 : end]), i + 2, ":::pmd")
-                except MarkdownParseError as exc:
-                    raise PMDParseError(str(exc)) from exc
+                props = _strict_yaml_mapping(
+                    "\n".join(lines[i + 1 : end]), i + 2, ":::pmd"
+                )
                 unknown = set(props) - _TOPIC_FIELDS
                 if unknown:
                     raise PMDParseError(

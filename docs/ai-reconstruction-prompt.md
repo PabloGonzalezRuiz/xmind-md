@@ -853,3 +853,22 @@ La hoja de ruta vigente está en `docs/roadmap.md`; las decisiones obligatorias,
 No cambiar el contrato IR 1.0.0 silenciosamente. La versión vigente ampliada es 1.1.0; su diseño está en `docs/ir-1.1-design.md` y ADR-002. Distinguir ausencia de propiedad, valor explícito y literal `inherited`; no confundir herencia de style_set con la futura herencia PMD por referencia al primer hijo. El SVG debe buscar fidelidad visual, no identidad XML.
 
 Rama de trabajo de esta evolución: `architecture/pmd-ir-roadmap`, creada desde `05efc482c333b266bf1a2bd5fbf2f3fdee129de7`. Antes de cualquier cambio, verificar HEAD y CI de la rama. Fases 0, 1, 2 y 3 están cerradas en sus respectivos alcances; la Fase 3 entrega solo diseño/documentación, sin loader ni runtime. Fase 4 (especificación del lenguaje PMD) queda pendiente de autorización expresa. No iniciar Fase 4 ni implementación runtime antes de esa autorización.
+
+
+---
+
+## Continuidad normativa PMD 1.0.0 — Fase 4 completada (2026-11-12)
+
+Este bloque prevalece sobre notas históricas que indiquen que la sintaxis PMD está pendiente. La especificación normativa vigente es `docs/pmd-language-spec.md`.
+
+- PMD 1.0.0 es Markdown enriquecido con front matter obligatorio `pmd_version: "1.0.0"`.
+- Los encabezados ATX H1–H6 crean temas; listas y tablas Markdown son contenido, nunca temas automáticamente.
+- `:::pmd` YAML, inmediatamente antes del encabezado, declara `id`, `kind`, `role`, `style_ref`, `style_overrides`, `structure`, anotaciones y layout.
+- `role` es semántico; `style_ref` es visual. No se intercambian ni se infieren por apariencia.
+- `tree_table` se declara en el contenedor y sus filas/celdas referencian IDs de hijos directos. El contenido de celda vive exclusivamente en el tema referenciado.
+- `:::pmd-note`, `:::pmd-relationship`, `:::pmd-boundary` y `:::pmd-summary` son directivas PMD. No se reinterpretan las directivas legacy `:::xmind`.
+- PMD 1.0.0 produce IR 1.1.0. Las referencias al catálogo se preservan; el resolutor IR 1.x todavía no ejecuta el catálogo PMD.
+- La política de herencia por primer hijo procede del catálogo, opera por grupo y fila, y admite excepciones por propiedad. El literal `inherited` no la activa.
+- Ejemplos normativos: `examples/pmd/constitucion-estructura.pmd.md` y `examples/pmd/tabla-arbol-tema1.pmd.md`.
+- Fase 4 completada en especificación/documentación. Fase 5 (parser PMD, validador y conversión PMD→IR) pendiente de autorización expresa.
+- Rama activa: `architecture/pmd-ir-roadmap`. No integrar en `main`, crear tags ni publicar releases sin autorización expresa.

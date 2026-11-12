@@ -85,17 +85,19 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 
 ### Fase 3 — Catálogo semántico y visual de estilos
 
-- [ ] Diseñar esquema de catálogo legible por máquina y documentación legible por IA/personas.
-- [ ] Definir estilos semánticos (significado, destinatarios, cuándo usar/no usar, ejemplos y restricciones).
-- [ ] Definir tokens/propiedades visuales neutrales y mapeo por adaptador.
-- [ ] Definir reglas semánticas prioritarias y reglas estructurales complementarias.
-- [ ] Definir precedencia, defaults, fallback, overrides y conflictos.
-- [ ] Definir procedencia/auditoría por propiedad resuelta.
-- [ ] Formalizar herencia por primer hijo, recursividad, estilos parciales y excepciones.
-- [ ] Distinguirla de herencia de style_set y de herencia nativa XMind.
-- [ ] Mantener el YAML runtime actual compatible durante la transición.
+**Estado: COMPLETADA en diseño y documentación.** Contrato de catálogo 1.0.0, esquema, vocabulario inicial, estilos visuales neutrales, reglas, precedencia, herencia por primer hijo y vectores conceptuales documentados. No hay implementación runtime.
 
-**Criterio de cierre:** catálogo versionado, especificación del motor, ejemplos y casos de prueba conceptuales deterministas.
+- [x] Diseñar esquema de catálogo legible por máquina y documentación legible por IA/personas.
+- [x] Definir estilos semánticos (significado, destinatarios, cuándo usar/no usar, ejemplos y restricciones).
+- [x] Definir tokens/propiedades visuales neutrales; el mapeo efectivo por adaptador queda para la Fase 7.
+- [x] Definir reglas semánticas prioritarias y reglas estructurales complementarias.
+- [x] Definir precedencia, defaults, fallback, overrides y conflictos.
+- [x] Definir procedencia/auditoría por propiedad resuelta.
+- [x] Formalizar herencia por primer hijo, recursividad, estilos parciales y excepciones.
+- [x] Distinguirla de herencia de style_set y de herencia nativa XMind.
+- [x] Mantener el YAML runtime actual compatible durante la transición.
+
+**Criterio de cierre:** CUMPLIDO para diseño. El catálogo y los vectores conceptuales están versionados; no se afirma ejecución del algoritmo.
 
 ### Fase 4 — Especificación del lenguaje PMD
 
@@ -163,4 +165,4 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 
 ## Ejecución activa
 
-Las Fases 0, 1 y 2 están completadas en la rama de trabajo. IR 1.1.0 y ADR-002 están documentados e implementados. El mapa de consumidores, la caracterización y el resultado de la migración están en [ir-consolidation-audit.md](ir-consolidation-audit.md); el diseño de parsing en [ir-parser-design.md](ir-parser-design.md). La ruta canónica ya construye IR desde AST y la resolución legacy está aislada en legacy_styles.py. Se conserva model.py y las API legacy por no conocerse consumidores externos; no se han integrado cambios en main ni publicado una nueva release. CI final de Fase 2: [run 43247569102](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43247569102), 189 pruebas por Python 3.10–3.12, Ruff, smoke XMind, build e instalación de wheel/sdist correctos. **Fase 2 completada:** IR 1.1.0 está implementado y validado. **Siguiente: Fase 3 — catálogo semántico y visual de estilos; pendiente de autorización expresa.**
+Las Fases 0, 1 y 2 están completadas en la rama de trabajo. IR 1.1.0 y ADR-002 están documentados e implementados. El mapa de consumidores, la caracterización y el resultado de la migración están en [ir-consolidation-audit.md](ir-consolidation-audit.md); el diseño de parsing en [ir-parser-design.md](ir-parser-design.md). La ruta canónica ya construye IR desde AST y la resolución legacy está aislada en legacy_styles.py. Se conserva model.py y las API legacy por no conocerse consumidores externos; no se han integrado cambios en main ni publicado una nueva release. CI final de Fase 2: [run 43247569102](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43247569102), 189 pruebas por Python 3.10–3.12, Ruff, smoke XMind, build e instalación de wheel/sdist correctos. **Fase 2 completada:** IR 1.1.0 está implementado y validado. **Fase 3 completada en diseño/documentación. Siguiente: Fase 4 — especificación del lenguaje PMD; pendiente de autorización expresa.**

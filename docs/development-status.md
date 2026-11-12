@@ -8,12 +8,12 @@
 - **Release:** `v0.1.0` publicada el 2026-11-11 como Alpha/prerelease; incluye wheel, sdist y `SHA256SUMS.txt`.
 - **CI de auditoría documental:** [run 43210510024](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43210510024), commit `9f4d9b5d4eb6abad62005ac109ac860adc937040`; cuatro jobs en `success`.
 - **Última prueba manual XMind Desktop registrada:** Windows, XMind 26.05.01107; fixture abierto, guardado y reabierto.
-- **Contrato runtime:** IR 1.0.0.
-- **Implementado:** ruta Markdown → IR → JSON/XMind, CLI, resolutor de estilos, pruebas y publicación Alpha. El adaptador XMind sigue siendo parcial.
+- **Contratos IR:** lector/validador de 1.0.0 y 1.1.0; el parser Markdown actual sigue generando 1.0.0.
+- **Implementado en Fase 2:** roles semánticos, estructura tree_table, filas/celdas referenciadas, validación, esquema 1.1.0, ejemplo y migración explícita 1.0.0 → 1.1.0. El adaptador XMind rechaza estas nuevas semánticas hasta la Fase 7.
 - **Dirección de producto:** PMD como lenguaje de autoría enriquecido, con conversión asistida por IA desde Markdown ordinario. Ver [pmd-design.md](pmd-design.md).
 - **Análisis de referencia Tema1:** completado y documentado en [reference-analysis-tema1.md](reference-analysis-tema1.md).
 - **Fase 1:** consolidación del modelo de ejecución completada en `architecture/pmd-ir-roadmap`.
-- **Siguiente paso:** Fase 2, evolución semántica y estructural del IR; pendiente de autorización expresa. No iniciar hasta recibirla.
+- **Fase 2:** autorizada y en implementación; diseño y entidades base IR 1.1.0 ya incorporados. Pendiente completar pruebas, documentación y CI.
 - **Regla:** distinguir implementado, decidido y pendiente; no iniciar una fase nueva sin autorización expresa.
 
 ## 1. Para qué sirve este documento
@@ -35,9 +35,9 @@ No sustituye a las especificaciones. Cuando haya discrepancias, consultar los do
 
 | Área | Documento o ubicación |
 |---|---|
-| Contrato del modelo intermedio | [Especificación IR 1.0.0](ir-specification.md) |
+| Contrato del modelo intermedio | [Especificación IR 1.1.0 / compatibilidad 1.0.0](ir-specification.md) |
 | Validación estructural del IR | [JSON Schema](ir-schema.json) |
-| Ejemplo del IR | [Constitución en IR](../examples/ir/constitucion.json) |
+| Ejemplos del IR | [Constitución IR 1.0.0](../examples/ir/constitucion.json), [tabla de árbol IR 1.1.0](../examples/ir/tree_table.json) |
 | Migración del modelo | [Plan de migración](ir-migration-plan.md) |
 | Diseño y estado del parser IR | [Diseño de parsing directo](ir-parser-design.md) |
 | Arquitectura | [architecture.md](architecture.md) |
@@ -54,9 +54,9 @@ Prioridad: contrato IR aprobado para la estructura objetivo; código y pruebas p
 
 ### 3.1 Modelo intermedio
 
-**Estado: modelo IR, parser, resolutor y adaptadores canónicos integrados; validación formal del esquema completada.**
+**Estado: modelo IR 1.1.0 en ampliación; parser Markdown sigue produciendo IR 1.0.0; resolutor y adaptadores canónicos integrados.**
 
-`src/xmind_md/ir/` contiene las entidades canónicas IR 1.0.0, serialización y validación semántica. `parser.py` produce AST temporal; `ir_builder.py` construye directamente las entidades IR e `ir_parser.py` expone la fachada pública. La ruta canónica no instancia el modelo legacy. La resolución antigua se ha aislado en `legacy_styles.py`; `model.py` queda reservado para las API y adaptadores de compatibilidad.
+`src/xmind_md/ir/` contiene las entidades canónicas IR 1.0.0/1.1.0, serialización y validación semántica. IR 1.1.0 añade `Topic.semantic_role`, `Topic.structure`, `TopicStructure`, `TreeTableRow` y `TreeTableCell`. `parser.py` produce AST temporal; `ir_builder.py` construye directamente las entidades IR e `ir_parser.py` expone la fachada pública. La ruta canónica no instancia el modelo legacy. La resolución antigua se ha aislado en `legacy_styles.py`; `model.py` queda reservado para las API y adaptadores de compatibilidad.
 
 El modelo legacy `src/xmind_md/model.py` todavía presenta estas diferencias:
 
@@ -72,19 +72,19 @@ El puente del parser y el resolutor disponen de rutas canónicas IR. Los adaptad
 
 ### 3.2 Parser Markdown
 
-**Estado: puente de conversión a IR 1.0.0 implementado y probado; API legacy conservada temporalmente.**
+**Estado: parser Markdown genera IR 1.0.0; las entidades y validación 1.1.0 ya están disponibles para consumidores que construyan ese contrato explícitamente.**
 
 `parser.py` analiza Markdown y produce `DocumentSyntax` / `TopicSyntax`; `ir_builder.py` construye entidades IR, bloques, anotaciones, assets y entidades de hoja directamente desde el AST; `ir_parser.py` es una fachada fina con `parse_markdown_ir()` y `parse_file_ir()`. La API antigua `parse_markdown()` / `parse_file()` reutiliza el AST y lo adapta mediante `legacy_adapter.py`, sin participar en la ruta canónica. Una prueba impide construir `model.MindMap` o `model.Topic` durante parsing IR. La CLI JSON y el generador smoke usan la ruta IR. `docs/grammar.md` delimita expresamente las funciones no compatibles con CommonMark/GFM completo.
 
 ### 3.3 Estilos
 
-**Estado: resolutor IR 1.0.0 implementado y probado; ruta legacy conservada.**
+**Estado: resolutor de estilos compatible con ambos contratos; catálogo semántico y reglas por rol quedan para Fase 3.**
 
 `resolve_styles()` despacha el modelo canónico a `resolve_ir_styles()` y deriva los objetos legacy a `legacy_styles.py`. `styles.py` ya no importa `model.py`; el resolver antiguo queda aislado como compatibilidad. No se deprecan ni eliminan las API legacy mientras se desconozcan sus consumidores externos. La cascada IR aplica valores predeterminados del sistema, `metadata.style_defaults`, conjunto aplicable, estilo nombrado y overrides locales, mediante fusión recursiva por propiedad. Los conjuntos se seleccionan globalmente con `metadata.style_set` o por tema con `Topic.style.style_set`; se heredan por rama y pueden sustituirse en descendientes. Se resuelven temas, notas, relaciones, límites y resúmenes. Las definiciones originales no se mutan.
 
 ### 3.4 Adaptadores y exportación
 
-**Estado: adaptadores migrados al IR 1.0.0 y verificados en CI.**
+**Estado: JSON serializa IR 1.0.0/1.1.0; XMind exporta el perfil 1.0.0 y rechaza expresamente roles/estructuras 1.1.0 aún no soportados.**
 
 - `json_adapter.py` serializa exclusivamente `MindMap.to_dict()` del IR 1.0.0.
 - `xmind_adapter.py` consume `MindMap.sheet`, entidades `Topic`, `Relationship`, `Annotation` y `StyleState` canónicas; no importa el modelo legacy.
@@ -135,13 +135,15 @@ La hoja de ruta vigente está en [roadmap.md](roadmap.md):
 | Fase | Objetivo | Estado |
 |---:|---|---|
 | 0 | Base técnica IR 1.0.0, CLI, CI y Release Alpha | **Completada** |
-| 1 | Analizar referencias XMind (Tema1 JSON/SVG/MD) | **En curso** |
-| 2 | Especificar catálogo, reglas semánticas/estructurales y herencia | **Dirección aceptada; especificación pendiente** |
-| 3 | Diseñar sintaxis PMD | Pendiente |
-| 4 | Definir PMD → IR y validación | Pendiente |
-| 5 | Diseñar Markdown → PMD mediante IA | Pendiente |
-| 6 | Mejorar XMind y fidelidad visual/SVG | Pendiente |
-| 7 | Integración, CLI, pruebas y documentación | Pendiente |
+| 0 | Decisiones y plan de migración | **Completada** |
+| 1 | Consolidar modelo de ejecución | **Completada** |
+| 2 | Evolución semántica y estructural IR 1.1.0 | **En curso** |
+| 3 | Catálogo semántico y visual de estilos | Pendiente |
+| 4 | Especificación del lenguaje PMD | Pendiente |
+| 5 | Parser y conversión PMD → IR | Pendiente |
+| 6 | Conversión asistida por IA Markdown → PMD | Pendiente |
+| 7 | Adaptador XMind y fidelidad visual | Pendiente |
+| 8 | Integración, documentación y publicación | Pendiente |
 
 La antigua tarea 14 (auditoría/publicación estable) ya no es el siguiente paso: la Release Alpha `v0.1.0` está publicada.
 ## 6. Registro de tareas terminadas y actividad

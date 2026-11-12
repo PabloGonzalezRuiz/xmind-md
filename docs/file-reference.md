@@ -25,7 +25,8 @@ Este documento identifica los principales archivos versionados y la responsabili
 | `ir_builder.py` | Construye directamente el IR 1.0.0 desde el AST. |
 | `ir_parser.py` | Fachada canónica `parse_markdown_ir()` / `parse_file_ir()`. |
 | `legacy_adapter.py` | Proyecta el AST al modelo legacy para las API antiguas. |
-| `styles.py` | Carga YAML y resuelve estilos en modelos IR y legacy. |
+| `styles.py` | Carga YAML y resuelve estilos IR; fachada de compatibilidad para objetos antiguos. |
+| `legacy_styles.py` | Resolución de estilos del modelo legacy, aislada de la ruta IR. |
 | `cli.py` | Coordina parsing, resolución de estilos y exportación JSON/XMind. |
 | `ir/` | Entidades, serialización y validación del contrato neutral IR 1.0.0. |
 | `adapters/json_adapter.py` | Serializa el modelo IR a JSON. |

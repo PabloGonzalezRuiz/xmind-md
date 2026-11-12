@@ -5,7 +5,6 @@ La ruta canónica AST → IR no instancia clases de este módulo.
 """
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any
 from uuid import NAMESPACE_URL, uuid5
 

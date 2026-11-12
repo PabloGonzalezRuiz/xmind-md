@@ -1,0 +1,430 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pablogonzalezruiz.github.io/xmind-md/schemas/style-catalog-1.0.0.schema.json",
+  "title": "XMind MD PMD Style Catalog 1.0.0",
+  "type": "object",
+  "required": [
+    "catalog_version",
+    "catalog_id",
+    "title",
+    "description",
+    "defaults",
+    "roles",
+    "styles",
+    "rules",
+    "inheritance"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "catalog_version": {
+      "const": "1.0.0"
+    },
+    "catalog_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9.-]*$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "defaults": {
+      "$ref": "#/$defs/propertySet"
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/role"
+      },
+      "uniqueItems": true
+    },
+    "styles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/style"
+      },
+      "uniqueItems": true
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/rule"
+      },
+      "uniqueItems": true
+    },
+    "inheritance": {
+      "$ref": "#/$defs/inheritance"
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*$"
+    },
+    "element": {
+      "enum": [
+        "topic",
+        "relationship",
+        "boundary",
+        "summary",
+        "notes",
+        "branch",
+        "map",
+        "callout"
+      ]
+    },
+    "role": {
+      "type": "object",
+      "required": [
+        "id",
+        "label",
+        "description",
+        "applies_to",
+        "when_to_use",
+        "when_not_to_use",
+        "style_ref",
+        "examples"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "applies_to": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/element"
+          },
+          "uniqueItems": true
+        },
+        "when_to_use": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "when_not_to_use": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "style_ref": {
+          "$ref": "#/$defs/id"
+        },
+        "examples": {
+          "type": "object",
+          "required": [
+            "positive",
+            "negative"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "positive": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "negative": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "style": {
+      "type": "object",
+      "required": [
+        "id",
+        "label",
+        "description",
+        "applies_to",
+        "properties"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "applies_to": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/element"
+          },
+          "uniqueItems": true
+        },
+        "properties": {
+          "$ref": "#/$defs/propertySet"
+        }
+      }
+    },
+    "propertySet": {
+      "type": "object",
+      "properties": {
+        "topic": {
+          "$ref": "#/$defs/topicProperties"
+        },
+        "relationship": {
+          "type": "object"
+        },
+        "boundary": {
+          "type": "object"
+        },
+        "summary": {
+          "type": "object"
+        },
+        "notes": {
+          "type": "object"
+        },
+        "branch": {
+          "type": "object"
+        },
+        "map": {
+          "type": "object"
+        },
+        "callout": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    },
+    "topicProperties": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "object",
+          "properties": {
+            "font_family": {
+              "type": "string"
+            },
+            "font_size": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "font_weight": {
+              "oneOf": [
+                {
+                  "enum": [
+                    "normal",
+                    "bold"
+                  ]
+                },
+                {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 900
+                }
+              ]
+            },
+            "font_style": {
+              "enum": [
+                "normal",
+                "italic"
+              ]
+            },
+            "color": {
+              "$ref": "#/$defs/color"
+            },
+            "text_transform": {
+              "enum": [
+                "none",
+                "uppercase",
+                "lowercase",
+                "capitalize"
+              ]
+            },
+            "decoration": {
+              "enum": [
+                "none",
+                "underline",
+                "line_through"
+              ]
+            },
+            "align": {
+              "enum": [
+                "left",
+                "center",
+                "right",
+                "justify"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "fill": {
+          "type": "object",
+          "properties": {
+            "color": {
+              "$ref": "#/$defs/color"
+            },
+            "opacity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          },
+          "additionalProperties": false
+        },
+        "border": {
+          "type": "object",
+          "properties": {
+            "color": {
+              "$ref": "#/$defs/color"
+            },
+            "width": {
+              "type": "number",
+              "minimum": 0
+            },
+            "pattern": {
+              "enum": [
+                "solid",
+                "dashed",
+                "dotted",
+                "dash_dot"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "shape": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "enum": [
+                "rectangle",
+                "rounded_rectangle",
+                "ellipse",
+                "underline",
+                "double_underline",
+                "none"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "color": {
+      "type": "string",
+      "pattern": "^#[0-9A-Fa-f]{6}(?:[0-9A-Fa-f]{2})?$"
+    },
+    "rule": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "match",
+        "style_ref",
+        "priority",
+        "description"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "kind": {
+          "enum": [
+            "semantic",
+            "structural"
+          ]
+        },
+        "match": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "style_ref": {
+          "$ref": "#/$defs/id"
+        },
+        "priority": {
+          "type": "integer"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "inheritance": {
+      "type": "object",
+      "required": [
+        "mode",
+        "enabled",
+        "scopes",
+        "property_mode",
+        "source",
+        "description"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "const": "first_child"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "scopes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "enum": [
+              "direct_children",
+              "tree_table_row_cells"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "property_mode": {
+          "const": "missing_only"
+        },
+        "source": {
+          "const": "first_child_resolved_style"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

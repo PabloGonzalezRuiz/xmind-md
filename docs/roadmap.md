@@ -43,6 +43,7 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 - [x] Añadir fixture Markdown, prueba de caracterización IR y comparación de identidad/estructura entre parser legacy e IR; CI [43221440866](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43221440866), 163 pruebas por Python 3.10–3.12 y build/install correctos.
 
 #### 1.2 Parser con salida IR directa
+- [x] Inspeccionar las rutas actuales y documentar el diseño AST sintáctico → constructor IR → adaptador legacy en [ir-parser-design.md](ir-parser-design.md). Diseño aprobado como base de implementación; todavía no está implementado.
 - [ ] Separar la sintaxis temporal del modelo de dominio legacy.
 - [ ] Trasladar gradualmente la construcción de entidades a fábricas/constructores IR.
 - [ ] Eliminar la conversión recursiva `_convert()` / `_topic()` de `ir_parser.py` cuando toda la información tenga una ruta directa y probada.
@@ -154,4 +155,4 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 
 ## Ejecución activa
 
-La Fase 0 queda documentada en ADR-001. La Fase 1 está iniciada: el mapa inicial de consumidores está en [ir-consolidation-audit.md](ir-consolidation-audit.md). Caracterización inicial y comparación legacy/IR completadas; CI [43221440866](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43221440866) verde con 163 pruebas por Python 3.10–3.12 y build/install correctos. El repositorio no permite conocer consumidores externos; por prudencia se conservarán las funciones legacy como wrappers/adaptadores durante la migración. Siguiente tarea: diseñar la capa sintáctica temporal que permita construir IR directamente sin un segundo modelo de dominio.
+La Fase 0 queda documentada en ADR-001. La Fase 1 está iniciada: el mapa inicial de consumidores está en [ir-consolidation-audit.md](ir-consolidation-audit.md). Caracterización inicial y comparación legacy/IR completadas; CI [43221440866](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43221440866) verde con 163 pruebas por Python 3.10–3.12 y build/install correctos. El repositorio no permite conocer consumidores externos; por prudencia se conservarán las funciones legacy como wrappers/adaptadores durante la migración. Siguiente tarea: implementar por pasos el diseño de [ir-parser-design.md](ir-parser-design.md), comenzando por AST sintáctico y builder IR.

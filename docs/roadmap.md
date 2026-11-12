@@ -1,6 +1,6 @@
 # Hoja de ruta XMind MD / PMD
 
-**Actualizada:** 2026-11-12. **Rama:** `main`. **Commit auditado:** `2c206dbc679ca6b77dded1f108192efff5ed442d`.
+**Actualizada:** 2026-11-12. **Rama:** `main`. **Referencia de auditoría:** informe [Tema1](reference-analysis-tema1.md); verificar HEAD antes de cada nueva tarea.
 
 Esta es la hoja de ruta vigente. El histórico de tareas Alpha se conserva en `development-status.md`; no debe confundirse con el trabajo futuro.
 
@@ -80,4 +80,4 @@ Integrar PMD sin romper Markdown→IR; pruebas unitarias/integración/regresión
 
 ## Siguiente paso
 
-Completar Fase 1: análisis profundo de `content.json`, `Tema1.svg` y `Tema1.md`. No implementar todavía parser PMD, catálogo nuevo ni generador SVG.
+La Fase 1 está cerrada para la referencia Tema1. El siguiente trabajo es la **Fase 2: especificación de la biblioteca de estilos, reglas semánticas/estructurales y herencia**. Antes de diseñar la sintaxis PMD, hay que concretar el esquema que la IA consultará, los metadatos de cada estilo y la resolución determinista. Esta fase requiere autorización expresa del usuario. No implementar todavía parser PMD ni catálogo runtime.

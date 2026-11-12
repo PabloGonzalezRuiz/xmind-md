@@ -1,4 +1,5 @@
 """Parser PMD 1.0.0 hacia el modelo canónico IR 1.1.0."""
+
 from __future__ import annotations
 
 import hashlib
@@ -23,12 +24,30 @@ class PMDParseError(ValueError):
 
 
 _FRONT_MATTER_FIELDS = {
-    "pmd_version", "title", "id", "author", "description",
-    "catalog", "inheritance", "metadata", "extensions",
+    "pmd_version",
+    "title",
+    "id",
+    "author",
+    "description",
+    "catalog",
+    "inheritance",
+    "metadata",
+    "extensions",
 }
 _TOPIC_FIELDS = {
-    "id", "parent", "kind", "role", "style_ref", "style_overrides",
-    "structure", "labels", "markers", "task", "layout", "links", "extensions",
+    "id",
+    "parent",
+    "kind",
+    "role",
+    "style_ref",
+    "style_overrides",
+    "structure",
+    "labels",
+    "markers",
+    "task",
+    "layout",
+    "links",
+    "extensions",
 }
 _GLOBAL_DIRECTIVES = {
     "pmd-relationship": "xmind-relationship",
@@ -98,7 +117,10 @@ def _catalog_indexes(
     if reference is None:
         return set(), set()
     data = _catalog_data(catalog)
-    if data.get("catalog_id") != reference["id"] or data.get("catalog_version") != reference["version"]:
+    if (
+        data.get("catalog_id") != reference["id"]
+        or data.get("catalog_version") != reference["version"]
+    ):
         raise PMDParseError(
             "La identidad/versión del catálogo suministrado no coincide con front matter catalog"
         )
@@ -149,14 +171,16 @@ def _transform_document(
     lines = source.splitlines()
     _, front_end = _front_matter(lines)
     accepted = {
-        key: metadata[key] for key in ("title", "id", "author", "description", "extensions")
+        key: metadata[key]
+        for key in ("title", "id", "author", "description", "extensions")
         if key in metadata
     }
     extensions = dict(accepted.get("extensions", {}))
     if "pmd" in extensions:
         raise PMDParseError("El espacio de nombres extensions.pmd está reservado")
     extensions["pmd"] = {
-        key: metadata[key] for key in ("pmd_version", "catalog", "inheritance", "metadata")
+        key: metadata[key]
+        for key in ("pmd_version", "catalog", "inheritance", "metadata")
         if key in metadata
     }
     accepted["extensions"] = extensions
@@ -184,7 +208,11 @@ def _transform_document(
         if marker_char:
             if fence_char is None:
                 fence_char, fence_length = marker_char, marker_len
-            elif marker_char == fence_char and marker_len >= fence_length and not stripped.strip(marker_char):
+            elif (
+                marker_char == fence_char
+                and marker_len >= fence_length
+                and not stripped.strip(marker_char)
+            ):
                 fence_char, fence_length = None, 0
             output.append(raw)
             line_map.append(i + 1)
@@ -204,12 +232,14 @@ def _transform_document(
                 if end is None:
                     raise PMDParseError(f"Directiva :::pmd sin cierre (línea {i + 1})")
                 try:
-                    props = _yaml_mapping("\n".join(lines[i + 1:end]), i + 2, ":::pmd")
+                    props = _yaml_mapping("\n".join(lines[i + 1 : end]), i + 2, ":::pmd")
                 except MarkdownParseError as exc:
                     raise PMDParseError(str(exc)) from exc
                 unknown = set(props) - _TOPIC_FIELDS
                 if unknown:
-                    raise PMDParseError(f"Propiedades desconocidas en :::pmd: {sorted(unknown)} (línea {i + 1})")
+                    raise PMDParseError(
+                        f"Propiedades desconocidas en :::pmd: {sorted(unknown)} (línea {i + 1})"
+                    )
                 if "style_ref" in props and "style" in props:
                     raise PMDParseError("PMD solo admite style_ref; no se admite style")
                 if "style_ref" in props:
@@ -231,7 +261,11 @@ def _transform_document(
                 if "structure" in props and not isinstance(props["structure"], dict):
                     raise PMDParseError(f"structure debe ser un objeto YAML (línea {i + 1})")
                 pending = props
-                legacy = {key: value for key, value in props.items() if key not in {"parent", "role", "structure", "style_ref"}}
+                legacy = {
+                    key: value
+                    for key, value in props.items()
+                    if key not in {"parent", "role", "structure", "style_ref"}
+                }
                 if "style_ref" in props:
                     legacy["style"] = props["style_ref"]
                 output.append(":::xmind")
@@ -278,6 +312,7 @@ def _transform_document(
 
 def _walk_syntax(root: TopicSyntax) -> list[TopicSyntax]:
     result: list[TopicSyntax] = []
+
     def visit(topic: TopicSyntax) -> None:
         result.append(topic)
         for child in topic.children:
@@ -311,7 +346,8 @@ def _stable_pmd_ids(root: TopicSyntax, source_path: str, explicit_ids: set[str])
         title = unicodedata.normalize("NFC", topic.title)
         index = siblings.index(topic)
         occurrence = sum(
-            1 for sibling in siblings[:index + 1]
+            1
+            for sibling in siblings[: index + 1]
             if unicodedata.normalize("NFC", sibling.title) == title
         )
         route = [*titles, title]
@@ -320,6 +356,7 @@ def _stable_pmd_ids(root: TopicSyntax, source_path: str, explicit_ids: set[str])
             topic.id = "auto-" + hashlib.sha256(seed.encode("utf-8")).hexdigest()[:16]
         for child in topic.children:
             visit(child, route, topic.children)
+
     visit(root, [], [root])
 
 
@@ -335,6 +372,7 @@ def _rebuild_parent_tree(
         if "id" in props:
             explicit_ids.add(topic.id)
     inferred_parent: dict[str, str | None] = {}
+
     def index_parents(topic: TopicSyntax, parent: str | None = None) -> None:
         inferred_parent[topic.id] = parent
         for child in topic.children:
@@ -351,7 +389,9 @@ def _rebuild_parent_tree(
             raise PMDParseError("parent debe referenciar un ID explícito de tema")
     for topic_id, parent_id in desired_parent.items():
         if parent_id is not None and parent_id not in by_id:
-            raise PMDParseError(f"parent del tema {topic_id!r} referencia tema inexistente {parent_id!r}")
+            raise PMDParseError(
+                f"parent del tema {topic_id!r} referencia tema inexistente {parent_id!r}"
+            )
         if parent_id == topic_id:
             raise PMDParseError(f"El tema {topic_id!r} no puede ser su propio padre")
     for topic in topics:
@@ -365,6 +405,7 @@ def _rebuild_parent_tree(
         topic.children.sort(key=lambda child: child.source.get("line_start", 0))
     visited: set[str] = set()
     active: set[str] = set()
+
     def check(topic: TopicSyntax) -> None:
         if topic.id in active:
             raise PMDParseError(f"Ciclo detectado en parent del tema {topic.id!r}")
@@ -377,7 +418,9 @@ def _rebuild_parent_tree(
         active.remove(topic.id)
     check(root)
     if visited != set(by_id):
-        raise PMDParseError(f"Jerarquía parent desconectada de la raíz: {sorted(set(by_id) - visited)}")
+        raise PMDParseError(
+            f"Jerarquía parent desconectada de la raíz: {sorted(set(by_id) - visited)}"
+        )
     return explicit_ids, props_by_id
 
 
@@ -397,7 +440,8 @@ def parse_pmd_markdown(
     _remap_source(syntax.root, line_map)
     inferred_topics = _walk_syntax(syntax.root)
     explicit_before_generation = {
-        topic.id for topic in inferred_topics
+        topic.id
+        for topic in inferred_topics
         if "id" in sidecar.get(topic.source.get("line_start"), {})
     }
     # Generar IDs antes de aplicar overrides parent: la ruta de títulos procede
@@ -420,9 +464,7 @@ def parse_pmd_markdown(
         role, style_ref = props.get("role"), props.get("style_ref")
         if role is not None and role not in role_ids:
             raise PMDParseError(f"Rol semántico inexistente en el catálogo: {role!r}")
-        if style_ref is not None and (
-            not isinstance(style_ref, str) or style_ref not in style_ids
-        ):
+        if style_ref is not None and (not isinstance(style_ref, str) or style_ref not in style_ids):
             raise PMDParseError(f"Referencia visual inexistente en el catálogo: {style_ref!r}")
         if "structure" in props:
             descriptor = props["structure"]
@@ -436,10 +478,14 @@ def parse_pmd_markdown(
                 if not isinstance(row, dict) or set(row) != {"cells"}:
                     raise PMDParseError(f"structure.rows[{row_index}] debe contener cells")
                 cells = row["cells"]
-                if not isinstance(cells, list) or not cells or any(
-                    not isinstance(cell, str)
-                    or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]*", cell)
-                    for cell in cells
+                if (
+                    not isinstance(cells, list)
+                    or not cells
+                    or any(
+                        not isinstance(cell, str)
+                        or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]*", cell)
+                        for cell in cells
+                    )
                 ):
                     raise PMDParseError(f"structure.rows[{row_index}].cells debe contener IDs")
                 referenced.extend(cells)
@@ -482,6 +528,7 @@ def _walk_ir_topics(mind_map: MindMap):
         yield topic
         for child in topic.children:
             yield from visit(child)
+
     yield from visit(mind_map.sheet.root_topic)
 
 

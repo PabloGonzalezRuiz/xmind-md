@@ -23,12 +23,12 @@ Este documento identifica los principales archivos versionados y la responsabili
 | `parser.py` | Analiza el subconjunto Markdown enriquecido y produce el AST sintáctico temporal. |
 | `syntax.py` | Tipos AST temporales `DocumentSyntax` y `TopicSyntax`. |
 | `ir_builder.py` | Construye directamente el IR 1.0.0 desde el AST. |
-| `ir_parser.py` | Fachada canónica `parse_markdown_ir()` / `parse_file_ir()`. |
+| `ir_parser.py` | Fachada canónica `parse_markdown_ir()` / `parse_file_ir()`; actualmente produce IR 1.0.0. |
 | `legacy_adapter.py` | Proyecta el AST al modelo legacy para las API antiguas. |
 | `styles.py` | Carga YAML y resuelve estilos IR; fachada de compatibilidad para objetos antiguos. |
 | `legacy_styles.py` | Resolución de estilos del modelo legacy, aislada de la ruta IR. |
 | `cli.py` | Coordina parsing, resolución de estilos y exportación JSON/XMind. |
-| `ir/` | Entidades, serialización y validación del contrato neutral IR 1.0.0. |
+| `ir/` | Entidades, serialización y validación de los contratos neutrales IR 1.0.0/1.1.0. |
 | `adapters/json_adapter.py` | Serializa el modelo IR a JSON. |
 | `adapters/xmind_adapter.py` | Genera libros XMind modernos ZIP + JSON desde IR y valida el perfil soportado. |
 
@@ -62,9 +62,11 @@ Este documento identifica los principales archivos versionados y la responsabili
 | `development.md` | Instalación, CLI, pruebas y ciclo de contribución. |
 | `file-reference.md` | Este catálogo. |
 | `grammar.md` | Sintaxis Markdown y matriz real de implementación. |
-| `ir-specification.md` | Contrato neutral IR 1.0.0. |
+| `ir-specification.md` | Especificación vigente del contrato neutral IR 1.1.0 y compatibilidad 1.0.0. |
 | `ir-schema.json` | JSON Schema Draft 2020-12 del IR. |
-| `ir-migration-plan.md` | Registro histórico de la migración parcial al IR. |
+| `ir-migration-plan.md` | Registro histórico de consolidación y evolución del contrato IR. |
+| `ir-1.1-design.md` | Diseño del contrato IR 1.1.0: roles semánticos y tablas de árbol. |
+| `decisions/ADR-002-ir-semantic-structures.md` | Decisión sobre roles semánticos, estructuras compuestas y versionado 1.1.0. |
 | `decisions/ADR-001-pmd-ir-architecture.md` | Decisiones arquitectónicas de PMD, IR, estilos y adaptadores. |
 | `ir-consolidation-audit.md` | Inventario de módulos, consumidores y riesgos de la consolidación del modelo. |
 | `ir-parser-design.md` | Diseño de AST sintáctico, constructor IR, adaptador legacy y estado de migración del parser. |
@@ -80,7 +82,8 @@ Este documento identifica los principales archivos versionados y la responsabili
 | `examples/constitucion.md` | Ejemplo de entrada Markdown enriquecida. |
 | `examples/xmind-smoke-test.md` | Fuente del libro mínimo para prueba manual XMind Desktop. |
 | `examples/assets/escudo.svg` | Recurso SVG ilustrativo original utilizado por el ejemplo de Constitución. |
-| `examples/ir/constitucion.json` | Ejemplo de documento IR serializado. |
+| `examples/ir/constitucion.json` | Ejemplo histórico IR 1.0.0. |
+| `examples/ir/tree_table.json` | Ejemplo IR 1.1.0 con roles y estructura tree_table. |
 
 ## Pruebas y scripts
 

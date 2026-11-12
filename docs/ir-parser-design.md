@@ -1,6 +1,6 @@
 # Diseño de parsing directo al IR
 
-**Estado:** diseño técnico de la tarea 1.2; pendiente de implementación y validación.
+**Estado:** diseño de referencia; AST, builder y adaptador implementados. La validación de la revisión final depende de CI.
 **Contrato de destino:** IR 1.0.0, sin cambios de esquema en esta tarea.
 
 ## 1. Problema observado
@@ -96,6 +96,7 @@ Diseño objetivo de módulos:
 |---|---|
 | syntax.py | Tipos AST sintácticos y, si conviene, utilidades de procedencia. |
 | parser.py | Gramática actual; produce DocumentSyntax. Las funciones antiguas delegan en el adaptador legacy. |
+| syntax.py | Dataclasses temporales DocumentSyntax y TopicSyntax. |
 | ir_builder.py | AST → IR, con constructores deterministas. |
 | ir_parser.py | Fachada pública parse_markdown_ir() y parse_file_ir(); orquesta parser + builder. |
 | legacy_adapter.py | AST → model.MindMap / model.Topic para compatibilidad temporal. |
@@ -157,4 +158,4 @@ Cada paso se realizará en commits pequeños. No se retirará model.py ni se cam
 
 ## 10. Estado
 
-Este documento define el diseño; no afirma que AST, builder o adaptador inverso estén implementados. La auditoría de hechos observados sigue en ir-consolidation-audit.md, y el estado de ejecución en roadmap.md.
+Implementación observada en la rama: parser.py produce DocumentSyntax/TopicSyntax; ir_builder.py construye directamente MindMap IR; ir_parser.py es una fachada fina; legacy_adapter.py proyecta el AST al modelo antiguo solo para las API legacy. Las pruebas verifican que parse_markdown_ir() no instancia model.MindMap ni model.Topic y que la API antigua conserva niveles de encabezado y texto Markdown. La resolución legacy de estilos sigue pendiente. La auditoría de hechos y la evidencia CI están en ir-consolidation-audit.md y roadmap.md.

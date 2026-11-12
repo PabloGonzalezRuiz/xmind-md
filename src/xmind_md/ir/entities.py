@@ -301,7 +301,7 @@ class MindMap:
     ir_version: str = "1.0.0"
 
     def to_dict(self) -> dict[str, Any]:
-        """Serializa exclusivamente la estructura canónica IR 1.0.0."""
+        """Serializa la estructura canónica de la versión declarada en el documento."""
         return {
             "ir_version": self.ir_version,
             "id": self.id,

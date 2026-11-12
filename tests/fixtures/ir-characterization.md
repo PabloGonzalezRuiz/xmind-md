@@ -68,6 +68,18 @@ Nota **clave**.
 :::xmind-relationship
 id: rel_articulo
 source: articulo_1
-target: articulo_1
+target: topic_7c08e4afc0d151cc
 title: Relación de prueba
+:::
+
+:::xmind-boundary
+id: bd_articulo
+topics: [articulo_1]
+title: Ámbito normativo
+:::
+
+:::xmind-summary
+id: sm_articulo
+topics: [articulo_1]
+title: Resumen del artículo
 :::

@@ -9,6 +9,7 @@
 El objetivo futuro no es depender de la importación Markdown limitada de XMind. PMD permitirá describir roles semánticos, estructuras especiales (incluidas tablas de árbol), referencias de estilo y excepciones. Una IA podrá transformar Markdown ordinario en PMD consultando una biblioteca de estilos y reglas; el conversor resolverá el formato de forma determinista.
 
 Consulta [Dirección de producto y diseño de PMD](docs/pmd-design.md) y la [hoja de ruta](docs/roadmap.md). Esta dirección es futura: no debe confundirse con las capacidades implementadas en la Alpha actual.
+- [Especificación del lenguaje PMD 1.0.0](docs/pmd-language-spec.md).
 
 ## Qué hace hoy la versión Alpha
 

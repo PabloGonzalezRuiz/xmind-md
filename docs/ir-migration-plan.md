@@ -1,7 +1,8 @@
 # Plan de consolidación del modelo intermedio (IR)
 
-**Versión objetivo:** IR 1.0.0  
-**Estado:** MIGRACIÓN PARCIAL. Documento de historial; los adaptadores/CLI están en IR, pero parser y resolución legacy siguen presentes. El estado vigente está en `roadmap.md` y `ir-consolidation-audit.md`.  
+**Versión base histórica:** IR 1.0.0  
+**Versión vigente:** IR 1.1.0  
+**Estado:** consolidación del runtime completada; evolución semántica IR 1.1.0 en curso. Este documento conserva el historial de la migración 1.0.0; el estado operativo está en `roadmap.md` y `development-status.md`.  
 **Alcance:** alinear el modelo Python y sus consumidores con `docs/ir-specification.md`, `docs/ir-schema.json` y `examples/ir/constitucion.json`.
 
 ## 1. Diagnóstico confirmado
@@ -26,7 +27,7 @@ El modelo legacy `src/xmind_md/model.py` conserva la estructura transitoria desc
 
 ## 2. Contrato canónico
 
-Las clases Python representan las entidades del esquema: `MindMap`, `Sheet`, `Topic`, `ContentBlock`, anotaciones, recursos, `Asset`, `Relationship`, `Boundary`, `Summary` y `StyleState`.
+Las clases Python representan las entidades del esquema: `MindMap`, `Sheet`, `Topic`, `ContentBlock`, anotaciones, recursos, `Asset`, `Relationship`, `Boundary`, `Summary` y `StyleState`. IR 1.1.0 añade `Topic.semantic_role`, `Topic.structure`, `TopicStructure`, `TreeTableRow` y `TreeTableCell`.
 
 El modelo no importa parser, PyYAML ni bibliotecas de exportación. Las entidades se convierten a diccionarios JSON con la estructura contractual.
 
@@ -34,8 +35,8 @@ El modelo no importa parser, PyYAML ni bibliotecas de exportación. Las entidade
 
 1. La API legacy se mantiene temporalmente para consumidores aún no migrados.
 2. Los adaptadores deben consumir el contrato canónico, no depender de alias legacy.
-3. Los campos legacy no forman parte de la serialización IR 1.0.0.
-4. La compatibilidad se retirará cuando parser, estilos, CLI y adaptadores hayan migrado.
+3. Los campos nuevos `semantic_role` y `structure` solo se serializan cuando están declarados; IR 1.0.0 conserva su forma original.
+4. La compatibilidad legacy se mantiene aislada; su retirada requiere conocer consumidores externos.
 5. No se permite que un mismo dato tenga dos representaciones divergentes.
 
 ## 4. Secuencia y estado de migración
@@ -94,7 +95,7 @@ La migración de consumidores se considera completada cuando:
 - La suite completa no presenta regresiones.
 - Se comprueba que la exportación no muta el documento IR.
 
-La migración de adaptadores y CLI al IR está completada. En la rama de trabajo `architecture/pmd-ir-roadmap`, el parsing se ha migrado también: `parser.py` produce AST sintáctico, `ir_builder.py` construye directamente el IR e `ir_parser.py` es una fachada. `legacy_adapter.py` proyecta el AST al modelo antiguo únicamente para las funciones `parse_markdown()` / `parse_file()`. La consolidación del modelo de ejecución se completó en `architecture/pmd-ir-roadmap`: `styles.py` no importa `model.py` y deriva las API antiguas a `legacy_styles.py`. `model.py` se conserva como compatibilidad externa aislada. CI final [43227325673](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43227325673) valida 166 pruebas por Python 3.10–3.12 y build/install de wheel/sdist. La exportación XMind permanece deliberadamente parcial; sus límites se describen en `xmind-adapter.md`. El modelo IR puede representar entidades que el parser no genera o que el adaptador no exporta.
+La migración de adaptadores y CLI al IR está completada. En la rama de trabajo `architecture/pmd-ir-roadmap`, el parsing se ha migrado también: `parser.py` produce AST sintáctico, `ir_builder.py` construye directamente el IR e `ir_parser.py` es una fachada. `legacy_adapter.py` proyecta el AST al modelo antiguo únicamente para las funciones `parse_markdown()` / `parse_file()`. La consolidación del modelo de ejecución se completó en `architecture/pmd-ir-roadmap`: `styles.py` no importa `model.py` y deriva las API antiguas a `legacy_styles.py`. `model.py` se conserva como compatibilidad externa aislada. CI final [43227325673](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43227325673) valida 166 pruebas por Python 3.10–3.12 y build/install de wheel/sdist. La exportación XMind permanece deliberadamente parcial; sus límites se describen en `xmind-adapter.md`. Para evitar pérdida silenciosa, el adaptador rechaza explícitamente `semantic_role` y `Topic.structure` hasta la Fase 7. El modelo IR puede representar entidades que el parser no genera o que el adaptador no exporta.
 
 ## 6. Fuera de alcance de esta migración
 
@@ -106,4 +107,16 @@ La migración de adaptadores y CLI al IR está completada. En la rama de trabajo
 
 ## 7. Regla de versionado
 
-El modelo Python, el esquema JSON y la validación semántica implementan el contrato IR 1.0.0. Esto no significa que el parser genere todas las entidades ni que los adaptadores puedan exportarlas. Los cambios incompatibles deberán reflejarse en el versionado del IR y en sus pruebas.
+El modelo Python, el esquema JSON y la validación semántica soportan IR 1.0.0 y 1.1.0. La versión 1.1.0 añade campos opcionales y una migración explícita desde 1.0.0. Esto no significa que el parser genere todas las entidades ni que los adaptadores puedan exportarlas. Los cambios incompatibles deberán reflejarse en el versionado del IR y en sus pruebas.
+
+
+## 8. Evolución IR 1.1.0
+
+La Fase 2 añade roles semánticos y estructuras compuestas. La especificación vigente está en [ir-specification.md](ir-specification.md), el diseño detallado en [ir-1.1-design.md](ir-1.1-design.md) y la decisión en [ADR-002](decisions/ADR-002-ir-semantic-structures.md).
+
+- `Topic.kind` conserva el tipo de representación del tema.
+- `Topic.semantic_role` describe su significado documental o funcional.
+- `Topic.structure` representa `tree_table` con filas y celdas ordenadas que referencian hijos directos.
+- El contenido sigue residiendo en el Topic referenciado.
+- `migrate_ir_1_0_to_1_1()` devuelve una copia y preserva `layout.structure_class` histórica bajo `extensions.xmind.legacy_structure_class`; avisa y no inventa roles.
+- El adaptador XMind rechaza las nuevas semánticas hasta la Fase 7.

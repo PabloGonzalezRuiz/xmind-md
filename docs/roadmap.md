@@ -115,3 +115,6 @@ Hallazgo principal: no se ha localizado una especificación pública normativa y
 - [ ] Crear matriz de compatibilidad por versión de Desktop y perfil generador.
 
 Esta investigación no inicia la Fase 2 de biblioteca de estilos ni autoriza cambios de implementación.
+
+
+La investigación se amplió con [XMindMark](https://github.com/xmindltd/xmindmark), lenguaje TypeScript/MIT de XMind inspirado en Markdown, y con el repositorio oficial [xmind-cli](https://github.com/xmindltd/xmind-cli), que distribuye un Skill MIT para agentes. XMindMark cubre jerarquía, relaciones, límites y resúmenes, y su implementación genera content.json con un Theme predefinido; incluye un helper de spreadsheet, pero no implementa la tabla de árbol legislativa de Tema1. El CLI actual aporta documentación operativa de generación/edición asistida, no una especificación de JSON. Los hallazgos están en `docs/xmind-official-sdk-research.md`.

@@ -61,7 +61,7 @@ Este inventario corresponde a los archivos versionados inspeccionados. No demues
 - [x] Inventario de consumidores internos y suites de prueba localizados.
 - [x] Revisar exportaciones públicas del paquete: `xmind_md.__init__` solo publica `__version__`; las funciones de parsing son importables desde sus módulos. No es posible inferir consumidores externos a partir del repositorio.
 - [x] Crear `tests/fixtures/ir-characterization.md` y una prueba de caracterización que fija IDs, metadatos, estilos, estructura, contenido, anotaciones, enlaces, recursos y entidades globales.
-- [ ] Añadir pruebas de equivalencia para IDs, procedencia, recursos y entidades globales.
+- [x] Añadir prueba comparativa legacy/IR para identidad, jerarquía, tipos de bloque, estilos, anotaciones, enlaces, recursos y entidades globales.
 - [x] CI de referencia de caracterización: [run 43221134964](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43221134964), commit `a2a4c7f640cfcc020c4bad516b5f0026c00bd965`; 162 pruebas correctas en Python 3.10, 3.11 y 3.12 y build/install correcto.
 
 ## 6. Resultado de la caracterización
@@ -77,7 +77,7 @@ Se añadió el fixture `tests/fixtures/ir-characterization.md` y la prueba `test
 
 **Observación de contrato:** el parser actual asigna a los temas `source.file`, `line_start` y `line_end`; no rellena `source.markdown_heading`, aunque la especificación IR lo contempla como campo opcional y algunos ejemplos JSON lo muestran. La caracterización fija el comportamiento real sin introducir una modificación funcional no aprobada.
 
-La suite CI del commit indicado terminó correctamente: 162 pruebas por cada versión Python (3.10, 3.11 y 3.12) y distribución construida/instalada con éxito.
+La prueba comparativa adicional verifica que el parser legacy y el IR conservan las mismas identidades, jerarquía, procedencia, referencias de estilo, anotaciones, enlaces, recursos y entidades globales en el fixture. La suite CI [43221440866](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43221440866) terminó correctamente: 163 pruebas por cada versión Python (3.10, 3.11 y 3.12) y distribución construida/instalada con éxito.
 
 ## 7. Próximo paso técnico
 

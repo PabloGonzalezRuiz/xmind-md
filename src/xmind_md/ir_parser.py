@@ -29,7 +29,7 @@ from .ir import (
     Topic,
     validate_mind_map,
 )
-from .parser import _inline_runs, parse_markdown
+from .parser import _inline_runs, parse_markdown_syntax
 
 
 def _id(prefix: str, value: str) -> str:
@@ -187,29 +187,33 @@ def _block(
     )
 
 
-def _topic(old: Any, assets: dict[str, Asset]) -> Topic:
+def _topic(syntax: Any, assets: dict[str, Asset]) -> Topic:
+    properties = syntax.properties
     resources = ResourceReferences()
-    content = [_block(block, old.id, assets, resources) for block in old.content_blocks]
+    content = [
+        _block(block, syntax.id, assets, resources)
+        for block in syntax.blocks
+    ]
 
     labels = [
-        Label(_id("label", f"{old.id}|{index}|{value}"), value)
-        for index, value in enumerate(old.annotations.get("labels", []))
+        Label(_id("label", f"{syntax.id}|{index}|{value}"), value)
+        for index, value in enumerate(properties.get("labels", []))
     ]
     markers = [
         Marker(
-            _id("marker", f"{old.id}|{index}|{marker.get('group')}|{marker.get('value')}"),
+            _id("marker", f"{syntax.id}|{index}|{marker.get('group')}|{marker.get('value')}"),
             marker["group"],
             marker["value"],
         )
-        for index, marker in enumerate(old.annotations.get("markers", []))
+        for index, marker in enumerate(properties.get("markers", []))
     ]
     notes = []
-    for index, value in enumerate(old.annotations.get("notes", [])):
+    for index, value in enumerate(syntax.notes):
         note_runs = _runs(_inline_runs(value))
         note_text = "".join(run["text"] for run in note_runs)
         notes.append(
             Note(
-                _id("note", f"{old.id}|{index}|{value}"),
+                _id("note", f"{syntax.id}|{index}|{value}"),
                 [_paragraph(note_text, note_runs)],
             )
         )
@@ -217,62 +221,41 @@ def _topic(old: Any, assets: dict[str, Asset]) -> Topic:
         notes=notes,
         labels=labels,
         markers=markers,
-        task=old.annotations.get("task"),
+        task=properties.get("task"),
     )
 
     links = []
-    for index, link in enumerate(old.links):
+    for index, link in enumerate(properties.get("links", [])):
         item = dict(link)
-        item.setdefault("id", _id("link", f"{old.id}|{index}|{item.get('target', '')}"))
+        item.setdefault("id", _id("link", f"{syntax.id}|{index}|{item.get('target', '')}"))
         if "kind" not in item or "target" not in item:
-            raise ValueError(f"Enlace inválido en el tema {old.id!r}: se requieren kind y target")
+            raise ValueError(f"Enlace inválido en el tema {syntax.id!r}: se requieren kind y target")
         links.append(item)
 
     return Topic(
-        id=old.id,
-        title=old.title,
-        kind=old.kind,
+        id=syntax.id,
+        title=syntax.title,
+        kind=properties.get("kind", "attached"),
         content=content,
         annotations=annotation,
         resources=resources,
         links=links,
         style=StyleState(
-            ref=old.style_ref,
-            style_set=old.style_set,
-            overrides=dict(old.style_overrides),
-            resolved=dict(old.resolved_style),
+            ref=properties.get("style"),
+            style_set=properties.get("style_set"),
+            overrides=dict(properties.get("style_overrides", {})),
         ),
-        layout=dict(old.layout),
-        extensions=dict(old.extensions),
-        source=dict(old.source),
-        children=[_topic(child, assets) for child in old.children],
+        layout=dict(properties.get("layout", {})),
+        extensions=dict(properties.get("extensions", {})),
+        source=dict(syntax.source),
+        children=[_topic(child, assets) for child in syntax.children],
     )
 
 
-def _convert(old: Any, source_path: str) -> MindMap:
+def _build_ir(syntax: Any) -> MindMap:
     assets: dict[str, Asset] = {}
+    root_topic = _topic(syntax.root, assets)
 
-    def collect_images(topic: Any) -> None:
-        for resource in topic.resources:
-            src = str(resource.get("src", ""))
-            if src:
-                asset_id = _id("asset", src)
-                assets.setdefault(
-                    asset_id,
-                    Asset(
-                        kind="image",
-                        path=src,
-                        name=Path(src).name or None,
-                        metadata={"alt": resource.get("alt", "")},
-                    ),
-                )
-        for child in topic.children:
-            collect_images(child)
-
-    for root in old.topics:
-        collect_images(root)
-
-    root_topic = _topic(old.topics[0], assets)
     relationships = [
         Relationship(
             id=item["id"],
@@ -282,7 +265,7 @@ def _convert(old: Any, source_path: str) -> MindMap:
             style=StyleState(ref=item.get("style")),
             extensions=dict(item.get("extensions", {})),
         )
-        for item in old.relationships
+        for item in syntax.relationships
     ]
     boundaries = [
         Boundary(
@@ -292,7 +275,7 @@ def _convert(old: Any, source_path: str) -> MindMap:
             style=StyleState(ref=item.get("style")),
             extensions=dict(item.get("extensions", {})),
         )
-        for item in old.boundaries
+        for item in syntax.boundaries
     ]
     summaries = [
         Summary(
@@ -302,34 +285,37 @@ def _convert(old: Any, source_path: str) -> MindMap:
             style=StyleState(ref=item.get("style")),
             extensions=dict(item.get("extensions", {})),
         )
-        for item in old.summaries
+        for item in syntax.summaries
     ]
 
-    layout = dict(old.layout)
+    source_metadata = syntax.metadata
+    title = source_metadata.get("title", syntax.root.title)
+    map_id = source_metadata.get("id") or _id("map", f"{syntax.source_path}|{title}")
+    layout = dict(source_metadata.get("layout", {}))
     sheet_layout = SheetLayout(
         structure=layout.pop("structure", "mind_map"),
         direction=layout.pop("direction", "balanced"),
         properties=layout,
     )
     metadata = {
-        key: old.metadata[key]
+        key: source_metadata[key]
         for key in ("author", "description", "style_set")
-        if key in old.metadata
+        if key in source_metadata
     }
-    if old.extensions:
-        metadata["extensions"] = dict(old.extensions)
-    metadata["source_file"] = source_path
-    sheet_id = _id("sheet", f"{old.id}|{source_path}")
+    if source_metadata.get("extensions"):
+        metadata["extensions"] = dict(source_metadata["extensions"])
+    metadata["source_file"] = syntax.source_path
+    sheet_id = _id("sheet", f"{map_id}|{syntax.source_path}")
     mind_map = MindMap(
-        id=old.id,
-        title=old.title,
+        id=map_id,
+        title=title,
         metadata=metadata,
-        styles=dict(old.styles),
-        style_sets=dict(old.style_sets),
+        styles=dict(source_metadata.get("styles", {})),
+        style_sets=dict(source_metadata.get("style_sets", {})),
         assets=assets,
         sheet=Sheet(
             id=sheet_id,
-            title=old.title,
+            title=title,
             root_topic=root_topic,
             metadata={},
             layout=sheet_layout,
@@ -343,7 +329,7 @@ def _convert(old: Any, source_path: str) -> MindMap:
 
 def parse_markdown_ir(text: str, source_path: str = "<string>") -> MindMap:
     """Analiza Markdown enriquecido y devuelve el modelo canónico IR 1.0.0."""
-    return _convert(parse_markdown(text, source_path), source_path)
+    return _build_ir(parse_markdown_syntax(text, source_path))
 
 
 def parse_file_ir(path: str | Path) -> MindMap:

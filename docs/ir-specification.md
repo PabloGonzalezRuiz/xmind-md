@@ -1,7 +1,7 @@
 # Especificación del modelo intermedio (IR)
 
 **Proyecto:** XMind MD  
-**Versión del contrato:** 1.0.0  
+**Versión vigente del contrato:** 1.1.0 (compatible con documentos 1.0.0)  
 **Estado:** especificación aprobada; esquema Draft 2020-12 validado y ejemplo conforme  
 **Esquema asociado:** [ir-schema.json](ir-schema.json)  
 **Ejemplo:** [constitucion.json](../examples/ir/constitucion.json)
@@ -66,7 +66,9 @@ Es el nodo jerárquico principal. Sus campos son:
 
 - `id`: identificador único dentro del mapa, independiente del título.
 - `title`: texto principal visible.
-- `kind`: clase semántica `attached`, `detached`, `callout` o `summary`. La raíz debe ser `attached`; un tema `detached` exportable a XMind necesita `layout.position` con coordenadas numéricas `x` e `y`. El IR puede representar `summary`, aunque el perfil XMind actual lo rechaza.
+- `kind`: tipo de representación/relación del tema (`attached`, `detached`, `callout` o `summary`); no expresa su significado documental. La raíz debe ser `attached`; un tema `detached` exportable a XMind necesita `layout.position` con coordenadas numéricas `x` e `y`. El IR puede representar `summary`, aunque el perfil XMind actual lo rechaza.
+- `semantic_role`: rol documental o funcional opcional, por ejemplo `legal.article`, `legal.exception`, `table.header_cell` o `table.body_cell`. Es un vocabulario abierto y neutral; el catálogo de la Fase 3 definirá los roles reconocidos.
+- `structure`: descriptor opcional de estructura compuesta que organiza hijos del tema, como `tree_table`.
 - `content`: lista ordenada de bloques estructurados.
 - `annotations`: notas, etiquetas, marcadores y tarea.
 - `resources`: referencias a imágenes, adjuntos y audio.
@@ -141,6 +143,16 @@ Representa un resumen visual asociado a uno o varios temas. Declara su ID, los t
 
 Los límites y resúmenes no deben simularse insertando texto artificial en los títulos de los temas.
 
+### 4.11 Estructuras compuestas de Topic
+
+IR 1.1.0 incorpora `Topic.structure`, opcional y neutral. El primer tipo soportado es `tree_table`, descrito en [ir-1.1-design.md](ir-1.1-design.md).
+
+Una tabla de árbol contiene filas ordenadas (`rows`) y celdas ordenadas (`cells`). Cada celda referencia un tema hijo directo mediante `topic_id`. El rol de celda se expresa en `semantic_role` del tema referenciado, no se duplica en la celda. El título, bloques, anotaciones, recursos y estilo residen exclusivamente en ese Topic.
+
+Cada hijo directo del tema contenedor debe aparecer exactamente una vez; no se admiten referencias repetidas, referencias a nietos ni hijos omitidos. Una celda puede contener otra estructura porque su Topic puede declarar su propio `structure`, lo que permite anidamiento siguiendo el árbol. La primera versión no modela celdas combinadas ni celdas sin Topic propio.
+
+La tabla Markdown (`ContentBlock` de tipo `table`) sigue siendo una estructura de contenido distinta. No debe confundirse con `Topic.structure.type = tree_table`.
+
 ## 5. Sistema de estilos
 
 ### 5.1 Fuentes
@@ -166,9 +178,12 @@ La propiedad más específica prevalece. Las propiedades no declaradas en un niv
 
 ### 5.3 Ausencia y restablecimiento
 
-- Propiedad ausente: hereda el valor anterior.
+- Propiedad ausente: no declara un valor y permite que actúe la cascada.
 - Propiedad con valor explícito: sustituye el valor anterior.
 - `null`: solicita restablecer la propiedad a su valor predeterminado definido por el sistema o por el adaptador, según el contrato de esa propiedad. No significa lo mismo que propiedad ausente.
+- El texto literal `inherited` es un valor explícito y se conserva como tal; no es una instrucción de herencia del IR. Su presencia en el JSON de Tema1 procede de la exportación XMind.
+
+La herencia de `style_set` por descendencia es independiente de estos estados. La futura regla PMD de herencia visual desde el primer hijo pertenecerá al catálogo y al resolutor, con precedencia y procedencia explícitas; no se codificará mediante el literal `inherited`.
 
 ### 5.4 Categorías neutrales
 
@@ -280,13 +295,13 @@ El adaptador JSON es una representación de inspección. El futuro adaptador XMi
 
 ## 11. Versionado y compatibilidad
 
-La versión del contrato utiliza SemVer:
+La versión del contrato utiliza SemVer. IR 1.0.0 es la versión histórica; IR 1.1.0 añade `semantic_role` y `structure` como campos opcionales y conserva la lectura de documentos 1.0.0. Los documentos que utilicen los campos nuevos deben declarar `ir_version: 1.1.0`.
 
 - MAJOR: cambios incompatibles en estructura o semántica.
 - MINOR: campos o capacidades opcionales compatibles.
-- PATCH: correcciones de documentación o restricciones que no cambien la interpretación válida.
+- PATCH: correcciones que no cambien la interpretación válida.
 
-Los documentos deben declarar `ir_version`. Las herramientas deben rechazar versiones mayores desconocidas o activar una migración explícita; no deben reinterpretarlas silenciosamente.
+La migración 1.0.0 → 1.1.0 es explícita. No infiere roles ni estructuras desde títulos, estilos o clases XMind. Una antigua `layout.structure_class` se conserva bajo `extensions.xmind.legacy_structure_class` y requiere migración semántica manual. Las herramientas deben rechazar versiones mayores desconocidas o activar una migración explícita; no deben reinterpretarlas silenciosamente.
 
 ## 12. Separación de responsabilidades
 
@@ -304,7 +319,7 @@ El modelo no importa bibliotecas XMind ni conoce la gramática Markdown. El adap
 
 ## 13. Estado de implementación
 
-El contrato IR 1.0.0, sus entidades, serialización y validación están implementados en Python. El parser Markdown solo produce el subconjunto descrito en `docs/grammar.md`; el adaptador XMind exporta un perfil parcial descrito en `docs/xmind-adapter.md`. La existencia de una entidad o propiedad en el IR no implica que el parser la genere ni que XMind pueda exportarla.
+Los contratos IR 1.0.0 y 1.1.0, sus entidades, serialización y validación están implementados en Python. El parser Markdown solo produce el subconjunto descrito en `docs/grammar.md`; el adaptador XMind exporta un perfil parcial descrito en `docs/xmind-adapter.md`. La existencia de una entidad o propiedad en el IR no implica que el parser la genere ni que XMind pueda exportarla.
 
 Las referencias a estilos se resuelven después de cargar las definiciones embebidas y externas. La validación estructural/semántica del IR y la validación del catálogo de estilos son fases diferenciadas.
 

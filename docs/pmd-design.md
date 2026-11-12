@@ -94,9 +94,13 @@ La IA no será una dependencia obligatoria del núcleo Python: el conversor podr
 
 ## 7. Referencia Tema1
 
-`themes/Tema1/` contiene `content.json`, `Tema1.svg` y `Tema1.md`, exportaciones de referencia; no contiene un `.xmind` original versionado.
+`themes/Tema1/` contiene `content.json`, `Tema1.svg` y `Tema1.md`, exportaciones de referencia; no contiene un `.xmind` original versionado. El análisis detallado y la tabla completa de nodos están en [reference-analysis-tema1.md](reference-analysis-tema1.md).
 
-El JSON contiene 10 temas. `Articulo` usa `org.xmind.ui.treetable.toptitle`; sus hijos `Cabecera` y `cuerpo` usan `org.xmind.internal.topicShape.treeTableCell`, con estilos distintos. `Titulo` lleva `flag-red`; `Articulo`, `flag-red` y `task-oct`. El Markdown conserva principalmente títulos y jerarquía, pero pierde estructura de tabla, estilos y marcadores.
+Hallazgos confirmados: 10 temas; nueve tienen estilo explícito y `ListaBloque` no declara uno en su objeto. `Articulo` usa `structureClass=org.xmind.ui.treetable.toptitle`; sus hijos `Cabecera` y `cuerpo` comparten `shape-class=org.xmind.internal.topicShape.treeTableCell`, pero tienen rellenos distintos (`#EEEEEEFF` y `#f6a04d33`). `cuerpo` contiene propiedades de borde con valor `inherited`. `Titulo` lleva `flag-red`; `Articulo`, `flag-red` y `task-oct`.
+
+El SVG relaciona los 10 títulos con los IDs del JSON mediante `data-view-id=topic-title:<id>`; utiliza `foreignObject` para los títulos. El Markdown conserva principalmente texto y jerarquía, pero pierde estructura de tabla, distinción de celdas, estilos y marcadores.
+
+Esta referencia no demuestra herencia nativa del primer hijo hacia los demás. La regla de herencia por primer hijo es una decisión de autoría PMD futura y debe distinguirse de los valores `inherited` y de los perfiles generales del tema XMind.
 
 ## 8. Decisiones aceptadas
 

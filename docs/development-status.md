@@ -1078,3 +1078,26 @@ Se actualizaron documentos de continuidad, arquitectura y estilos. No se modific
 ### Verificación
 
 La ejecución [43210510024](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43210510024), para el commit `9f4d9b5d4eb6abad62005ac109ac860adc937040`, finalizó `completed / success`. Los tres jobs de pruebas Python 3.10, 3.11 y 3.12 finalizaron correctamente; el job de distribuciones construyó y verificó wheel/sdist, los instaló en entornos limpios separados y completó las pruebas CLI. La sincronización documental de la Fase 1 queda validada por CI. Este registro genera un nuevo commit documental y, por tanto, una nueva ejecución CI que debe comprobarse por separado.
+
+
+## 33. Documentación de formatos de intercambio XMind (2026-11-12)
+
+Se han creado dos documentos técnicos dedicados a la conversión:
+
+- [xmind-markdown-behavior.md](xmind-markdown-behavior.md): evidencia de exportación Markdown de Tema1, pérdidas de información, límites de inferencia y distinción entre Markdown nativo XMind y la gramática del proyecto.
+- [xmind-json-format.md](xmind-json-format.md): contenedor XMind moderno, estructura observada de `content.json`, temas, `structureClass`, `shape-class`, estilos, marcadores, SVG y perfil del adaptador actual.
+
+Se han enlazado desde README, arquitectura, índice documental, hoja de ruta y prompt de continuidad.
+
+### Principios registrados
+
+- JSON IR y JSON XMind no son intercambiables.
+- La exportación Markdown de Tema1 conserva texto y jerarquía aproximada, pero pierde IDs, tabla de árbol, estilos, marcadores y layout.
+- La gramática Markdown de XMind MD es propia y no describe la importación nativa de XMind Desktop.
+- `structureClass` y `shape-class` son campos distintos.
+- Propiedad ausente, valor explícito y valor literal `inherited` deben distinguirse.
+- Las afirmaciones basadas en Tema1 se etiquetan como observadas; no se extrapolan a todas las versiones XMind.
+- El adaptador actual genera un perfil XMind ZIP + JSON parcial y rechaza explícitamente características no soportadas.
+- El SVG se usa como referencia visual y de correlación; no se exige identidad XML.
+
+No se ha implementado código ni se ha iniciado la Fase 2 de especificación de estilos. La investigación de importación/exportación controlada y nuevos fixtures queda pendiente.

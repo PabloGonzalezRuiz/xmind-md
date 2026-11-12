@@ -83,6 +83,8 @@ def _strict_yaml_mapping(source: str, line: int, label: str) -> dict[str, Any]:
             inspect(root)
     except yaml.YAMLError as exc:
         raise PMDParseError(f"YAML inválido en {label}, línea {line}: {exc}") from exc
+    except RecursionError as exc:
+        raise PMDParseError(f"Estructura YAML demasiado profunda en {label} (línea {line})") from exc
     try:
         return _yaml_mapping(source, line, label)
     except MarkdownParseError as exc:
@@ -170,6 +172,10 @@ def _catalog_indexes(
         if role["id"] in role_ids:
             raise PMDParseError(f"Catálogo PMD inválido: rol duplicado {role['id']!r}")
         role_ids.add(role["id"])
+        if "applies_to" in role and (
+            not isinstance(role["applies_to"], list) or "topic" not in role["applies_to"]
+        ):
+            raise PMDParseError(f"El rol {role['id']!r} no es aplicable a topics")
         if role.get("style_ref") is not None:
             if not isinstance(role["style_ref"], str):
                 raise PMDParseError(f"Catálogo PMD inválido: style_ref inválido para {role['id']}")
@@ -179,6 +185,10 @@ def _catalog_indexes(
             raise PMDParseError("Catálogo PMD inválido: definición de estilo sin id textual")
         if style["id"] in style_ids:
             raise PMDParseError(f"Catálogo PMD inválido: estilo duplicado {style['id']!r}")
+        if "applies_to" in style and (
+            not isinstance(style["applies_to"], list) or "topic" not in style["applies_to"]
+        ):
+            raise PMDParseError(f"El estilo {style['id']!r} no es aplicable a topics")
         style_ids.add(style["id"])
     for role_id, style_id in role_styles.items():
         if style_id not in style_ids:
@@ -222,7 +232,9 @@ def _validate_override_mapping(value: Any, shape: dict[str, Any], path: str) -> 
             continue
         if isinstance(expected, dict):
             _validate_override_mapping(item, expected, current_path)
-        elif not isinstance(item, tuple(expected)):
+        elif (isinstance(item, bool) and bool not in expected) or not isinstance(
+            item, tuple(expected)
+        ):
             raise PMDParseError(
                 f"Tipo no válido para {current_path}: se esperaba "
                 f"{', '.join(kind.__name__ for kind in expected)}"
@@ -402,6 +414,10 @@ def _transform_document(
                 i = end + 1
                 continue
             if name in _GLOBAL_DIRECTIVES:
+                end = next((j for j in range(i + 1, len(lines)) if lines[j].strip() == ":::"), None)
+                if end is None:
+                    raise PMDParseError(f"Directiva {name!r} sin cierre (línea {i + 1})")
+                _strict_yaml_mapping("\\n".join(lines[i + 1 : end]), i + 2, f":::{name}")
                 output.append(":::" + _GLOBAL_DIRECTIVES[name])
                 line_map.append(i + 1)
                 i += 1

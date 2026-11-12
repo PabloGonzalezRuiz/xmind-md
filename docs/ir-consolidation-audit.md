@@ -62,7 +62,7 @@ Este inventario corresponde a los archivos versionados inspeccionados. No demues
 - [x] Revisar exportaciones públicas del paquete: `xmind_md.__init__` solo publica `__version__`; las funciones de parsing son importables desde sus módulos. No es posible inferir consumidores externos a partir del repositorio.
 - [x] Crear `tests/fixtures/ir-characterization.md` y una prueba de caracterización que fija IDs, metadatos, estilos, estructura, contenido, anotaciones, enlaces, recursos y entidades globales.
 - [x] Añadir prueba comparativa legacy/IR para identidad, jerarquía, tipos de bloque, estilos, anotaciones, enlaces, recursos y entidades globales.
-- [x] CI de referencia de caracterización: [run 43221134964](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43221134964), commit `a2a4c7f640cfcc020c4bad516b5f0026c00bd965`; 162 pruebas correctas en Python 3.10, 3.11 y 3.12 y build/install correcto.
+- [x] CI de referencia de caracterización: [run 43221440866](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43221440866), commit `cef9359486b438abf50b750dffa03b5fd6c843c4`; 163 pruebas correctas en Python 3.10, 3.11 y 3.12 y build/install correcto.
 
 ## 6. Resultado de la caracterización
 
@@ -81,8 +81,8 @@ La prueba comparativa adicional verifica que el parser legacy y el IR conservan 
 
 ## 7. Próximo paso técnico
 
-Antes de cambiar el parser, añadir pruebas de caracterización independientes de la implementación que validen la salida IR actual. Después, diseñar un AST sintáctico mínimo que preserve la información necesaria para construir IR sin convertir un modelo de dominio legacy. La API legacy podrá delegar en esa ruta y adaptar la salida solo mientras exista una necesidad de compatibilidad.
+La caracterización inicial está completada. El siguiente trabajo es diseñar un AST sintáctico mínimo que preserve toda la información necesaria para construir IR directamente, sin convertir un modelo de dominio legacy. La API legacy podrá delegar en la ruta canónica y adaptar su resultado solo mientras exista una necesidad de compatibilidad.
 
 ## 8. Límites de esta auditoría
 
-Esta tarea es una inspección documental/código estática sobre la base indicada. No se ha ejecutado pytest localmente, no se han añadido pruebas, no se ha cambiado el parser ni se ha retirado el modelo legacy. La CI nueva de la rama deberá verificar los commits documentales; la migración de código solo se considerará completada con pruebas específicas y CI verde.
+Esta tarea comenzó como inspección estática y se amplió con dos pruebas de caracterización en CI. No se ha ejecutado pytest localmente, no se ha cambiado el parser ni se ha retirado el modelo legacy. La CI de la rama ha validado las pruebas en Python 3.10, 3.11 y 3.12 y la construcción/instalación de distribuciones. La migración del parser solo se considerará completada cuando la ruta canónica construya IR directamente y las pruebas de regresión sigan verdes.

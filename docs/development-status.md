@@ -1241,7 +1241,7 @@ Se añadió el fixture `tests/fixtures/ir-characterization.md` y una prueba que 
 
 ### Comportamiento validado
 - Front matter obligatorio y versión PMD exacta.
-- YAML estricto: alias, fechas implícitas, claves duplicadas y valores no admitidos rechazados.
+- YAML estricto: alias, fechas implícitas, claves duplicadas y valores no admitidos rechazados, también en directivas globales.
 - Encabezados ATX y directivas PMD, con rechazo explícito de directivas legacy :::xmind dentro de PMD 1.0.0.
 - IDs automáticos deterministas SHA-256; referencias parent explícitas, adelantadas y validadas como árbol conectado y acíclico.
 - Roles y estilos comprobados contra la identidad/versionado del catálogo.
@@ -1252,7 +1252,7 @@ Se añadió el fixture `tests/fixtures/ir-characterization.md` y una prueba que 
 - parse_markdown_ir() y parse_file_ir() siguen produciendo IR 1.0.0; no se ha alterado el parser Markdown ni la compatibilidad legacy.
 
 ### Verificación CI
-- Run: https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43259224463
+- Run: https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43260491163
 - Commit probado: 71c1875a2697f2fa83749b7183965fd38bdbde44.
 - Python 3.10, 3.11 y 3.12: 207 pruebas superadas en cada versión.
 - Ruff lint y format: correctos.

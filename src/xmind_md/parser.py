@@ -510,7 +510,8 @@ def parse_markdown_syntax(text: str, source_path: str = "<string>") -> DocumentS
                 {
                     "type": "quote",
                     "content": [
-                        {"type": "paragraph", "text": value, "runs": _inline_runs(value)} for value in quote
+                        {"type": "paragraph", "text": value, "runs": _inline_runs(value)}
+                        for value in quote
                     ],
                     "source": {"file": source_path, "line_start": line_no, "line_end": i},
                 }

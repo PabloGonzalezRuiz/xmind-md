@@ -1,6 +1,6 @@
 # ADR-002: Evolución semántica y estructuras compuestas del IR
 
-- **Estado:** Aceptada para la implementación de la Fase 2
+- **Estado:** Aceptada e implementada en la Fase 2 (CI 43246986236)
 - **Fecha:** 2026-11-12
 - **Ámbito:** contrato IR, roles semánticos y estructuras compuestas
 - **Relacionada con:** ADR-001

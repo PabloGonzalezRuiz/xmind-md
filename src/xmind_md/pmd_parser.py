@@ -153,6 +153,8 @@ def _transform_document(
         if key in metadata
     }
     extensions = dict(accepted.get("extensions", {}))
+    if "pmd" in extensions:
+        raise PMDParseError("El espacio de nombres extensions.pmd está reservado")
     extensions["pmd"] = {
         key: metadata[key] for key in ("pmd_version", "catalog", "inheritance", "metadata")
         if key in metadata
@@ -294,9 +296,7 @@ def _remap_source(topic: TopicSyntax, line_map: list[int]) -> None:
 
 
 def _stable_pmd_ids(root: TopicSyntax, source_path: str, explicit_ids: set[str]) -> None:
-    normalized_path = unicodedata.normalize(
-        "NFC", str(PurePosixPath(source_path.replace("\\", "/")))
-    )
+    normalized_path = unicodedata.normalize("NFC", source_path.replace("\\", "/"))
     if source_path in {"<string>", "<memory>"}:
         normalized_path = "<memory>"
 
@@ -388,8 +388,15 @@ def parse_pmd_markdown(
     except MarkdownParseError as exc:
         raise PMDParseError(str(exc)) from exc
     _remap_source(syntax.root, line_map)
+    inferred_topics = _walk_syntax(syntax.root)
+    explicit_before_generation = {
+        topic.id for topic in inferred_topics
+        if "id" in sidecar.get(topic.source.get("line_start"), {})
+    }
+    # Generar IDs antes de aplicar overrides parent: la ruta de títulos procede
+    # de la jerarquía ATX original, como exige la especificación PMD.
+    _stable_pmd_ids(syntax.root, source_path, explicit_before_generation)
     explicit_ids, props_by_id = _rebuild_parent_tree(syntax.root, sidecar)
-    _stable_pmd_ids(syntax.root, source_path, explicit_ids)
     props_by_id = {
         topic.id: sidecar.get(topic.source.get("line_start"), {})
         for topic in _walk_syntax(syntax.root)

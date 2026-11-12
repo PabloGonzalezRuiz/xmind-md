@@ -270,7 +270,7 @@ def parse_markdown_syntax(text: str, source_path: str = "<string>") -> DocumentS
         "boundaries": [],
         "summaries": [],
     }
-        fence_char = chr(96)
+    fence_char = chr(96)
 
     while i < len(lines):
         raw = lines[i]

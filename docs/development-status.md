@@ -1225,3 +1225,46 @@ Se añadió el fixture `tests/fixtures/ir-characterization.md` y una prueba que 
 - No se modificaron módulos Python, IR, parser Markdown existente, adaptador XMind, `main` ni releases.
 
 **Siguiente fase:** Fase 5 — parser, validador y conversión PMD → IR. Pendiente de autorización expresa.
+
+
+## 37. Parser PMD 1.0.0 y conversión a IR 1.1.0 — Fase 5 (2026-11-12)
+
+**Estado: COMPLETADA en código, pruebas y documentación.** El usuario autorizó expresamente la Fase 5. Se implementó una API PMD separada y se mantuvo intacto el contrato del parser Markdown existente.
+
+### Implementación
+- src/xmind_md/pmd_parser.py: parser PMD 1.0.0, validación semántica y conversión a IR 1.1.0.
+- src/xmind_md/ir_parser.py: reexporta PMDParseError, parse_pmd_markdown() y parse_pmd_file() junto a las API Markdown existentes.
+- src/xmind_md/data/style-catalog.json: catálogo de referencia incluido en el paquete; pyproject.toml declara package data.
+- src/xmind_md/ir_builder.py: conserva IDs explícitos de marcadores cuando se proporcionan, manteniendo generación determinista para los demás.
+- tests/test_pmd_parser.py: pruebas de ejemplos, jerarquía, parent adelantado, tree_table, roles, referencias visuales, overrides, notas, marcadores, YAML estricto, errores y compatibilidad Markdown.
+- docs/pmd-parser.md: guía de API, validación y limitaciones.
+
+### Comportamiento validado
+- Front matter obligatorio y versión PMD exacta.
+- YAML estricto: alias, fechas implícitas, claves duplicadas y valores no admitidos rechazados.
+- Encabezados ATX y directivas PMD, con rechazo explícito de directivas legacy :::xmind dentro de PMD 1.0.0.
+- IDs automáticos deterministas SHA-256; referencias parent explícitas, adelantadas y validadas como árbol conectado y acíclico.
+- Roles y estilos comprobados contra la identidad/versionado del catálogo.
+- style_overrides comprobados por ruta y tipo contra las propiedades neutrales del catálogo; null se conserva e inherited se rechaza.
+- tree_table exige filas no vacías, referencias a IDs explícitos de hijos directos, sin duplicados y cobertura exacta de todos los hijos.
+- Marcadores con IDs explícitos preservados.
+- Conversión final a IR 1.1.0 y validación mediante el validador canónico.
+- parse_markdown_ir() y parse_file_ir() siguen produciendo IR 1.0.0; no se ha alterado el parser Markdown ni la compatibilidad legacy.
+
+### Verificación CI
+- Run: https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43259224463
+- Commit probado: 71c1875a2697f2fa83749b7183965fd38bdbde44.
+- Python 3.10, 3.11 y 3.12: 207 pruebas superadas en cada versión.
+- Ruff lint y format: correctos.
+- Smoke test XMind existente: correcto.
+- Wheel y sdist: construidos, contenido/licencia verificados, instalados en entornos limpios y probados correctamente.
+- El catálogo incluido se empaqueta y está disponible en la distribución.
+
+### Límites explícitos
+- No hay CLI PMD.
+- No se ejecuta aún la cascada completa de reglas, defaults y herencia por primer hijo del catálogo; el parser valida y conserva referencias, roles y overrides.
+- No se convierte el catálogo PMD a style_sets/styles del resolutor IR 1.x.
+- El adaptador XMind sigue rechazando roles/estructuras IR 1.1.0; su ampliación corresponde a Fase 7.
+- No se ha modificado main, no se ha integrado la rama ni se ha publicado release.
+
+**Siguiente fase:** Fase 6 — conversión asistida por IA de Markdown convencional a PMD. Pendiente de autorización expresa.

@@ -17,10 +17,7 @@ def _stable_id(prefix: str, seed: str) -> str:
 
 
 def _plain_runs(runs: list[dict[str, Any]]) -> str:
-    return "".join(
-        str(run.get("text", run.get("alt", "")))
-        for run in runs
-    )
+    return "".join(str(run.get("text", run.get("alt", ""))) for run in runs)
 
 
 def _list_plain_text(items: list[dict[str, Any]]) -> str:
@@ -57,9 +54,7 @@ def _topic(syntax: TopicSyntax) -> Topic:
             resources.append({"alt": block.get("alt", ""), "src": block.get("src", "")})
 
     annotations = {
-        key: properties[key]
-        for key in ("labels", "markers", "task")
-        if key in properties
+        key: properties[key] for key in ("labels", "markers", "task") if key in properties
     }
     if syntax.notes:
         annotations["notes"] = list(syntax.notes)

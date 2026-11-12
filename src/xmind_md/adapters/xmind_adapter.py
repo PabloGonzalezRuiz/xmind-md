@@ -1,4 +1,4 @@
-"""Adaptador IR 1.0.0 para generar libros XMind modernos (ZIP + JSON).
+"""Adaptador IR 1.x para generar libros XMind modernos (ZIP + JSON).
 
 El adaptador solo consume entidades canónicas. No interpreta Markdown, no
 resuelve estilos y rechaza explícitamente las capacidades que aún no exporta.
@@ -111,7 +111,9 @@ def _validate_topic_layout(topic: Topic) -> None:
 
 def _validate_supported_features(mind_map: MindMap) -> None:
     if not isinstance(mind_map, MindMap):
-        raise TypeError("El adaptador XMind requiere un MindMap IR 1.0.0.")
+        raise TypeError("El adaptador XMind requiere un MindMap IR compatible.")
+    if mind_map.ir_version not in {"1.0.0", "1.1.0"}:
+        raise XMindAdapterError(f"Versión IR no soportada: {mind_map.ir_version!r}")
     if mind_map.assets:
         raise XMindAdapterError("La exportación de recursos/imágenes aún no está implementada.")
     unsupported_metadata = set(mind_map.metadata) - {
@@ -141,6 +143,18 @@ def _validate_supported_features(mind_map: MindMap) -> None:
     topic_ids: set[str] = set()
 
     def visit(topic: Topic, *, is_root: bool = False) -> None:
+        if topic.semantic_role is not None:
+            raise XMindAdapterError(
+                f"El rol semántico de '{topic.title}' aún no tiene mapeo XMind."
+            )
+        if topic.structure is not None:
+            raise XMindAdapterError(
+                f"La estructura compuesta de '{topic.title}' aún no está soportada."
+            )
+        if "structure_class" in topic.layout and mind_map.ir_version == "1.1.0":
+            raise XMindAdapterError(
+                f"layout.structure_class de '{topic.title}' no es neutral en IR 1.1.0."
+            )
         if topic.kind not in {"attached", "detached", "callout"}:
             raise XMindAdapterError(
                 f"El tema '{topic.title}' tiene kind='{topic.kind}'; "

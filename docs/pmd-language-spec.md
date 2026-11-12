@@ -205,10 +205,10 @@ Texto de contenido.
 Reglas:
 - En PMD 1.0.0 solo se admite `structure.type: tree_table`.
 - `rows` es lista ordenada no vacía; cada fila tiene una lista `cells` no vacía.
-- Cada celda referencia un hijo directo del contenedor.
+- Cada celda referencia un hijo directo del contenedor. En la sintaxis PMD, cada entrada de `cells` es el ID textual del hijo; el parser la normaliza a `TreeTableCell(topic_id=<id>)`.
 - No se repiten IDs y todos los hijos directos deben aparecer exactamente una vez.
 - El orden de filas y celdas es significativo.
-- El rol de celda se declara en el tema referenciado; no se duplica en el descriptor.
+- El rol de celda se declara en el tema referenciado; no se duplica en el descriptor. La lista abreviada de IDs en PMD se convierte en objetos `{topic_id: ...}` en IR 1.1.0, conservando el orden.
 - No hay celdas vacías, referencias a nietos, celdas combinadas, rowspan/colspan ni celdas sin tema propio.
 - Una celda puede contener otra estructura, siguiendo el árbol.
 
@@ -266,7 +266,7 @@ Si un tema no declara ID, el parser genera uno determinista:
 4. Unir los componentes con U+0000 y calcular SHA-256 UTF-8.
 5. Usar `auto-` + los primeros 16 caracteres hexadecimales minúsculos.
 
-Si no hay ruta de origen se usa `<memory>`. Colisiones con IDs explícitos o generados son error; no se resuelven con sufijos dependientes del orden. Los IDs son opacos, no títulos ni etiquetas semánticas.
+Si no hay ruta de origen se usa `<memory>`. Colisiones con IDs explícitos o generados son error; no se resuelven con sufijos dependientes del orden. El campo `parent` debe resolver a un tema del documento; la relación final debe ser acíclica, conectada y con un solo padre por tema. Los IDs son opacos, no títulos ni etiquetas semánticas.
 
 ## 10. Escapes y delimitadores
 
@@ -298,7 +298,8 @@ Si no hay ruta de origen se usa `<memory>`. Colisiones con IDs explícitos o gen
 | `id/kind/role` | `Topic.id/kind/semantic_role` |
 | `parent` | Relación de pertenencia en `Topic.children`; no se serializa como propiedad del Topic |
 | `style_ref/style_overrides` | `Topic.style.ref/overrides` |
-| `structure` | `Topic.structure` |
+| `structure` | `Topic.structure`; cada ID de `cells` se normaliza a `TreeTableCell.topic_id` |
+| `inheritance.mode` | Política de resolución PMD registrada como metadato de autoría; no altera el contrato IR 1.1.0 |
 | `labels/markers/task` | `Topic.annotations` |
 | Bloques Markdown | `Topic.content` |
 | Nota | `Topic.annotations.notes` |
@@ -313,7 +314,7 @@ Las referencias de estilo del catálogo PMD son referencias de autoría, no nomb
 
 ## 13. Errores y diagnósticos
 
-Los diagnósticos deben incluir ruta, línea, columna, directiva y campo cuando sea posible. Son errores: front matter ausente/duplicado o YAML inválido; versión no soportada; catálogo ausente/inexistente cuando se necesita; raíz ausente o varios H1; directiva de tema sin destino o mal asociada; claves duplicadas/desconocidas; ID vacío/duplicado; rol o estilo inexistente/incompatible; kind inválido; estructura desconocida; filas/celdas vacías; referencias a hijo inexistente/no directo; referencias repetidas o hijos omitidos; propiedad visual inválida o literal `inherited`; entidad global incompleta/duplicada; referencias internas irresolubles; directiva desconocida/sin cierre; contenido no soportado que no pueda preservarse sin pérdida.
+Los diagnósticos deben incluir ruta, línea, columna, directiva y campo cuando sea posible. Son errores: front matter ausente/duplicado o YAML inválido; versión no soportada; catálogo ausente/inexistente cuando se necesita; raíz ausente o varios H1; directiva de tema sin destino o mal asociada; claves duplicadas/desconocidas; ID vacío/duplicado; rol o estilo inexistente/incompatible; kind inválido; estructura desconocida; filas/celdas vacías; referencias a padre inexistente, autorreferencia o ciclo; referencias a hijo inexistente/no directo; referencias repetidas o hijos omitidos; propiedad visual inválida o literal `inherited`; entidad global incompleta/duplicada; referencias internas irresolubles; directiva desconocida/sin cierre; contenido no soportado que no pueda preservarse sin pérdida.
 
 El parser SHOULD acumular errores independientes si puede continuar con seguridad. No devuelve IR válido con errores estructurales. Advertencias y errores deben distinguirse y las advertencias no pueden ocultar pérdidas.
 
@@ -326,7 +327,7 @@ El parser SHOULD acumular errores independientes si puede continuar con segurida
 5. Asociar directivas de tema con su encabezado siguiente.
 6. Asociar contenido y notas al tema activo.
 7. Registrar estructuras y referencias globales.
-8. Resolver referencias de tabla, enlaces y entidades.
+8. Resolver referencias de padres explícitos, celdas de tabla, enlaces y entidades.
 9. Validar roles, estilos, propiedades, cardinalidad y catálogo.
 10. Construir IR 1.1.0 y ejecutar su validación.
 11. Emitir IR solo sin errores; ordenar diagnósticos por posición y código estable.

@@ -5,10 +5,10 @@ import warnings
 import pytest
 
 from xmind_md.ir import (
+    IRValidationError,
     MindMap,
     Sheet,
     Topic,
-    IRValidationError,
     migrate_ir_1_0_to_1_1,
     validate_mind_map,
 )

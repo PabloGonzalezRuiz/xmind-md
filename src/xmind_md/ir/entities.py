@@ -1,4 +1,4 @@
-"""Entidades canónicas del modelo intermedio IR 1.0.0.
+"""Entidades canónicas del modelo intermedio IR 1.x.
 
 Este módulo no depende del parser, de PyYAML ni de motores de exportación.
 """
@@ -107,6 +107,37 @@ class ResourceReferences:
 
 
 @dataclass
+class TreeTableCell:
+    """Referencia a un tema hijo que ocupa una celda de tabla de árbol."""
+
+    topic_id: str
+
+    def to_dict(self) -> dict[str, str]:
+        return {"topic_id": self.topic_id}
+
+
+@dataclass
+class TreeTableRow:
+    """Fila ordenada de una tabla de árbol."""
+
+    cells: list[TreeTableCell] = field(default_factory=list)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {"cells": [cell.to_dict() for cell in self.cells]}
+
+
+@dataclass
+class TopicStructure:
+    """Estructura compuesta neutral asociada a un tema."""
+
+    type: str
+    rows: list[TreeTableRow] = field(default_factory=list)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {"type": self.type, "rows": [row.to_dict() for row in self.rows]}
+
+
+@dataclass
 class Topic:
     id: str
     title: str
@@ -120,6 +151,8 @@ class Topic:
     extensions: dict[str, Any] = field(default_factory=dict)
     source: dict[str, Any] = field(default_factory=dict)
     children: list[Topic] = field(default_factory=list)
+    semantic_role: str | None = None
+    structure: TopicStructure | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -135,6 +168,8 @@ class Topic:
             "extensions": dict(self.extensions),
             "source": dict(self.source),
             "children": [item.to_dict() for item in self.children],
+            **({"semantic_role": self.semantic_role} if self.semantic_role is not None else {}),
+            **({"structure": self.structure.to_dict()} if self.structure is not None else {}),
         }
 
 

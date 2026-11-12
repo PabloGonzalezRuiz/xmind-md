@@ -99,4 +99,4 @@ El catálogo no sustituye a las pruebas: antes de modificar un módulo, inspecci
 
 | `xmind-markdown-behavior.md` | Evidencia y límites de exportación/importación Markdown de XMind; separación frente a la gramática propia del proyecto. |
 | `xmind-json-format.md` | Estructura observada de `content.json`, contenedor XMind moderno, estilos, SVG y perfil del adaptador actual. |
-| `xmind-official-sdk-research.md` | Investigación de documentación y repositorios oficiales TypeScript/MIT de XMind, esquemas, modelo de componentes y serializadores ZIP/JSON. |
+| `xmind-official-sdk-research.md` | Investigación de repositorios oficiales TypeScript/MIT (SDK, modelo, generador y XMindMark), esquemas, gramática de mapas, CLI/Skill y serializadores ZIP/JSON. |

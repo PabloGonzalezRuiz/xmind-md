@@ -139,19 +139,19 @@ def test_markdown_parser_remains_ir_1_0_and_legacy_compatible() -> None:
 
 def test_yaml_aliases_and_implicit_dates_are_rejected() -> None:
     alias_source = _document(
-        ":::pmd\\nid: raiz\\nlabels: &labels [A]\\nextensions: {vendor: *labels}\\n:::\\n# Raíz\\n"
+        ":::pmd\nid: raiz\nlabels: &labels [A]\nextensions: {vendor: *labels}\n:::\n# Raíz\n"
     )
     with pytest.raises(PMDParseError, match="alias YAML"):
         parse_pmd_markdown(alias_source)
 
-    date_source = _document(":::pmd\\nid: raiz\\ntask: {due_date: 2026-12-15}\\n:::\\n# Raíz\\n")
+    date_source = _document(":::pmd\nid: raiz\ntask: {due_date: 2026-12-15}\n:::\n# Raíz\n")
     with pytest.raises(PMDParseError, match="cadenas ISO 8601"):
         parse_pmd_markdown(date_source)
 
 
 def test_explicit_marker_ids_are_preserved() -> None:
     source = _document(
-        ":::pmd\\nid: raiz\\nmarkers:\\n  - id: marca_prioridad\\n    group: priority\\n    value: high\\n:::\\n# Raíz\\n"
+        ":::pmd\nid: raiz\nmarkers:\n  - id: marca_prioridad\n    group: priority\n    value: high\n:::\n# Raíz\n"
     )
     result = parse_pmd_markdown(source)
     assert result.sheet.root_topic.annotations.markers[0].id == "marca_prioridad"

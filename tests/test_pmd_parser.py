@@ -178,6 +178,12 @@ def test_style_override_paths_and_types_are_checked_against_catalog() -> None:
 
 
 def test_global_pmd_directives_use_strict_yaml_validation() -> None:
-    source = _document("# Raíz\n:::pmd-boundary\ntitle: &name Uno\ntopics: *name\n:::\n")
+    source = _document("\n".join([
+        "# Raíz",
+        ":::pmd-boundary",
+        "title: &name Uno",
+        "topics: *name",
+        ":::",
+    ]))
     with pytest.raises(PMDParseError, match="alias YAML"):
         parse_pmd_markdown(source)

@@ -48,11 +48,13 @@ def migrate_ir_1_0_to_1_1(mind_map: MindMap) -> MindMap:
 
     visit(migrated.sheet.root_topic, "sheet.root_topic")
     if preserved:
-        warnings.warn(
+        warning_message = (
             "Se han preservado clases estructurales XMind históricas como "
             "extensions.xmind.legacy_structure_class; requieren migración "
             "semántica manual antes de exportar como estructura neutral: "
-            + ", ".join(preserved),
+        )
+        warnings.warn(
+            f"{warning_message}{', '.join(preserved)}",
             UserWarning,
             stacklevel=2,
         )

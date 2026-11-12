@@ -1,6 +1,6 @@
 # Diseño del contrato IR 1.1.0
 
-**Estado:** diseño aprobado para implementación en Fase 2  
+**Estado:** implementado y validado en Fase 2 (CI 43246986236)  
 **Versión base:** IR 1.0.0  
 **Versión objetivo:** IR 1.1.0  
 **Decisión:** ADR-002

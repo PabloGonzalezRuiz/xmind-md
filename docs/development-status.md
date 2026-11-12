@@ -14,6 +14,7 @@
 - **Análisis de referencia Tema1:** completado y documentado en [reference-analysis-tema1.md](reference-analysis-tema1.md).
 - **Fase 1:** consolidación del modelo de ejecución completada en `architecture/pmd-ir-roadmap`.
 - **Fase 2:** completada en `architecture/pmd-ir-roadmap`; IR 1.1.0, validación, esquema, migración, ejemplos y documentación verificados.
+- **Fase 3:** diseño y documentación completados en `architecture/pmd-ir-roadmap`; catálogo PMD 1.0.0, esquema JSON, vocabulario semántico, estilos visuales, reglas y herencia por primer hijo especificados. No existe implementación runtime del catálogo.
 - **Regla:** distinguir implementado, decidido y pendiente; no iniciar una fase nueva sin autorización expresa.
 
 ## 1. Para qué sirve este documento
@@ -1159,3 +1160,36 @@ La Fase 0 está documentada. La Fase 1 está en curso. La inspección inicial de
 ## 11. Caracterización del IR (2026-11-12)
 
 Se añadió el fixture `tests/fixtures/ir-characterization.md` y una prueba que fija IDs, metadatos, estilos, contenido estructurado, anotaciones, enlaces, assets, relaciones, límites, resúmenes y determinismo de serialización. La CI [43221440866](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43221440866), commit `cef9359486b438abf50b750dffa03b5fd6c843c4`, terminó `success`: 163 pruebas en cada una de Python 3.10, 3.11 y 3.12, más build/install. Se añadió también una comparación de caracterización entre parser legacy e IR. La caracterización refleja el comportamiento observado; no se ha cambiado el parser ni retirado el modelo legacy. La migración continúa pendiente.
+
+
+## 35. Catálogo semántico y visual PMD — Fase 3 (2026-11-12)
+
+**Estado: diseño y documentación completados; implementación runtime no iniciada.**
+
+### Artefactos creados
+- `catalog/style-catalog.json`: catálogo de referencia PMD 1.0.0.
+- `docs/style-catalog.schema.json`: JSON Schema Draft 2020-12 del catálogo.
+- `docs/style-catalog.md`: contrato, roles, estilos, reglas, precedencia y herencia.
+- `docs/style-resolution-cases.md`: 12 vectores conceptuales de resolución.
+- Actualizados `docs/style-system.md`, `docs/pmd-design.md`, `docs/roadmap.md`, `docs/file-reference.md`, `docs/ai-reconstruction-prompt.md`, `themes/Tema1/README.md` y `README.md`.
+
+### Decisiones cerradas
+- Separación de rol semántico, estructura IR, estilo visual, regla y anotación.
+- Catálogo versionado independientemente de IR; vocabulario abierto de roles.
+- Roles iniciales jurídicos, funcionales y de tabla; estilos neutrales sin claves privadas XMind.
+- Prioridad de reglas semánticas sobre reglas estructurales; estas últimas actúan como fallback.
+- Precedencia por propiedad: defaults → regla estructural → herencia del primer hijo → regla semántica → estilo explícito → override local.
+- Herencia top-down y recursiva por grupo de hijos directos; en `tree_table`, primer hijo de cada fila como fuente independiente.
+- La herencia solo rellena propiedades ausentes; las reglas semánticas y las excepciones explícitas prevalecen.
+- Ausencia, `null` y literal `inherited` conservan significados distintos.
+- Procedencia mínima por propiedad definida para la futura ejecución.
+- `config/styles.yaml` y `resolve_ir_styles()` permanecen intactos y compatibles.
+
+### Verificación y límites
+- Se comprobó que el catálogo y el esquema son JSON sintácticamente válidos y que los identificadores con punto, guion y guion bajo están contemplados por el patrón de ID.
+- Los casos de resolución son vectores de especificación, no pruebas del motor.
+- No se ha ejecutado CI en esta fase ni se ha validado el esquema con un validador JSON Schema independiente; queda como comprobación técnica antes de declarar verificado el artefacto de esquema.
+- No se ha modificado código Python, IR, parser, adaptador XMind, `main` ni releases.
+- La herencia por primer hijo sigue siendo una regla de autoría PMD diseñada, no un comportamiento nativo probado de XMind.
+
+**Siguiente fase:** Fase 4 — especificación del lenguaje PMD. Pendiente de autorización expresa.

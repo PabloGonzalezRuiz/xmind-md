@@ -340,3 +340,27 @@ def test_legacy_and_ir_parsers_preserve_the_same_topic_identity_and_structure():
     assert [item["topics"] for item in legacy.summaries] == [
         item.topic_ids for item in canonical.sheet.summaries
     ]
+
+
+def test_syntax_parser_returns_temporary_syntax_tree():
+    from xmind_md.parser import parse_markdown_syntax
+    from xmind_md.syntax import DocumentSyntax, TopicSyntax
+
+    result = parse_markdown_syntax("# Raíz\n### Nivel tres\n")
+    assert isinstance(result, DocumentSyntax)
+    assert isinstance(result.root, TopicSyntax)
+    assert result.root.children[0].level == 3
+
+
+def test_ir_parser_does_not_construct_legacy_domain_objects(monkeypatch):
+    import xmind_md.model as legacy_model
+
+    def unexpected_legacy_construction(*args, **kwargs):
+        raise AssertionError("La ruta IR no debe construir entidades legacy")
+
+    monkeypatch.setattr(legacy_model.Topic, "__init__", unexpected_legacy_construction)
+    monkeypatch.setattr(legacy_model.MindMap, "__init__", unexpected_legacy_construction)
+
+    result = parse_markdown_ir("# Raíz\n## Rama\n")
+    assert result.sheet.root_topic.title == "Raíz"
+    assert result.sheet.root_topic.children[0].title == "Rama"

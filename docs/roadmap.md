@@ -1,6 +1,6 @@
 # Hoja de ruta XMind MD / PMD
 
-**Actualizada:** 2026-11-12. **Rama de trabajo:** `architecture/pmd-ir-roadmap`. **ADR:** [ADR-001](decisions/ADR-001-pmd-ir-architecture.md).
+**Actualizada:** 2026-11-12. **Rama de trabajo:** `architecture/pmd-ir-roadmap`. **ADR:** [ADR-001](decisions/ADR-001-pmd-ir-architecture.md), [ADR-002](decisions/ADR-002-ir-semantic-structures.md).
 
 Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la biblioteca de estilos antes de resolver la duplicidad del modelo y las carencias estructurales del IR. La secuencia nueva prioriza los contratos de ejecución: no diseñaremos sintaxis para compensar limitaciones del IR.
 
@@ -10,11 +10,11 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 - Base de trabajo: `05efc482c333b266bf1a2bd5fbf2f3fdee129de7`.
 - Rama creada para este trabajo: `architecture/pmd-ir-roadmap`.
 - Release `v0.1.0` publicada como Alpha/prerelease.
-- El flujo CLI es Markdown → `parse_file_ir()` → IR 1.0.0 → resolución de estilos (para XMind) → adaptador JSON/XMind.
-- `parser.py` construye actualmente el modelo `MindMap`/`Topic` de `model.py`; `ir_parser.py` lo convierte al IR. Por tanto, la duplicidad del modelo sigue existiendo en la ruta de parsing.
+- El flujo CLI es Markdown → `parse_file_ir()` → IR 1.0.0 (el parser actual aún genera 1.0.0) → resolución de estilos (para XMind) → adaptador JSON/XMind.
+- La ruta canónica construye IR directamente desde AST; `model.py` solo permanece en adaptadores legacy aislados.
 - `styles.py` resuelve IR y actúa como fachada de compatibilidad; la ruta antigua está aislada en `legacy_styles.py`. `parser.py` produce AST y `legacy_adapter.py` conserva las API antiguas sin afectar al flujo IR.
 - Los adaptadores consumen IR; no se propone reescribirlos desde cero.
-- El IR actual distingue `Topic.kind` de entidades, pero no dispone todavía de un rol semántico explícito ni de una estructura neutral `tree_table`.
+- IR 1.1.0 añade `Topic.semantic_role` y `Topic.structure` con `tree_table`; el adaptador XMind rechaza explícitamente esas capacidades hasta la Fase 7.
 - La tabla Markdown actual no sustituye a una tabla de árbol.
 - La referencia Tema1 y la investigación de implementaciones oficiales XMind están documentadas en `reference-analysis-tema1.md` y `xmind-official-sdk-research.md`.
 - El CI verde de la base histórica no se considerará evidencia de esta rama; cada cambio deberá verificarse con una ejecución nueva.
@@ -68,15 +68,20 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 
 ### Fase 2 — Evolución semántica y estructural del IR
 
-- [ ] Definir el vocabulario y ubicación de roles semánticos, separado de `Topic.kind`.
-- [ ] Definir estructuras compuestas neutrales, empezando por `tree_table`.
-- [ ] Especificar filas, celdas, roles de celda, orden, anidamiento y contenido.
-- [ ] Separar estructura neutral de las claves privadas de XMind.
-- [ ] Revisar el tratamiento de propiedades ausentes, explícitas y el literal `inherited`.
-- [ ] Actualizar entidades, esquema, validación, ejemplos y documentación.
-- [ ] Definir política de versión IR y migración de documentos 1.0.0.
+**Estado: IMPLEMENTACIÓN EN CURSO.** El diseño del contrato 1.1.0 está documentado en [ir-1.1-design.md](ir-1.1-design.md) y ADR-002.
 
-**Criterio de cierre:** esquema y validación aprobados, fixtures positivos/negativos, migración documentada y ninguna filtración de clases internas XMind al IR.
+- [x] Definir roles semánticos abiertos en `Topic.semantic_role`, separados de `Topic.kind`.
+- [x] Definir `Topic.structure` neutral, empezando por `tree_table`.
+- [x] Especificar filas y celdas ordenadas con referencias a temas hijos, roles en los temas y contenido sin duplicación.
+- [x] Definir anidamiento de estructuras a través del árbol de temas.
+- [x] Separar el nuevo contrato de las clases privadas XMind; conservar la clase antigua solo para migración IR 1.0.0.
+- [x] Precisar ausencia, valor explícito, `null` y literal `inherited`.
+- [x] Definir versionado IR 1.1.0 y migración explícita desde 1.0.0.
+- [x] Añadir entidades Python, esquema JSON, validación semántica y ejemplo 1.1.0.
+- [ ] Completar pruebas positivas/negativas, round-trip y validación de migración en CI.
+- [ ] Sincronizar documentación operativa y verificar wheel/sdist.
+
+**Criterio de cierre:** esquema y validación aprobados, fixtures positivos/negativos, migración documentada y ninguna filtración de clases internas XMind al IR. El adaptador XMind debe rechazar explícitamente las nuevas estructuras hasta que se implemente su mapeo en Fase 7.
 
 ### Fase 3 — Catálogo semántico y visual de estilos
 
@@ -158,4 +163,4 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 
 ## Ejecución activa
 
-La Fase 0 y la Fase 1 están completadas en la rama de trabajo. El mapa de consumidores, la caracterización y el resultado de la migración están en [ir-consolidation-audit.md](ir-consolidation-audit.md); el diseño de parsing en [ir-parser-design.md](ir-parser-design.md). La ruta canónica ya construye IR desde AST y la resolución legacy está aislada en legacy_styles.py. Se conserva model.py y las API legacy por no conocerse consumidores externos; no se han integrado cambios en main ni publicado una nueva release. CI final: [run 43227325673](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43227325673), 166 pruebas por Python 3.10–3.12, Ruff, build e instalación de wheel/sdist correctos. **Siguiente paso: Fase 2 — evolución semántica y estructural del IR. Está pendiente de autorización expresa; no comenzar hasta recibirla.**
+La Fase 0 y la Fase 1 están completadas en la rama de trabajo. La Fase 2 está autorizada y en implementación; el contrato 1.1.0 y su decisión ADR-002 ya están documentados. El mapa de consumidores, la caracterización y el resultado de la migración están en [ir-consolidation-audit.md](ir-consolidation-audit.md); el diseño de parsing en [ir-parser-design.md](ir-parser-design.md). La ruta canónica ya construye IR desde AST y la resolución legacy está aislada en legacy_styles.py. Se conserva model.py y las API legacy por no conocerse consumidores externos; no se han integrado cambios en main ni publicado una nueva release. CI final: [run 43227325673](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43227325673), 166 pruebas por Python 3.10–3.12, Ruff, build e instalación de wheel/sdist correctos. **Trabajo activo: completar y validar Fase 2 — IR 1.1.0.**

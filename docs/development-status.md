@@ -4,14 +4,15 @@
 
 - **Última actualización:** 2026-11-12
 - **Rama:** `main`
-- **Commit auditado:** `2c206dbc679ca6b77dded1f108192efff5ed442d`
+- **Commit base de auditoría PMD:** `d96cc74cb144e0de851f5ab75b45d9d1030a82aa` (informe Tema1 añadido; verificar HEAD para el estado posterior).
 - **Release:** `v0.1.0` publicada el 2026-11-11 como Alpha/prerelease; incluye wheel, sdist y `SHA256SUMS.txt`.
 - **CI de main:** [run 43206029166](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43206029166), mismo SHA que el commit auditado; cuatro jobs en `success`.
 - **Última prueba manual XMind Desktop registrada:** Windows, XMind 26.05.01107; fixture abierto, guardado y reabierto.
 - **Contrato runtime:** IR 1.0.0.
 - **Implementado:** ruta Markdown → IR → JSON/XMind, CLI, resolutor de estilos, pruebas y publicación Alpha. El adaptador XMind sigue siendo parcial.
 - **Dirección de producto:** PMD como lenguaje de autoría enriquecido, con conversión asistida por IA desde Markdown ordinario. Ver [pmd-design.md](pmd-design.md).
-- **Siguiente trabajo:** completar análisis de referencias reales Tema1. Ver [roadmap.md](roadmap.md).
+- **Fase 1:** análisis de la referencia Tema1 completado y documentado en [reference-analysis-tema1.md](reference-analysis-tema1.md).
+- **Siguiente trabajo:** Fase 2, especificación de biblioteca de estilos, reglas y herencia; requiere autorización expresa. Ver [roadmap.md](roadmap.md).
 - **Regla:** distinguir implementado, decidido y pendiente; no iniciar una fase nueva sin autorización expresa.
 
 ## 1. Para qué sirve este documento
@@ -1045,3 +1046,35 @@ Se creó [roadmap.md](roadmap.md). La Fase 1 sigue en curso; la Fase 2 tiene dir
 ### Alcance de esta auditoría
 
 Se actualizaron documentos de continuidad, arquitectura y estilos. No se modificaron código, parser, esquema IR, configuración runtime ni pruebas. Próximo paso: completar el análisis de Tema1; no implementar todavía parser PMD, catálogo nuevo ni generador SVG.
+
+
+## 32. Cierre de Fase 1 — análisis detallado de la referencia Tema1 (2026-11-12)
+
+**Estado: COMPLETADA para la referencia Tema1.** Se ha analizado el JSON, el SVG y el Markdown y se ha publicado el informe reproducible [reference-analysis-tema1.md](reference-analysis-tema1.md). No se ha modificado código, parser, IR, configuración runtime ni pruebas.
+
+### Hallazgos comprobados
+
+- El JSON contiene una hoja y 10 temas; nueve temas tienen un objeto `style` explícito y `ListaBloque` no lo declara.
+- `Articulo` declara `structureClass=org.xmind.ui.treetable.toptitle`. Sus hijos `Cabecera` y `cuerpo` tienen `shape-class=org.xmind.internal.topicShape.treeTableCell` y estilos distintos.
+- Los rellenos de las dos celdas son `#EEEEEEFF` y `#f6a04d33`. En `cuerpo`, propiedades de borde tienen el valor explícito `inherited`.
+- Marcadores: `Titulo` → `flag-red`; `Articulo` → `flag-red` y `task-oct`.
+- SVG: 856.804 caracteres; 10 `foreignObject`, cero títulos SVG `text`, 61 grupos, 33 rutas, 3 imágenes, 6 `@font-face` y 103 `data-view-id`. Los diez IDs `topic-title:<id>` corresponden a IDs de temas JSON.
+- Markdown conserva texto, jerarquía y algunos énfasis; no representa la tabla de árbol, los roles de celda, los estilos, los marcadores ni la correspondencia por ID.
+- No hay un `.xmind` original versionado en `themes/Tema1/`.
+
+### Decisiones y precauciones
+
+- Se distingue el perfil general `theme`, el estilo explícito de cada tema, una propiedad ausente y el valor especial `inherited`.
+- La herencia PMD por referencia al primer hijo es una regla futura de autoría, no una característica nativa demostrada por Tema1: las dos celdas tienen estilos propios.
+- Las clases/propiedades internas de XMind se traducirán a conceptos neutrales; no deben exponerse como sintaxis PMD obligatoria.
+- El SVG debe priorizar fidelidad visual; no se exige identidad XML ni reproducción de IDs internos.
+
+### Documentación sincronizada
+
+- Creado `docs/reference-analysis-tema1.md`.
+- Actualizados `themes/Tema1/README.md`, `docs/pmd-design.md`, `docs/style-system.md`, `docs/roadmap.md`, `docs/ai-reconstruction-prompt.md`, `docs/file-reference.md` y `README.md`.
+- La Fase 1 queda cerrada para esta referencia. La Fase 2 es el siguiente trabajo, pero no se inicia sin autorización expresa.
+
+### Verificación
+
+La ejecución de CI del commit documental final debe consultarse antes de declarar validada la sincronización. La evidencia se añadirá aquí una vez finalice.

@@ -16,6 +16,8 @@ Sí existen fuentes oficiales de mucho valor:
 
 Estas fuentes son documentación e implementaciones oficiales, pero **no constituyen por sí mismas una especificación normativa completa**. El código revela qué representa y genera cada biblioteca, no necesariamente todo lo que XMind Desktop acepta o cómo renderiza cada propiedad.
 
+También se han localizado dos referencias adicionales: **xmindmark**, un lenguaje oficial de marcado para mapas mentales en TypeScript/MIT que probablemente coincide con la pista del usuario, y **xmind-cli**, la guía oficial más reciente para agentes, cuyo repositorio distribuye un Skill MIT y enlaza el CLI como paquete npm separado.
+
 ## 2. Repositorios oficiales identificados
 
 ### 2.1 xmind-sdk-js
@@ -391,3 +393,133 @@ Se mantiene la decisión vigente:
 - [Arquitectura](architecture.md).
 - [Diseño PMD](pmd-design.md).
 - [Hoja de ruta](roadmap.md).
+
+
+## 10. XMindMark: lenguaje oficial de marcado para mapas mentales
+
+### 10.1 Identificación y vigencia
+
+- Repositorio: https://github.com/xmindltd/xmindmark
+- Especificación: https://github.com/xmindltd/xmindmark/blob/main/docs/specification.md
+- Código del parser: https://github.com/xmindltd/xmindmark/blob/main/src/parser/mindmark.ts
+- Modelo/constructor: https://github.com/xmindltd/xmindmark/blob/main/src/parser/mindmap.ts
+- Conversor XMindMark → XMind: https://github.com/xmindltd/xmindmark/blob/main/src/lib/xmindmark-to-xmind.ts
+- Conversor XMind → XMindMark: https://github.com/xmindltd/xmindmark/blob/main/src/lib/xmind-to-xmindmark.ts
+- Licencia: MIT.
+- Implementación TypeScript; package.json observado: xmindmark 0.3.2, TypeScript ^4.5.4.
+- Autor declarado: XMind Ltd.
+- Último push consultado: 2022-05-17.
+
+Este repositorio encaja especialmente bien con la descripción de un proyecto TypeScript/MIT de XMind relacionado con Markdown. XMindMark se define como un lenguaje ligero para mapas mentales inspirado en Markdown. Es una referencia oficial de sintaxis y conversión, aunque antigua y de alcance limitado.
+
+### 10.2 Gramática documentada
+
+La especificación establece:
+
+- La primera línea no vacía es el tema central.
+- Los temas subordinados se escriben con guion o asterisco y espacio.
+- La indentación expresa niveles; una tabulación equivale a cuatro espacios.
+- Las relaciones se marcan mediante identificadores [n] y [^n]; opcionalmente se añade título.
+- Los límites se marcan con [B], [B1], etc. y pueden recibir título en una línea posterior.
+- Los resúmenes se marcan con [S], [S1], etc.; el título del resumen se declara en una línea posterior y puede tener subtemas.
+- La especificación indica que los temas flotantes no están soportados.
+
+No es CommonMark/GFM completo. Tampoco ofrece una sintaxis general para estilos por nodo, roles semánticos, celdas, tablas de árbol o reglas de herencia visual.
+
+### 10.3 Cómo genera content.json
+
+El parser crea una hoja con:
+
+- id, class = sheet, title.
+- rootTopic con id, class = topic, title, structureClass y titleUnedited.
+- topicPositioning = fixed.
+- relationships como colección de hoja.
+
+Los temas se crean en children.attached. Para límites, el parser guarda boundaries con range por índices de hijos. Para resúmenes, crea simultáneamente un tema en children.summary y un elemento en summaries que contiene range y topicId. Las relaciones se guardan en la hoja con end1Id, end2Id y title.
+
+El constructor aplica un Theme predefinido directamente en código. Ese Theme incluye perfiles map, centralTopic, mainTopic, subTopic, summaryTopic, calloutTopic, floatingTopic, boundary, summary, relationship, importantTopic, minorTopic y expiredTopic, con propiedades técnicas XMind. También añade una extensión provider org.xmind.ui.skeleton.structure.style que declara estructura para centralTopic y mainTopic.
+
+Esto es una evidencia práctica de tres mecanismos diferenciados:
+- estructura del mapa mediante structureClass;
+- perfiles visuales mediante theme;
+- extensiones mediante extensions/provider/content.
+
+La sintaxis de XMindMark no expresa esos detalles de estilo; el conversor los incorpora por defecto.
+
+### 10.4 Tablas y estructuras especiales
+
+El código contiene un helper makeKeyValueTable que:
+
+- establece structureClass = org.xmind.ui.spreadsheet;
+- añade una extensión con provider org.xmind.ui.spreadsheet y metadatos de columnas;
+- crea pares clave/valor como temas subordinados anidados.
+
+Es una pista útil de cómo esta implementación construye una estructura de hoja de cálculo/matriz, pero **no es la tabla de árbol de Tema1**. No demuestra cómo generar org.xmind.ui.treetable.toptitle ni cómo se construyen las celdas treeTableCell. Tampoco forma parte de la gramática textual publicada.
+
+Conclusión: XMindMark confirma que XMind ha usado extensiones y structureClass para construir estructuras distintas del árbol normal, pero no resuelve nuestro caso principal de tabla de árbol legislativa.
+
+### 10.5 Contenedor ZIP y SVG
+
+El conversor XMindMark → XMind genera un ZIP con:
+
+- content.json, cuyo valor es un array de hojas.
+- manifest.json con file-entries para content.json y metadata.json.
+- metadata.json con objeto vacío.
+
+En el código inspeccionado no se añaden mimetype ni miniatura. La compresión usada es DEFLATE nivel 6. Es otro perfil histórico de generación y no debe copiarse automáticamente al adaptador actual.
+
+Para producir SVG, el proyecto descarga y ejecuta Snowbrush 2.47.0 desde assets.xmind.net dentro de Chromium/Puppeteer. Esto documenta que esa versión del proyecto delega el renderizado en un motor de XMind, pero no expone la implementación de Snowbrush ni define una API pública estable para reproducir su layout.
+
+### 10.6 Conversión inversa y pérdidas
+
+XMindMark incluye un conversor XMind → XMindMark que abre el ZIP y lee content.json. Recorre principalmente attached y summary; representa relaciones, límites y resúmenes mediante marcadores textuales.
+
+La implementación no conserva en esa conversión toda la información de un libro XMind: no reconstruye estilos, Theme, markers, imágenes, notas, extensiones, geometría ni todas las clases de hijos. La generación textual de etiquetas aparece desactivada en el código consultado. Por tanto, es una conversión parcial y con pérdida, no un round-trip completo.
+
+### 10.7 Relevancia para PMD
+
+XMindMark aporta precedentes y lecciones:
+
+1. La sintaxis de mapas puede ser mucho más simple que el JSON XMind.
+2. Los marcadores textuales pueden representar relaciones, límites y resúmenes sin exponer el formato interno.
+3. El conversor puede aplicar un Theme predeterminado sin que el usuario escriba propiedades visuales.
+4. Las estructuras especiales necesitan datos JSON adicionales (ranges, summary topic, extensions).
+5. La conversión inversa requiere declarar explícitamente qué información se pierde.
+
+PMD debe ir más allá de XMindMark en el caso de uso del proyecto: semántica legislativa, roles, tabla de árbol, biblioteca de estilos consultable por IA, defaults, excepciones, herencia y propiedades por celda. No conviene adoptar la gramática XMindMark como base sin ampliaciones; sí debe mantenerse como referencia oficial comparativa.
+
+## 11. XMind CLI y Skill oficial para agentes
+
+### 11.1 Repositorio y alcance
+
+- Repositorio: https://github.com/xmindltd/xmind-cli
+- README: https://github.com/xmindltd/xmind-cli/blob/main/README.md
+- Skill: https://github.com/xmindltd/xmind-cli/blob/main/skills/xmind-file/SKILL.md
+- Licencia: MIT.
+- El repositorio público distribuye principalmente el punto de entrada del Skill y su configuración de plugin.
+- El CLI se publica por separado como paquete npm @xmindltd/xmind-cli.
+- Última actualización del repositorio consultada: agosto de 2026.
+
+No se ha inspeccionado código fuente del serializador del CLI en este repositorio. Por tanto, su README y Skill son documentación operativa oficial, no evidencia directa de la estructura interna de content.json.
+
+### 11.2 Flujo oficial de trabajo con agentes
+
+El README describe capacidades para:
+
+- Generar mapas nativos desde especificaciones semánticas o Markdown.
+- Leer y describir libros existentes.
+- Añadir, actualizar, borrar y editar temas en lote.
+- Aplicar estructuras, temas, layouts, marcadores, etiquetas, enlaces e imágenes.
+- Validar archivos XMind.
+
+El Skill separa responsabilidades: el agente aporta criterio semántico, receta y estrategia visual; el CLI ejecuta la generación, edición, adjuntos, imágenes y validación. Para obtener la gramática y recetas vigentes, indica consultar el catálogo y los recursos mediante comandos del CLI (por ejemplo, skill list y skill show markdown-grammar).
+
+Es relevante para nuestra arquitectura IA → PMD → IR porque confirma una separación similar entre interpretación semántica y ejecución mecánica. Sin embargo, el repositorio no publica el detalle completo del compilador ni el esquema interno de generación.
+
+### 11.3 Precauciones
+
+- El repositorio Skill no equivale al repositorio fuente del CLI.
+- No deducir el lenguaje ni la implementación interna del paquete npm a partir de este repositorio.
+- No tratar las recetas dinámicas ni el JSON de generación como formato de almacenamiento XMind.
+- Sus instrucciones de uso son una referencia de producto actual, pero no sustituyen los fixtures de XMind Desktop ni los esquemas históricos.
+

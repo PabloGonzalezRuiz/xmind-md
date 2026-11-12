@@ -2,11 +2,11 @@
 
 **Módulo:** `src/xmind_md/adapters/xmind_adapter.py`  
 **Formato objetivo:** XMind moderno, contenedor ZIP con JSON  
-**Estado:** adaptador IR 1.0.0 integrado en CLI; fixture manual comprobado en XMind Desktop 26.05.01107; perfil de exportación parcial
+**Estado:** adaptador IR 1.x integrado en CLI; fixture manual comprobado en XMind Desktop 26.05.01107; perfil de exportación parcial
 
 ## 1. Responsabilidad y contrato
 
-El adaptador recibe exclusivamente un `xmind_md.ir.MindMap` IR 1.0.0 y genera un paquete `.xmind`. No analiza Markdown, no resuelve estilos y no modifica el IR. El parser admite `summary` en el IR, pero el adaptador exporta únicamente temas `attached`, `detached` y `callout`; un tema `detached` necesita coordenadas `layout.position.x/y`.
+El adaptador recibe un `xmind_md.ir.MindMap` IR 1.0.0/1.1.0 y genera un paquete `.xmind`. Para IR 1.1.0 rechaza explícitamente `Topic.semantic_role` y `Topic.structure` hasta que exista el mapeo correspondiente en la Fase 7. No analiza Markdown, no resuelve estilos y no modifica el IR. El parser admite `summary` en el IR, pero el adaptador exporta únicamente temas `attached`, `detached` y `callout`; un tema `detached` necesita coordenadas `layout.position.x/y`.
 
 - `build_xmind_content(mind_map)`: construye el contenido JSON en memoria.
 - `write_xmind(mind_map, destination)`: genera el contenedor ZIP.
@@ -118,7 +118,7 @@ Estas pruebas demuestran consistencia interna del generador, no compatibilidad c
 - Decisión de arquitectura: [xmind-engine-evaluation.md](xmind-engine-evaluation.md)
 
 
-## 8. Matriz de capacidades IR 1.0.0
+## 8. Matriz de capacidades IR 1.x
 
 La clasificación distingue entre representación exportada, conversión con pérdida explícita y rechazo. «Soportado» significa que existe una conversión estructural probada; no certifica todavía la apertura visual en XMind Desktop.
 
@@ -138,7 +138,10 @@ La clasificación distingue entre representación exportada, conversión con pé
 | `Topic.kind=detached` | Soportado con requisito | `children.detached`; requiere `layout.position` con coordenadas numéricas `x/y` |
 | `Topic.kind=callout` | Soportado | `children.callout` |
 | `Topic.kind=summary` y otros tipos | No soportado | Error explícito |
-| `Topic.layout` | Parcial | `position`, `structure_class`, `branch=folded`, `width`; resto rechazado |
+| `Topic.layout` en IR 1.0.0 | Parcial | `position`, `structure_class`, `branch=folded`, `width`; resto rechazado |
+| `Topic.layout.structure_class` en IR 1.1.0 | No soportado | Campo heredado no neutral; migración lo preserva en `extensions.xmind.legacy_structure_class` |
+| `Topic.semantic_role` en IR 1.1.0 | No soportado todavía | Error explícito; no se descarta el rol |
+| `Topic.structure=tree_table` en IR 1.1.0 | No soportado todavía | Error explícito; el mapeo se implementará en Fase 7 |
 | `Topic.content` paragraph/list/table/code/quote/divider | Soportado con pérdida de formato | Se aplana a texto dentro de `notes.plain.content`; se pierden estilos inline, los destinos de enlaces inline (queda su texto visible) y la estructura original de los bloques |
 | `Topic.content` equation/image/raw | No soportado | Error explícito |
 | Notas sin estilo visual | Soportado con pérdida de formato | Se concatenan con el contenido del tema en `notes.plain.content`; los IDs de nota y la estructura de bloques no se conservan |

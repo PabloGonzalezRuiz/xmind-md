@@ -12,7 +12,7 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 - Release `v0.1.0` publicada como Alpha/prerelease.
 - El flujo CLI es Markdown → `parse_file_ir()` → IR 1.0.0 → resolución de estilos (para XMind) → adaptador JSON/XMind.
 - `parser.py` construye actualmente el modelo `MindMap`/`Topic` de `model.py`; `ir_parser.py` lo convierte al IR. Por tanto, la duplicidad del modelo sigue existiendo en la ruta de parsing.
-- `styles.py` conserva una ruta legacy y otra IR. El modelo legacy sigue siendo importado por el parser y por la ruta legacy del resolutor.
+- `styles.py` resuelve IR y actúa como fachada de compatibilidad; la ruta antigua está aislada en `legacy_styles.py`. `parser.py` produce AST y `legacy_adapter.py` conserva las API antiguas sin afectar al flujo IR.
 - Los adaptadores consumen IR; no se propone reescribirlos desde cero.
 - El IR actual distingue `Topic.kind` de entidades, pero no dispone todavía de un rol semántico explícito ni de una estructura neutral `tree_table`.
 - La tabla Markdown actual no sustituye a una tabla de árbol.

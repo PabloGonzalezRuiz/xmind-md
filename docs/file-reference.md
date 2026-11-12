@@ -47,7 +47,7 @@ Este documento identifica los principales archivos versionados y la responsabili
 
 | Archivo | Función |
 |---|---|
-| `config/styles.yaml` | Ejemplo de conjuntos y definiciones de estilos neutrales. |
+| `config/styles.yaml` | Configuración runtime actual de conjuntos y definiciones de estilos IR 1.x. |
 
 ## Documentación: `docs/`
 
@@ -73,10 +73,19 @@ Este documento identifica los principales archivos versionados y la responsabili
 | `decisions/ADR-001-pmd-ir-architecture.md` | Decisiones arquitectónicas de PMD, IR, estilos y adaptadores. |
 | `ir-consolidation-audit.md` | Inventario de módulos, consumidores y riesgos de la consolidación del modelo. |
 | `ir-parser-design.md` | Diseño de AST sintáctico, constructor IR, adaptador legacy y estado de migración del parser. |
-| `style-system.md` | Modelo de estilos actual y evolución prevista del catálogo semántico y reglas. |
+| `style-system.md` | Modelo de estilos IR 1.x y relación con el catálogo PMD 1.0.0. |
+| `style-catalog.md` | Especificación del catálogo PMD: roles, estilos, reglas, precedencia y herencia. |
+| `style-catalog.schema.json` | JSON Schema Draft 2020-12 del catálogo PMD 1.0.0. |
+| `style-resolution-cases.md` | Vectores conceptuales deterministas para la futura resolución PMD. |
 | `xmind-adapter.md` | Mapeo IR→XMind y matriz de soporte/rechazo/pérdidas. |
 | `xmind-engine-evaluation.md` | Evaluación de motores y decisión de serialización Python nativa. |
 | `xmind-integration-tests.md` | Fixture de referencia, CI y prueba manual XMind Desktop. |
+
+## Catálogo PMD
+
+| Ruta | Función |
+|---|---|
+| `catalog/style-catalog.json` | Catálogo de referencia versionado con roles jurídicos, estilos neutrales y reglas semánticas/estructurales. |
 
 ## Ejemplos
 

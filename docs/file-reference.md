@@ -96,3 +96,6 @@ Este documento identifica los principales archivos versionados y la responsabili
 | `output/` | Salidas locales; el contenido generado no se versiona salvo fixtures expresamente ubicados en tests. |
 
 El catálogo no sustituye a las pruebas: antes de modificar un módulo, inspecciona su implementación y sus tests actuales.
+
+| `xmind-markdown-behavior.md` | Evidencia y límites de exportación/importación Markdown de XMind; separación frente a la gramática propia del proyecto. |
+| `xmind-json-format.md` | Estructura observada de `content.json`, contenedor XMind moderno, estilos, SVG y perfil del adaptador actual. |

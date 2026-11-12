@@ -12,7 +12,7 @@
 - **Implementado:** ruta Markdown → IR → JSON/XMind, CLI, resolutor de estilos, pruebas y publicación Alpha. El adaptador XMind sigue siendo parcial.
 - **Dirección de producto:** PMD como lenguaje de autoría enriquecido, con conversión asistida por IA desde Markdown ordinario. Ver [pmd-design.md](pmd-design.md).
 - **Fase 1:** análisis de la referencia Tema1 completado y documentado en [reference-analysis-tema1.md](reference-analysis-tema1.md).
-- **Trabajo activo:** Fase 1, consolidación del modelo de ejecución. ADR-001, hoja de ruta e inventario de consumidores actualizados; caracterización IR inicial añadida en `tests/fixtures/ir-characterization.md` y `tests/test_ir_parser.py`.
+- **Trabajo activo:** Fase 1, consolidación del modelo de ejecución. Tareas 1.1 y 1.2 completadas; parsing directo a IR implementado con AST temporal, builder y adaptador legacy. Siguiente: tarea 1.3, aislar la ruta legacy del resolutor de estilos.
 - **Regla:** distinguir implementado, decidido y pendiente; no iniciar una fase nueva sin autorización expresa.
 
 ## 1. Para qué sirve este documento
@@ -38,6 +38,7 @@ No sustituye a las especificaciones. Cuando haya discrepancias, consultar los do
 | Validación estructural del IR | [JSON Schema](ir-schema.json) |
 | Ejemplo del IR | [Constitución en IR](../examples/ir/constitucion.json) |
 | Migración del modelo | [Plan de migración](ir-migration-plan.md) |
+| Diseño y estado del parser IR | [Diseño de parsing directo](ir-parser-design.md) |
 | Arquitectura | [architecture.md](architecture.md) |
 | Auditoría funcional | [functional-audit.md](functional-audit.md) |
 | Gramática Markdown | [grammar.md](grammar.md) |
@@ -54,7 +55,7 @@ Prioridad: contrato IR aprobado para la estructura objetivo; código y pruebas p
 
 **Estado: modelo IR, parser, resolutor y adaptadores canónicos integrados; validación formal del esquema completada.**
 
-`src/xmind_md/ir/` contiene las entidades canónicas IR 1.0.0, serialización y validación semántica. Los adaptadores y la CLI consumen el IR, pero `parser.py` todavía construye `src/xmind_md/model.py` y `ir_parser.py` lo convierte al IR. `styles.py` mantiene una ruta legacy. Por tanto, la consolidación del parser y del resolutor sigue pendiente.
+`src/xmind_md/ir/` contiene las entidades canónicas IR 1.0.0, serialización y validación semántica. `parser.py` produce AST temporal; `ir_builder.py` construye directamente las entidades IR e `ir_parser.py` expone la fachada pública. La ruta canónica no instancia el modelo legacy. `styles.py` mantiene todavía una ruta legacy, por lo que la consolidación del resolutor sigue pendiente.
 
 El modelo legacy `src/xmind_md/model.py` todavía presenta estas diferencias:
 
@@ -72,7 +73,7 @@ El puente del parser y el resolutor disponen de rutas canónicas IR. Los adaptad
 
 **Estado: puente de conversión a IR 1.0.0 implementado y probado; API legacy conservada temporalmente.**
 
-`src/xmind_md/ir_parser.py` expone `parse_markdown_ir()` y `parse_file_ir()`. Estas funciones convierten el resultado del parser actual a entidades canónicas, estructuran la hoja y validan el documento resultante. `parse_markdown()` y `parse_file()` conservan la API legacy; `parse_markdown_ir()` y `parse_file_ir()` proporcionan la ruta canónica. La CLI JSON y el generador smoke usan la ruta IR. La tarea 7 ha auditado y probado el subconjunto implementado; `docs/grammar.md` delimita expresamente las funciones no compatibles con CommonMark/GFM completo.
+`parser.py` analiza Markdown y produce `DocumentSyntax` / `TopicSyntax`; `ir_builder.py` construye entidades IR, bloques, anotaciones, assets y entidades de hoja directamente desde el AST; `ir_parser.py` es una fachada fina con `parse_markdown_ir()` y `parse_file_ir()`. La API antigua `parse_markdown()` / `parse_file()` reutiliza el AST y lo adapta mediante `legacy_adapter.py`, sin participar en la ruta canónica. Una prueba impide construir `model.MindMap` o `model.Topic` durante parsing IR. La CLI JSON y el generador smoke usan la ruta IR. `docs/grammar.md` delimita expresamente las funciones no compatibles con CommonMark/GFM completo.
 
 ### 3.3 Estilos
 
@@ -94,18 +95,19 @@ La prueba manual acredita el fixture y los elementos comprobados, no compatibili
 
 ### 3.5 CLI, pruebas, CI y distribuciones
 
-**Estado: CLI JSON/XMind integrada; CI Ubuntu con Ruff y 131 pruebas; wheel/sdist construidos, inspeccionados, instalados y probados con salidas JSON y XMind.**
+**Estado: CLI JSON/XMind integrada; CI Ubuntu con Ruff y 166 pruebas en Python 3.10, 3.11 y 3.12; wheel/sdist construidos, inspeccionados, instalados y probados con salidas JSON y XMind.**
 
 - La CLI genera JSON (`.json`) o libros XMind (`.xmind`) desde `parse_file_ir()`; admite `--format` explícito y deducción por extensión.
 - La exportación XMind resuelve estilos antes de invocar el adaptador. La salida JSON solo resuelve estilos si se proporciona `--styles`.
 - Los errores de entrada, configuración, formato y capacidades XMind no exportables se muestran en stderr y devuelven código 2.
-- La CI actual está en `.github/workflows/ci.yml`, solo Ubuntu/Python 3.12. El job Tests instala en editable, ejecuta Ruff, descarga el fixture de referencia, pytest y genera el smoke XMind.
+- La CI actual está en `.github/workflows/ci.yml`, con matriz Ubuntu/Python 3.10, 3.11 y 3.12. Los jobs de pruebas instalan en editable, ejecutan Ruff, descargan el fixture de referencia, ejecutan pytest y generan el smoke XMind.
 - El job dependiente Build and install distributions construye wheel/sdist, verifica metadatos MIT/archivos esenciales, instala cada distribución en un virtualenv limpio separado y ejecuta CLI para JSON y XMind.
 - Run [42990025087](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42990025087), commit `9831ae89da6e331219e1edbce71f6415752e2f22`: ambos jobs success; Ruff lint/format success; **131 passed in 0.48s**; wheel/sdist y CLI JSON/XMind correctos.
 - La documentación reconciliada se volvió a validar en run [42990299861](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/42990299861), commit `a150ed9db79d6b133f3bf7f18f3a5c1f0fadcded`: ambos jobs success; **131 passed in 0.50s**; build, verificación, instalaciones y CLI JSON/XMind success.
 - Artefactos del run #42990299861: `python-distributions` ID `13841446896`, 73.390 bytes, SHA-256 del ZIP `38a138fcae1d115499ff11cf1d0db6cddf13c6a88db0316e732b66933373b912`; `xmind-desktop-smoke-test` ID `13841477803`, 1.331 bytes, SHA-256 del ZIP `5a579a93abc118feb3091a579567b59b65f72dd0dc5a0c04abdbd4c5b5bfffbf`.
 - El smoke XMind desde distribuciones valida ZIP, MIME, posición y compresión de `mimetype`, `content.json`, tema raíz e integridad. No sustituye la inspección visual manual en XMind Desktop.
 - La CI no prueba todavía Python 3.10/3.11 ni Windows. El log de Actions muestra aviso de deprecación Node.js 20 en las versiones de actions actualmente utilizadas; se mantiene como tarea de mejora.
+- Run [43226219111](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43226219111), commit `5d082a9c09bb41f667fbd5fbf07aa483a5076975`: tres jobs de pruebas y build/install en success; Ruff lint/format correctos; **166 passed** por Python 3.10, 3.11 y 3.12; wheel y sdist instalados y probados en entornos limpios.
 - El usuario no desea instalar ni ejecutar Python localmente; las validaciones se realizan en GitHub Actions.
 
 

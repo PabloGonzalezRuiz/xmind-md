@@ -237,6 +237,7 @@ def test_ir_1_1_tree_table_serializes_roles_and_order_without_duplicate_content(
     validate_mind_map(mind_map)
     result = mind_map.to_dict()["sheet"]["root_topic"]
 
+    assert result["kind"] == "attached"
     assert result["semantic_role"] == "legal.article"
     assert result["structure"] == {
         "type": "tree_table",
@@ -349,3 +350,47 @@ def test_literal_inherited_is_preserved_as_an_explicit_style_value():
         "width": None,
         "pattern": "solid",
     }
+
+
+def test_ir_1_0_rejects_tree_table_structure():
+    mind_map = make_map()
+    root = mind_map.sheet.root_topic
+    root.structure = TopicStructure(
+        "tree_table",
+        [TreeTableRow([TreeTableCell("topic_child")])],
+    )
+
+    with pytest.raises(IRValidationError, match="requiere ir_version 1.1.0"):
+        validate_mind_map(mind_map)
+
+
+def test_semantic_role_must_be_non_empty_text():
+    mind_map = make_map()
+    mind_map.ir_version = "1.1.0"
+    mind_map.sheet.root_topic.semantic_role = "   "
+
+    with pytest.raises(IRValidationError, match="semantic_role"):
+        validate_mind_map(mind_map)
+
+
+def test_tree_table_rejects_unknown_structure_types():
+    mind_map = make_map()
+    mind_map.ir_version = "1.1.0"
+    mind_map.sheet.root_topic.structure = TopicStructure("xmind_tree_table")
+
+    with pytest.raises(IRValidationError, match="estructura no soportada"):
+        validate_mind_map(mind_map)
+
+
+def test_tree_table_rejects_empty_rows_and_cells():
+    mind_map = make_map()
+    mind_map.ir_version = "1.1.0"
+    mind_map.sheet.root_topic.structure = TopicStructure("tree_table", [])
+
+    with pytest.raises(IRValidationError, match="al menos una fila"):
+        validate_mind_map(mind_map)
+
+    mind_map.sheet.root_topic.structure = TopicStructure("tree_table", [TreeTableRow([])])
+
+    with pytest.raises(IRValidationError, match="al menos una celda"):
+        validate_mind_map(mind_map)

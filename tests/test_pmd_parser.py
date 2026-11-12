@@ -16,12 +16,7 @@ CATALOG = """catalog:
 
 def _document(body: str, *, catalog: bool = True) -> str:
     reference = CATALOG if catalog else ""
-    return (
-        '---\npmd_version: "1.0.0"\ntitle: Mapa PMD\n'
-        + reference
-        + "---\n\n"
-        + body
-    )
+    return '---\npmd_version: "1.0.0"\ntitle: Mapa PMD\n' + reference + "---\n\n" + body
 
 
 @pytest.mark.parametrize(
@@ -73,9 +68,7 @@ def test_pmd_generated_topic_ids_are_deterministic_and_source_independent_of_lin
 
 def test_parent_can_reference_a_topic_declared_later() -> None:
     source = _document(
-        "# Raíz\n"
-        ":::pmd\nid: hijo\nparent: padre\n:::\n## Hijo\n"
-        ":::pmd\nid: padre\n:::\n## Padre\n"
+        "# Raíz\n:::pmd\nid: hijo\nparent: padre\n:::\n## Hijo\n:::pmd\nid: padre\n:::\n## Padre\n"
     )
     result = parse_pmd_markdown(source)
     assert [topic.id for topic in result.sheet.root_topic.children] == ["padre"]
@@ -83,9 +76,7 @@ def test_parent_can_reference_a_topic_declared_later() -> None:
 
 
 def test_pmd_note_is_converted_to_topic_annotation() -> None:
-    result = parse_pmd_markdown(
-        _document("# Raíz\n:::pmd-note\nNota **importante**.\n:::\n")
-    )
+    result = parse_pmd_markdown(_document("# Raíz\n:::pmd-note\nNota **importante**.\n:::\n"))
     note = result.sheet.root_topic.annotations.notes[0]
     assert note.content[0].data["text"] == "Nota importante."
 
@@ -93,11 +84,24 @@ def test_pmd_note_is_converted_to_topic_annotation() -> None:
 @pytest.mark.parametrize(
     ("source", "message"),
     [
-        (_document("# Raíz\n", catalog=False).replace('pmd_version: "1.0.0"', 'pmd_version: "2.0.0"'), "pmd_version"),
+        (
+            _document("# Raíz\n", catalog=False).replace(
+                'pmd_version: "1.0.0"', 'pmd_version: "2.0.0"'
+            ),
+            "pmd_version",
+        ),
         (_document(":::pmd\nrole: unknown.role\n:::\n# Raíz\n"), "Rol semántico"),
         (_document(":::pmd\nstyle_ref: visual.no-existe\n:::\n# Raíz\n"), "Referencia visual"),
-        (_document(":::pmd\nid: a\n:::\n# Raíz\n:::pmd\nparent: ausente\n:::\n## Hijo\n"), "parent"),
-        (_document(":::pmd\nid: a\nstructure:\n  type: tree_table\n  rows:\n    - cells: [no_existe]\n:::\n# Raíz\n## Hijo\n"), "tree_table"),
+        (
+            _document(":::pmd\nid: a\n:::\n# Raíz\n:::pmd\nparent: ausente\n:::\n## Hijo\n"),
+            "parent",
+        ),
+        (
+            _document(
+                ":::pmd\nid: a\nstructure:\n  type: tree_table\n  rows:\n    - cells: [no_existe]\n:::\n# Raíz\n## Hijo\n"
+            ),
+            "tree_table",
+        ),
         (_document("# Raíz\n:::xmind\nid: legacy\n:::\n## Hijo\n"), "legacy"),
     ],
 )

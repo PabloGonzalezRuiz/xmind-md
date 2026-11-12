@@ -1101,3 +1101,37 @@ Se han enlazado desde README, arquitectura, índice documental, hoja de ruta y p
 - El SVG se usa como referencia visual y de correlación; no se exige identidad XML.
 
 No se ha implementado código ni se ha iniciado la Fase 2 de especificación de estilos. La investigación de importación/exportación controlada y nuevos fixtures queda pendiente.
+
+
+## 34. Investigación de SDKs, modelo y serializadores oficiales XMind (2026-11-12)
+
+**Estado: investigación documental completada; sin cambios de código ni de dependencias.**
+
+Se identificaron y estudiaron tres repositorios de XMind Ltd., todos TypeScript y MIT:
+
+- **xmind-sdk-js** (SDK oficial, paquete observado 2.2.33; último commit consultado 2024-06-13).
+- **xmind-model** (modelo y JSON Schema Draft-07; paquete 1.1.12; último commit consultado 2020-06-12). Su README recomienda no consumirlo directamente y usar xmind-sdk-js.
+- **xmind-generator** (generador oficial; paquete 1.0.1; último push consultado 2024-06-14).
+
+El informe completo está en [xmind-official-sdk-research.md](xmind-official-sdk-research.md). Se ha ampliado [xmind-json-format.md](xmind-json-format.md) y se han sincronizado arquitectura, roadmap, catálogo y README.
+
+### Hallazgos técnicos
+
+- El esquema de xmind-model representa el documento como array de hojas y contempla rootTopic, estilos, Theme, posicionamiento libre/fijo, solapamiento, relaciones, leyenda y settings.
+- Los temas pueden contener colecciones children diferenciadas (attached, detached, summary, callout), además de structureClass, class, estilos locales, notas, imágenes, marcadores, límites, resúmenes y extensiones.
+- class, structureClass y style.properties tienen funciones distintas. El modelo muestra perfiles Theme y consulta de familias de estilo, pero no documenta completamente la herencia del motor Desktop.
+- xmind-generator construye y serializa una estructura con temas, notas, etiquetas, marcadores, imágenes, relaciones y resúmenes; su metadata declara dataStructureVersion = "2".
+- Los ZIP generados por xmind-sdk-js y xmind-generator difieren del perfil actual del proyecto. El primero incluye content.xml heredado; el segundo incluye resources y metadata v2; ninguno de los dos serializadores inspeccionados añade mimetype y thumbnail. El adaptador XMind MD mantiene su perfil actual con dataStructureVersion 3, layoutEngineVersion 5, mimetype y thumbnail.
+
+### Conclusión y límites
+
+No se ha localizado una especificación pública normativa, completa y versionada que describa todo el formato moderno y el comportamiento interno del motor. Los repositorios son fuentes oficiales de implementación, no una garantía de compatibilidad universal. No se ha añadido ningún SDK como dependencia.
+
+### Pendiente
+
+- Crear fixtures de ambos generadores oficiales y abrir/guardar en XMind Desktop 26.05.01107.
+- Comparar el ZIP antes/después del guardado.
+- Investigar tabla de árbol y reglas de herencia mediante fixtures Desktop específicos.
+- Añadir matriz de compatibilidad por versión y perfil.
+
+La Fase 2 de PMD sigue pendiente de autorización expresa; esta investigación no la inicia.

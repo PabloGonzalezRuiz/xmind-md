@@ -521,7 +521,7 @@ Código de referencia contrastado: `src/xmind_md/cli.py`, `src/xmind_md/ir_parse
 ### Estado técnico vigente
 
 - La CLI admite salida JSON y XMind; infiere por extensión o recibe `--format`.
-- El IR 1.0.0 es el contrato canónico de los adaptadores.
+- Los adaptadores consumen entidades IR 1.x, pero cada uno puede rechazar capacidades explícitamente; el adaptador XMind aún no exporta roles ni tree_table de IR 1.1.0.
 - El parser implementa un subconjunto de Markdown enriquecido, no CommonMark/GFM completos.
 - La resolución de estilos IR implementa defaults, style_defaults, conjunto, estilo nombrado y overrides.
 - El adaptador XMind genera ZIP + JSON moderno y rechaza explícitamente capacidades no soportadas; no es un exportador completo de todas las entidades IR.

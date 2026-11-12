@@ -1,4 +1,4 @@
-"""Adaptador JSON del modelo intermedio canónico IR 1.0.0."""
+"""Adaptador JSON de los contratos del modelo intermedio IR 1.x."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from ..ir import MindMap
 def write_json(mind_map: MindMap, destination: str | Path) -> None:
     """Escribe el documento IR canónico como JSON UTF-8 legible."""
     if not isinstance(mind_map, MindMap):
-        raise TypeError("write_json requiere un MindMap IR 1.0.0.")
+        raise TypeError("write_json requiere un MindMap IR.")
     path = Path(destination)
     path.parent.mkdir(parents=True, exist_ok=True)
     serialized = (

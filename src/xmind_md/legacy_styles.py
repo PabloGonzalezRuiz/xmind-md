@@ -4,7 +4,8 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any
 
-from .model import MindMap as LegacyMindMap, Topic
+from .model import MindMap as LegacyMindMap
+from .model import Topic
 from .styles import StyleError, _deep_merge, _mapping, _validate_definitions
 
 

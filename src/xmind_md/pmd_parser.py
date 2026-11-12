@@ -88,7 +88,9 @@ def _strict_yaml_mapping(source: str, line: int, label: str) -> dict[str, Any]:
     except MarkdownParseError as exc:
         raise PMDParseError(str(exc)) from exc
     except RecursionError as exc:
-        raise PMDParseError(f"Estructura YAML demasiado profunda en {label} (línea {line})") from exc
+        raise PMDParseError(
+            f"Estructura YAML demasiado profunda en {label} (línea {line})"
+        ) from exc
 
 
 def _yaml_dump(value: Mapping[str, Any]) -> str:
@@ -263,9 +265,7 @@ def _transform_document(
                 end = next((j for j in range(i + 1, len(lines)) if lines[j].strip() == ":::"), None)
                 if end is None:
                     raise PMDParseError(f"Directiva :::pmd sin cierre (línea {i + 1})")
-                props = _strict_yaml_mapping(
-                    "\n".join(lines[i + 1 : end]), i + 2, ":::pmd"
-                )
+                props = _strict_yaml_mapping("\n".join(lines[i + 1 : end]), i + 2, ":::pmd")
                 unknown = set(props) - _TOPIC_FIELDS
                 if unknown:
                     raise PMDParseError(

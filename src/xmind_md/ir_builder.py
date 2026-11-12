@@ -3,6 +3,7 @@
 Este módulo convierte construcciones ya reconocidas en entidades canónicas.
 No analiza Markdown ni importa el modelo legacy.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -322,5 +323,3 @@ def build_ir(syntax: Any) -> MindMap:
         ),
     )
     return validate_mind_map(mind_map)
-
-

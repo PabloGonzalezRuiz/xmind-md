@@ -60,7 +60,9 @@ Este documento identifica los principales archivos versionados y la responsabili
 | `grammar.md` | Sintaxis Markdown y matriz real de implementación. |
 | `ir-specification.md` | Contrato neutral IR 1.0.0. |
 | `ir-schema.json` | JSON Schema Draft 2020-12 del IR. |
-| `ir-migration-plan.md` | Registro/plan histórico de migración al IR. |
+| `ir-migration-plan.md` | Registro histórico de la migración parcial al IR. |
+| `decisions/ADR-001-pmd-ir-architecture.md` | Decisiones arquitectónicas de PMD, IR, estilos y adaptadores. |
+| `ir-consolidation-audit.md` | Inventario de módulos, consumidores y riesgos de la consolidación del modelo. |
 | `style-system.md` | Modelo de estilos actual y evolución prevista del catálogo semántico y reglas. |
 | `xmind-adapter.md` | Mapeo IR→XMind y matriz de soporte/rechazo/pérdidas. |
 | `xmind-engine-evaluation.md` | Evaluación de motores y decisión de serialización Python nativa. |

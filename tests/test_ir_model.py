@@ -338,9 +338,7 @@ def test_ir_1_1_rejects_xmind_structure_class_in_layout():
 
 def test_literal_inherited_is_preserved_as_an_explicit_style_value():
     mind_map = make_map()
-    mind_map.sheet.root_topic.style.overrides = {
-        "border": {"color": "inherited", "width": None}
-    }
+    mind_map.sheet.root_topic.style.overrides = {"border": {"color": "inherited", "width": None}}
     defaults = {"topic": {"border": {"color": "#000000", "width": 2, "pattern": "solid"}}}
 
     resolve_styles(mind_map, defaults=defaults)

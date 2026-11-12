@@ -79,7 +79,7 @@ El puente del parser y el resolutor disponen de rutas canónicas IR. Los adaptad
 
 **Estado: resolutor IR 1.0.0 implementado y probado; ruta legacy conservada.**
 
-`resolve_styles()` despacha el modelo canónico a `resolve_ir_styles()` y mantiene el comportamiento anterior para el modelo legacy. La cascada IR aplica valores predeterminados del sistema, `metadata.style_defaults`, conjunto aplicable, estilo nombrado y overrides locales, mediante fusión recursiva por propiedad. Los conjuntos se seleccionan globalmente con `metadata.style_set` o por tema con `Topic.style.style_set`; se heredan por rama y pueden sustituirse en descendientes. Se resuelven temas, notas, relaciones, límites y resúmenes. Las definiciones originales no se mutan.
+`resolve_styles()` despacha el modelo canónico a `resolve_ir_styles()` y deriva los objetos legacy a `legacy_styles.py`. `styles.py` ya no importa `model.py`; el resolver antiguo queda aislado como compatibilidad. La cascada IR aplica valores predeterminados del sistema, `metadata.style_defaults`, conjunto aplicable, estilo nombrado y overrides locales, mediante fusión recursiva por propiedad. Los conjuntos se seleccionan globalmente con `metadata.style_set` o por tema con `Topic.style.style_set`; se heredan por rama y pueden sustituirse en descendientes. Se resuelven temas, notas, relaciones, límites y resúmenes. Las definiciones originales no se mutan.
 
 ### 3.4 Adaptadores y exportación
 

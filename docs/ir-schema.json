@@ -17,7 +17,11 @@
   ],
   "properties": {
     "ir_version": {
-      "const": "1.0.0"
+      "type": "string",
+      "enum": [
+        "1.0.0",
+        "1.1.0"
+      ]
     },
     "id": {
       "$ref": "#/$defs/id"
@@ -816,6 +820,13 @@
           "items": {
             "$ref": "#/$defs/topic"
           }
+        },
+        "semantic_role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "structure": {
+          "$ref": "#/$defs/topicStructure"
         }
       },
       "additionalProperties": false
@@ -1040,6 +1051,61 @@
         "extensions": {
           "type": "object",
           "additionalProperties": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "topicStructure": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/treeTableStructure"
+        }
+      ]
+    },
+    "treeTableStructure": {
+      "type": "object",
+      "required": [
+        "type",
+        "rows"
+      ],
+      "properties": {
+        "type": {
+          "const": "tree_table"
+        },
+        "rows": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/treeTableRow"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "treeTableRow": {
+      "type": "object",
+      "required": [
+        "cells"
+      ],
+      "properties": {
+        "cells": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/treeTableCell"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "treeTableCell": {
+      "type": "object",
+      "required": [
+        "topic_id"
+      ],
+      "properties": {
+        "topic_id": {
+          "$ref": "#/$defs/id"
         }
       },
       "additionalProperties": false

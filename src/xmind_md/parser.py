@@ -691,17 +691,13 @@ def parse_markdown_syntax(text: str, source_path: str = "<string>") -> DocumentS
 
 
 def parse_markdown(text: str, source_path: str = "<string>"):
-    """API legacy: analiza a IR y adapta el resultado al modelo anterior."""
-    from .ir_parser import parse_markdown_ir
+    """API legacy: adapta el AST al modelo anterior solo bajo demanda."""
     from .legacy_adapter import to_legacy_mind_map
 
-    return to_legacy_mind_map(parse_markdown_ir(text, source_path=source_path))
+    return to_legacy_mind_map(parse_markdown_syntax(text, source_path=source_path))
 
 
 def parse_file(path: str | Path):
     """API legacy de archivo, conservada mediante el adaptador de compatibilidad."""
     source = Path(path)
-    from .ir_parser import parse_file_ir
-    from .legacy_adapter import to_legacy_mind_map
-
-    return to_legacy_mind_map(parse_file_ir(source))
+    return parse_markdown(source.read_text(encoding="utf-8"), source_path=source.as_posix())

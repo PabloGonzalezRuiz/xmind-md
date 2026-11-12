@@ -16,6 +16,9 @@ from .entities import (
     StyleState,
     Summary,
     Topic,
+    TopicStructure,
+    TreeTableCell,
+    TreeTableRow,
 )
 from .validation import IRValidationError, validate_mind_map
 
@@ -36,5 +39,8 @@ __all__ = [
     "StyleState",
     "Summary",
     "Topic",
+    "TopicStructure",
+    "TreeTableCell",
+    "TreeTableRow",
     "validate_mind_map",
 ]

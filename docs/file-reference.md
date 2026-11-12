@@ -19,9 +19,12 @@ Este documento identifica los principales archivos versionados y la responsabili
 |---|---|
 | `__init__.py` | Publica `__version__`; debe coincidir con `pyproject.toml`. |
 | `__main__.py` | Permite ejecutar el paquete con `python -m xmind_md`. |
-| `model.py` | Modelo legacy conservado por compatibilidad. No es el contrato de los adaptadores. |
-| `parser.py` | Analiza el subconjunto Markdown enriquecido y conserva la API/modelo legacy. |
-| `ir_parser.py` | Puente de parsing al modelo canónico IR 1.0.0; expone `parse_markdown_ir()` y `parse_file_ir()`. |
+| `model.py` | Modelo legacy conservado por compatibilidad; aislado del parsing IR canónico. |
+| `parser.py` | Analiza el subconjunto Markdown enriquecido y produce el AST sintáctico temporal. |
+| `syntax.py` | Tipos AST temporales `DocumentSyntax` y `TopicSyntax`. |
+| `ir_builder.py` | Construye directamente el IR 1.0.0 desde el AST. |
+| `ir_parser.py` | Fachada canónica `parse_markdown_ir()` / `parse_file_ir()`. |
+| `legacy_adapter.py` | Proyecta el AST al modelo legacy para las API antiguas. |
 | `styles.py` | Carga YAML y resuelve estilos en modelos IR y legacy. |
 | `cli.py` | Coordina parsing, resolución de estilos y exportación JSON/XMind. |
 | `ir/` | Entidades, serialización y validación del contrato neutral IR 1.0.0. |
@@ -63,6 +66,7 @@ Este documento identifica los principales archivos versionados y la responsabili
 | `ir-migration-plan.md` | Registro histórico de la migración parcial al IR. |
 | `decisions/ADR-001-pmd-ir-architecture.md` | Decisiones arquitectónicas de PMD, IR, estilos y adaptadores. |
 | `ir-consolidation-audit.md` | Inventario de módulos, consumidores y riesgos de la consolidación del modelo. |
+| `ir-parser-design.md` | Diseño y estado del parsing directo al IR y del adaptador de compatibilidad. |
 | `ir-parser-design.md` | Diseño de AST sintáctico, constructor IR, adaptador legacy y secuencia de migración del parser. |
 | `style-system.md` | Modelo de estilos actual y evolución prevista del catálogo semántico y reglas. |
 | `xmind-adapter.md` | Mapeo IR→XMind y matriz de soporte/rechazo/pérdidas. |

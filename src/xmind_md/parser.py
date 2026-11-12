@@ -263,7 +263,7 @@ def parse_markdown_syntax(text: str, source_path: str = "<string>") -> DocumentS
         i = end + 1
 
     roots: list[TopicSyntax] = []
-    stack: list[Topic] = []
+    stack: list[TopicSyntax] = []
     pending: dict[str, Any] | None = None
     globals_: dict[str, list[dict[str, Any]]] = {
         "relationships": [],

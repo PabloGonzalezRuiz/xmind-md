@@ -1,7 +1,7 @@
 # Plan de consolidación del modelo intermedio (IR)
 
 **Versión objetivo:** IR 1.0.0  
-**Estado:** MIGRACIÓN COMPLETADA. Documento histórico; el estado vigente y la evidencia se mantienen en `development-status.md` y `functional-audit.md`  
+**Estado:** MIGRACIÓN PARCIAL. Documento de historial; los adaptadores/CLI están en IR, pero parser y resolución legacy siguen presentes. El estado vigente está en `roadmap.md` y `ir-consolidation-audit.md`.  
 **Alcance:** alinear el modelo Python y sus consumidores con `docs/ir-specification.md`, `docs/ir-schema.json` y `examples/ir/constitucion.json`.
 
 ## 1. Diagnóstico confirmado
@@ -42,7 +42,7 @@ El modelo no importa parser, PyYAML ni bibliotecas de exportación. Las entidade
 
 ### Fase A — Modelo canónico
 
-**Estado: completada.** Entidades, serialización y validación semántica están implementadas en `src/xmind_md/ir/` y cubiertas por pruebas.
+**Estado: completada.** Entidades, serialización y validación semántica están implementadas en `src/xmind_md/ir/` y cubiertas por pruebas. Esto solo acredita la existencia del modelo IR; no significa que el parser lo construya directamente.
 
 ### Fase B — Parser y resolutor de estilos
 
@@ -93,7 +93,7 @@ La migración de consumidores se considera completada cuando:
 - La suite completa no presenta regresiones.
 - Se comprueba que la exportación no muta el documento IR.
 
-La consolidación del IR está completada. La exportación XMind permanece deliberadamente parcial; sus límites se describen en `xmind-adapter.md`. El modelo IR puede representar entidades que el parser no genera o que el adaptador no exporta.
+La migración de adaptadores y CLI al IR está completada, pero la consolidación total del modelo de ejecución no lo está: `parser.py` aún construye el modelo legacy, `ir_parser.py` realiza el puente y `styles.py` conserva una ruta legacy. La exportación XMind permanece deliberadamente parcial; sus límites se describen en `xmind-adapter.md`. El modelo IR puede representar entidades que el parser no genera o que el adaptador no exporta.
 
 ## 6. Fuera de alcance de esta migración
 

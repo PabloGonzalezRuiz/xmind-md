@@ -93,6 +93,8 @@ Los encabezados ATX H1–H6 crean temas:
 - Se permiten saltos de nivel.
 - El nivel de encabezado expresa anidamiento, no rol ni estilo.
 - El texto del encabezado es el título; el énfasis inline no asigna estilos al tema.
+- Si no hay `parent`, el padre se infiere por la pila de niveles ATX. Si la directiva declara `parent`, ese ID prevalece y puede apuntar a un tema declarado antes o después.
+- `parent` no cambia el título ni crea un nodo adicional. Cada tema tiene un único padre; la raíz no declara `parent`; el grafo final debe ser un árbol conectado y sin ciclos.
 - Los encabezados dentro de código cercado son literales.
 - Setext, atributos de encabezado y HTML no forman parte del perfil PMD 1.0.0.
 
@@ -120,6 +122,7 @@ Se permite espacio en blanco entre directiva y encabezado, pero no otro bloque M
 | Campo | Tipo | Correspondencia IR |
 |---|---|---|
 | `id` | string | `Topic.id` |
+| `parent` | string | Relación padre-hijo del árbol; no es un campo propio del Topic IR |
 | `kind` | string | `Topic.kind` |
 | `role` | string | `Topic.semantic_role` |
 | `style_ref` | string | `Topic.style.ref` |
@@ -132,7 +135,7 @@ Se permite espacio en blanco entre directiva y encabezado, pero no otro bloque M
 | `links` | lista de mappings | `Topic.links` |
 | `extensions` | mapping | `Topic.extensions` |
 
-No se admiten claves desconocidas. Se utiliza `role` como forma compacta de autoría; el IR mantiene el nombre `semantic_role`.
+No se admiten claves desconocidas. Se utiliza `role` como forma compacta de autoría; el IR mantiene el nombre `semantic_role`. El campo opcional `parent` declara el ID del tema padre y prevalece sobre el padre inferido por nivel de encabezado; permite representar árboles con más de seis niveles sin convertir listas en temas.
 
 ### 5.3 Kind y rol
 
@@ -293,6 +296,7 @@ Si no hay ruta de origen se usa `<memory>`. Colisiones con IDs explícitos o gen
 | Front matter `title/id/author/description` | `MindMap` y `metadata` |
 | Encabezados | `Topic.title` y `children` |
 | `id/kind/role` | `Topic.id/kind/semantic_role` |
+| `parent` | Relación de pertenencia en `Topic.children`; no se serializa como propiedad del Topic |
 | `style_ref/style_overrides` | `Topic.style.ref/overrides` |
 | `structure` | `Topic.structure` |
 | `labels/markers/task` | `Topic.annotations` |
@@ -339,7 +343,7 @@ Son fixtures de especificación, todavía no parseados por el runtime.
 ## 16. Cierre de Fase 4
 
 - [x] Modelo de documento y front matter versionado.
-- [x] Relación entre Markdown, encabezados, listas y contenido.
+- [x] Relación entre Markdown, encabezados, listas y contenido, con `parent` explícito para árboles de profundidad superior a H6.
 - [x] Roles separados de estilos visuales.
 - [x] Sintaxis tree_table con referencias a IDs.
 - [x] Herencia y excepciones por propiedad.

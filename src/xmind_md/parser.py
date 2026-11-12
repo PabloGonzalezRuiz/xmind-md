@@ -11,7 +11,7 @@ from uuid import NAMESPACE_URL, uuid5
 
 import yaml
 
-from .model import MindMap, Topic
+from .syntax import DocumentSyntax, TopicSyntax
 
 
 class MarkdownParseError(ValueError):
@@ -250,8 +250,8 @@ def _parse_table(lines: list[str], start: int) -> tuple[dict[str, Any], int]:
     }, i
 
 
-def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
-    """Analiza front matter, temas, bloques Markdown y directivas XMind."""
+def parse_markdown_syntax(text: str, source_path: str = "<string>") -> DocumentSyntax:
+    """Analiza el subconjunto Markdown y devuelve un AST sintáctico temporal."""
     lines = text.splitlines()
     metadata: dict[str, Any] = {}
     i = 0
@@ -262,7 +262,7 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
         metadata = _yaml_mapping("\n".join(lines[1:end]), 2, "front matter")
         i = end + 1
 
-    roots: list[Topic] = []
+    roots: list[TopicSyntax] = []
     stack: list[Topic] = []
     pending: dict[str, Any] | None = None
     globals_: dict[str, list[dict[str, Any]]] = {
@@ -270,8 +270,7 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
         "boundaries": [],
         "summaries": [],
     }
-    assets: list[dict[str, Any]] = []
-    fence_char = chr(96)
+        fence_char = chr(96)
 
     while i < len(lines):
         raw = lines[i]
@@ -298,7 +297,7 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             if i >= len(lines):
                 raise MarkdownParseError(f"Bloque de código sin cierre (línea {line_no})")
             code = "\n".join(code_lines)
-            stack[-1].content_blocks.append(
+            stack[-1].blocks.append(
                 {
                     "type": "code",
                     "language": language.strip() or None,
@@ -306,7 +305,6 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
                     "source": {"file": source_path, "line_start": line_no, "line_end": i + 1},
                 }
             )
-            stack[-1].content.append(code)
             i += 1
             continue
 
@@ -331,7 +329,7 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             elif name == "xmind-note":
                 if not stack:
                     raise MarkdownParseError(f"Nota antes del tema raíz (línea {line_no})")
-                stack[-1].annotations.setdefault("notes", []).append(payload_text)
+                stack[-1].notes.append(payload_text)
             else:
                 key = {
                     "xmind-relationship": "relationships",
@@ -474,19 +472,14 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             explicit_id = (
                 _validate_id(props["id"], "id del tema", line_no) if "id" in props else None
             )
-            topic = Topic(
+            syntax_props = dict(props)
+            if not stack and not syntax_props.get("style_set") and metadata.get("style_set"):
+                syntax_props["style_set"] = metadata["style_set"]
+            topic = TopicSyntax(
                 id=explicit_id or _stable_id("topic", seed),
                 title=title,
                 level=level,
-                style_set=props.get("style_set")
-                or (metadata.get("style_set") if not stack else None),
-                kind=props.get("kind", "attached"),
-                style_ref=props.get("style"),
-                style_overrides=props.get("style_overrides", {}),
-                annotations={k: props[k] for k in ("labels", "markers", "task") if k in props},
-                links=props.get("links", []),
-                layout=props.get("layout", {}),
-                extensions=props.get("extensions", {}),
+                properties=syntax_props,
                 source={"file": source_path, "line_start": line_no, "line_end": line_no},
             )
             pending = None
@@ -513,7 +506,7 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             while i < len(lines) and lines[i].lstrip().startswith(">"):
                 quote.append(lines[i].lstrip()[1:].lstrip())
                 i += 1
-            topic.content_blocks.append(
+            topic.blocks.append(
                 {
                     "type": "quote",
                     "content": [
@@ -522,21 +515,19 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
                     "source": {"file": source_path, "line_start": line_no, "line_end": i},
                 }
             )
-            topic.content.extend(quote)
             continue
         if re.match(r"^\s*([-+*]|\d+[.)])\s+", raw):
             block, i = _parse_list(lines, i)
             block["source"] = {"file": source_path, "line_start": line_no, "line_end": i}
-            topic.content_blocks.append(block)
-            topic.content.append(_list_plain_text(block))
+            topic.blocks.append(block)
             continue
         if "|" in raw and i + 1 < len(lines) and re.match(r"^\s*\|?\s*:?-{3,}", lines[i + 1]):
             block, i = _parse_table(lines, i)
             block["source"] = {"file": source_path, "line_start": line_no, "line_end": i}
-            topic.content_blocks.append(block)
+            topic.blocks.append(block)
             continue
         if re.match(r"^\s*([-*_])(?:\s*\1){2,}\s*$", raw):
-            topic.content_blocks.append(
+            topic.blocks.append(
                 {
                     "type": "divider",
                     "source": {"file": source_path, "line_start": line_no, "line_end": line_no},
@@ -548,15 +539,13 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             match = re.match(r"!\[([^\]]*)\]\(([^)]*)\)", stripped)
             if match:
                 asset = {"alt": match.group(1), "src": match.group(2)}
-                assets.append(asset)
-                topic.content_blocks.append(
+                topic.blocks.append(
                     {
                         "type": "image",
                         **asset,
                         "source": {"file": source_path, "line_start": line_no, "line_end": line_no},
                     }
                 )
-                topic.resources.append(asset)
                 i += 1
                 continue
 
@@ -574,8 +563,7 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
             paragraph.append(candidate.strip())
             i += 1
         joined = " ".join(paragraph)
-        topic.content.append(joined)
-        topic.content_blocks.append(
+        topic.blocks.append(
             {
                 "type": "paragraph",
                 "runs": _inline_runs(joined),
@@ -692,23 +680,28 @@ def parse_markdown(text: str, source_path: str = "<string>") -> MindMap:
         not isinstance(metadata["style_set"], str) or not metadata["style_set"]
     ):
         raise MarkdownParseError("style_set del front matter debe ser texto no vacío")
-    return MindMap(
-        id=map_id,
-        title=title,
-        topics=roots,
+    return DocumentSyntax(
+        source_path=source_path,
         metadata=metadata,
-        styles=metadata.get("styles", {}),
-        style_sets=metadata.get("style_sets", {}),
-        assets=assets,
+        root=roots[0],
         relationships=globals_["relationships"],
         boundaries=globals_["boundaries"],
         summaries=globals_["summaries"],
-        layout=layout,
-        extensions=metadata.get("extensions", {}),
     )
 
 
-def parse_file(path: str | Path) -> MindMap:
-    """Lee UTF-8 y utiliza la ruta como origen para IDs deterministas."""
+def parse_markdown(text: str, source_path: str = "<string>"):
+    """API legacy: analiza a IR y adapta el resultado al modelo anterior."""
+    from .ir_parser import parse_markdown_ir
+    from .legacy_adapter import to_legacy_mind_map
+
+    return to_legacy_mind_map(parse_markdown_ir(text, source_path=source_path))
+
+
+def parse_file(path: str | Path):
+    """API legacy de archivo, conservada mediante el adaptador de compatibilidad."""
     source = Path(path)
-    return parse_markdown(source.read_text(encoding="utf-8"), source_path=source.as_posix())
+    from .ir_parser import parse_file_ir
+    from .legacy_adapter import to_legacy_mind_map
+
+    return to_legacy_mind_map(parse_file_ir(source))

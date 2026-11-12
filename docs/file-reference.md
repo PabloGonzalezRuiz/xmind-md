@@ -21,9 +21,10 @@ Este documento identifica los principales archivos versionados y la responsabili
 | `__main__.py` | Permite ejecutar el paquete con `python -m xmind_md`. |
 | `model.py` | Modelo legacy conservado por compatibilidad; aislado del parsing IR canónico. |
 | `parser.py` | Analiza el subconjunto Markdown enriquecido y produce el AST sintáctico temporal. |
+| `pmd_parser.py` | Analiza PMD 1.0.0, valida catálogo/estructura y convierte a IR 1.1.0. |
 | `syntax.py` | Tipos AST temporales `DocumentSyntax` y `TopicSyntax`. |
-| `ir_builder.py` | Construye directamente el IR 1.0.0 desde el AST. |
-| `ir_parser.py` | Fachada canónica `parse_markdown_ir()` / `parse_file_ir()`; actualmente produce IR 1.0.0. |
+| `ir_builder.py` | Construye el IR canónico desde el AST; admite la conversión PMD 1.0.0 a IR 1.1.0. |
+| `ir_parser.py` | Fachada pública para parsing Markdown (IR 1.0.0) y PMD (IR 1.1.0). |
 | `legacy_adapter.py` | Proyecta el AST al modelo legacy para las API antiguas. |
 | `styles.py` | Carga YAML y resuelve estilos IR; fachada de compatibilidad para objetos antiguos. |
 | `legacy_styles.py` | Resolución de estilos del modelo legacy, aislada de la ruta IR. |
@@ -61,6 +62,7 @@ Este documento identifica los principales archivos versionados y la responsabili
 | `roadmap.md` | Hoja de ruta vigente de PMD y conversión asistida por IA. |
 | `pmd-design.md` | Dirección de producto, decisiones PMD y diseño objetivo de estilos/IA. |
 | `pmd-language-spec.md` | Especificación normativa del lenguaje PMD 1.0.0: sintaxis, semántica, errores y correspondencia IR. |
+| `pmd-parser.md` | Guía de API, validación, catálogo incluido y limitaciones del parser PMD 1.0.0. |
 | `reference-analysis-tema1.md` | Análisis contrastado de estructura JSON, estilos, marcadores, SVG y pérdidas de Markdown en la referencia Tema1. |
 | `architecture.md` | Capas, flujo de datos e invariantes vigentes. |
 | `development.md` | Instalación, CLI, pruebas y ciclo de contribución. |
@@ -86,7 +88,8 @@ Este documento identifica los principales archivos versionados y la responsabili
 
 | Ruta | Función |
 |---|---|
-| `catalog/style-catalog.json` | Catálogo de referencia versionado con roles jurídicos, estilos neutrales y reglas semánticas/estructurales. |
+| `catalog/style-catalog.json` | Catálogo fuente de referencia versionado con roles, estilos neutrales y reglas semánticas/estructurales. |
+| `src/xmind_md/data/style-catalog.json` | Copia empaquetada del catálogo de referencia para validación PMD en instalaciones wheel/sdist. |
 
 ## Ejemplos
 
@@ -104,7 +107,8 @@ Este documento identifica los principales archivos versionados y la responsabili
 
 | Ruta | Función |
 |---|---|
-| `tests/test_parser.py` | Gramática, directivas, bloques y errores de parsing. |
+| `tests/test_parser.py` | Gramática, directivas, bloques y errores del parser Markdown. |
+| `tests/test_pmd_parser.py` | Conversión PMD 1.0.0 → IR 1.1.0, catálogo, tree_table, IDs, YAML y errores. |
 | `tests/test_ir_model.py` | Entidades IR, serialización y reglas semánticas de roles/estructuras. |
 | `tests/test_ir_migrations.py` | Migración explícita IR 1.0.0 → 1.1.0. |
 | `tests/test_ir_schema.py` | Validación de esquema JSON y ejemplos IR. |

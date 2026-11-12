@@ -662,11 +662,8 @@ def parse_markdown_syntax(text: str, source_path: str = "<string>") -> DocumentS
     if not isinstance(layout, dict):
         raise MarkdownParseError("layout del front matter debe ser un objeto")
 
-    map_id = (
+    if "id" in metadata:
         _validate_id(metadata["id"], "id del mapa", 1)
-        if "id" in metadata
-        else _stable_id("map", f"{source_path}|{title}")
-    )
     for field_name in ("styles", "style_sets", "extensions"):
         if field_name in metadata and not isinstance(metadata[field_name], dict):
             raise MarkdownParseError(f"{field_name} del front matter debe ser un objeto")

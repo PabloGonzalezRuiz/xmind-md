@@ -6,15 +6,17 @@
 
 ## Dirección de producto: PMD
 
-El objetivo futuro no es depender de la importación Markdown limitada de XMind. PMD permitirá describir roles semánticos, estructuras especiales (incluidas tablas de árbol), referencias de estilo y excepciones. Una IA podrá transformar Markdown ordinario en PMD consultando una biblioteca de estilos y reglas; el conversor resolverá el formato de forma determinista.
+PMD 1.0.0 ya dispone de especificación y parser Python independiente: convierte documentos PMD en IR 1.1.0 validado. La transformación asistida por IA desde Markdown ordinario, la resolución visual completa del catálogo y la exportación XMind de las nuevas estructuras siguen siendo fases posteriores.
 
-Consulta [Dirección de producto y diseño de PMD](docs/pmd-design.md) y la [hoja de ruta](docs/roadmap.md). Esta dirección es futura: no debe confundirse con las capacidades implementadas en la Alpha actual.
+Consulta [Dirección de producto y diseño de PMD](docs/pmd-design.md), la [especificación PMD](docs/pmd-language-spec.md), la [guía del parser](docs/pmd-parser.md) y la [hoja de ruta](docs/roadmap.md).
 - [Especificación del lenguaje PMD 1.0.0](docs/pmd-language-spec.md).
+- [Guía del parser PMD 1.0.0](docs/pmd-parser.md).
 
 ## Qué hace hoy la versión Alpha
 
 - Convierte encabezados Markdown ATX (`#` a `######`) en una jerarquía de temas.
-- Interpreta front matter YAML y directivas `:::xmind`, `:::xmind-note` y directivas globales de relación, límite y resumen.
+- Interpreta Markdown enriquecido con el parser actual (IR 1.0.0).
+- Expone un parser PMD 1.0.0 independiente que genera IR 1.1.0 y valida roles, estilos, overrides y tablas de árbol.
 - Conserva bloques de contenido estructurados en el IR: párrafos, listas, tablas, código, citas, separadores e imágenes como recursos.
 - Resuelve estilos neutrales definidos en el documento y/o en YAML externo.
 - Exporta el IR a JSON para inspección.
@@ -44,7 +46,7 @@ Markdown + YAML
       +----> adaptador XMind --> .xmind
 ```
 
-El IR es el contrato neutral entre parser, estilos y adaptadores. El adaptador no interpreta Markdown ni resuelve estilos. Consulta [docs/architecture.md](docs/architecture.md) y [docs/ir-specification.md](docs/ir-specification.md).
+El IR es el contrato neutral entre parsers, estilos y adaptadores. El parser Markdown existente conserva IR 1.0.0; PMD produce IR 1.1.0. Consulta [docs/architecture.md](docs/architecture.md) y [docs/ir-specification.md](docs/ir-specification.md).
 
 ## Requisitos
 
@@ -153,7 +155,7 @@ python -m pytest
 python scripts/create_xmind_smoke.py
 ```
 
-La CI ejecuta Ruff y **161 pruebas por versión** en Python 3.10, 3.11 y 3.12, y genera un XMind de comprobación en cada job. Un segundo job construye wheel y sdist, verifica sus metadatos/licencia, instala cada paquete en un entorno limpio y ejecuta conversiones CLI a JSON y XMind; los libros generados pasan verificaciones estructurales ZIP/MIME/JSON. La evidencia y los límites de las pruebas están en el [estado de desarrollo](docs/development-status.md) y la [auditoría de Release](docs/release-audit.md).
+La CI ejecuta Ruff y **207 pruebas por versión** en Python 3.10, 3.11 y 3.12, y genera un XMind de comprobación en cada job. Un segundo job construye wheel y sdist, verifica sus metadatos/licencia, instala cada paquete en un entorno limpio y ejecuta conversiones CLI a JSON y XMind; los libros generados pasan verificaciones estructurales ZIP/MIME/JSON. La evidencia y los límites de las pruebas están en el [estado de desarrollo](docs/development-status.md) y la [auditoría de Release](docs/release-audit.md).
 
 ## Versiones publicadas y cambios
 

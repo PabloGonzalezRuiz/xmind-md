@@ -116,13 +116,18 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 
 ### Fase 5 — Parser, validador y conversión PMD → IR
 
-- [ ] Implementar parser PMD separado del parser Markdown existente.
-- [ ] Validar roles, estructuras, referencias y estilos.
-- [ ] Convertir PMD al IR de forma determinista.
-- [ ] Añadir pruebas negativas y fixtures de referencia.
-- [ ] Preservar el flujo Markdown → IR durante la introducción de PMD.
+**Estado: COMPLETADA en código, pruebas y documentación.**
 
-**Criterio de cierre:** documentos PMD de referencia parsean a IR válido y reproducible.
+- [x] Implementar parser PMD independiente con API parse_pmd_markdown() y parse_pmd_file().
+- [x] Mantener parse_markdown_ir() / parse_file_ir() sin cambios de contrato (siguen produciendo IR 1.0.0).
+- [x] Validar front matter, YAML estricto, IDs, padres, roles, estilos, overrides, anotaciones, notas, enlaces, entidades globales y tree_table.
+- [x] Convertir a IR 1.1.0 y ejecutar la validación final.
+- [x] Incluir el catálogo de referencia como recurso del paquete y verificar wheel/sdist.
+- [x] Añadir fixtures legislativo y Tema1, pruebas positivas/negativas y guía de API.
+
+**Artefactos:** guía del parser (pmd-parser.md), especificación PMD 1.0.0 (pmd-language-spec.md), módulo pmd_parser.py, catálogo empaquetado y tests/test_pmd_parser.py.
+
+**Criterio de cierre:** CUMPLIDO para parsing y conversión a IR. No incluye resolución visual completa del catálogo, CLI PMD ni exportación XMind de IR 1.1.0.
 
 ### Fase 6 — Conversión asistida por IA Markdown → PMD
 
@@ -169,4 +174,4 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 
 ## Ejecución activa
 
-Las Fases 0–4 están completadas en sus respectivos alcances. IR 1.1.0 está implementado y validado; el catálogo 1.0.0 y PMD 1.0.0 están especificados, pero el catálogo PMD no está conectado al resolutor y PMD aún no tiene parser. La especificación normativa está en [pmd-language-spec.md](pmd-language-spec.md), con ejemplos legislativo y tree_table en `examples/pmd/`. No se han integrado cambios en `main` ni publicado una nueva release. **Siguiente: Fase 5 — parser, validador y conversión PMD → IR; pendiente de autorización expresa.**
+Las Fases 0–5 están completadas en sus respectivos alcances. PMD 1.0.0 se analiza mediante una API independiente y genera IR 1.1.0 validado; el catálogo de referencia se incluye en el paquete y se usa para validar roles, estilos y overrides. La resolución completa de reglas/herencia del catálogo y la exportación XMind de IR 1.1.0 siguen pendientes. La guía está en pmd-parser.md. No se han integrado cambios en main ni publicado una nueva release. **Siguiente: Fase 6 — conversión asistida por IA de Markdown convencional a PMD; pendiente de autorización expresa.**

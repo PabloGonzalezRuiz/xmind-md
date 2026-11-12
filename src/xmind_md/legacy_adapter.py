@@ -42,14 +42,14 @@ def _topic(syntax: TopicSyntax) -> Topic:
     for block in syntax.blocks:
         kind = block.get("type")
         if kind == "paragraph":
-            content.append(_plain_runs(block.get("runs", [])))
+            content.append(block.get("text", _plain_runs(block.get("runs", []))))
         elif kind == "list":
             content.append(_list_plain_text(block.get("items", [])))
         elif kind == "code":
             content.append(block.get("text", ""))
         elif kind == "quote":
             content.extend(
-                _plain_runs(item.get("runs", []))
+                item.get("text", _plain_runs(item.get("runs", [])))
                 for item in block.get("content", [])
                 if item.get("type") == "paragraph"
             )

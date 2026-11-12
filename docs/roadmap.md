@@ -1,120 +1,157 @@
 # Hoja de ruta XMind MD / PMD
 
-**Actualizada:** 2026-11-12. **Rama:** `main`. **Referencia de auditoría:** informe [Tema1](reference-analysis-tema1.md); verificar HEAD antes de cada nueva tarea.
+**Actualizada:** 2026-11-12. **Rama de trabajo:** `architecture/pmd-ir-roadmap`. **ADR:** [ADR-001](decisions/ADR-001-pmd-ir-architecture.md).
 
-Esta es la hoja de ruta vigente. El histórico de tareas Alpha se conserva en `development-status.md`; no debe confundirse con el trabajo futuro.
+Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la biblioteca de estilos antes de resolver la duplicidad del modelo y las carencias estructurales del IR. La secuencia nueva prioriza los contratos de ejecución: no diseñaremos sintaxis para compensar limitaciones del IR.
 
-## Estado de partida
+## Estado de partida verificado
 
-- IR 1.0.0, parser Markdown, resolución de estilos, adaptadores y CLI implementados.
-- Ruta actual: Markdown → IR → JSON/XMind.
-- Adaptador XMind parcial; pérdidas y rechazos en `xmind-adapter.md`.
-- Release [v0.1.0](https://github.com/PabloGonzalezRuiz/xmind-md/releases/tag/v0.1.0) publicada el 2026-11-11 como Alpha/prerelease; incluye wheel, sdist y `SHA256SUMS.txt`.
-- CI del commit auditado: [43206029166](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43206029166), cuatro jobs `success` (tests Python 3.10/3.11/3.12 y build/install de distribuciones).
-- Análisis XMind: [43058441322](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43058441322), `success` para el commit `00f05cf`.
+- Repositorio: `PabloGonzalezRuiz/xmind-md`.
+- Base de trabajo: `05efc482c333b266bf1a2bd5fbf2f3fdee129de7`.
+- Rama creada para este trabajo: `architecture/pmd-ir-roadmap`.
+- Release `v0.1.0` publicada como Alpha/prerelease.
+- El flujo CLI es Markdown → `parse_file_ir()` → IR 1.0.0 → resolución de estilos (para XMind) → adaptador JSON/XMind.
+- `parser.py` construye actualmente el modelo `MindMap`/`Topic` de `model.py`; `ir_parser.py` lo convierte al IR. Por tanto, la duplicidad del modelo sigue existiendo en la ruta de parsing.
+- `styles.py` conserva una ruta legacy y otra IR. El modelo legacy sigue siendo importado por el parser y por la ruta legacy del resolutor.
+- Los adaptadores consumen IR; no se propone reescribirlos desde cero.
+- El IR actual distingue `Topic.kind` de entidades, pero no dispone todavía de un rol semántico explícito ni de una estructura neutral `tree_table`.
+- La tabla Markdown actual no sustituye a una tabla de árbol.
+- La referencia Tema1 y la investigación de implementaciones oficiales XMind están documentadas en `reference-analysis-tema1.md` y `xmind-official-sdk-research.md`.
+- El CI verde de la base histórica no se considerará evidencia de esta rama; cada cambio deberá verificarse con una ejecución nueva.
 
-## Fase 1 — Analizar referencias reales XMind
+## Fases
 
-**Estado: COMPLETADA para la referencia Tema1.**
+### Fase 0 — Decisiones y plan de migración
 
-- [x] Incorporar `themes/Tema1/content.json`, `Tema1.svg` y `Tema1.md`.
-- [x] Confirmar que Markdown conserva principalmente texto y jerarquía.
-- [x] Identificar `Articulo` como tabla de árbol y `Cabecera`/`cuerpo` como celdas.
-- [x] Documentar la jerarquía completa, estilos explícitos, marcadores y diferencias entre nodos.
-- [x] Relacionar los 10 nodos JSON con los títulos SVG mediante `data-view-id` y documentar las pérdidas de Markdown.
-- [x] Extraer requisitos semánticos/estructurales sin convertir detalles internos de XMind en sintaxis PMD obligatoria.
+**Estado: COMPLETADA en esta rama.**
 
-**Cierre:** cumplido para Tema1. El informe reproducible está en [reference-analysis-tema1.md](reference-analysis-tema1.md). No se dispone del `.xmind` original y el análisis no pretende cubrir todas las variantes de tablas.
+- [x] Crear ADR de arquitectura objetivo.
+- [x] Establecer orden de dependencias entre IR, catálogo, PMD y adaptador.
+- [x] Registrar la situación real del puente legacy y evitar declarar retirada la duplicidad.
+- [x] Definir compatibilidad, versionado, criterios de prueba y política SVG.
 
-## Fase 2 — Especificar biblioteca de estilos y reglas
+**Criterio de cierre:** ADR aprobado y hoja de ruta coherente con el código observado.
 
-**Estado: dirección aceptada; especificación pendiente.**
+### Fase 1 — Consolidación del modelo de ejecución
 
-- Definir catálogo reutilizable con identificador, descripción semántica, destinatarios, propiedades, restricciones y ejemplos.
-- Diseñar reglas semánticas (criterio principal) y estructurales (complemento).
-- Formalizar herencia por referencia al primer hijo, excepciones y recursividad.
-- Definir defaults, fallback, overrides y precedencia por propiedad.
-- Separar datos estructurados para máquina de documentación para personas/IA.
-- Mantener separado el catálogo futuro del YAML runtime actual.
+**Estado: EN CURSO.** Objetivo: que el IR sea el único modelo de dominio de ejecución. El AST/syntax tree temporal es admisible; un segundo modelo de dominio persistente no.
 
-**Cierre:** especificación, ejemplos y casos de prueba conceptuales; no implica implementación.
+#### 1.1 Caracterización y mapa de consumidores
+- [ ] Inventariar todas las llamadas públicas a `parse_markdown()`, `parse_file()`, `parse_markdown_ir()` y `parse_file_ir()`.
+- [ ] Inventariar importaciones y consumidores de `model.py`, `Topic`, `MindMap` y la ruta legacy de `styles.py`.
+- [ ] Registrar contratos observables: IDs deterministas, fuentes, errores, directivas, contenido, anotaciones, recursos, relaciones, límites y resúmenes.
+- [ ] Añadir pruebas de caracterización que comparen el IR actual con fixtures de entrada representativos.
 
-## Fase 3 — Diseñar sintaxis PMD
+#### 1.2 Parser con salida IR directa
+- [ ] Separar la sintaxis temporal del modelo de dominio legacy.
+- [ ] Trasladar gradualmente la construcción de entidades a fábricas/constructores IR.
+- [ ] Eliminar la conversión recursiva `_convert()` / `_topic()` de `ir_parser.py` cuando toda la información tenga una ruta directa y probada.
+- [ ] Mantener wrappers de API legacy si los consumidores externos lo requieren, implementados como adaptadores de compatibilidad y no como núcleo.
 
-Definir documento, relación con Markdown, sintaxis mínima de roles, estructuras, tablas de árbol, estilos y excepciones; escapes, IDs, referencias y errores. Priorizar legibilidad y poca anotación manual.
+#### 1.3 Resolutor y API
+- [ ] Migrar consumidores restantes de estilos a IR.
+- [ ] Retirar la detección y resolución legacy de `styles.py` cuando ya no sea necesaria.
+- [ ] Decidir deprecación y retirada de `model.py` según la compatibilidad pública documentada.
+- [ ] Mantener la CLI y los adaptadores funcionando sin cambios de comportamiento no intencionados.
 
-**Cierre:** gramática y ejemplos inequívocos que puedan escribir una persona o generar una IA.
+**Criterios de cierre de Fase 1**
+- La ruta canónica de parsing construye IR directamente.
+- Ningún componente interno de ejecución depende del modelo legacy.
+- Las API legacy, si se mantienen, delegan en la ruta canónica o están deprecadas explícitamente.
+- Pruebas de caracterización y suite completa verdes en Python 3.10, 3.11 y 3.12.
+- CLI JSON/XMind y fixture de smoke siguen funcionando.
+- Documentación y matriz de compatibilidad actualizadas.
 
-## Fase 4 — Definir PMD → IR y validación
+### Fase 2 — Evolución semántica y estructural del IR
 
-Reutilizar IR donde baste; identificar brechas antes de modificarlo; proponer versionado/migración si hay cambios incompatibles; validar referencias, estructuras y estilos.
+- [ ] Definir el vocabulario y ubicación de roles semánticos, separado de `Topic.kind`.
+- [ ] Definir estructuras compuestas neutrales, empezando por `tree_table`.
+- [ ] Especificar filas, celdas, roles de celda, orden, anidamiento y contenido.
+- [ ] Separar estructura neutral de las claves privadas de XMind.
+- [ ] Revisar el tratamiento de propiedades ausentes, explícitas y el literal `inherited`.
+- [ ] Actualizar entidades, esquema, validación, ejemplos y documentación.
+- [ ] Definir política de versión IR y migración de documentos 1.0.0.
 
-**Cierre:** mapeo, esquema/validación y ejemplos PMD convertidos a IR.
+**Criterio de cierre:** esquema y validación aprobados, fixtures positivos/negativos, migración documentada y ninguna filtración de clases internas XMind al IR.
 
-## Fase 5 — Conversión Markdown → PMD mediante IA
+### Fase 3 — Catálogo semántico y visual de estilos
 
-Preparar instrucciones con catálogo/reglas/ejemplos; reconocer semántica y estructura; evitar invención; identificar ambigüedades; crear corpus Markdown/PMD esperado y evaluación reproducible.
+- [ ] Diseñar esquema de catálogo legible por máquina y documentación legible por IA/personas.
+- [ ] Definir estilos semánticos (significado, destinatarios, cuándo usar/no usar, ejemplos y restricciones).
+- [ ] Definir tokens/propiedades visuales neutrales y mapeo por adaptador.
+- [ ] Definir reglas semánticas prioritarias y reglas estructurales complementarias.
+- [ ] Definir precedencia, defaults, fallback, overrides y conflictos.
+- [ ] Definir procedencia/auditoría por propiedad resuelta.
+- [ ] Formalizar herencia por primer hijo, recursividad, estilos parciales y excepciones.
+- [ ] Distinguirla de herencia de style_set y de herencia nativa XMind.
+- [ ] Mantener el YAML runtime actual compatible durante la transición.
 
-**Cierre:** PMD válido en documentos reales y reducción demostrable del formateo manual.
+**Criterio de cierre:** catálogo versionado, especificación del motor, ejemplos y casos de prueba conceptuales deterministas.
 
-## Fase 6 — Generación XMind y fidelidad visual
+### Fase 4 — Especificación del lenguaje PMD
 
-Priorizar estructuras de estudio/legislación; implementar mapeos requeridos; comparar con referencias reales; generar SVG lo más fiel posible a la apariencia original de XMind. No exigir identidad XML, atributos o IDs internos. Documentar límites.
+- [ ] Definir el modelo de documento, front matter y relación con Markdown ordinario.
+- [ ] Definir sintaxis compacta para roles, estructuras, estilos y excepciones.
+- [ ] Resolver explícitamente semántica de encabezados y listas.
+- [ ] Definir referencias/IDs, escapes, errores y compatibilidad.
+- [ ] Diseñar ejemplos legislativos y tablas de árbol con anotación mínima.
+- [ ] Verificar que la sintaxis puede representar el IR aprobado sin detalles XMind.
 
-**Cierre:** referencias reconstruidas con fidelidad visual suficiente y limitaciones explícitas.
+**Criterio de cierre:** gramática inequívoca, ejemplos de referencia y especificación validada antes de programar parser.
 
-## Fase 7 — Integración, CLI, pruebas y documentación
+### Fase 5 — Parser, validador y conversión PMD → IR
 
-Integrar PMD sin romper Markdown→IR; pruebas unitarias/integración/regresión; CI; CLI y guía; comprobar Windows por ser entorno de uso.
+- [ ] Implementar parser PMD separado del parser Markdown existente.
+- [ ] Validar roles, estructuras, referencias y estilos.
+- [ ] Convertir PMD al IR de forma determinista.
+- [ ] Añadir pruebas negativas y fixtures de referencia.
+- [ ] Preservar el flujo Markdown → IR durante la introducción de PMD.
 
-**Cierre:** flujo reproducible Markdown → IA → PMD → XMind, CI verde y ejemplos verificables.
+**Criterio de cierre:** documentos PMD de referencia parsean a IR válido y reproducible.
 
-## Reglas de ejecución
+### Fase 6 — Conversión asistida por IA Markdown → PMD
 
-1. Auditar GitHub antes de cada cambio.
-2. Trabajar por tareas pequeñas y autorizadas.
-3. Separar implementado, decidido y pendiente.
-4. Actualizar este documento, `development-status.md` y el prompt maestro al cerrar tareas/decisiones.
-5. No modificar código durante tareas de documentación/diseño sin autorización.
-6. No avanzar de fase sin cumplir criterios, salvo autorización expresa.
+- [ ] Crear prompt/protocolo de transformación basado en catálogo y reglas.
+- [ ] Construir corpus de Markdown fuente y PMD esperado, especialmente legislación.
+- [ ] Definir cómo señalar ambigüedades y evitar invención.
+- [ ] Medir precisión semántica, validez PMD y cantidad de anotación manual.
+- [ ] Incorporar el catálogo y ejemplos en el contexto de la IA.
 
-## Siguiente paso
+**Criterio de cierre:** evaluación reproducible y reducción demostrable del formateo manual.
 
-La Fase 1 está cerrada para la referencia Tema1. El siguiente trabajo es la **Fase 2: especificación de la biblioteca de estilos, reglas semánticas/estructurales y herencia**. Antes de diseñar la sintaxis PMD, hay que concretar el esquema que la IA consultará, los metadatos de cada estilo y la resolución determinista. Esta fase requiere autorización expresa del usuario. No implementar todavía parser PMD ni catálogo runtime.
+### Fase 7 — Adaptador XMind y fidelidad visual
 
+- [ ] Implementar mapeo de `tree_table` y roles de celda.
+- [ ] Ampliar estilos, marcadores y recursos según prioridades reales.
+- [ ] Mantener rechazo explícito de características no soportadas.
+- [ ] Crear fixtures generados y guardados desde la versión objetivo de XMind Desktop.
+- [ ] Validar archivos abiertos/guardados/reabiertos en XMind Desktop.
+- [ ] Comparar SVG por fidelidad visual, no por identidad XML.
 
-## Investigación de formatos XMind — documentación base creada (2026-11-12)
+**Criterio de cierre:** estructuras prioritarias reproducidas con fidelidad visual suficiente y matriz de compatibilidad sustentada en pruebas.
 
-Se han añadido dos documentos técnicos para que el trabajo futuro de conversión no dependa de recordar hallazgos dispersos:
+### Fase 8 — Integración, documentación y publicación
 
-- [xmind-markdown-behavior.md](xmind-markdown-behavior.md): exportación Markdown real de XMind, pérdida de información, distinción frente a la gramática Markdown propia y pruebas de importación/exportación pendientes.
-- [xmind-json-format.md](xmind-json-format.md): estructura del contenedor moderno, `content.json`, árbol, clases estructurales, estilos, marcadores, SVG y perfil real del adaptador Python.
+- [ ] Integrar CLI y comandos de validación/inspección PMD.
+- [ ] Completar guías de autoría, catálogo y reglas para IA.
+- [ ] Actualizar ejemplos, changelog y notas de migración.
+- [ ] Ejecutar CI completa y pruebas manuales Desktop.
+- [ ] Publicar versión cuando se cumplan los criterios de release.
 
-Estos documentos separan evidencia de Tema1, comportamiento verificado en código y cuestiones aún no demostradas. No equivalen a una especificación completa del formato XMind ni a una certificación de compatibilidad entre versiones.
+**Criterio de cierre:** flujo reproducible Markdown → IA → PMD → IR → XMind, documentación y distribución verificadas.
 
-### Trabajo de investigación pendiente
+## Orden y reglas de ejecución
 
-- [ ] Obtener más fixtures XMind Desktop para tablas de árbol, relaciones, temas flotantes, imágenes, notas, marcadores y herencia.
-- [ ] Registrar versión de XMind y opciones utilizadas en cada exportación/importación de prueba.
-- [ ] Verificar mediante pruebas controladas qué construcciones Markdown acepta el importador nativo de XMind.
-- [ ] Documentar diferencias entre variantes/versiones del formato JSON y el perfil de nuestro generador.
-- [ ] Diseñar, en una fase futura autorizada, un lector XMind → IR/PMD con política de preservación de datos desconocidos.
+1. Las fases 1 y 2 preceden al cierre de sintaxis PMD.
+2. El catálogo semántico se especifica tras acordar el vocabulario/estructura del IR; puede prepararse conceptualmente en paralelo, pero no se implementa antes de estabilizar sus destinatarios.
+3. Cada tarea se trabaja en commits pequeños y preferiblemente en ramas de trabajo.
+4. Antes de editar se consulta HEAD y los archivos afectados.
+5. Cada cambio de código requiere pruebas locales cuando haya entorno disponible y CI nueva; no se declara validado solo por haber enviado el cambio.
+6. No se cambia el contrato IR 1.0.0 silenciosamente.
+7. Se actualizan `development-status.md`, `architecture.md`, `file-reference.md` y el prompt de continuidad cuando una decisión o implementación afecte a su contenido.
+8. Se distinguen siempre: observado, implementado, decidido y pendiente.
+9. No se copia una implementación o serializador oficial XMind sin verificar compatibilidad con Desktop.
 
+## Ejecución activa
 
-## Investigación oficial XMind — repositorios y esquema (2026-11-12)
-
-**Estado: investigación documental realizada y registrada.** Se han estudiado xmind-sdk-js, xmind-model y xmind-generator, todos publicados por la organización xmindltd y con licencia MIT. El informe [xmind-official-sdk-research.md](xmind-official-sdk-research.md) recoge esquemas, clases, serialización, estructura de componentes, estilos y diferencias entre perfiles ZIP.
-
-Hallazgo principal: no se ha localizado una especificación pública normativa y exhaustiva del formato moderno. Los repositorios aportan esquemas e implementaciones oficiales, pero corresponden a perfiles/versiones concretos. xmind-generator declara dataStructureVersion 2; el adaptador actual del proyecto declara 3 y layoutEngineVersion 5. No deben mezclarse sin fixtures y pruebas en XMind Desktop.
-
-### Investigación pendiente
-
-- [ ] Generar/obtener fixtures mediante xmind-generator y xmind-sdk-js y abrirlos/guardarlos con XMind Desktop objetivo.
-- [ ] Comparar los archivos antes/después del guardado y documentar normalizaciones.
-- [ ] Investigar específicamente estructura de tabla de árbol y herencia visual; los repositorios consultados no bastan para especificarlas.
-- [ ] Crear matriz de compatibilidad por versión de Desktop y perfil generador.
-
-Esta investigación no inicia la Fase 2 de biblioteca de estilos ni autoriza cambios de implementación.
-
-
-La investigación se amplió con [XMindMark](https://github.com/xmindltd/xmindmark), lenguaje TypeScript/MIT de XMind inspirado en Markdown, y con el repositorio oficial [xmind-cli](https://github.com/xmindltd/xmind-cli), que distribuye un Skill MIT para agentes. XMindMark cubre jerarquía, relaciones, límites y resúmenes, y su implementación genera content.json con un Theme predefinido; incluye un helper de spreadsheet, pero no implementa la tabla de árbol legislativa de Tema1. El CLI actual aporta documentación operativa de generación/edición asistida, no una especificación de JSON. Los hallazgos están en `docs/xmind-official-sdk-research.md`.
+La Fase 0 queda documentada en ADR-001. Se inicia la Fase 1 por la tarea **1.1: caracterización y mapa de consumidores**. No se modificará el parser ni se retirará código legacy hasta cerrar ese inventario y disponer de pruebas que protejan el comportamiento actual.

@@ -110,7 +110,7 @@ La prueba manual acredita el fixture y los elementos comprobados, no compatibili
 - La CI no prueba todavía Python 3.10/3.11 ni Windows. El log de Actions muestra aviso de deprecación Node.js 20 en las versiones de actions actualmente utilizadas; se mantiene como tarea de mejora.
 - Run [43226219111](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43226219111), commit `5d082a9c09bb41f667fbd5fbf07aa483a5076975`: parsing directo, tres jobs de pruebas y build/install en success; Ruff lint/format correctos; **166 passed** por Python 3.10, 3.11 y 3.12; wheel y sdist instalados y probados en entornos limpios.
 - Run [43227325673](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43227325673), commit `0361f290a490c61e108ee0aa8a9d212c7f7b73c3`: además valida el aislamiento de `legacy_styles.py`; tres jobs de pruebas y build/install en success; Ruff lint/format correctos; **166 passed** por Python 3.10, 3.11 y 3.12.
-- Run [43246986236](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43246986236), commit `ad1471c8027952e20ea05367777ccaeee087a806`: CI final de Fase 2; tres matrices de pruebas y build/install en success; Ruff lint/format correctos; **189 passed** en Python 3.10, 3.11 y 3.12; smoke XMind, wheel/sdist y pruebas de instalación correctos.
+- Run [43247569102](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43247569102), commit `7f51378167cf82f22f226711afe31d193657f36a`: CI final de Fase 2; tres matrices de pruebas y build/install en success; Ruff lint/format correctos; **189 passed** en Python 3.10, 3.11 y 3.12; smoke XMind, wheel/sdist y pruebas de instalación correctos.
 - El usuario no desea instalar ni ejecutar Python localmente; las validaciones se realizan en GitHub Actions.
 
 

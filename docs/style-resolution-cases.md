@@ -15,7 +15,7 @@ Notación:
 
 Entrada: un hijo de una estructura `tree_table` tiene `semantic_role=table.header_cell`.
 
-Candidatos: regla estructural `table.body-cell` y regla semántica `table.header-cell`.
+Candidatos: regla estructural `visual.table.body-cell` y regla semántica `visual.table.header-cell`.
 
 Esperado: aplicar el estilo semántico de cabecera. La regla estructural no puede reemplazarlo aunque tenga una prioridad numérica mayor.
 
@@ -23,7 +23,7 @@ Esperado: aplicar el estilo semántico de cabecera. La regla estructural no pued
 
 Entrada: un hijo de `tree_table` no declara rol semántico y no hay regla semántica coincidente.
 
-Esperado: aplicar la regla estructural `structural.tree-table-cell` y el estilo `table.body-cell`.
+Esperado: aplicar la regla estructural `structural.tree-table-cell` y el estilo `visual.table.body-cell`.
 
 ## Caso 3 — Herencia de propiedades parciales
 

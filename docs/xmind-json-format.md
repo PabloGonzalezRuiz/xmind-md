@@ -309,3 +309,7 @@ xmind-sdk-js incluye content.json, metadata.json, content.xml, manifest.json y r
 
 Por tanto, estos repositorios son fuentes oficiales de implementación, pero sus perfiles de serialización no deben combinarse ni sustituir automáticamente el formato actual del proyecto. La diferencia de versiones debe validarse con XMind Desktop.
 
+
+### 14.3 Precaución: esquemas históricos y código runtime
+
+Los esquemas de xmind-model no siempre coinciden con sus interfaces y métodos runtime. Por ejemplo, topic.json declara labels como string, mientras que Topic manipula etiquetas como colección; el esquema declara customWidth, mientras que TopicData y el código utilizan width. Por tanto, el JSON Schema histórico no debe utilizarse aisladamente como validador de conformidad del formato actual. Contrastar siempre esquema, interfaces, implementación, fixtures Desktop y versión objetivo. El informe [xmind-official-sdk-research.md](xmind-official-sdk-research.md) detalla estas discrepancias.

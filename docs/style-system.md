@@ -430,3 +430,20 @@ La semántica será el criterio principal y la estructura será complementaria. 
 Se conserva el principio de herencia por referencia al primer hijo: puede establecer el formato predeterminado para sus hermanos; los hijos pueden declarar excepciones; la regla se aplica recursivamente. Queda pendiente precisar fallback si el primer hijo carece de estilo, fusión por propiedad y precedencia frente a reglas semánticas y overrides.
 
 La IA debe seleccionar roles y referencias existentes; el motor valida y resuelve. No confundir este diseño con la cascada actual de conjuntos por rama. Ver [pmd-design.md](pmd-design.md) y [roadmap.md](roadmap.md).
+
+
+## 17. Distinciones derivadas de la referencia Tema1
+
+El análisis de [Tema1](reference-analysis-tema1.md) confirma que el diseño PMD debe distinguir al menos estas fuentes de presentación:
+
+1. **Perfil general del tema XMind:** valores de `theme` para mapa, tema central, temas principales/secundarios y otros elementos.
+2. **Estilo explícito del elemento:** objeto `style` asociado al tema concreto.
+3. **Propiedad ausente:** no se ha declarado un valor en ese objeto.
+4. **Valor explícito especial `inherited`:** la propiedad está presente y solicita herencia según la semántica del formato de origen.
+5. **Regla de autoría PMD:** estilo semántico, regla contextual o herencia por referencia al primer hijo.
+
+Estas fuentes no son intercambiables. En particular, la regla PMD de tomar el formato del primer hijo como referencia de sus hermanos no describe el comportamiento nativo demostrado por Tema1: las celdas `Cabecera` y `cuerpo` contienen estilos propios y distintos. La regla PMD es una comodidad declarativa futura para reducir anotaciones, no una afirmación sobre cómo XMind creó esa referencia.
+
+El catálogo PMD deberá almacenar propiedades neutrales y metadatos de uso para IA. Los valores técnicos como `fo:font-size`, `svg:fill`, `shape-class` o `org.xmind.internal.topicShape.treeTableCell` pertenecen a la traducción del formato XMind, no al vocabulario semántico que la IA debe escribir.
+
+La procedencia de cada propiedad efectiva debe poder explicarse: perfil/base, regla semántica, regla estructural, herencia, estilo explícito o excepción local. El orden definitivo de precedencia queda pendiente de especificación en la Fase 2.

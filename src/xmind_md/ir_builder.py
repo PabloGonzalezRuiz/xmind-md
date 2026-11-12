@@ -29,6 +29,7 @@ from .ir import (
 )
 from .parser import _inline_runs
 
+
 def _id(prefix: str, value: str) -> str:
     return f"{prefix}_{uuid5(NAMESPACE_URL, value).hex[:16]}"
 

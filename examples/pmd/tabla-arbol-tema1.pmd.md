@@ -1,6 +1,6 @@
 ---
 pmd_version: "1.0.0"
-title: Tema1 — tabla de árbol
+title: Tema1 — patrón de tabla de árbol
 id: map_tema1_tree_table
 catalog:
   id: xmind-md.study
@@ -45,6 +45,7 @@ role: legal.chapter
 
 :::pmd
 id: articulo
+parent: capitulo
 role: legal.article
 structure:
   type: tree_table
@@ -55,6 +56,7 @@ structure:
 
 :::pmd
 id: cabecera
+parent: articulo
 role: table.header_cell
 style_ref: visual.table.header-cell
 :::
@@ -63,6 +65,7 @@ style_ref: visual.table.header-cell
 
 :::pmd
 id: cuerpo
+parent: articulo
 role: table.body_cell
 style_ref: visual.table.body-cell
 style_overrides:
@@ -74,5 +77,5 @@ style_overrides:
 Contenido de la celda, que puede incluir párrafos, listas, notas, enlaces y otros bloques admitidos.
 
 :::pmd-note
-La tabla de árbol se declara en el tema contenedor. Las celdas son los dos temas hijos directos y cada una mantiene su propio rol y estilo.
+La profundidad adicional se representa mediante `parent`, que prevalece sobre la relación inferida por nivel de encabezado. Las celdas son los dos hijos directos del tema Articulo y mantienen sus propios roles y estilos.
 :::

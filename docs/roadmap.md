@@ -34,11 +34,11 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 
 ### Fase 1 — Consolidación del modelo de ejecución
 
-**Estado: EN CURSO.** Objetivo: que el IR sea el único modelo de dominio de ejecución. El AST/syntax tree temporal es admisible; un segundo modelo de dominio persistente no.
+**Estado: EN CURSO.** Auditoría inicial de consumidores documentada en [ir-consolidation-audit.md](ir-consolidation-audit.md); el inventario está completo a nivel de código interno, pero faltan pruebas de caracterización y comprobación de consumidores externos. Objetivo: que el IR sea el único modelo de dominio de ejecución. El AST/syntax tree temporal es admisible; un segundo modelo de dominio persistente no.
 
 #### 1.1 Caracterización y mapa de consumidores
-- [ ] Inventariar todas las llamadas públicas a `parse_markdown()`, `parse_file()`, `parse_markdown_ir()` y `parse_file_ir()`.
-- [ ] Inventariar importaciones y consumidores de `model.py`, `Topic`, `MindMap` y la ruta legacy de `styles.py`.
+- [x] Inventariar las llamadas internas a `parse_markdown()`, `parse_file()`, `parse_markdown_ir()` y `parse_file_ir()`.
+- [x] Inventariar importaciones y consumidores internos de `model.py`, `Topic`, `MindMap` y la ruta legacy de `styles.py`.
 - [ ] Registrar contratos observables: IDs deterministas, fuentes, errores, directivas, contenido, anotaciones, recursos, relaciones, límites y resúmenes.
 - [ ] Añadir pruebas de caracterización que comparen el IR actual con fixtures de entrada representativos.
 
@@ -154,4 +154,4 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 
 ## Ejecución activa
 
-La Fase 0 queda documentada en ADR-001. Se inicia la Fase 1 por la tarea **1.1: caracterización y mapa de consumidores**. No se modificará el parser ni se retirará código legacy hasta cerrar ese inventario y disponer de pruebas que protejan el comportamiento actual.
+La Fase 0 queda documentada en ADR-001. La Fase 1 está iniciada: el mapa inicial de consumidores está en [ir-consolidation-audit.md](ir-consolidation-audit.md). Siguiente tarea: completar caracterización mediante fixtures/pruebas de salida IR y confirmar el alcance de compatibilidad pública. No se modificará el parser ni se retirará código legacy hasta disponer de esas pruebas.

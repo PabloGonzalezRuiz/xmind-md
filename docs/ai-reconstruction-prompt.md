@@ -852,7 +852,7 @@ La hoja de ruta vigente está en `docs/roadmap.md`; las decisiones obligatorias,
 
 No cambiar el contrato IR 1.0.0 silenciosamente. La versión vigente ampliada es 1.1.0; su diseño está en `docs/ir-1.1-design.md` y ADR-002. Distinguir ausencia de propiedad, valor explícito y literal `inherited`; no confundir herencia de style_set con la futura herencia PMD por referencia al primer hijo. El SVG debe buscar fidelidad visual, no identidad XML.
 
-Rama de trabajo de esta evolución: `architecture/pmd-ir-roadmap`, creada desde `05efc482c333b266bf1a2bd5fbf2f3fdee129de7`. Antes de cualquier cambio, verificar HEAD y CI de la rama. Fases 0, 1, 2 y 3 están cerradas en sus respectivos alcances; la Fase 3 entrega solo diseño/documentación, sin loader ni runtime. Fase 4 (especificación del lenguaje PMD) queda pendiente de autorización expresa. No iniciar Fase 4 ni implementación runtime antes de esa autorización.
+Rama de trabajo de esta evolución: `architecture/pmd-ir-roadmap`, creada desde `05efc482c333b266bf1a2bd5fbf2f3fdee129de7`. Antes de cualquier cambio, verificar HEAD y CI de la rama. Fases 0–4 están cerradas en sus respectivos alcances. La Fase 3 entrega catálogo y documentación, sin loader/runtime; la Fase 4 entrega la especificación PMD 1.0.0 y ejemplos, sin parser/runtime. La Fase 5 (parser y conversión PMD→IR) requiere autorización expresa.
 
 
 ---

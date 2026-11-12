@@ -84,7 +84,9 @@ def _strict_yaml_mapping(source: str, line: int, label: str) -> dict[str, Any]:
     except yaml.YAMLError as exc:
         raise PMDParseError(f"YAML inválido en {label}, línea {line}: {exc}") from exc
     except RecursionError as exc:
-        raise PMDParseError(f"Estructura YAML demasiado profunda en {label} (línea {line})") from exc
+        raise PMDParseError(
+            f"Estructura YAML demasiado profunda en {label} (línea {line})"
+        ) from exc
     try:
         return _yaml_mapping(source, line, label)
     except MarkdownParseError as exc:

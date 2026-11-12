@@ -34,7 +34,7 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 
 ### Fase 1 — Consolidación del modelo de ejecución
 
-**Estado: EN CURSO.** Las tareas 1.1 (inventario/caracterización) y 1.2 (parsing directo a IR) están implementadas. La tarea 1.3 (resolutor/API legacy) sigue pendiente. El AST es temporal; la ruta IR ya no construye el modelo legacy. Las API antiguas se mantienen aisladas mediante un adaptador AST → legacy.
+**Estado: COMPLETADA en la rama de trabajo.** Las tareas 1.1, 1.2 y 1.3 están implementadas: el IR es el único modelo de dominio de la ruta canónica; el AST es temporal; las API antiguas y su resolutor de estilos permanecen aislados en módulos de compatibilidad. model.py se conserva para no romper consumidores externos desconocidos.
 
 #### 1.1 Caracterización y mapa de consumidores
 - [x] Inventariar las llamadas internas a `parse_markdown()`, `parse_file()`, `parse_markdown_ir()` y `parse_file_ir()`.
@@ -51,17 +51,18 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 - [x] CI final del builder separado: [run 43226219111](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43226219111), 166 pruebas por Python 3.10–3.12 y build/install wheel/sdist correctos.
 
 #### 1.3 Resolutor y API
-- [ ] Migrar consumidores restantes de estilos a IR.
-- [ ] Retirar la detección y resolución legacy de `styles.py` cuando ya no sea necesaria.
-- [ ] Decidir deprecación y retirada de `model.py` según la compatibilidad pública documentada.
-- [ ] Mantener la CLI y los adaptadores funcionando sin cambios de comportamiento no intencionados.
+- [x] Migrar los consumidores internos de estilos a IR; la CLI y los adaptadores ya operan exclusivamente sobre IR.
+- [x] Aislar la resolución legacy en legacy_styles.py. styles.py conserva solo la fachada que deriva objetos antiguos al módulo de compatibilidad y no importa model.py.
+- [x] Decidir conservar model.py y las API antiguas por compatibilidad mientras no se conozcan consumidores externos; parse_markdown()/parse_file() usan AST → legacy_adapter y resolve_styles() mantiene un despacho explícito a legacy_styles.py. No se retira ni depreca ahora.
+- [x] Mantener la CLI y los adaptadores sin cambios de comportamiento; suite completa y distribución verificadas.
 
 **Criterios de cierre de Fase 1**
-- La ruta canónica de parsing construye IR directamente.
-- Ningún componente interno de ejecución depende del modelo legacy.
-- Las API legacy, si se mantienen, delegan en la ruta canónica o están deprecadas explícitamente.
+- La ruta canónica de parsing construye IR directamente desde AST.
+- Ningún componente de la ruta canónica (parser, builder, resolutor IR, CLI y adaptadores) depende del modelo legacy.
+- Las API legacy se mantienen únicamente mediante adaptadores explícitos, fuera de la ruta canónica.
+- La resolución de estilos legacy está encapsulada en un módulo de compatibilidad separado.
 - Pruebas de caracterización y suite completa verdes en Python 3.10, 3.11 y 3.12.
-- CLI JSON/XMind y fixture de smoke siguen funcionando.
+- CLI JSON/XMind, fixture de smoke y wheel/sdist siguen funcionando.
 - Documentación y matriz de compatibilidad actualizadas.
 
 ### Fase 2 — Evolución semántica y estructural del IR

@@ -34,7 +34,7 @@ Esta hoja de ruta sustituye la secuencia anterior de fases PMD, que colocaba la 
 
 ### Fase 1 — Consolidación del modelo de ejecución
 
-**Estado: EN CURSO.** Auditoría inicial de consumidores documentada en [ir-consolidation-audit.md](ir-consolidation-audit.md); el inventario está completo a nivel de código interno, pero faltan pruebas de caracterización y comprobación de consumidores externos. Objetivo: que el IR sea el único modelo de dominio de ejecución. El AST/syntax tree temporal es admisible; un segundo modelo de dominio persistente no.
+**Estado: EN CURSO.** La tarea 1.1 (inventario y caracterización inicial) está completada y documentada en [ir-consolidation-audit.md](ir-consolidation-audit.md). Los consumidores externos no pueden inferirse del repositorio; por ello se conservarán las API legacy como wrappers/adaptadores durante la transición. Objetivo: que el IR sea el único modelo de dominio de ejecución. El AST/syntax tree temporal es admisible; un segundo modelo de dominio persistente no.
 
 #### 1.1 Caracterización y mapa de consumidores
 - [x] Inventariar las llamadas internas a `parse_markdown()`, `parse_file()`, `parse_markdown_ir()` y `parse_file_ir()`.

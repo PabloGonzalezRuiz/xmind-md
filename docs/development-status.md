@@ -6,7 +6,7 @@
 - **Rama:** `main`
 - **Commit base de auditoría PMD:** `d96cc74cb144e0de851f5ab75b45d9d1030a82aa` (informe Tema1 añadido; verificar HEAD para el estado posterior).
 - **Release:** `v0.1.0` publicada el 2026-11-11 como Alpha/prerelease; incluye wheel, sdist y `SHA256SUMS.txt`.
-- **CI de main:** [run 43206029166](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43206029166), mismo SHA que el commit auditado; cuatro jobs en `success`.
+- **CI de auditoría documental:** [run 43210510024](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43210510024), commit `9f4d9b5d4eb6abad62005ac109ac860adc937040`; cuatro jobs en `success`.
 - **Última prueba manual XMind Desktop registrada:** Windows, XMind 26.05.01107; fixture abierto, guardado y reabierto.
 - **Contrato runtime:** IR 1.0.0.
 - **Implementado:** ruta Markdown → IR → JSON/XMind, CLI, resolutor de estilos, pruebas y publicación Alpha. El adaptador XMind sigue siendo parcial.
@@ -1077,4 +1077,4 @@ Se actualizaron documentos de continuidad, arquitectura y estilos. No se modific
 
 ### Verificación
 
-La ejecución de CI del commit documental final debe consultarse antes de declarar validada la sincronización. La evidencia se añadirá aquí una vez finalice.
+La ejecución [43210510024](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43210510024), para el commit `9f4d9b5d4eb6abad62005ac109ac860adc937040`, finalizó `completed / success`. Los tres jobs de pruebas Python 3.10, 3.11 y 3.12 finalizaron correctamente; el job de distribuciones construyó y verificó wheel/sdist, los instaló en entornos limpios separados y completó las pruebas CLI. La sincronización documental de la Fase 1 queda validada por CI. Este registro genera un nuevo commit documental y, por tanto, una nueva ejecución CI que debe comprobarse por separado.

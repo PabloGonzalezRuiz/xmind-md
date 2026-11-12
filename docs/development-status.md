@@ -12,7 +12,7 @@
 - **Implementado:** ruta Markdown → IR → JSON/XMind, CLI, resolutor de estilos, pruebas y publicación Alpha. El adaptador XMind sigue siendo parcial.
 - **Dirección de producto:** PMD como lenguaje de autoría enriquecido, con conversión asistida por IA desde Markdown ordinario. Ver [pmd-design.md](pmd-design.md).
 - **Fase 1:** análisis de la referencia Tema1 completado y documentado en [reference-analysis-tema1.md](reference-analysis-tema1.md).
-- **Trabajo activo:** Fase 1, consolidación del modelo de ejecución. ADR-001 y hoja de ruta actualizada; inventario inicial de consumidores en [ir-consolidation-audit.md](ir-consolidation-audit.md).
+- **Trabajo activo:** Fase 1, consolidación del modelo de ejecución. ADR-001, hoja de ruta e inventario de consumidores actualizados; caracterización IR inicial añadida en `tests/fixtures/ir-characterization.md` y `tests/test_ir_parser.py`.
 - **Regla:** distinguir implementado, decidido y pendiente; no iniciar una fase nueva sin autorización expresa.
 
 ## 1. Para qué sirve este documento
@@ -1147,3 +1147,8 @@ La Fase 2 de PMD sigue pendiente de autorización expresa; esta investigación n
 Se ha creado la rama `architecture/pmd-ir-roadmap` desde `05efc482c333b266bf1a2bd5fbf2f3fdee129de7`. ADR-001 fija PMD como lenguaje de autoría separado del IR, IR como modelo de dominio único, roles semánticos y estructuras neutrales, catálogo de estilos separado en capa semántica/visual, resolución determinista y adaptador XMind independiente. La hoja de ruta se reorganizó en fases 0–8; ver `roadmap.md`.
 
 La Fase 0 está documentada. La Fase 1 está en curso. La inspección inicial de consumidores se documenta en `ir-consolidation-audit.md`. No se han modificado módulos Python ni se ha ejecutado una suite de pruebas en esta tarea. Próximo paso: completar pruebas de caracterización antes de cambiar el parser.
+
+
+## 11. Caracterización del IR (2026-11-12)
+
+Se añadió el fixture `tests/fixtures/ir-characterization.md` y una prueba que fija IDs, metadatos, estilos, contenido estructurado, anotaciones, enlaces, assets, relaciones, límites, resúmenes y determinismo de serialización. La CI [43221134964](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43221134964), commit `a2a4c7f640cfcc020c4bad516b5f0026c00bd965`, terminó `success`: 162 pruebas en cada una de Python 3.10, 3.11 y 3.12, más build/install. La caracterización refleja el comportamiento observado; no se ha cambiado el parser ni retirado el modelo legacy. La migración continúa pendiente.

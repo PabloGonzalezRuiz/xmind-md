@@ -190,10 +190,7 @@ def _block(
 def _topic(syntax: Any, assets: dict[str, Asset]) -> Topic:
     properties = syntax.properties
     resources = ResourceReferences()
-    content = [
-        _block(block, syntax.id, assets, resources)
-        for block in syntax.blocks
-    ]
+    content = [_block(block, syntax.id, assets, resources) for block in syntax.blocks]
 
     labels = [
         Label(_id("label", f"{syntax.id}|{index}|{value}"), value)
@@ -229,7 +226,9 @@ def _topic(syntax: Any, assets: dict[str, Asset]) -> Topic:
         item = dict(link)
         item.setdefault("id", _id("link", f"{syntax.id}|{index}|{item.get('target', '')}"))
         if "kind" not in item or "target" not in item:
-            raise ValueError(f"Enlace inválido en el tema {syntax.id!r}: se requieren kind y target")
+            raise ValueError(
+                f"Enlace inválido en el tema {syntax.id!r}: se requieren kind y target"
+            )
         links.append(item)
 
     return Topic(

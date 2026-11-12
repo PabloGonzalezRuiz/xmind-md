@@ -1,4 +1,4 @@
-"""API pública del modelo intermedio canónico IR 1.0.0."""
+"""API pública del modelo intermedio canónico IR 1.x."""
 
 from .entities import (
     Annotation,
@@ -20,6 +20,7 @@ from .entities import (
     TreeTableCell,
     TreeTableRow,
 )
+from .migrations import migrate_ir_1_0_to_1_1
 from .validation import IRValidationError, validate_mind_map
 
 __all__ = [
@@ -42,5 +43,6 @@ __all__ = [
     "TopicStructure",
     "TreeTableCell",
     "TreeTableRow",
+    "migrate_ir_1_0_to_1_1",
     "validate_mind_map",
 ]

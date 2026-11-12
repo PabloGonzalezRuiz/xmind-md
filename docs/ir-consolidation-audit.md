@@ -90,7 +90,7 @@ Esta tarea comenzó como inspección estática y se amplió con dos pruebas de c
 
 ## 9. Diseño de la ruta directa al IR
 
-La inspección detallada de parser.py, ir_parser.py, model.py, ir/entities.py y las pruebas confirma que el problema no se resuelve simplemente moviendo _convert(): el parser actual mezcla reconocimiento sintáctico con campos y colecciones específicos del modelo legacy. También genera contenido duplicado (texto plano y bloques) para satisfacer consumidores antiguos.
+La inspección detallada de parser.py, ir_parser.py, model.py, ir/entities.py y las pruebas confirmó que el problema no se resolvía simplemente moviendo _convert(): el parser mezclaba reconocimiento sintáctico con campos y colecciones específicos del modelo legacy. También generaba contenido duplicado (texto plano y bloques) para satisfacer consumidores antiguos.
 
 Se ha documentado el diseño objetivo en [ir-parser-design.md](ir-parser-design.md):
 
@@ -100,6 +100,48 @@ Se ha documentado el diseño objetivo en [ir-parser-design.md](ir-parser-design.
 - Adaptador inverso IR → legacy para mantener temporalmente parse_markdown() y parse_file().
 - Resolución legacy de estilos aislada como trabajo relacionado, sin bloquear el primer corte del parser.
 
-La decisión es conservar IR 1.0.0 y la gramática actual durante esta migración. El AST no será API pública ni una segunda representación de dominio. El diseño está documentado, pero no se ha implementado aún; el estado de Fase 1.2 permanece en curso.
+La decisión fue conservar IR 1.0.0 y la gramática actual durante esta migración. El AST no es API pública ni una segunda representación de dominio. La implementación se completó después de documentar el diseño; el resultado y la evidencia se registran en la sección 10.
 
 **Siguiente paso:** implementar AST y builder por incrementos, con pruebas que demuestren que parse_markdown_ir() no instancia model.MindMap ni model.Topic y que el adaptador inverso mantiene el contrato legacy observable.
+
+
+## 10. Resultado de implementación: parsing directo a IR
+
+**Estado:** implementado en la rama de trabajo; CI de código completa en Python 3.10, 3.11 y 3.12.
+
+La ruta canónica queda así:
+
+    Markdown
+      → parser.py / DocumentSyntax
+      → ir_builder.py
+      → ir_parser.py (fachada)
+      → IR 1.0.0
+      → CLI / resolución de estilos IR / adaptadores
+
+La ruta legacy queda aislada:
+
+    parse_markdown() / parse_file()
+      → parser.py / DocumentSyntax
+      → legacy_adapter.py
+      → model.MindMap / model.Topic
+
+Cambios realizados:
+
+- parser.py deja de importar o construir model.MindMap / model.Topic en tiempo de ejecución; produce DocumentSyntax y TopicSyntax.
+- syntax.py contiene los dataclasses temporales del AST.
+- ir_builder.py crea directamente entidades IR, anotaciones, bloques, assets, referencias y entidades de hoja.
+- ir_parser.py se reduce a la fachada parse_markdown_ir() / parse_file_ir().
+- legacy_adapter.py proyecta el AST al modelo anterior solo para las API legacy; preserva nivel de encabezado y texto Markdown original.
+- Se eliminó la conversión legacy → IR de la ruta canónica.
+- No se modificó el esquema ni la versión IR 1.0.0.
+
+Pruebas añadidas:
+
+- Verificación del tipo y contenido estructural del AST.
+- Verificación de que parse_markdown_ir() no instancia model.MindMap ni model.Topic.
+- Verificación de que el adaptador legacy conserva niveles de encabezado y texto Markdown original.
+- La prueba de caracterización y la comparación legacy/IR anteriores siguen pasando.
+
+Evidencia CI de la implementación con builder separado: [run 43226219111](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43226219111), commit `5d082a9c09bb41f667fbd5fbf07aa483a5076975`. Resultado: jobs Python 3.10, 3.11 y 3.12 en success; Ruff lint y format correctos; 166 pruebas superadas por versión; wheel/sdist construidos, instalados en entornos limpios y probados.
+
+**Pendiente de Fase 1:** styles.py conserva resolución legacy y model.py sigue siendo requerido por esa compatibilidad. La tarea 1.3 debe aislar esa ruta y decidir su política de deprecación/retirada. No se ha integrado la rama en main ni se ha publicado una nueva release.

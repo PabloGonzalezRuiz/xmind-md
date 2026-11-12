@@ -24,13 +24,13 @@ Este bloque y `docs/pmd-design.md`/`docs/roadmap.md` prevalecen sobre notas hist
 - Repositorio `PabloGonzalezRuiz/xmind-md`; `main` es la rama de integración y `architecture/pmd-ir-roadmap` es la rama activa de esta evolución. Verificar siempre el HEAD real antes de actuar y no integrar ni publicar sin autorización.
 - Release `v0.1.0` publicada el 2026-11-11 como Alpha/prerelease, con wheel, sdist y `SHA256SUMS.txt`.
 - CI de la tarea de parsing directo: [43226219111](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43226219111), cuatro jobs `success`; 166 pruebas por Python 3.10, 3.11 y 3.12; Ruff, wheel/sdist, instalación y CLI correctos.
-- Ruta canónica implementada: Markdown → parser.py / AST temporal → ir_builder.py → IR 1.0.0 → JSON/XMind. ir_parser.py es una fachada fina. La API legacy usa legacy_adapter.py (AST → model.MindMap/model.Topic), aislada de la ruta canónica. El adaptador XMind sigue siendo parcial.
+- Ruta canónica implementada: Markdown → parser.py / AST temporal → ir_builder.py → IR 1.0.0 → JSON/XMind. El modelo y validador admiten también IR 1.1.0 con roles semánticos y tree_table; el parser Markdown todavía emite 1.0.0. ir_parser.py es una fachada fina. La API legacy usa legacy_adapter.py (AST → model.MindMap/model.Topic), aislada de la ruta canónica. El adaptador XMind sigue siendo parcial.
 - Dirección futura: PMD (Pableras Markdown) como lenguaje de autoría legible y apto para IA. Flujo objetivo: Markdown ordinario → IA → PMD → parser/validador → IR → resolución determinista → XMind. PMD no es el IR.
 - Estilos: biblioteca reutilizable con descripciones semánticas, destinatarios, propiedades, restricciones y ejemplos; reglas semánticas prioritarias y estructurales complementarias; herencia por referencia al primer hijo, con excepciones explícitas y recursividad. El algoritmo exacto está pendiente.
 - La IA debe seleccionar roles y referencias existentes, no inventar propiedades visuales; el motor valida y resuelve.
 - El SVG debe ser lo más fiel posible a la apariencia original de XMind; no se exige identidad de XML, atributos o IDs internos.
 - Tema1: Fase 1 completada para `content.json`, `Tema1.svg` y `Tema1.md`; informe completo en `docs/reference-analysis-tema1.md`, `docs/xmind-markdown-behavior.md` y `docs/xmind-json-format.md`. Son 10 temas; nueve con estilo explícito; `Articulo` es el título superior de una tabla de árbol y `Cabecera`/`cuerpo` son celdas con estilos distintos. El SVG enlaza los 10 títulos con IDs JSON mediante `data-view-id`. No hay `.xmind` original versionado. La herencia PMD por primer hijo no queda demostrada como comportamiento nativo de XMind.
-- El roadmap vigente fue reordenado: Fase 1 = consolidación del modelo de ejecución. Tareas 1.1, 1.2 y 1.3 están completadas en `architecture/pmd-ir-roadmap`: parser directo a IR, adaptador AST → legacy y resolución legacy aislada en `legacy_styles.py`. `model.py` se conserva como compatibilidad por desconocerse consumidores externos. CI final [43227325673](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43227325673): 166 pruebas por Python 3.10–3.12, Ruff y build/install correctos. Fase 1 está cerrada. Siguiente: Fase 2, evolución semántica y estructural del IR (roles semánticos y `tree_table`), pendiente de autorización expresa. No iniciar Fase 2 ni catálogo runtime/parser PMD hasta solicitar y recibir autorización.
+- El roadmap vigente fue reordenado: Fase 1 = consolidación del modelo de ejecución. Tareas 1.1, 1.2 y 1.3 están completadas en `architecture/pmd-ir-roadmap`: parser directo a IR, adaptador AST → legacy y resolución legacy aislada en `legacy_styles.py`. `model.py` se conserva como compatibilidad por desconocerse consumidores externos. Fase 1 está cerrada. Fase 2 ha sido autorizada y está en implementación: ADR-002 y `docs/ir-1.1-design.md` fijan `Topic.semantic_role`, `Topic.structure` (`tree_table`), referencias ordenadas a hijos, semántica de `inherited` y versión 1.1.0. No iniciar Fase 3, catálogo runtime ni parser PMD sin autorización posterior.
 
 Fuentes normativas de continuidad: `docs/pmd-design.md`, `docs/roadmap.md`, `docs/development-status.md`, `docs/style-system.md` y el análisis de referencia `docs/reference-analysis-tema1.md`. Distinguir siempre implementado, decidido y pendiente; auditar GitHub antes de modificar y pedir autorización antes de iniciar una fase nueva.
 
@@ -112,7 +112,7 @@ Invariantes:
 - Un ZIP estructuralmente válido no acredita compatibilidad con XMind Desktop.
 - Una misma entrada/configuración debe producir estructura estable; los metadatos de creación pueden depender del instante.
 
-## 4. Contrato IR 1.0.0
+## 4. Contratos IR 1.0.0 y 1.1.0
 
 Fuentes:
 - `docs/ir-specification.md`
@@ -140,7 +140,7 @@ MindMap
     └── summaries[]
 ~~~
 
-El modelo Python contiene entidades tipadas para MindMap, Sheet, Topic, ContentBlock, anotaciones (Note, Label, Marker), recursos, Asset, Relationship, Boundary, Summary, SheetLayout y StyleState. Cada entidad relevante implementa serialización `to_dict()`.
+El modelo Python contiene entidades tipadas para MindMap, Sheet, Topic, ContentBlock, anotaciones (Note, Label, Marker), recursos, Asset, Relationship, Boundary, Summary, SheetLayout y StyleState. IR 1.1.0 añade `Topic.semantic_role`, `Topic.structure`, `TopicStructure`, `TreeTableRow` y `TreeTableCell`. Cada entidad relevante implementa serialización `to_dict()`.
 
 La validación semántica comprueba, entre otros aspectos, IDs, estructura del árbol, referencias, tipos, estilos y relaciones. El JSON Schema valida la forma estructural y formatos declarados; no sustituye la validación semántica Python.
 
@@ -149,7 +149,7 @@ Decisiones:
 - Todos los temas pertenecen al árbol.
 - No hay temas flotantes como raíz independiente del árbol.
 - El IR preserva identidad, orden, referencias y procedencia cuando el parser puede determinarla.
-- IR 1.0.0 es el contrato canónico; cualquier cambio incompatible exige versionado y migración.
+- IR 1.0.0 sigue siendo legible. IR 1.1.0 añade campos opcionales; semantic_role y structure requieren declarar esa versión. La migración es explícita mediante `migrate_ir_1_0_to_1_1()`.
 
 El modelo anterior `src/xmind_md/model.py` se conserva como API legacy. No lo elimines hasta auditar consumidores, compatibilidad y estrategia de retirada.
 
@@ -196,7 +196,7 @@ El resolutor admite carga YAML segura, conjuntos, herencia por rama, sustitució
 
 La selección global se realiza mediante `metadata.style_set`; el tema puede seleccionar/sustituir con `Topic.style.style_set`. El resultado se escribe en `style.resolved`, sin mutar las definiciones originales. La ruta legacy sigue existiendo por compatibilidad.
 
-El estado vigente de la resolución de estilos se describe en `docs/style-system.md`: la ruta IR 1.0.0 está implementada y probada; la ruta legacy se conserva por compatibilidad y el catálogo de propiedades exportables XMind es parcial.
+El estado vigente de la resolución de estilos se describe en `docs/style-system.md`: el resolutor mantiene compatibilidad con el IR 1.x; la ruta legacy se conserva por compatibilidad y el catálogo de propiedades exportables XMind es parcial. El catálogo semántico por roles corresponde a la Fase 3.
 
 ## 7. Adaptadores y CLI actuales
 
@@ -838,7 +838,7 @@ No se ha localizado una especificación pública normativa, completa y versionad
 
 Mantener separados class (familias de estilo), structureClass (estructura) y style.properties (propiedades visuales locales). Preservar las colecciones children por tipo (attached/detached/summary/callout), las entidades auxiliares y los datos desconocidos al diseñar el futuro lector. La herencia visual nativa completa no queda especificada por estos repositorios. La herencia PMD por primer hijo sigue siendo una regla propia pendiente de especificación, no una característica nativa demostrada.
 
-La investigación no autoriza por sí misma iniciar la Fase 2 ni implementar cambios. La hoja de ruta y la autorización expresa siguen siendo obligatorias.
+La investigación no autoriza por sí misma implementar cambios fuera de la fase expresamente autorizada. La hoja de ruta y la autorización expresa siguen siendo obligatorias.
 
 
 Ampliación de referencias oficiales (2026-11-12): consulta también [docs/xmind-official-sdk-research.md](xmind-official-sdk-research.md). Se identificó [xmindmark](https://github.com/xmindltd/xmindmark), lenguaje TypeScript/MIT de XMind inspirado en Markdown. Su gramática textual cubre central topic, listas indentadas, relaciones, boundaries y summaries; su conversor aplica un Theme fijo y genera content.json. Incluye un helper spreadsheet basado en org.xmind.ui.spreadsheet, que no debe confundirse con la tabla de árbol legislativa de Tema1. Su conversión inversa es parcial y con pérdida. También se revisó [xmind-cli](https://github.com/xmindltd/xmind-cli), repositorio MIT del Skill oficial para agentes; el CLI se distribuye por separado y el repositorio no revela su serializador. No tratar ninguna de estas fuentes como especificación normativa completa ni como autorización para iniciar la Fase 2.
@@ -850,6 +850,6 @@ La hoja de ruta vigente está en `docs/roadmap.md`; las decisiones obligatorias,
 
 **Estado vigente:** Fase 1, consolidación del modelo de ejecución, completada en `architecture/pmd-ir-roadmap`. `parser.py` produce AST; `ir_builder.py` crea IR directamente; `ir_parser.py` es una fachada; `legacy_adapter.py` y `legacy_styles.py` aíslan las API antiguas. `styles.py` no importa `model.py`. La CI [43227325673](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43227325673) acredita 166 pruebas en Python 3.10–3.12 y build/install correctos. `model.py` se conserva como compatibilidad externa. No se ha integrado en `main`.
 
-No cambiar el contrato IR 1.0.0 silenciosamente. Roles semánticos y estructuras compuestas (en particular `tree_table`) deberán definirse de forma neutral antes de implementar sintaxis PMD. Distinguir ausencia de propiedad, valor explícito y literal `inherited`; no confundir herencia de style_set con la futura herencia PMD por referencia al primer hijo. El SVG debe buscar fidelidad visual, no identidad XML.
+No cambiar el contrato IR 1.0.0 silenciosamente. La versión vigente ampliada es 1.1.0; su diseño está en `docs/ir-1.1-design.md` y ADR-002. Distinguir ausencia de propiedad, valor explícito y literal `inherited`; no confundir herencia de style_set con la futura herencia PMD por referencia al primer hijo. El SVG debe buscar fidelidad visual, no identidad XML.
 
-Rama de trabajo de esta evolución: `architecture/pmd-ir-roadmap`, creada desde `05efc482c333b266bf1a2bd5fbf2f3fdee129de7`. Antes de cualquier cambio, verificar HEAD y CI de la rama. Fase 0 y Fase 1 están cerradas. Siguiente: Fase 2, evolución semántica y estructural del IR (roles y tree_table), pendiente de autorización expresa. No iniciar hasta recibirla.
+Rama de trabajo de esta evolución: `architecture/pmd-ir-roadmap`, creada desde `05efc482c333b266bf1a2bd5fbf2f3fdee129de7`. Antes de cualquier cambio, verificar HEAD y CI de la rama. Fase 0 y Fase 1 están cerradas. Fase 2 está autorizada y en implementación; completar sus pruebas y documentación. No iniciar Fase 3 ni parser PMD sin autorización expresa.

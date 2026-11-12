@@ -3,7 +3,7 @@
 **Fecha:** 2026-11-12  
 **Base de código:** `05efc482c333b266bf1a2bd5fbf2f3fdee129de7`  
 **Rama de trabajo:** `architecture/pmd-ir-roadmap`  
-**Alcance:** Fase 1.1 — inventario inicial de responsabilidades y consumidores conocidos. No se han modificado módulos Python.
+**Alcance:** Fase 1.1 — inventario inicial y caracterización del contrato IR actual. No se ha modificado el parser ni se ha retirado código legacy.
 
 ## 1. Hallazgo principal
 
@@ -59,15 +59,30 @@ Este inventario corresponde a los archivos versionados inspeccionados. No demues
 
 - [x] Inspección de módulos de parsing, IR, estilos, CLI y adaptadores.
 - [x] Inventario de consumidores internos y suites de prueba localizados.
-- [ ] Confirmar exportaciones públicas documentadas y posibles consumidores externos.
-- [ ] Crear fixtures de caracterización con salidas IR esperadas para los casos críticos del parser.
+- [x] Revisar exportaciones públicas del paquete: `xmind_md.__init__` solo publica `__version__`; las funciones de parsing son importables desde sus módulos. No es posible inferir consumidores externos a partir del repositorio.
+- [x] Crear `tests/fixtures/ir-characterization.md` y una prueba de caracterización que fija IDs, metadatos, estilos, estructura, contenido, anotaciones, enlaces, recursos y entidades globales.
 - [ ] Añadir pruebas de equivalencia para IDs, procedencia, recursos y entidades globales.
-- [ ] Ejecutar suite completa y guardar la ejecución CI de referencia de esta rama.
+- [x] CI de referencia de caracterización: [run 43221134964](https://github.com/PabloGonzalezRuiz/xmind-md/actions/runs/43221134964), commit `a2a4c7f640cfcc020c4bad516b5f0026c00bd965`; 162 pruebas correctas en Python 3.10, 3.11 y 3.12 y build/install correcto.
 
-## 6. Próximo paso técnico
+## 6. Resultado de la caracterización
+
+Se añadió el fixture `tests/fixtures/ir-characterization.md` y la prueba `test_characterization_fixture_preserves_the_complete_ir_contract`. El caso cubre:
+- IDs deterministas del mapa/hoja/tema y serialización reproducible para una entrada y ruta iguales.
+- Metadatos, estilos, conjuntos de estilos y extensiones.
+- Procedencia de encabezados y rangos de contenido.
+- Párrafos con formato y enlaces internos, listas anidadas, tablas, citas, divisores, imágenes y código.
+- Etiquetas, marcadores, tareas, notas y enlaces externos.
+- Inventario de assets y referencias de recursos.
+- Relaciones, límites y resúmenes.
+
+**Observación de contrato:** el parser actual asigna a los temas `source.file`, `line_start` y `line_end`; no rellena `source.markdown_heading`, aunque la especificación IR lo contempla como campo opcional y algunos ejemplos JSON lo muestran. La caracterización fija el comportamiento real sin introducir una modificación funcional no aprobada.
+
+La suite CI del commit indicado terminó correctamente: 162 pruebas por cada versión Python (3.10, 3.11 y 3.12) y distribución construida/instalada con éxito.
+
+## 7. Próximo paso técnico
 
 Antes de cambiar el parser, añadir pruebas de caracterización independientes de la implementación que validen la salida IR actual. Después, diseñar un AST sintáctico mínimo que preserve la información necesaria para construir IR sin convertir un modelo de dominio legacy. La API legacy podrá delegar en esa ruta y adaptar la salida solo mientras exista una necesidad de compatibilidad.
 
-## 7. Límites de esta auditoría
+## 8. Límites de esta auditoría
 
 Esta tarea es una inspección documental/código estática sobre la base indicada. No se ha ejecutado pytest localmente, no se han añadido pruebas, no se ha cambiado el parser ni se ha retirado el modelo legacy. La CI nueva de la rama deberá verificar los commits documentales; la migración de código solo se considerará completada con pruebas específicas y CI verde.

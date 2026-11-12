@@ -64,16 +64,13 @@ def _walk_topics(
 
     if topic.semantic_role is not None:
         if ir_version != "1.1.0":
-            raise IRValidationError(
-                f"{path}.semantic_role: requiere ir_version 1.1.0"
-            )
+            raise IRValidationError(f"{path}.semantic_role: requiere ir_version 1.1.0")
         if not isinstance(topic.semantic_role, str) or not topic.semantic_role.strip():
             raise IRValidationError(f"{path}.semantic_role: debe ser texto no vacío")
 
     if ir_version == "1.1.0" and "structure_class" in topic.layout:
         raise IRValidationError(
-            f"{path}.layout.structure_class: no se admite en IR 1.1.0; "
-            "utiliza Topic.structure"
+            f"{path}.layout.structure_class: no se admite en IR 1.1.0; utiliza Topic.structure"
         )
 
     if topic.structure is not None:

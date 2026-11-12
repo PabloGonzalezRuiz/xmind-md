@@ -171,6 +171,8 @@ XMind MD se distribuye bajo la licencia [MIT](LICENSE), con el aviso de copyrigh
 - [Hoja de ruta vigente](docs/roadmap.md)
 - [Dirección de producto y diseño de PMD](docs/pmd-design.md)
 - [Análisis detallado de la referencia Tema1](docs/reference-analysis-tema1.md)
+- [Comportamiento de intercambio Markdown de XMind](docs/xmind-markdown-behavior.md)
+- [Formato JSON de XMind y estrategia de conversión](docs/xmind-json-format.md)
 - [Prompt maestro de reconstrucción](docs/ai-reconstruction-prompt.md)
 - [Auditoría de empaquetado y publicación](docs/release-audit.md)
 - [Auditoría de sincronización documental](docs/documentation-audit.md)

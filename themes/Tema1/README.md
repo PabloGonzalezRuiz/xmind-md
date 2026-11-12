@@ -69,8 +69,8 @@ La referencia confirma que `Cabecera` y `cuerpo` son celdas con estilos explíci
 ## Trabajo posterior
 
 - [ ] Analizar otras variantes reales de tablas de árbol y estructuras de legislación.
-- [ ] Especificar el catálogo semántico y las reglas de aplicación en la Fase 2.
-- [ ] Definir precedencia entre defaults, estilos semánticos, contexto estructural, herencia y excepciones.
+- [ ] Catálogo semántico y reglas de aplicación diseñados en la Fase 3; ver [style-catalog.md](../../docs/style-catalog.md).
+- [ ] Precedencia definida en [style-catalog.md](../../docs/style-catalog.md) y vectores en [style-resolution-cases.md](../../docs/style-resolution-cases.md).
 - [ ] Diseñar ejemplos PMD cuando la sintaxis esté aprobada.
 
 ## Decisiones PMD relacionadas
@@ -80,4 +80,4 @@ La referencia confirma que `Cabecera` y `cuerpo` son celdas con estilos explíci
 - La regla se aplica recursivamente.
 - La IA utilizará estilos semánticos y reglas estructurales del catálogo, no valores XMind internos repetidos en cada nodo.
 
-Son decisiones de diseño; el algoritmo y la sintaxis están pendientes. Fuente normativa: [docs/pmd-design.md](../../docs/pmd-design.md).
+Son decisiones de diseño aprobadas en Fase 3; el catálogo no está implementado en runtime. La sintaxis PMD continúa pendiente. Fuente normativa: [docs/pmd-design.md](../../docs/pmd-design.md).

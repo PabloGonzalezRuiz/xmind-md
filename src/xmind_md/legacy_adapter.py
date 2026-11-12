@@ -3,6 +3,7 @@
 Solo lo utilizan las funciones públicas antiguas parse_markdown()/parse_file().
 La ruta canónica AST → IR no instancia clases de este módulo.
 """
+
 from __future__ import annotations
 
 from typing import Any

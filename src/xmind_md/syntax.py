@@ -3,6 +3,7 @@
 Estas estructuras conservan la sintaxis reconocida y la procedencia. No son
 entidades de dominio y no forman parte del contrato IR ni de la API pública.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

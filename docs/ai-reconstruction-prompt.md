@@ -30,9 +30,9 @@ Este bloque y `docs/pmd-design.md`/`docs/roadmap.md` prevalecen sobre notas hist
 - La IA debe seleccionar roles y referencias existentes, no inventar propiedades visuales; el motor valida y resuelve.
 - El SVG debe ser lo más fiel posible a la apariencia original de XMind; no se exige identidad de XML, atributos o IDs internos.
 - Tema1: `content.json`, `Tema1.svg` y `Tema1.md` disponibles; 10 temas; `Articulo` es tabla de árbol y `Cabecera`/`cuerpo` son celdas con estilos diferentes. No hay `.xmind` original versionado.
-- Siguiente paso: completar análisis de referencias Tema1 (Fase 1). No implementar parser PMD ni nuevo catálogo antes de especificar y autorizar.
+- Fase 1 (análisis de Tema1) completada para los archivos versionados; informe: `docs/reference-analysis-tema1.md`. Siguiente paso: Fase 2, especificar biblioteca de estilos, reglas semánticas/estructurales y herencia. Esta fase requiere autorización expresa antes de iniciarse. No implementar parser PMD ni catálogo runtime por anticipado.
 
-Fuentes normativas de continuidad: `docs/pmd-design.md`, `docs/roadmap.md`, `docs/development-status.md`, `docs/style-system.md`. Distinguir siempre implementado, decidido y pendiente; auditar GitHub antes de modificar y pedir autorización antes de iniciar una fase nueva.
+Fuentes normativas de continuidad: `docs/pmd-design.md`, `docs/roadmap.md`, `docs/development-status.md`, `docs/style-system.md` y el análisis de referencia `docs/reference-analysis-tema1.md`. Distinguir siempre implementado, decidido y pendiente; auditar GitHub antes de modificar y pedir autorización antes de iniciar una fase nueva.
 
 ## 1. Objetivo funcional
 

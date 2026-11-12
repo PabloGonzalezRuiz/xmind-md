@@ -2,7 +2,7 @@
 
 ## 1. Propósito y estado
 
-XMind MD convierte Markdown enriquecido en un modelo intermedio neutral (IR 1.1.0) y exporta ese modelo a JSON o a un libro XMind moderno (`.xmind`). La implementación principal es Python (>=3.10).
+XMind MD convierte Markdown enriquecido en un modelo intermedio neutral y exporta ese modelo a JSON o a un libro XMind moderno (`.xmind`). El contrato vigente es IR 1.1.0; el parser Markdown actual todavía produce IR 1.0.0. La implementación principal es Python (>=3.10).
 
 La arquitectura separa parsing, representación semántica, resolución de estilos y serialización. El adaptador XMind implementa un perfil parcial y validado; las capacidades no soportadas se rechazan explícitamente.
 

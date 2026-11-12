@@ -184,7 +184,7 @@ def _transform_document(
         if key in metadata
     }
     accepted["extensions"] = extensions
-    front = ["---", _yaml_dump(accepted), "---"]
+    front = ["---", *_yaml_dump(accepted).splitlines(), "---"]
     output = list(front)
     line_map = [1] + [2] * (len(front) - 2) + [front_end + 1]
     pending: dict[str, Any] | None = None
